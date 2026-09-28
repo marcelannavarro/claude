@@ -1,0 +1,9 @@
+{
+  "id": "15",
+  "subject": "Remediate audit findings 1–9",
+  "description": "Brain taxonomy → provider-driven + drop regional-rule; rename e2eNaming.jira→story; move coderabbit.yaml out of base to provider-gated CLI emission; genericize /knowledge; staticAnalysis vendor-neutral (security/lint/aiReview); soften web-leaning security wording; pack-node → npm; regenerate stale registry. Re-audit.",
+  "activeForm": "Remediating audit findings",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

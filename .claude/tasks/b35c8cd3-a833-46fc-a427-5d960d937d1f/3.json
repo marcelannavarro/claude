@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Verify live rendering against specs (blocked on preview access)",
+  "description": "Once the MRT preview is reachable: at mobile (375/402), tablet (768/1024), desktop (1280/1440), pull computed styles via devtools for each component and diff against the Figma specs gathered above. Flag Popper-based mega menu separately (known screenshot blind spot) — use computed styles, not screenshots, for it.",
+  "activeForm": "Verifying live rendering against Figma specs",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

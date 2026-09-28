@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Step 1 — renderVariationAttribute slot on product-view",
+  "description": "Implementer→Tester→Orchestrator→Scorer loop for the slot extraction in overrides/app/components/product-view/index.tsx. Visual checkpoint is a regression check (must look identical). Commit on PASS.",
+  "activeForm": "Building Step 1 — renderVariationAttribute slot",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": []
+}

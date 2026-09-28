@@ -1,0 +1,4 @@
+- [User profile](user_profile.md) — Angular/Nx engineer at Accenture; also stepping into FE Lead role on Zimmermann PWA Kit; power-user of Claude Code as configured infra
+- [manndotfiles project](project_manndotfiles.md) — macOS-only dotfiles repo, fully audited 2026-07-09 post-overhaul, clean bill of health
+- [zimmermann-pwa project](project_zimmermann-pwa.md) — Salesforce PWA Kit migration; squad-ownership/integration-count/aspirational-doc discrepancies found during playbook audit
+- [zimmerMANN-skills project](project_zimmermann-skills.md) — personal FED Lead skills, 1 of 8 built; design derived from a full read of all 459 sessions

@@ -1,0 +1,710 @@
+# PR #57 / SFCC-89 — What's going on and what to do about it
+
+**For the FED Lead · 22 Aug 2026**
+
+PR #57, "PDP UI static product information." Written by Jhoan, not you. 30 files, +1702/−99.
+Currently open, marked "changes requested," and blocked. Due 17 Aug — five days ago.
+
+Nothing in the repo was changed to produce this. No commits, no pushes, nothing posted to the PR.
+
+**How to read the confidence level.** Most of what follows I checked by running a command and
+reading the output. Some of it comes from Jira, Confluence, Figma, or CI artifacts that I did not
+re-run. Appendix A splits the two, item by item. Where something is a guess, it says so in the
+sentence.
+
+**One handling rule, no exceptions.** Four reference documents drove this analysis —
+`uiBuild-knowledge.md`, `fedLead-playbook.md`, `fedBuild-manual.md`,
+`zimmermann_frontend_lead_playbook.md`. They live outside the repo. **None of them can ever appear
+in a PR comment, a commit message, a code comment, a Jira ticket, or Confluence.** Appendix B gives
+you a citable repo source for every point you might need to raise. Where no repo source exists,
+Appendix B says so — that's a gap to fill, not a citation to fudge.
+
+---
+
+## Start here
+
+Ten lines. If you read nothing else:
+
+1. **Merging this deletes add-to-bag from the live PDP.** Along with swatches, quantity picker,
+   recommendations, accordions, 404 handling and the analytics hooks.
+2. **The fix is deleting four lines.** Not a restructure. See §1.
+3. **I found something bigger by accident: no page on this storefront server-renders. Anywhere.**
+   Homepage, PDP, category, search, login — all return a loading spinner. Not this PR's fault.
+   Pre-existing. This is the most important thing in the document. See §2.
+4. **That also clears the reviewers.** "Nobody opened the preview" doesn't hold — opening it shows
+   a spinner on every page, so it would have told them nothing.
+5. **The component work is genuinely the best example of our styling pattern in the repo.** Keep it.
+6. **Three of the "violations" in my earlier notes were wrong.** Acting on one of them would ship
+   a layout bug. See §3.
+7. **Ownership was already decided a month ago and nobody acted on it.** CODEOWNERS says Squad B.
+8. **The one package this PR added is also the thing crashing the PDP.** Same object, two problems.
+9. **Three of our own rules files are broken, missing, or teach a pattern that fails.** A developer
+   following them literally ships a build error.
+10. **This is not a hit piece.** A large share of what went wrong is ours, not Jhoan's. §5 splits it.
+
+---
+
+## Contents
+
+- [1. If this merges tomorrow, here's what breaks](#1-if-this-merges-tomorrow-heres-what-breaks)
+- [2. The bigger problem I found by accident](#2-the-bigger-problem-i-found-by-accident)
+- [3. Corrections — including to my own earlier notes](#3-corrections--including-to-my-own-earlier-notes)
+- [4. What this PR gets genuinely right](#4-what-this-pr-gets-genuinely-right)
+- [5. What went wrong, and how much of it is ours](#5-what-went-wrong-and-how-much-of-it-is-ours)
+- [6. Your four decisions](#6-your-four-decisions)
+- [7. Safe to do right now](#7-safe-to-do-right-now)
+- [8. Conversations you need to have](#8-conversations-you-need-to-have)
+- [9. Not your problem](#9-not-your-problem)
+- [10. Docs that are actively misleading your team](#10-docs-that-are-actively-misleading-your-team)
+- [11. The order I'd do it in](#11-the-order-id-do-it-in)
+- [Appendix A — how I know all this](#appendix-a--how-i-know-all-this)
+- [Appendix B — what to cite when you raise it](#appendix-b--what-to-cite-when-you-raise-it)
+
+---
+
+## 1. If this merges tomorrow, here's what breaks
+
+### The headline
+
+The live PDP loses add-to-bag, colour swatches, the quantity picker, recommended products, the
+information accordions, wishlist, basket integration, proper 404 status codes, SSR cache headers,
+deferred hydration, and all the Einstein / Data Cloud / Active Data analytics.
+
+Not because anything was sabotaged. Because the new page renders three things — a grey box where
+the gallery goes, the product info panel, and a breadcrumb — and it takes over the URL that used to
+render Salesforce's 876-line page.
+
+### Why it takes over, explained from scratch
+
+PWA Kit has a file-replacement system. Put a file at `overrides/app/pages/foo.tsx` and it stands in
+for the base Salesforce file at the same path. That's the whole idea, and it's how everything in
+`overrides/` works.
+
+The interesting part is *when* it kicks in. A webpack plugin inspects each import and only redirects
+it if the import **names the package** — something like
+`@salesforce/retail-react-app/app/components/breadcrumb`. Its own code comment says it plainly:
+
+> *"returns true only if the import request points to a package in 'extends'… If false, the import
+> request proceeds to the base package in node_modules"*
+
+Now look at how base Salesforce loads its own PDP:
+
+```js
+const ProductDetail = loadable(() => import('./pages/product-detail'), {fallback})
+```
+
+That's a **relative** path. No package name. So it is never redirected — base Salesforce keeps
+loading its own real page, untouched.
+
+So why does the storefront show the cut-down version? Because of this, in `overrides/app/routes.tsx`:
+
+```js
+{
+  path: '/product/:productId',
+  component: ProductDetail,     // ← the override
+},
+..._routes,                     // ← base Salesforce's routes, including the real PDP
+```
+
+Our route is registered **first**. First match wins. That's the entire mechanism.
+
+**Delete lines 37–40 of `overrides/app/routes.tsx` and the full base PDP is back.** I confirmed both
+pages are sitting in the shipped bundle side by side — `build/pages-product-detail.js` contains
+markers unique to our override *and* markers unique to the base page, and the same file fetched from
+the live preview is byte-for-byte identical to my local build.
+
+**Why this matters for planning:** earlier notes (mine included) said there were *two* mechanisms
+doing this and that deleting the route wouldn't help. That was wrong, and it inflated the fix from
+four lines to a rewrite. The regression and the delivery are now separate problems, which is a much
+better position to be in.
+
+### The breadcrumb is the opposite case, and it really is a problem
+
+Same system, different outcome. Two base Salesforce files import the breadcrumb **by package name**:
+
+- `product-view/index.jsx:45`
+- `product-list/partials/page-header.jsx:14`
+
+Package name means the redirect fires. So both of those now get our breadcrumb. The second one is
+the **PLP**.
+
+A PDP ticket has silently restyled the product listing page — chevron separator replaced with `/`,
+uppercase, the `useStyleConfig('Breadcrumb')` hook orphaned, the `sf-crumb-item` test id gone. Squad
+B's page changed appearance with no design review and no notice. Nobody would find this except QA or
+a shopper.
+
+There's a second-order oddity worth flagging to Squad B: SFCC-89's AC puts the breadcrumb *below*
+the product images. On the PLP, breadcrumbs are top-of-page wayfinding. The same component may not
+want the same placement.
+
+---
+
+## 2. The bigger problem I found by accident
+
+**No page on this storefront is server-rendered. On any route. On any environment I could reach.**
+
+I went looking for the reported PDP crash on the preview environment and found something else: every
+URL returns HTTP 200 with the app shell rendered and a **loading spinner** where the page content
+should be.
+
+| URL | Result |
+|---|---|
+| preview `/` | 200, spinner |
+| preview `/en-au/product/8637DS241-3` | 200, spinner |
+| preview `/en-au/product/DEFINITELY-NOT-A-SKU` | 200, spinner |
+| preview `/en-au/category/womens` | 200, spinner |
+| preview `/en-au/search?q=dress` | 200, spinner |
+| preview `/en-au/login` | 200, spinner |
+| **`test` tier `/`** | 200, spinner |
+| **`test` tier `/en-au/category/womens`** | 200, spinner |
+
+Supporting detail: the PDP's HTML is identical to the homepage's apart from the canonical URL. Its
+`<title>` is `Retail React App` — the fallback, not a product name. The strings `Style Code` and
+`Unable to load product information` appear **zero** times in the served HTML. Same output for curl,
+for a real Chrome user-agent, and for Googlebot. The shell itself *is* server-rendered — header,
+footer, the SVG sprite, the full theme. It's the page components that never arrive.
+
+And the preview genuinely is running this PR's code — the served chunk matches my local build byte
+for byte.
+
+**What this costs.** The project brief opens with *"Must be robust and secure and SEO-friendly"* and
+sets a ≤2s p75 mobile LCP budget. Client-rendered spinners defeat both. Every "compare the preview
+against Figma" review anyone has ever done on this project has been reviewing a client-rendered page.
+
+**My best guess at the cause, stated as a guess.** Every page in base Salesforce's route table is
+wrapped in `loadable(() => import(...), {fallback})`. A correct shell plus a spinner in `<main>` is
+exactly what you get when the server-side chunk resolution doesn't happen and the `fallback` renders
+instead. That points at `ChunkExtractor` / `loadable-stats.json` wiring in `overrides/app/ssr.js`
+and `overrides/app/ssr/` — **Tier 1, Integration-owned, and one of the four absolutely-untouchable
+files.** Do not go near it. Report it.
+
+**Two things this changes immediately.**
+
+First, it clears the reviewers. The criticism that nobody opened the preview URL doesn't survive:
+opening it shows a spinner on the PDP *and* on the homepage, indistinguishable. Any reviewer who
+looked would reasonably conclude "previews don't SSR here" and move on. Don't use that as a stick.
+
+Second, the reported PDP crash and this finding are consistent, not contradictory. The crash happens
+where SSR actually evaluates the page module — which is where the CI Playwright run served from. On
+MRT it's **masked**, because MRT never evaluates the page module server-side at all. Which also
+means: **the MRT preview is not a usable SSR smoke test on this project.** Any process fix that says
+"hit the preview and check the status code" would have produced a false pass here.
+
+**One gap before you escalate.** I could only reach the preview and the `test` tier — `test`
+publishes its URL as an environment variable, `dev` and `sit` don't, and I had no URL for `staging`
+or `prod`. Find out whether they behave the same before deciding how loud to be.
+
+---
+
+## 3. Corrections — including to my own earlier notes
+
+Trust matters more than looking consistent, so these are stated flatly.
+
+### Don't "fix" three of the flagged styling violations — you'd ship a bug
+
+I earlier told you nine `var(--zimm-*)` uses in component files were all violations to move into
+theme recipes. **Three of them are correct as written.**
+
+Here's why. Chakra resolves style props against named scales in the theme, but our
+`overrides/app/theme/index.ts` only registers six of them: `borderWidths`, `breakpoints`, `colors`,
+`fonts`, `space`, `textStyles`. **`sizes` is not registered.** So a bare token key works fine on
+`margin` or `padding` (which resolve through `space`) and silently misresolves on `width`, `height`
+or `boxSize` (which resolve through `sizes`).
+
+Lines 69–71 of the page are `<Skeleton height="var(--zimm-scale-800)" />` and similar. `height` is
+a sizing prop. The raw `var()` is the **only** correct form there. Convert them to bare keys and the
+skeletons break.
+
+Worth noting Jhoan got this exactly right — the same lines use `mb="m"` and `mb="xl"`, bare keys on
+a *spacing* prop, which is correct. He wasn't guessing.
+
+The revised picture:
+
+| Site | Verdict |
+|---|---|
+| `product-detail:69, 70, 71` — `Skeleton height` | **Correct. Leave alone.** |
+| `product-detail:63` — `pt` 16px | Real violation, `m` exists, safe to move |
+| `product-detail:61, 62` (base) — 32px gutter | Real violation, but the right value is **30px**, not the 32px `2xl` token. Use `grid.containerPadding.base`. |
+| `product-detail:52` — `columnGap` 180px | Real, but **no named token exists** — our spacing scale tops out at 160px. Designer question. |
+| `product-detail:62` (md) — `pr` 140px | Same. Designer question. |
+| `breadcrumb:33`, `zimmPageToolbar:58` | **Different problem entirely** — these are motion values, and there's no motion scale to reach for. Import the `motion` constant from `app/theme/foundation`. Heads up: `motion.ts` says its own values are *"PROVISIONAL… Do not treat as final."* |
+
+### I was wrong about the fonts
+
+I told you a Tier 1 governance file was factually wrong about self-hosted fonts. It isn't. On this
+branch and on `develop`, `frozenFiles.md` says **"No font binaries in this repo"** and explains that
+type renders from the fallback stack — which is correct, and is a licence position, not an oversight.
+
+The "fonts are self-hosted" wording exists only on the SFCC-55 footer branch. **My session started
+on that branch**, so the copy of the rules in my context was that branch's version, and it didn't
+update when I switched. Practical takeaway for you: anything I quote from `.claude/rules/` is worth
+re-checking against the branch actually in hand.
+
+The downstream conclusion survives and still matters: there are no font files, so every local and
+preview visual check rendered the fallback face. **No type metric on this PR has ever been visually
+validated** — and SFCC-732/733 are the styling ACs that will be QA'd on exactly those metrics.
+
+*Related risk:* if the SFCC-55 branch merges, it brings a `frozenFiles.md` that asserts self-hosted
+fonts plus two `.woff2` files — which would contradict the Monotype licence position currently
+recorded in that same Tier 1 file. Flag it to whoever owns SFCC-55 before it lands.
+
+### The jsdom / bundle-budget link doesn't exist
+
+Several notes connected the new dependency to `vendor.js` sitting at 95.4% of its budget. There's no
+connection. `grep -c jsdom build/vendor.js` returns **0**. The package ships a browser entry point
+that doesn't import jsdom at all, and the client build resolves to it. Client-side cost is
+`dompurify` alone.
+
+The 95.4% is real and is a standing risk with ~25 kB of headroom — but it's pre-existing and
+unrelated. **Raise them separately or the budget concern gets dismissed along with the dependency.**
+
+This also improves the options: because a jsdom-free browser entry exists, "rip the package out"
+isn't the only route. See §6.
+
+### SEO needs no new package
+
+An unresolved CodeRabbit thread asks for `react-helmet`, and I'd previously called that a Hard Rule
+#7 problem. It isn't — **`react-helmet@6.1.0` is already installed** as a dependency of
+`retail-react-app`, and base ships a ready-made `app/components/seo` wrapper. Import that. It's a
+published entrypoint, so it satisfies our import rules too.
+
+One thing that comes with it: the base SEO block reads `product.pageTitle` and `pageMetaTags`, and
+our `useProduct` call requests no `expand` list at all where base requests nine fields plus
+`perPricebook: true`. Restoring SEO means restoring the expand list.
+
+**Which raises a question nobody has asked.** AC-2 wants a single full price. The override reads
+`product.price` with no `perPricebook` and no `expand: ['prices']`. I haven't proved that returns
+the wrong number — but the base page doesn't trust that field, and neither should we without
+checking against live data.
+
+### A few smaller ones
+
+- **A bare `Breadcrumb` theme recipe would be a trap.** Base Salesforce registers its own
+  `Breadcrumb` recipe, so `extendTheme` would deep-merge ours into theirs — the exact failure that
+  cost you time on the footer. Name it `ZimmBreadcrumb`.
+- **The focus ring is inconsistent, not absent.** `zimmPageToolbar` applies a
+  `.zimm-focus-visible` class that does express `_focusVisible` properly, so that control is fine.
+  The **breadcrumb has no focus treatment at all** — and it's the interactive element the AC
+  requires. Browsers still paint a default outline, so this is a consistency defect, **not** a WCAG
+  failure. Don't over-claim it. The real finding is that one PR answers the same question three
+  different ways.
+- **Lint:** 22 errors repo-wide, **5 of them this branch's**, and eslint reports 21 of 22 as
+  auto-fixable. The one it flags as not auto-fixable sits on the same line as a prettier fix that
+  removes the same character, so `lint:fix` should clear all five. Verify after running. Don't fold
+  in the 17 pre-existing errors in the Contentful definitions file.
+- **`auditTokenUsage.mjs` doesn't exist**, and the rule mandating it is
+  `.claude/rules/overrideStyling.md` — a repo file. That's good news: it's citable, so fixing it is
+  normal work.
+- **Three Figma node IDs are in circulation** — the tickets cite `5804-170721`, the measurements
+  came from `5083:70358`, the page node is `3087:15747`. Don't assume they're the same frame. Confirm
+  with the BA before QA measures against the wrong one.
+- **The PR body and CI disagree on test results** — the body says 4 of 9 scenarios run and pass, CI
+  says 0 of 7 with 2 skipped. I didn't re-run Playwright. Treat the body as a claim and CI as an
+  observation, and re-run before quoting either.
+
+---
+
+## 4. What this PR gets genuinely right
+
+Read this before §5, because the calibration matters.
+
+**The component and its theme recipe are the best worked example of our styling pattern anywhere in
+this repo.** `ZimmPdpProductInfo` is correctly namespaced so `extendTheme` has nothing to merge into.
+It's registered properly. All five of its parts are actually consumed — not a registered-but-unread
+recipe. The two escape hatches it needs are exported *from the theme file* and imported by the
+component, so even the call-site styling is named where styling belongs, with a written note
+explaining what would collapse them and why that's blocked. **Copy this shape for everything else.**
+
+**Zero bare scale keys on any sizing or typography prop, across the entire branch.** This is the
+single most dangerous trap in this codebase and the branch is completely clean on it. Given that a
+mistake here fails silently, that's not luck.
+
+**The provisional column width was flagged in code as provisional** rather than silently guessed.
+The value turned out to be wrong — 218px measured against 360px written — but the *behaviour* was
+exactly right, and that distinction is the whole point of the rule.
+
+**Accessibility is asserted, not claimed.** Proper `h1`, `nav[aria-label]`/`ol`/`li`, `aria-current`,
+`aria-hidden` on separators, and a Storybook `play` that proves the *negative* case when content is
+absent. Storybook a11y is gated at `error` in CI, so those assertions genuinely run.
+
+**Also right:** data fetching lives only in the page, all three components are pure and prop-driven ·
+`getTemplateName` retained, easy to drop · a discriminated union for the toolbar props, exactly per
+our TypeScript rules · both `dangerouslySetInnerHTML` sites sanitised — the security instinct was
+right, only the dependency was wrong · `storybook/test` imported correctly *against* a repo rule that
+says otherwise · Storybook categorisation right four times out of four · gherkin-first followed, the
+`.feature` file exists · `tsc` clean, Vitest 146/146, Storybook 27/27 · **and every Tier 1 file left
+alone** — no workflows, no playwright config, no `.storybook/`, no theme foundation, no `ssr.js`. On
+an overdue story with three tempting Tier 1 shortcuts sitting right there, that's discipline.
+
+---
+
+## 5. What went wrong, and how much of it is ours
+
+### Ours
+
+Name these out loud so Jhoan isn't reviewed for them.
+
+1. **Five reviewer teams were asked on 18 Aug. Four days later, none had responded.** Every one of
+   the 8 reviews on this PR is CodeRabbit. The "changes requested" status blocking it is a bot's.
+   There is no review SLA anywhere and no escalation path.
+2. **The review tool can't detect what we ask it to detect.** The preview shows a spinner on every
+   route (§2). Blaming reviewers for not opening a URL that would have told them nothing is the
+   wrong correction — the right one is that we didn't know our own preview doesn't SSR.
+3. **Three of our rules files are broken, missing, or teach a failing pattern.**
+   `overrideStyling.md` mandates a script that doesn't exist, and cross-references
+   `.claude/rules/overrides.md` — which **isn't on `develop`**. That missing file is precisely the
+   one containing the override pre-flight checklist and the grep that would have caught the PLP
+   regression. And `testing.md:87` tells developers to
+   `import {expect, userEvent, within} from '@storybook/test'` — **a package that does not exist**
+   on our installed Storybook. Jhoan ignored the rule and imported correctly. Anyone who followed it
+   literally would have shipped a module-not-found.
+4. **`eslint`, `prettier` and `tsc --noEmit` are gated by nothing.** Not CI, not a hook, not a
+   stated team expectation. The check that would have caught those 5 lint errors doesn't exist in
+   any form.
+5. **"Build it in Storybook" is structurally impossible for a page here.** A page calls
+   `useProduct`, which needs a `CommerceApiProvider`, and the only place to add one is
+   `.storybook/preview.tsx` — Tier 1, frozen. The duplicated page JSX in the story is a **cornered
+   outcome, not laziness**, and he wrote down the reason.
+6. **The `ui-kits` convention he followed has no repo rule on `develop`.** He placed one component
+   inside `ui-kits/` and one outside it, and **nobody can tell him which is right from a source he
+   can point at.**
+7. **The design isn't locked and the story was already late.** Confluence puts PDP stories
+   ready-for-development on **24 Aug**; the story was due **17 Aug**. He was asked to build against
+   an unlocked design on a deadline that had already passed.
+8. **Type metrics were never measurable locally** — no font binaries, by licence. The "tested
+   locally" checkbox could not have validated a single type metric, which is what SFCC-732/733 will
+   be QA'd on.
+9. **`sprintScope.md` is stale** — self-labelled draft, says "Sprint 0 in progress," dates Sprint 3
+   wrongly — while Hard Rule #14 binds developers to it.
+10. **The Squad A/B ownership contradiction was written down on 9 July and left open.** It's now the
+    reason a real PR can't be routed to the right reviewer.
+
+### His
+
+Same standard, no inflation.
+
+1. **The Tier 1 dependency.** The PR body names the gate verbatim — *"needs integration team
+   approval (Hard Rule #7)"* — and the package was added anyway. Spotting a gate and then crossing
+   it is a different failure from not knowing it exists. Worth a direct question rather than a
+   comment restating the rule: what unblocked it — a verbal OK, time pressure, or an assumption the
+   PR gate would catch it?
+2. **Copy-first wasn't done on either shadowed module.** No `[overrides]` marker was ever committed;
+   the breadcrumb was written from scratch at 71 lines against a 67-line base with a different
+   implementation, and the page at 48 lines against 876. **This one omission is the root cause of
+   both the PDP capability loss and the PLP regression.**
+3. **The bridge-pattern grep wasn't run.** One command, and it returns two lines. Mitigating: the
+   rules file spelling out that procedure doesn't exist on `develop`.
+4. **The PR body is stale in five ways** — says the dependency isn't added when it is; lists 15 of
+   30 files and omits every Tier 1 file; names a path that doesn't exist; ticks "lint passes"; tiers
+   the page as Squad A against CODEOWNERS.
+5. **Diagnosis by proxy.** The body blames sandbox provisioning for the Playwright failures. That
+   explains *some* skips, not every `/product/*` request failing on valid and invalid SKUs alike.
+   When a check returns zero, establish which zero it is.
+6. **`npm start` was run**, self-reported, against an explicit "Do not run."
+7. **The migration stopped one commit short.** `3e1686b` built the recipe correctly; the very next
+   and final commit edited a padding **constant** instead of creating the second recipe. Mitigating:
+   that constant uses correct named keys and carries a comment explaining its derivation. It's
+   orderly, traceable code sitting one level too low. **Finish it, don't restart it.**
+8. **Requirements defects** — `product.id` used as style code where it should be the master style
+   number; `c_sizeFit` scraped for model copy where SFCC-26 created `modelFit` for exactly that;
+   `shortDescription || longDescription` as a guess; and a regex that only matches a bare `<li>` and
+   only the English string, so the model line vanishes on 10 of 11 locales. Partly forced — SFCC-26
+   hasn't reached the sandbox he tests against, so the right field may genuinely not exist there.
+   Ask before charging it.
+
+**The line to use in the regroup:** the component layer is the best example of our styling pattern in
+the repo and should be carried forward almost verbatim. The integration layer reproduces, one for
+one, the failures the skipped pre-flight steps exist to prevent — and three of those steps are
+documented in files that are broken, missing, or wrong.
+
+---
+
+## 6. Your four decisions
+
+### Decision 1 — What does the PDP page actually do?
+
+| Option | What it costs |
+|---|---|
+| **(a) Delete the route entry now**, ship the components later | Storefront keeps the full base PDP immediately; regression gone in four lines. But the three new components render nowhere, so SFCC-89 doesn't deliver and slips further. Cheapest safe state. |
+| **(b) Compose** — the override wraps base `ProductView` and layers the new panel and toolbar around it | Delivers SFCC-89 *and* keeps add-to-bag, swatches, gallery, accordions, recommendations, 404s, cache headers. Biggest code change, and it must restore the `expand` list and `perPricebook` or price and images stay unreliable. Also the only option that survives SFCC-91/92/186/195 landing in the same file. |
+| **(c) Ship the reduced PDP deliberately** | Fastest delivery. Storefront loses add-to-bag until SFCC-92 ships. Runs straight into our own **Minimal changes** rule — *"Do not remove or replace existing base template functionality unless explicitly instructed"* — so it needs an explicit product instruction recorded on the story, not a reviewer's assumption. |
+
+**My recommendation, as a recommendation:** (a) today, (b) as the delivery path. Splitting them is
+only possible because of the correction in §1 — under the old "two mechanisms" reading it wasn't.
+
+Waiting on this: the 218px column, the 30px gutter, the two token gaps, the mobile prose inset
+question, whether the story's duplicated JSX becomes an extracted `PdpLayout`, and where SEO lands.
+
+### Decision 2 — Who owns what?
+
+Three tickets claim overlapping scope: **SFCC-737** (`pdp/product-content`, already "Ready for
+Review") restates SFCC-89 almost word for word; **SFCC-723** (`pdp/hero`) arguably owns the layout;
+**SFCC-578** (SEO Breadcrumb, **Squad B**) owns the component this PR already built.
+
+This is a BA/PO call, not a technical one. Ask for the cards to be reworked — one owning ticket per
+deliverable — rather than creating a reconciliation ticket.
+
+**One part is already answered.** Your own §16 notes recorded this exact Squad A/B contradiction on
+**9 July** and wrote down the tie-break: *"whichever `CODEOWNERS` says."* CODEOWNERS says **Squad
+B**. That's not a decision to make, it's one to act on — and the first act is backing this PR's
+registry change out.
+
+### Decision 3 — The sanitiser and the Tier 1 dependency
+
+| Option | Cost |
+|---|---|
+| Approve as-is | Needs Integration sign-off, and SSR still crashes wherever SSR works. You'd be approving the defect. Not viable. |
+| **Keep it, move sanitising off the server** (post-hydration, or behind a `typeof window` guard) | Uses the package's own jsdom-free browser entry. Still needs Hard Rule #7 approval. **Best technical proposal.** |
+| Back it out, render the field as plain text | Zero dependency risk. Either the markup shows as escaped text or the model line is descoped. What the PR body originally proposed. |
+| Sanitise upstream in SFCC/PIM | Removes the problem entirely. Longest lead time; not this sprint. |
+
+Take it to Integration as a **defect report**, not a permission request: the package runs
+`new JSDOM()` at import time, which is the crash. That framing gets a faster answer than a licence
+conversation.
+
+### Decision 4 — How you take the PR over
+
+Two mechanical facts to plan around:
+
+- **`dismiss_stale_reviews` is on.** Every push you make dismisses any approval already given. Batch
+  your pushes and request review *after* the last one.
+- **You could push the Tier 1 change and approve it yourself** — Jhoan is the author, so nothing
+  mechanically stops you. Don't. Our own rule says the gate exists *"so a compromised or careless
+  session can't grant itself write access to a frozen file,"* and collapsing author and approver
+  defeats the point even where it doesn't defeat the mechanism. Get a second approver.
+
+Also: **SFCC-91 (colour swatches) already branched off SFCC-89 at an older commit** and carries ~650
+lines plus an 883-line spec. Rebasing it will conflict in the product-info component. **Adopt that
+work, don't rewrite it**, and tell Jhoan before you convert anything.
+
+---
+
+## 7. Safe to do right now
+
+Everything here survives all four decisions and touches no protected tier.
+
+| # | Do this | Where |
+|---|---|---|
+| 1 | `npm run lint:fix`, then re-run `lint` | 5 errors in `breadcrumb/index.tsx:10`, `product-detail/index.tsx:16` and `:38`, `index.stories.tsx:20` (×2). Leave the 17 Contentful ones alone. |
+| 2 | Add a `data-testid` to the `h1` | `pdpProductInfo/index.tsx:32` — its four siblings all have one |
+| 3 | Make an absent name or price collapse instead of leaving a gap | `pdpProductInfo/index.tsx:32` and `:34` render unconditionally, and the recipe gives each a 20px bottom margin — so an empty value leaves a labelled void. Fix it **in the component**, not with the page's `?? ''`. The other three fields already guard correctly — copy that shape. |
+| 4 | Route four strings through `react-intl` | `breadcrumb:51` (`aria-label`), `:55` (`Home`), `pdpProductInfo:59` (`Style Code:`), `product-detail:66` (the error text). `useIntl` is already imported. `translations/` is Tier 2 — add message ids and raise the request, don't edit the files. |
+| 5 | Swap the inlined motion vars for the `motion` constants | `breadcrumb:33`, `zimmPageToolbar:58` — or bundle into #8 and do it once inside the recipes |
+| 6 | Move the test to the module it tests, add its two missing cases | `pages/product-detail/index.test.ts` → `utils/productData.test.ts`. It tests `extractModelLine`. Add an attributed `<li class="…">` case and a non-English case — the regex fails both and the 5 existing cases cover neither. |
+| 7 | **Back the squad reassignment out of this PR** | `scripts/generateRegistry.mjs` moves the page path from Squad B to Squad A, contradicting CODEOWNERS. A governance change riding inside a feature diff. ~5 minutes, and it's currently part of what blocks approval. |
+| 8 | Write the two missing theme recipes | `ZimmBreadcrumb` and `ZimmPageToolbar` — **namespaced**, because base ships a `Breadcrumb` recipe. Put `_hover` **and** `_focusVisible` in both. Make the toolbar padding responsive; it currently applies 40px horizontal on a 375px viewport. |
+| 9 | Reply in-thread to all 8 CodeRabbit findings | Two get an explanation rather than a fix: the leaf-category one (cite the two reverts and the `Home/New/New/Product` output it produces) and the Helmet one (say it's being addressed via base `<Seo>`, not a new package). Our own rules require a reply whether or not it's fixed — silence is what makes the bot loop, and one thread has already been raised three times. |
+| 10 | Correct the PR body | Five false claims. `/pr-checklist` regenerates the table properly. |
+
+**Do NOT put these in this bucket:**
+
+- **The three `Skeleton height` lines** (§3). Correct as written.
+- **The 32→30px gutter and 360→218px column.** Both real, both cheap, both inside a grid that
+  decision 1 may replace. Sequence them *after*.
+
+---
+
+## 8. Conversations you need to have
+
+| Who | What to ask |
+|---|---|
+| **Integration** — highest priority | **(1)** No route server-renders page content on the preview or `test` tier; shell renders, `<main>` has a spinner. Likely the `loadable` / `ChunkExtractor` wiring in `ssr.js` — Tier 1, not touchable by us. *Is this expected on MRT, and does it hold on staging and prod?* **(2)** The dependency, framed as the defect report in §6. **(3)** `vendor.js` at 95.4% of budget, gated only on deploy jobs, never on a PR — so a budget-breaking PR merges clean and breaks the *next* person's deploy. |
+| **Integration** (CI config) | No `e2e_pdp` group in `qa.yml`, so every PDP change runs the full Playwright suite. The spec is `.spec.js` with no `.p0.` segment, so the SIT gate will never select it. Both Tier 1 — **he was right to leave them alone**, but they're now yours. |
+| **UI Designer** — send as one batch | **(1)** `typography.ts:98` points `body2Strong` at the −0.12px letter-spacing where Figma says −0.14px, and the correct token already exists two lines up. Tier 1, and no PDP component uses it — batch it, it doesn't block. **(2)** Five off-scale spacing values (6/15/22/28/44) plus a question about 43, which the Figma read suggests is space-between rather than a value. **(3)** The 768–1279px band is undesigned — only 402 and 1440 frames exist, and our breakpoints are 768 and 1280, so the gap straddles both. **(4)** She's owed a notification for the two Tier 2 theme files already in this diff; the bot's checkbox is unticked. **(5)** Confirm the 218px column and the mobile prose inset asymmetry. **(6)** Free win — the button measures 50/5/24 at both breakpoints, which resolves a standing open item in favour of the current provisional constants. |
+| **Squad B lead** | **(1)** A code-owner approval is required regardless of what the docs say — CODEOWNERS routes this path to Squad B and code-owner review is enforced. **(2)** Does this component close SFCC-578, or are they still building one? If it closes it, who adds the JSON-LD and heading hierarchy? **(3)** Tell them now that this PR already restyles their PLP breadcrumb, and that bottom-of-page placement may be wrong for the PLP. |
+| **Both squad leads** | The three-way contradiction: CODEOWNERS says Squad B, `squadA.md` says Squad A, the registry says Squad A. Recorded 9 July, still open, now blocking. **Output has to be a commit to one governance file, not a Slack message.** |
+| **Jas (BA)** | **(1)** Three tickets, one deliverable — rework the cards. **(2)** SFCC-732/733 assert `.product-name` / `.product-price` selectors the component doesn't expose; values match, selectors don't, so they fail at QA as written. **(3)** Which Figma node is canonical — three are in circulation. **(4)** The AC has no loading-state or error-state criteria, yet both were built. **(5)** `modelFit` vs `c_sizeFit`, given SFCC-26 hasn't reached the sandbox — is the right field provisioned, or is this an interim workaround that needs an owner and a removal ticket? |
+| **Design lead** | Confluence marks Product Content "Done, minor update required." What's the update, and does it touch what's built? |
+| **Jhoan** — before you convert anything | Lead with the recipe and the provisional-value discipline; both are genuinely good. Then ask about the two things that look like errors and probably have reasons: `c_sizeFit` instead of `modelFit`, and the twice-reverted leaf-category change. Warn him about the SFCC-91 fork-point conflict. Make clear the takeover is a decision queue, not a repudiation. |
+
+---
+
+## 9. Not your problem
+
+Log and move on. Owning tickets in brackets.
+
+Badges (SFCC-132/225) · was/now pricing (SFCC-194) · wishlist, including the 20×20 mobile tap target
+that's under the 24×24 accessibility minimum (SFCC-434) · colour swatches (SFCC-91 — in flight,
+adopt it) · size selector and add-to-bag (SFCC-92) · Find in Boutique (SFCC-297) · image gallery
+(SFCC-186/187/188) · the accordions (SFCC-195/102/267/266) · breadcrumb JSON-LD and heading
+hierarchy (SFCC-573/570, behind SFCC-578).
+
+**One note to carry into the gallery work:** `utils/sfccImage.ts`'s `proxyImageUrl()` exists because
+direct Demandware-host image access is Cloudflare-WAF-blocked outside the Commerce Cloud network.
+Gallery code that renders image links without it will 403 for real shoppers.
+
+**Also not this PR:** the 17 pre-existing lint errors in the Contentful definitions file · the stale
+`sprintScope.md` · the `.docs/prd/pdp.md` entries marked confirmed that Confluence has struck
+through · the SFCC-55 font/licence contradiction heading for `develop`.
+
+---
+
+## 10. Docs that are actively misleading your team
+
+### Repo files — wrong, citable, so fixing them is normal work
+
+All are Tier 1 governance, so they need both squad leads plus the Integration lead. But you can
+raise them by name today.
+
+| Priority | File | What's wrong | Fix |
+|---|---|---|---|
+| **Highest** | `.claude/rules/testing.md:87` | Teaches an import from `@storybook/test`, which doesn't exist on our Storybook | Change to `storybook/test`. Nothing in CI catches this — it breaks anyone who follows it. |
+| **High** | `.claude/rules/overrides.md` — **missing** | `overrideStyling.md` references it repeatedly. It exists on the f2r branch (110 lines, "Override Components — Pre-flight Rules") with exactly the checklist that would have caught the PLP regression | Merge it — **and widen its scope line**, which currently covers `components/` only, so as written it'd catch the breadcrumb but not the page. |
+| **High** | `.claude/rules/uikit-components.md` — **missing** | No repo rule states the `ui-kits/{atoms,molecules,organisms}` layout | Write it **fresh**. Do **not** merge the f2r version — it forbids Chakra inside ui-kit files and mandates Emotion, contradicting `overrideStyling.md`. Keep its token-injection insight (already implemented as `zimmTokensGlobal.tsx` — don't let anyone rip that out); reject its component-authoring model. |
+| **High** | `.claude/rules/overrideStyling.md` (units) | The no-raw-values rule is unqualified, so a grep sweep flags the three *correct* sizing-prop sites | Qualify it to spacing props and state the sizing rule explicitly, with the reason: `theme.sizes` isn't registered. This ambiguity has already produced a wrong instruction twice. |
+| **High** | `.claude/rules/overrideStyling.md` (new section) | Nothing warns that a path-mirrored file under `pages/` replaces a whole base page, or what a page carries that a component doesn't | Add: before writing a page override, list what the base page does that yours won't — SEO tags, 404 handling, cache headers, hydration boundaries, the data `expand` list, analytics — and name every dropped item in the PR body. |
+| **High** | `CODEOWNERS` | No entry for the breadcrumb, the product-info component, or `ui-kits/` — yet the breadcrumb shadows a component two base modules render across two page types | Add them, and settle the Squad A/B question **here** rather than in `squadA.md`. This is the only surface GitHub enforces. |
+| High | `.claude/rules/overrideStyling.md` (token audit) | Mandates a script that doesn't exist | Write it — encoding the sizing-vs-spacing distinction, or it flags correct code on day one — or say the check is manual for now. |
+| Med-high | `.claude/rules/conventions.md` | **No i18n rule exists anywhere**, on a project with 11 locales | Add one: every user-facing string through `react-intl` — copy, `aria-label`s, `alt` text, errors, and any locale-sensitive pattern match. A hardcoded English literal is the same class of defect as a hardcoded hex. Four shipped on this PR, and it's the second-order cause of the English-only regex. |
+| Medium | `.docs/memory/sprintScope.md`, `.docs/prd/pdp.md` | Stale; one contradicts Confluence | Re-sync. Hard Rule #14 binds developers to the first one. |
+| Low | `.claude/rules/overrideStyling.md` (known gaps) | Lists the button-height conflict as open; the Figma measurement resolves it | Record it once the designer confirms. |
+
+**Two gaps with no repo file at all**, worth writing so they become citable: **no review SLA or
+escalation path** when a requested code-owner team goes silent, and **no rule that a governance
+change mustn't ride inside a feature PR** — exactly what happened via the registry generator.
+
+### Your own local docs — correct them, never cite them
+
+- **The Figma node-type rule is too binary.** A frame that *hugs* a text child inherits the
+  cap-height artifact too — accordion rows report 9px where the real pitch is ~25.5px. Discriminate
+  by **sizing mode**, not node type.
+- **The breakpoint numbers are wrong.** They say 768/860/1024. Reality is `md` 768 and `xl` 1280;
+  `860` appears nowhere in the theme. And there's no 1023 Figma frame — only 402 and 1440, so the
+  undesigned band straddles both breakpoints.
+- **`ui-kits` is described as "settled" with atoms that don't exist on `develop`.** Restate: styling
+  surface settled *and* citable; directory layout decided but *not* citable.
+- **Two artifacts cited as models are branch-local** — the recipe guard test and the safe-href guard
+  exist only on the SFCC-55 branch. Mark them.
+- **Add the failure class this PR exposed:** a green build is not evidence the server can evaluate
+  the module graph. Before importing a new runtime dependency at module scope, read its node entry
+  for import-time side effects — DOM construction, handles, config reads. And note the budget gate
+  can't see it: it covers the two client bundles only.
+- **On bundle budgets:** read the headroom, not the pass/fail. 95.4% means the next dependency fails
+  on someone else's PR.
+- **Both lead playbooks: the "open the preview" guidance is wrong on this project** (§2). Replace it
+  with: the preview doesn't server-render page content, so it isn't an SSR smoke test — verify SSR
+  against a locally built and served bundle, and treat preview-vs-Figma as a *client-rendered*
+  comparison.
+- **The squad/tier lookup names `squadA.md` and the registry and never mentions CODEOWNERS** — the
+  only enforced surface. Invert that precedence.
+- **Add the missing review question:** *does merging this remove anything the storefront has today?*
+  With the corollary the override-first argument needs — an override that discards the inherited
+  wiring is a bespoke build wearing an override's clothes.
+- **Note that the Tier 1 verified-session exception doesn't extend to dependency adds.** Hard Rule
+  #7 needs **Integration**, which is a different authority from the Tier 1 approvers list.
+- **Add takeover guidance — there is none.** Talk to the author first; preserve their artifacts as
+  raw material; check their other branches for fork-point conflicts; land decisions before code;
+  every push resets approvals; don't become sole approver of a change you wrote; split the PR if the
+  tiers split.
+- **The "registry can't go stale" claim is falsified twice** — its consumer-count cache silently
+  no-ops because the schema version wasn't bumped, and this PR hand-edits the generator's squad
+  lists.
+- **The `/code-quality` default-base problem got worse, not better.** A local `main` now exists, so
+  it no longer errors — it silently audits 245 files instead of 30. Loud failure became quiet.
+- **Two lead playbooks exist with no stated precedence.** Declare one canonical or merge them. For
+  anything citable, `AGENTS.md` and `.claude/rules/` win, always.
+
+---
+
+## 11. The order I'd do it in
+
+Honest effort: *afternoon* ≈ 2–4h, *day* ≈ 6–8h.
+
+**Today, ~2 hours, all conversations.** Escalate the SSR finding to Integration first — it's the
+highest-consequence item and not yours to fix, and the answer changes how urgent everything else is.
+Then the dependency, as a defect report. Then chase the five silent review requests by name, framed
+as process rather than blame. Then one message to Jhoan. Then book the ownership call. Then send the
+designer questions as **one** batch.
+
+**Today or tomorrow afternoon — the safe code.** Everything in §7 except item 8. Nothing there is
+undone by any decision. Batch your pushes and request review after the last one.
+
+**Tomorrow — the four-line safety valve.** Make decision 1. Unless the answer is "ship the reduced
+PDP as a recorded product decision," delete the route entry today and the storefront regression
+leaves the table. Record the decision on the story *and* in Confluence, not just a thread.
+
+**Day 1–2 — finish what he started.** The two namespaced recipes with `_hover` and `_focusVisible`
+(half a day), then make the breadcrumb's default export a faithful port with the Zimmermann
+treatment behind a named export or the recipe (half a day). **Do the breadcrumb work regardless of
+who ends up owning SFCC-578** — the PLP regression is real either way.
+
+**Day 2–3 — delivery, once decisions 1–3 land.** Compose the page (~a day): wrap base `ProductView`,
+layer the panel and toolbar, restore the `expand` list and `perPricebook`, add SEO via the base
+component. Then the layout values that were waiting on it. Then extract a `PdpLayout` so the story
+stops duplicating the page (~2h), and fix the model-line regex once the field question is answered
+(~1h).
+
+**Rolling this sprint — the rules fixes.** The `@storybook/test` one-liner today, it actively breaks
+people. Then the two missing rules files together — highest leverage available, because their absence
+produced the two biggest findings here. Then the rest of §10. Then correct your own local docs,
+especially the preview-environment claim, or you'll walk into the next review with a verification
+step that produces false passes.
+
+**Explicitly not on this list:** anything in `.github/workflows/`, `playwright.config.*`,
+`.storybook/`, `theme/foundation/`, `ssr.js`, `ssr/`, `config/`, or `worker/main.js`. The E2E group,
+the spec rename, the Storybook provider and the SSR investigation all belong to Integration. He was
+right to leave them alone, and so are you.
+
+---
+
+## Appendix A — how I know all this
+
+**Checked by running a command and reading the output.** Branch and tree state · full reads of all
+five new source files plus the theme recipe, the util, and the token-injection module · the override
+resolver plugin's decision function and doc comment · both base import sites for the breadcrumb and
+their render calls · base's own `Breadcrumb` theme registration · which scales `theme/index.ts`
+registers · the spacing, motion, grid and typography foundation files · every `var(--zimm-*)` site
+with line and occurrence counts · `_focusVisible` across the branch and the global-styles class ·
+`ls .claude/rules/` and `ls scripts/` · the `frozenFiles.md` font wording on three branches ·
+`overrides.md` and `uikit-components.md` on their respective branches · all three ownership sources
+and the registry-generator diff · branch protection and required contexts · every workflow grepped
+for lint/prettier/tsc/bundlesize · the husky hooks · Storybook a11y config · the dependency's
+`exports` map and node entry source · `jsdom` counts in the client and server bundles · gzip sizes ·
+`react-helmet`'s presence and owner · base's SEO component · base PDP line count and its
+`expand` list · `npm run lint` (22 errors, 5 this branch) · `npx tsc --noEmit` (clean) ·
+`@storybook/test` absence · `npm run build` and the bundle-budget check · PR state, review authors,
+and all 22 review threads · live HTTP probes of six preview routes and two `test`-tier routes across
+three user agents, with `<main>` extraction and the served chunk compared byte-for-byte to a local
+build.
+
+**Taken from Jira, Confluence, Figma or CI and not re-run.** Ticket contents, statuses and AC fields ·
+the Confluence date and status pages · every Figma measurement, including the 218px column and the
+off-scale spacing values · the CI Playwright artifact and its stack trace · the two green-but-skipped
+runs on 20 Aug · the SFCC-91 branch contents · whether any human opened the preview.
+
+**Explicitly unknown.** Whether `staging` and `prod` server-render — I had no URLs for either.
+Whether `product.price` without a pricebook expansion returns the correct full price. Which of the
+three Figma node IDs is canonical.
+
+---
+
+## Appendix B — what to cite when you raise it
+
+Never cite the four local documents. Use these.
+
+| To raise this | Cite |
+|---|---|
+| An override mustn't delete base functionality | `AGENTS.md` > Rules > **Minimal changes** |
+| A shared component's default export must stay a faithful port | `.claude/rules/overrideStyling.md` > **The SFCC bridge pattern** |
+| Styling belongs in a theme recipe | `.claude/rules/overrideStyling.md` > **The hierarchy** (item 3) and > **One canonical styling surface** |
+| Tokens, not literals | `.claude/rules/css.md` > Tokens; `overrideStyling.md` > Units |
+| Don't invent a design value | `.claude/rules/overrideStyling.md` > **Component-local tokens** |
+| Copy-first before shadowing | `AGENTS.md` > Rules > **Copy-first rule** |
+| A new package needs approval | `AGENTS.md` **Hard Rule #7**, plus > Performance > **Dependencies** |
+| One PR, one protection tier | `AGENTS.md` **Hard Rule #10** |
+| Tier 1 / Tier 2 file lists and owners | `.claude/rules/frozenFiles.md` · `.claude/rules/protectedFiles.md` |
+| Squad ownership for the merge gate | **`CODEOWNERS`** — the only enforced surface |
+| Every CodeRabbit finding needs a reply | `AGENTS.md` > **Responding to a CodeRabbit PR review** |
+| Requirements must trace to a doc | `AGENTS.md` > **Requirements** |
+| E2E naming, tags, multi-region fixtures | `.claude/rules/testing.md` |
+| Test config is frozen | `AGENTS.md` **Hard Rule #8** |
+| Don't run the dev server | `AGENTS.md` > **Commands** |
+| Component structure and authoring-time a11y | `.claude/rules/components.md` |
+| Sanitised `dangerouslySetInnerHTML` | `.claude/rules/conventions.md` · `semgrep.yml` |
+| No commits or PRs without an explicit ask | `AGENTS.md` **Hard Rule #15** |
+| Self-approval isn't the Tier 1 gate | `AGENTS.md` > **Tier 1 Approval** |
+| **i18n on user-facing strings** | **No repo source exists.** Raise the rule; don't cite a local doc. |
+| **`ui-kits/` directory layout** | **No repo source exists.** The styling half is citable; the layout half isn't. |
+| **Review SLA / reviewer escalation** | **No repo source exists.** |
+| **Governance changes mustn't ride in a feature PR** | **No repo source exists.** |
+| **The "13% wider fallback" figure** | **No repo source.** Cite `frozenFiles.md`'s *"Type renders from the fallback stack"* instead. |

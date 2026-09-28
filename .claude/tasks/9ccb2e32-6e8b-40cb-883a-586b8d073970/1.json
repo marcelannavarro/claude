@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Gather (b) current + comments + ops + deck",
+  "description": "Pull current version + comments of page 346783750; re-verify ops page 318472193 checklist; decode+read the Observability deck (tiny link A4BOEg); re-check codebase claims (deps, sfccCategoryId, webhook receiver, useContentful).",
+  "activeForm": "Gathering (b), ops page, deck, codebase",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

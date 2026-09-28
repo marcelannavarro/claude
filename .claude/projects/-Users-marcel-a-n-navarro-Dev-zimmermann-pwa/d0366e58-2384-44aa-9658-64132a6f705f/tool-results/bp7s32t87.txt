@@ -1,0 +1,173 @@
+=== HEALTH SCRIPT ===
+-rwxr-xr-x@ 1 marcel.a.n.navarro  staff  1355 Jul  9 14:07 scripts/healthCheckAll.sh
+
+=== projectState.md ===
+# Project State
+
+*Current status of all services, integrations, deploy status, what's complete, and what's pending. Update this file at the start of each session if anything has changed.*
+
+*Last updated: 2026-08-24 (SFCC-55 global footer — decomposed into `ui-kits/` atoms/molecules/organisms with co-located `<name>.css.ts` recipes; wired to live Contentful `footerConfig` with region-aware resolution; `useUiCopy` promoted to an app-wide Context; `var(--zimm-*)` now required over bare Chakra token keys; `scripts/auditTokenUsage.mjs` added. See In Progress). Previous: 2026-08-18 (zimmTokens.ts made fully derived from the other `foundation/*` files instead of hand-retyped literals; `zimmButton.css.ts` established as the single source of truth for button styling, `globalStyles.ts`'s conflicting `.zimm-btn-*` class system removed; `spacing.ts`/`typography.ts` converted px → rem for WCAG 1.4.4; `header.ts`/`listMenu.ts` brought onto the same `var(--zimm-*)` token convention; new `.claude/rules/overrideStyling.md` documents the resulting styling-source hierarchy. See What's Complete). Previous: 2026-07-16 (PR #30 and PR #35 merged — e2e-localhost fixed and re-enabled, root cause was a swallowed click failure in `BasePage.js`'s consent handling; `deploy-test.yml` added for the previously undeployable `test` tier; README command reference added; Stage/UAT promotion order reconciled across docs; a tag-based environment-promotion proposal is drafted on Confluence, not yet implemented — see What's Pending). Previous sweep 2026-06-25 against updated Zimmermann Functional Requirements.xlsx via /update-prds-from-xlsx — CFD-067 Company Name + VAT/Tax ID optional fields confirmed for EU/UK checkout; PRC-03 future-dated markdown with timezone mapping confirmed; PRC-07 tax class via AP21 taxonomy ID + Avalara/Global-e coverage confirmed; PRC-13 catalogue markdowns + promotions in order payload confirmed; PRC-46 coupon handling at Global-e challenged and kept Open; HPC-018 header icon set resolved — Search/Account/Bag only, Locate Boutique/Contact Us/Newsletter confirmed not in header; SPR-03 editorial paragraph confirmed not collapsible, read-more action only); trimmed stale entries.*
+
+## Phase
+**Detailed Design** — Some functional requirements have been confirmed (30 Apr 2026 sign-off); others are still open. No production build has started beyond scaffolding.
+
+Workshop sign-off tracker: All workshops signed off (2026-04-30 through 2026-06-24). Row-level opens tracked under Unresolved Dependencies below.
+
+*For system roles and integration details, see [architecture.md](architecture.md). Open items that block implementation are listed under "Unresolved Dependencies" below.*
+
+## Integrations
+| System | Status | Notes |
+|---|---|---|
+| Salesforce Commerce Cloud (SFCC) | Mock | Sandbox; not yet Zimmermann's production org |
+| Contentful | Mock | Demo space; not yet Zimmermann's production space |
+| Global-e | Not started | Pricing via SFCC price books (AP21 base RRP + fixed pricelists, nightly FX job — PRC-34..55, now Confirmed 2026-06-01). Global-e handles shipping/duties/taxes at international checkout via vendor cartridge + iframe injection. REG-040 struck (superseded by REG-041, confirmed). |
+| Didomi | Not started | |
+| Omneo | Not started | |
+| Emarsys | Not started | |
+| MuleSoft | Not started | |
+| NewStore OMS | Not started | SIT parallel CI lane scaffolded 2026-05-20: `.github/workflows/digital-sit.yml` + [05.6 - Environment Details](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/285540356) (Confluence). Six-tier topology reference at [Environment Topology & Promotion Path](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/304840708) (Confluence). Pending: SFCC SIT credentials, `MRT_SIT_URL` / `MRT_TEST_URL` GitHub Secrets, `push:sit` / `activate:sit` npm scripts, `mobify.config.js` `sit` env entry, `config/sit.js`. |
+| AP21 | Not started | |
+| Adyen | Not started | Apple Pay, Google Pay, Klarna: targeting August 2026 (not launch) |
+| Narvar | Not started | |
+| Google Maps API | Not started | Address validation/autocomplete. Now confirmed to also back **address-book** validation (CRM-053) — the same validation used in cart/checkout is reused in the account address book; users may still opt into the full manual form. |
+| Avalara | Not started | Covers US domestic, NZ, New Caledonia, **and EU domestic** (confirmed 2026-06-19 via Third_Party_Integrations sheet update). UK uses SFCC native VAT tables. |
+| GiveX | Not started | Gift card processing (physical + digital). Gift Cards workshop targeting sign-off 2026-05-12 |
+| Inside Chat | Not started | |
+| Transperfect | Not started | Direct Contentful↔Transperfect workflow confirmed (REG-047 update); SFCC strings via JSON files. PWA only consumes translated payloads |
+| Google Business API | Not started | Daily store-hours feed into SFCC; PWA renders only (out-of-band) |
+| Feedonomics | Not started | Product feed for downstream marketing channels (PRD-071); no PWA runtime touchpoint |
+
+## What's Complete
+- PWA Kit scaffolding with TypeScript strict mode (`@salesforce/retail-react-app` bumped from v9.1.1 → v10.0.0 on 2026-05-18)
+- Overrides pattern established
+- Country/locale config (`overrides/app/config/countries.ts`)
+- Contentful Studio integration (pointing to mock account)
+- **Contentful content model tooling** (`npm run sync:contentful` / `npm run install:contentful`) — authors `scripts/contentful/content-types/` as one organization-scoped Environment Template and installs it per environment via the Management API (replaced the earlier per-environment sync.js + migrations pipeline, 2026-08-23).
+- **ShoppableImage component decommissioned** (2026-08-23) — it was a Studio Experience component + standard content type synced 2026-05-11, but had 0 entries and was removed (content type, React component, and its hotspotMarker/hotspotPopup sub-components) once the region/link/footerConfig content model landed. `CollectionHero` and `ImageText` are the remaining Studio Experience components.
+- Basic SFCC Commerce SDK integration (pointing to mock account)
+- Home page / home-preview page merged
+- Functional requirements signed off (Checkout, Returns, Orders, Payments, Cart, Regional, Content, PDP/PLP, Search, CRM)
+- Design token foundation ported from the F2R Handover into `overrides/app/theme/foundation/` (`colour.ts`, `typography.ts`, `gridSystem.ts`, `spacing.ts`, `sizes.ts`, `motion.ts`, `zimmTokens.ts`) plus the `.zimm-*` global classes in `overrides/app/theme/globalStyles.ts`; composed in `overrides/app/theme/index.ts`, per-component overrides now co-located beside their component as `<name>.css.ts` and registered in `overrides/app/theme/components/index.ts` (`theme/components/` itself now holds only `header.ts`/`listMenu.ts` as registered recipes, plus `navConstants.ts` and `footerShared.ts` for values shared across split-out files). Delivered as a foundation for the manual UI build (branch `feature/design-tokens-implementation-to-dev`); F2R component work continues separately on `feature/f2r-component-registry` and `feature/f2r-implementation-workflow`. Futura Round **is** self-hosted as of SFCC-55 — two faces (400/500) ship from `overrides/app/static/fonts/` and are served on every tier. Open with the UI designer: primary-action hover contrast (2.96:1), inverse focus ring, and button-height / nav letter-spacing deviations from the Handover.
+- **Token architecture hardened** (2026-08-18): `zimmTokens.ts` (the `--zimm-*` CSS-var registry) is now fully derived from the other `foundation/*` files via imports instead of hand-duplicated literals, closing the drift risk the original port above carried. `typography.ts` gained a proper `fontSizes`/`lineHeights`/`letterSpacings`/`fontWeights` scale layer. `spacing.ts`/`typography.ts` converted px → rem (WCAG 1.4.4); within those two files, px is kept only for hairline geometry (border widths, focus-ring offsets — now named tokens in `spacing.ts`'s `focusRingOffsets`). `zimmButton.css.ts`'s provisional height/padding constants are a separate, already-flagged px exception (not hairline geometry) — see below. `zimmButton.css.ts` is now the single source of truth for button styling — `globalStyles.ts`'s conflicting `.zimm-btn-*`/`.zimm-text-btn-*` classes (different heights, transparent-vs-opaque secondary background, zero interactive states) were removed entirely; any button must use Chakra's `<Button>`, never a class. `header.ts`/`listMenu.ts` brought onto the same `var(--zimm-*)` convention (no direct `foundation/` imports, no Chakra semantic colour-token names). New `.claude/rules/overrideStyling.md` documents the styling-source hierarchy, unit rules, the alias-is-a-reference-not-a-copy principle, and a real gotcha: importing an already-overridden component via the SFCC base path resolves correctly in the real app but silently renders the unstyled base version in Storybook/Vitest (the `ccExtensibility` resolver is webpack-only, neither tool loads it). Still open, flagged inline rather than silently resolved: `zimmButton.css.ts`'s `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM` (50px/41px prototype values) disagree with the Handover-sourced `actionSizes.height.lg`/`.md` (52px/40px); `BTN_PADDING_Y` (5px) has no Handover token at all — both pending UI-designer sign-off.
+- **Header override** (`overrides/app/components/header/index.tsx`): two-row layout, brand logo via `BrandLogo` component (overrides base SVG at `overrides/app/assets/svg/brand-logo.svg`), uppercase nav with `::after` hover animation, Account/Saved/Bag text buttons with matching animation, chevrons hidden. Still being refined visually against Figma.
+- Path aliases (`~` → root, `app` → `overrides/app`) wired up across Babel, tsconfig, Storybook, and Jest
+- **Per-tier environment switching** (`npm run env` → `scripts/switchEnv.mjs`) — manages `.env.shared` / `.env.<tier>` across dev/test/sit/uat/staging/prod via `init` (scaffold + pull + Contentful auto-fetch), `validate [--live]` (structural checks plus live Contentful Delivery API + SFCC SLAS guest-token calls), and `push <scope>` (tier-1-approvers only). Shared/tier values (excluding personal credentials) can be centrally published through this repo's GitHub Environments (`shared` + one per tier) — write gated to repo Admin. Landed 2026-07-13.
+
+## In Progress
+- **SFCC-55 global footer** (PR #59): footer decomposed into `overrides/app/components/footer/` plus
+  `ui-kits/{atoms,molecules,organisms}/`, most with a co-located `<name>.css.ts` recipe registered in
+  `theme/components/index.ts`. `FooterContainer` fetches live Contentful `footerConfig` client-side and
+  resolves per-storefront content via `utils/resolveByRegion.ts`. Microcopy comes from the `uiCopy` content
+  type through `useUiCopy` (Context provider mounted in `_app-config`). Open items: the footer is not in the
+  SSR HTML (client-only `useEffect` fetch, no `getProps`); no locale is passed to Contentful, so all
+  storefronts currently receive the space default; and `en-CA` — which `SITE_LOCALES` lists for
+  ZimmermannUSIntl — is now in `bootstrapSpace.mjs`'s locale list, but whether the **live** space has it
+  is still unconfirmed from the repo. Re-running `setup:contentful` is what would provision it; until
+  someone does, `/en-ca/` Experience pages still send an unknown locale to the CDA.
+- **Header visual refinement**: layout and animations are implemented; still being iterated against the draft Figma to close remaining gaps
+- **SFCC-751 — BrowserStack ↔ Zephyr Scale QA automation pipeline** (branch `feature/browserstack-ci-automation`,
+  PR #61 open against `develop`, worktree `.claude/worktrees/feature+browserstack-ci-automation`). Syncs
+  BrowserStack Test Observability results to Zephyr Scale — built because BrowserStack's native Zephyr
+  integration can't reach this org's DE-hosted Zephyr instance (US/EU regions only). Full spec/history:
+  `.docs/temp/SFCC-751-implementation-spec.md`.
+  - **Committed & pushed (PR #61 as of 2026-08-25)**: Zephyr test case `SFCC-T285`, the site-prefix spec,
+    `.github/workflows/zephyr-results-sync.yml` + `scripts/zephyrBrowserstackSync.mjs`, the
+    `.browserstack.yml` → `browserstack.yml` rename (the SDK requires the undotted filename — see
+    `.docs/memory/feedback.md`), `scripts/computeBuildName.mjs`, the `e2e/tests/zimm/homepage/desktop/`
+    + `.../mobile/` spec split (BrowserStack Test Observability collapses same-titled tests across
+    Playwright projects — see `.docs/memory/feedback.md`), `MobileDrawerMenuPage.js` (new POM), the
+    consent-dialog race-condition fix in `BasePage.dismissConsent()`, doc updates to
+    `.claude/rules/testing.md` / `.claude/skills/qa-generate/SKILL.md` / `e2e/features/README.md`, and a
+    second round of CodeRabbit-prompted fixes (consent-check caching per browser context, terminal-only
+    BrowserStack status mapping, a `workflow_run` script-injection fix in `zephyr-results-sync.yml`).
+  - **Real product gap found** (not a testing bug): the mobile hamburger drawer has zero category
+    navigation links — matches an already-documented discrepancy against HPC-018 in
+    `overrides/app/components/header/index.tsx`'s own comments. The new mobile spec deliberately fails
+    until that ships — confirmed intentional, not a bug to fix in the test.
+  - **Secrets live in GH Actions** (pushed 2026-08-24/25): `ZEPHYR_API_KEY`, `ZEPHYR_API_URL`,
+    `JIRA_AUTOMATION_EMAIL`, `JIRA_AUTOMATION_API_TOKEN`, `JIRA_URL`.
+  - **Still to do**: Deliverable 3 (a QA-authoring skill for non-developer QA) and Deliverable 4
+    (validation/runbook doc) are not started. Note `.docs/prompts/qaClaudeCodeSetup.md` references
+    `docs/qa/README.md` as an existing artefact — it does **not** exist in this repo; decide where
+    Deliverable 4 should actually live before writing it. PR #61 review is still in progress — see the
+    PR's CodeRabbit threads for the current open findings.
+
+## What's Pending
+- All integrations need to point to production accounts (SFCC, Contentful)
+- Global-e integration (confirm pricing flow mechanism before implementing)
+- Didomi consent management (implement per storefront defaults in REG-054)
+- Omneo / Emarsys marketing sync
+- Adyen payment integration
+- MuleSoft middleware connections
+- PDP, PLP, Cart, Checkout flows
+- BOPIS (Collect in Boutique) checkout flow
+- Full multi-site routing — 8 SFCC sites across 6 regions (AU, US domestic, US international, UK, EU domestic, EU international, HK, ME). **US site topology updated (REG-005, 2026-07-10):** US splits into two separate SFCC sites — US domestic (`/us/`, SFCC checkout) and US international (`/en-ca/`, Global-e checkout). New site ID `ZimmermannUSIntl` pending BM confirmation.
+- Address autocomplete via Google Maps API
+- Narvar EDD + tracking integration
+- SEO: hreflang, canonical URLs, sitemaps
+- Order-on-behalf (OOBO) for CS agents
+- Retail Rewards (AP21) integration
+- Gift card PDP, cart, checkout, and GiveX integration
+- Promotions engine and multi-currency/FX pricebook setup
+- CI workflow split — two complementary workflows, each with a clear role:
+  - `qa.yml` (every PR to `develop`/`release/**`): `unit-tests` (Vitest) + `storybook-test` (Storybook `play` + `@storybook/addon-a11y`, `storybook test --ci`) run in parallel; `e2e-browserstack` on release PRs only. **`storybook-test` job is wired but pending `@storybook/addon-test` and `@storybook/addon-a11y` installation (feature/storybook-v10 upgrade task).**
+  - `digital-sit.yml` (push/PR to `release/**`): four parallel jobs into `sit-gate` — `playwright-p0` (Chromium P0 suite), `bundle-size` (bundlewatch, main.js < 180 kB / vendor.js < 250 kB / main.css < 50 kB), `contract-tests` (placeholder; real MuleSoft OpenAPI assertion pending spec source), `lighthouse-ci` (Perf ≥ 80, A11y ≥ 90, Best Practices ≥ 90; requires LHCI server secrets)
+- **`e2e-localhost` (qa.yml) is fixed and re-enabled, as of PR #35 (`bugfix/ci-e2e-test`, merged 2026-07-16).** Root cause of the "homepage smoke test fails in CI, logo never found" issue (open as of PR #30): `BasePage.js`'s old `dismissConsent()` wrapped both `waitFor()` and `.click()` in one `try/catch`, so a real click failure was silently swallowed as "no dialog appeared" — if a consent dialog genuinely appeared in CI (injected by something outside this repo's own source, e.g. GTM/MRT platform config — not by anything grep-visible in `overrides/`) and the click failed transiently, the `aria-modal` dialog stayed open and blocked the entire page's accessibility tree, exactly matching the symptom. Fixed by CodeRabbit-prompted review in PR #30 (separated `.click()` out of the `try/catch`) — but that fix was never actually exercised in CI until PR #35 re-enabled the job, confirmed via 4 consecutive clean CI passes. Along the way also: added an HTML reporter to `playwright.config.js` (every project except `p0` had been silently producing an empty `playwright-report/` — CI failures were undebuggable from artifacts alone); fixed a webpack-build-race (`wait-on` only confirms the port is open, not that the client bundle finished compiling — added a step polling `dev-server.log` for `webpack built client`); fixed the original missing-Commerce-API-env-vars bug (job now binds `environment: dev`, sources `COMMERCE_API_*` from `vars.*`, `scripts/switchEnv.mjs`'s `push <tier>` uploads a shared+tier merge so one environment binding is self-sufficient); switched the job gate from `always()` to `!cancelled()` so a superseded/cancelled run doesn't burn a 15-min runner slot.
+- PR #30 (`feature/gh-qa-workflow`, merged) also: deleted the unfinished `SFCC-000_guest-checkout` placeholder (never had real Adyen payment interaction, self-described `EXAMPLE` in its own header) and its `testIgnore` mis-scoping (ran under `chromium`/`mobile-chrome` `retries:2` instead of the dedicated `p0` project's `retries:0`, costing ~12 of the ~14 min `e2e-localhost` runtime on every PR); added a homepage smoke test (new `homepage` E2E area + `SMOKE-` naming convention for Jira-less tests); fixed a `@typescript-eslint/no-var-requires` misconfiguration flagging `require()` in `e2e/`'s intentionally-CommonJS files; added `test-results/`/`playwright-report/` to `.gitignore`.
+- **Proposed: tag-based environment promotion (GitFlow) — full spec on Confluence, implementation not yet started.** Full rationale, tag naming convention, worked commands, and open questions:
+  [Proposed: Tag-Based Environment Promotion (GitFlow)](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/335216656/Proposed+Tag-Based+Environment+Promotion+GitFlow)
+  (Confluence, v5, child of the Branching Guide page). Summary: only `Dev` should be continuously tied to `develop`; every other tier should deploy a specific, immutable git tag (`vX.Y.Z-rc.N` / `vX.Y.Z` / `vX.Y.Z-hotfix.N`, cut via `npm version`) instead of a branch ref, so Test/SIT/UAT/Stage can each run independent testing cycles instead of being forced onto the same moving branch. **Do not implement the AGENTS.md/governance pieces without squad-lead + Integration-lead sign-off — this is still a proposal.** Implementation checklist for a fresh session on a new branch (see the Confluence page for full detail on each item):
+  - **Decided 2026-07-16** (see Confluence page's "Decisions made so far" table): release cadence is per-sprint; pre-launch versioning starts at `v0.1.0` (MAJOR locked at `0` until go-live, which becomes `v1.0.0`); `Test` gets its own automated CI gate (not manual-only); tag protection + the version-guard + Release-per-final-tag are all adopted immediately, not phased in.
+  - **Tooling — safe to build now, doesn't touch governance docs:**
+    1. `npm version` adoption — no code change needed, it's a built-in npm command; just start using it per the Confluence page's "How to deploy" section instead of raw `git tag`. First tag will be `v0.1.0-rc.0`.
+    2. **Primary enforcement — one GitHub Ruleset covers both naming and immutability:** Settings → Rules → Rulesets → New tag ruleset, targeting `v*`, with a "tag name pattern" rule requiring `^v\d+\.\d+\.\d+(-rc\.\d+|-hotfix\.\d+)?$` plus "restrict creation," "restrict updates," and "restrict deletion" all enabled. This genuinely hard-blocks a non-matching tag at push time *and* prevents force-push/delete on matching tags — all on GitHub.com, not Enterprise Server-only (corrected from an earlier draft of this note, which wrongly split this into a separate "tag protection rules" step and claimed pattern-blocking wasn't possible on GitHub.com). Keep a `push: tags: ['*']` validation workflow too, as defense-in-depth / for a clearer failure message than the raw ruleset rejection gives.
+    3. A version-guard step added to each `deploy-*.yml` (test/sit/stg/uat/prod) — fetch the environment's current deployed tag via `gh api repos/ZimmermannAU/zimmermann-pwa/deployments?environment=<env>`, semver-compare against the tag being deployed (use the `semver` npm package, not hand-rolled bash comparison — pre-release identifiers must be dot-separated, e.g. `-rc.10` vs `-rc.2`, or numeric comparison breaks), fail on a downgrade. **`<env>` must be the actual GitHub Environment name, not the workflow-file suffix** — they diverge for `stg` (`deploy-stg.yml` targets the `staging` Environment, not `stg`; we hit this exact mismatch once already this session, commit `12bf91b`). Map each tier explicitly (`stg` → `staging`, everything else matches its filename) rather than deriving it from the filename. Fail closed if the environment name is wrong or the API call errors — a genuine first-ever deployment (no prior Deployment record at all) is fine to proceed, but an unresolvable environment/API error is not the same thing and must not be treated as "nothing to compare against, allow it."
+    4. **A Test-tier CI gate** — new, decided 2026-07-16. Proposed shape (not yet confirmed, see the page's remaining two open questions): a second job appended to `deploy-test.yml` that runs a P0-only Playwright suite against whatever was just deployed, so the run's pass/fail becomes the "safe to promote to SIT" signal — deliberately deploy-then-gate rather than SIT Gate's gate-then-deploy, since `Test` is on-demand (`workflow_dispatch`, including raw feature branches) and has no push/PR event to hang a pre-check on.
+    5. Wire `/generate-changelog`'s existing `gh release create` offer into the "cut the final tag" step — no new tooling, the skill already does this.
+  - **Governance — needs squad-lead + Integration-lead review before merging:**
+    6. A new `.claude/rules/tagging.md` (or fold into `.docs/releaseBranchesRules.md`, already auto-loaded on `release/*`/`hotfix/*`) documenting the tag convention and instructing Claude to always use `npm version`, never hand-construct a tag string.
+    7. `AGENTS.md`'s branch table / the Confluence Branching Guide itself, once the team has actually reviewed and approved the proposal — this repo's `AGENTS.md` requires both squad leads and the Integration lead to sign off on changes to itself, stronger than the usual verified-session Tier 1 exception.
+  - Still open per the Confluence page: exact Test-gate design (deploy-then-gate as proposed, or match SIT's gate-then-deploy exactly) and its scope (P0 suite only, or also bundle-size/contract-tests/Lighthouse).
+
+## Unresolved Dependencies
+Do not hard-code assumptions for the following — ask the user before implementing:
+- Product copy ownership: Contentful vs SFCC vs AP21 (TBD).
+- Translation trigger workflow with TransPerfect (TBD).
+- Global-e + Didomi consent interaction (TBD).
+- **Social login (Apple/Google):** Confirmed in scope for launch (ENH-004, Must-Have, Go-Live) as SFCC OOTB configuration only. **Hard dependency:** Apple and Google merchant accounts must be provisioned by Zimmermann before implementation can start. Do not implement until merchant accounts exist.
+- **Omneo guest record creation timing:** When to create an Omneo record for a guest (at newsletter sign-up, at back-in-stock capture, at checkout, or only at order completion) is under legal/SFCC best-practice review. SFCC best practice is order completion only. Do not create Omneo records for guests at any earlier point until confirmed. Note: CRM-012–015 are signed off but Tony Tilbrook (early creation) and Izzy Coxon (order-completion only) currently disagree on the timing — treat as Open until reconciled.
+- **Denmark routing:** Which storefront Denmark resolves to is not yet confirmed.
+- **EU billing fields:** Locale-specific billing fields (Italian Codice Fiscale, Spanish NIF, French SIRET) — to be confirmed before implementing.
+- **Adyen dynamic checkout (ENH-020):** Confirmed Must-Have for Go-Live, but a **hard dependency on Adyen** delivering A/B-able dynamic payment-method display. Do not assume the feature is buildable end-to-end until Adyen delivery is confirmed.
+- **Optimizely SFCC data-layer scope (AAB-004):** Load mechanism Confirmed (PWA-direct head tag, US-only, Zimmermann-provided script). Residual: Tell No Lies suspects no SFCC-side data-layer work is needed for Optimizely (Magento launch was GTM-only). Confirm with Tell No Lies before doing SFCC data-layer work specifically for Optimizely.
+- **CRM-155 customer group precedence:** Rules for resolving overlapping customer group memberships are TBD.
+- **Mulesoft stock aggregation (CAI-023):** Confirmation pending that Mulesoft can aggregate warehouse + boutique stock pre-checkout.
+- **Search/recommendation platform:** SFCC Einstein is confirmed on the Search sheet (SPR-63). **Cross-sheet contradiction (flag, do not resolve):** the Cart & Inventory sheet CAI-005 now states "search / recommendation engine not confirmed" with RJ noting "99% likely we will move away from Athos" — i.e. the engine is being treated as open there. Confirm which sheet is authoritative before relying on Einstein for cart/recommendation surfaces.
+- **PRC-45 Retail Rewards count per order:** Requirement text says "maximum of one Retail Reward per order" but RJ challenges: "Multiple retail rewards can be applied per order." Downgraded to Open — confirm the cap before building reward-application logic.
+- **Addingwell role in analytics (AAB-001/003):** AAB-001 frames all container/tag logic as living in GTM (Tell No Lies), while the Third Party Integrations rows say the GTM container loads *via the Addingwell MRT integration* and GA4/downstream tags route through an Addingwell *server-side container*. Reconciled in analytics.md as logic-vs-transport, but confirm with Tell No Lies whether Addingwell is none / transport-only / server-side routing.
+- **DMU-007 order history source (upstream):** DMU-007 PWA contract Confirmed (displays MuleSoft payload). Residual upstream conflict: requirement + JT say NewStore via MuleSoft; RJ says "Order history will come from Omneo." Out of PWA boundary — reconcile so the integration contract is unambiguous.
+- **DMU-009 Contentful setup ownership:** RJ: "This is no longer required as AS will be setting up Contentful." Downgraded pending reconciliation of who owns CMS setup.
+- **Customer migration shape (DMU-004):** Only email + Omneo ID migrated; name, phone, addresses, comms prefs sourced **live from Omneo at login**. My Account profile pages must round-trip to Omneo post-auth. Graceful degradation for Omneo outages on account screens is now load-bearing — confirm UX before implementing profile reads.
+- **Asset/CDN migration & platform (DMU-010 / DMU-020):** Asset migration de-scoped — no asset 301s; images stay in Contentful. Separately, the source note now records the platform CDN as Akamai (SFCC default), which sits against existing Cloudflare carry-forward references — confirm the CDN platform of record (no asset-migration impact either way).
+- **PRC-43 Global-e cartridge customer-group catalogue prices:** Open with Global-e — does the cartridge honour customer-group catalogue prices (VIC) at international checkout? Also: how do VIC customers currently receive discounts at Global-e checkout in M2? Do not assume VIC pricing flows through Global-e until confirmed.
+- **CFD-070 guest account creation flow:** Dependent on the guest journey design — open.
+- **CFD-045 BOPIS seeding mechanism:** Open — how Collect in Boutique availability is seeded into checkout still TBC.
+- **PAY-022 Adyen CVC config:** Confirm CVC-on-saved-card configuration with Adyen. PWA behaviour (re-entry required) is Confirmed.
+- **PAY-047/048/049 fraud hold scope:** Adyen/NewStore-owned per IC; PWA-side display behaviour not yet signed off.
+- **OM-002 MuleSoft order export gating:** Sign-off pending on the exact attribute set passed at order export.
+- **OM-017/018 NewStore order status taxonomy:** SFCC displays raw MuleSoft status; mapping list still open.
+- **OM-034 back-in-stock FIFO email logic:** Sign-off pending.
+- **DLV-012 free-shipping thresholds:** Per-delivery-method per-storefront rate card updated; re-sign-off pending.
+- **CAI-041 location-aware boutique inventory fallback:** Flagged as potential enhancement (RJ 25.05) — not in launch scope until confirmed.
+- **RRC-030 tax/duties display location:** Confirm whether tax/duties appear in My Account vs Narvar/Global-e portals only.
+- **CRM-022 international Retail Rewards via Global-e:** Not scoped; needs Global-e discussion.
+- **CRM-048 / CRM-100 saved-address cap:** RJ proposes 20; IC "we can do this" — working target 20, formal sign-off pending.
+- **DMU-018 / DMU-019 / DMU-022 SEO migration items:** Sparro dependencies — confirm before any URL-rewrite / canonical work. (DMU-016 closed 2026-06-04: REG-009 bot allowlist keeps AU root globally crawlable, so `x-default` stays AU.)
+- **DMU-032 / DMU-035 SEO meta-title and schema authoring:** DMU-031 dropped the word "Online" from product meta-title format (`[Product Name] [Colour] | Zimmermann`); DMU-032 "auto-applied" question remains; DMU-035 schema definition still open with Sparro.
+- **Wishlist hosting — SFCC vs Omneo (ENH-038/039):** Previously out of scope (wishlist to migrate to Omneo); now "ACN to size — wishlist in SFCC" / "To be sized." A SFCC-hosted wishlist for go-live is being scoped but NOT confirmed. ENH-040 still logs an eventual SFCC→Omneo migration. Note: Move-to-Wishlist (CAI-004/008) is **confirmed authenticated-only** at launch — guests are prompted to log in; guest wishlist is a logged enhancement out of scope for go-live.
+- **Returns-link eligibility logic (ENH-014):** To be sized. Intended logic (not yet confirmed): show the Returns link only if the order contains returnable items (via product attribute); window = 15 days from delivery completion date, else 28 days from order creation date if no delivery completion date. Hard dependency: the delivery completion date must be passed back via MuleSoft.
+- **Address validation on free-text addresses (CFD-024):** PO Box / Parcel Locker blocking is Confirmed. NEW VR/RT review request (not scoped): "Current magento behaviour lets a user checkout with a very random address with no error messaging. Can this be reviewed?" — broader address-validity enhancement, unscoped.
+- **SSO scope (CRM-001):** Sheet only says "to be considered for go-live (ENH tab — to be discussed)". Treat as Open. Note: Social login (Apple/Google) is separately confirmed via ENH-004 (see entry above) and is the only SSO surface in scope for launch.
+- **PRC-46 coupon handling at Global-e:** Workbook shows Confirmed 2026-06-24, but sign-off is conditional — "only if Global-e can support." Confirm with Global-e that the SFCC cartridge can apply and validate coupon codes at international checkout before implementing.
+- **PRC-53 Global-e digital gift card currencies:** Currency coverage for digital gift cards at Global-e checkout to be confirmed.
+

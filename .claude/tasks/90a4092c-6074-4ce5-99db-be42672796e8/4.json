@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Diagnose mcp-atlassian MCP server (missing all 6 env vars)",
+  "description": "claude mcp list shows mcp-atlassian in .mcp.json is missing JIRA_URL/JIRA_USERNAME/JIRA_API_TOKEN/CONFLUENCE_URL/CONFLUENCE_USERNAME/CONFLUENCE_API_TOKEN. This blocks project-init's Phase 3 Confluence checklist read/write. Needs Marcel's Atlassian API token.",
+  "activeForm": "Diagnosing mcp-atlassian setup",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

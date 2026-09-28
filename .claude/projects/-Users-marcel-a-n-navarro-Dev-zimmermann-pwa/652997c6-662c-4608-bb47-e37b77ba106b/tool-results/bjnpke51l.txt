@@ -1,0 +1,561 @@
+########## footer/index.tsx ##########
+     1	import React, { useState, useRef } from 'react';
+     2	import { createPortal } from 'react-dom';
+     3	import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+     4	import { ZimmLogo } from 'app/components/ui-kits/atoms/zimmLogo';
+     5	import { ZimmIcon } from 'app/components/ui-kits/atoms/zimmIcon';
+     6	import { ZimmNavItem } from 'app/components/ui-kits/atoms/zimmNavItem';
+     7	import { ZimmButton } from 'app/components/ui-kits/atoms/zimmButton';
+     8	import { ZimmTextInput } from 'app/components/ui-kits/atoms/zimmTextInput';
+     9	import { ZimmInputAction } from 'app/components/ui-kits/molecules/zimmInputAction';
+    10	import { isSafeHref } from 'app/utils/safeHref';
+    11	import { useSubscribeModal } from 'app/hooks/useSubscribeModal';
+    12	import { noop } from '@salesforce/retail-react-app/app/utils/utils';
+    13	import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site';
+    14	import { useHistory } from 'react-router-dom';
+    15	import { HOME_HREF } from '@salesforce/retail-react-app/app/constants';
+    16	import type { FooterConfigEntry } from 'app/types/contentful';
+    17	import { FOOTER_FIXTURE } from './contentfulFixture';
+    18	
+    19	// Named constant to avoid magic string comparison in the render tree
+    20	/** Non-breaking space. Marks a label whose line break is intentional — see the nav item below. */
+    21	const NBSP = '\u00A0';
+    22	
+    23	/**
+    24	 * Theme recipe key. Namespaced rather than 'Footer' because extendTheme deep-merges — a recipe
+    25	 * named Footer would inherit base SFCC's Footer instead of replacing it. Must match the key
+    26	 * registered in theme/components/index.ts; a typo here silently yields an empty style object.
+    27	 */
+    28	const ZIMM_FOOTER_RECIPE = 'ZimmFooter';
+    29	// Locale control label. Hardcoded, and deliberately NOT fixture data — region and currency
+    30	// come from site config (config/default.js: defaultSite 'ZimmermannAU'), not Contentful, so
+    31	// FooterConfigEntry has no field for them. Set to match the site the app actually serves at
+    32	// '/'; it previously read "United States (USD) / ENG" on an AU storefront. The real fix reads
+    33	// site.l10n.defaultLocale and the site's currency via useMultiSite when the locale selector
+    34	// lands, at which point this constant goes away rather than getting a different literal.
+    35	const LOCALE_LABEL_PLACEHOLDER = 'Australia (AUD) / ENG';
+    36	
+    37	// ---------------------------------------------------------------------------
+    38	// Types
+    39	// ---------------------------------------------------------------------------
+    40	type FooterProps = {
+    41	  /** Contentful FooterConfigEntry. Pass FOOTER_FIXTURE from contentfulFixture.ts in stories/tests. */
+    42	  data: FooterConfigEntry;
+    43	  copyrightYear?: number;
+    44	  /** Forces SubscribeSection into its post-submit state. For Storybook/tests only. */
+    45	  initialSubscribed?: boolean;
+    46	  /**
+    47	   * Opt in to the HPC-035 first/last-name capture modal. Defaults to false: SFCC-55 ships the
+    48	   * Stay in Touch section as an input plus submit button only, and the modal has no design yet.
+    49	   */
+    50	  enableNameCapture?: boolean;
+    51	  /** Click handler for the wordmark. Mirrors the header's onLogoClick prop, defaulting to
+    52	   *  noop so the presentational Footer never navigates on its own. */
+    53	  onLogoClick?: () => void;
+    54	  /** href for the Privacy Policy link inside the subscribe modal (HPC-037). Locale-aware at runtime. */
+    55	  privacyPolicyHref?: string;
+    56	};
+    57	
+    58	// ---------------------------------------------------------------------------
+    59	// All footer styling lives in theme/components/footer.ts and is consumed via
+    60	// useMultiStyleConfig('ZimmFooter') → __css. Nothing is styled at the call site.
+    61	// ---------------------------------------------------------------------------
+    62	
+    63	// Subscribe heading ("Keep in Touch") — same type scale as navigation, distinct colour and lineHeight
+    64	// colour.ts note: text.inverseGrey and text.muted are both #969696 as of develop commit 6fa8e92
+    65	// lineHeight override: textStyles.navigation says 'normal' (≈14.4px at 12px font), but Figma
+    66	// wants 14px, so subscribeHeading sets lineHeight explicitly to --zimm-font-lineheight-2xs.
+    67	// These values now live in theme/components/footer.ts's subscribeHeading part, not here.
+    68	// ---------------------------------------------------------------------------
+    69	// Subscribe modal (HPC-035 + HPC-037)
+    70	// Rendered via createPortal so the overlay escapes the footer stacking context.
+    71	// ---------------------------------------------------------------------------
+    72	// HPC-037 copy — update when UX supplies final content
+    73	const PRIVACY_CONSENT_COPY = 'By providing your details, you agree to receive email updates from Zimmermann. View our';
+    74	const ACCESSIBILITY_DISCLAIMER_COPY =
+    75	  'Zimmermann is committed to providing accessible services. ' +
+    76	  'If you experience any difficulty, please contact us for assistance.';
+    77	
+    78	type SubscribeModalProps = {
+    79	  isOpen: boolean;
+    80	  onClose: () => void;
+    81	  onSubmit: (firstName: string, lastName: string) => void;
+    82	  privacyPolicyHref: string;
+    83	};
+    84	
+    85	const SubscribeModal = ({ isOpen, onClose, onSubmit, privacyPolicyHref }: SubscribeModalProps) => {
+    86	  const { mounted, formRef, firstFocusRef } = useSubscribeModal({ isOpen, onClose });
+    87	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+    88	
+    89	  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    90	    e.preventDefault();
+    91	    const form = e.currentTarget;
+    92	    // namedItem returns Element | RadioNodeList | null. The cast keeps `| null` rather than
+    93	    // asserting it away — these fields are always single <input>s rendered by ZimmTextInput,
+    94	    // but a missing field must stay a null the `?.` below can actually catch. Same pattern as
+    95	    // zimmInputAction's handleSubmit.
+    96	    const firstName = (form.elements.namedItem('firstName') as HTMLInputElement | null)?.value ?? '';
+    97	    const lastName = (form.elements.namedItem('lastName') as HTMLInputElement | null)?.value ?? '';
+    98	    onSubmit(firstName.trim(), lastName.trim());
+    99	  };
+   100	
+   101	  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+   102	    if (e.target === e.currentTarget) onClose();
+   103	  };
+   104	
+   105	  if (!mounted || !isOpen) return null;
+   106	
+   107	  return createPortal(
+   108	    <chakra.div role="presentation" onClick={handleBackdropClick} __css={styles.modalOverlay}>
+   109	      <chakra.div
+   110	        role="dialog"
+   111	        aria-modal="true"
+   112	        aria-labelledby="zimm-subscribe-modal-title"
+   113	        aria-describedby="zimm-subscribe-modal-consent"
+   114	        __css={styles.subscribeModalPanel}
+   115	      >
+   116	        <form ref={formRef} onSubmit={handleFormSubmit} noValidate>
+   117	          {/* Title */}
+   118	          <chakra.h2 id="zimm-subscribe-modal-title" __css={styles.modalTitle}>
+   119	            Join Us
+   120	          </chakra.h2>
+   121	
+   122	          {/* First Name */}
+   123	          <chakra.div ref={firstFocusRef} __css={styles.modalField}>
+   124	            <ZimmTextInput label="First Name" name="firstName" />
+   125	          </chakra.div>
+   126	
+   127	          {/* Last Name */}
+   128	          <chakra.div __css={styles.modalFieldLast}>
+   129	            <ZimmTextInput label="Last Name" name="lastName" />
+   130	          </chakra.div>
+   131	
+   132	          {/* Privacy consent copy (HPC-037) */}
+   133	          <chakra.p id="zimm-subscribe-modal-consent" __css={styles.modalConsent}>
+   134	            {PRIVACY_CONSENT_COPY}{' '}
+   135	            {/* Same guard as the contact channels: privacyPolicyHref is a prop, so a caller
+   136	                can supply anything. Unsafe or absent renders the label as plain text rather
+   137	                than an anchor that goes nowhere. */}
+   138	            {isSafeHref(privacyPolicyHref) ? (
+   139	              <chakra.a href={privacyPolicyHref} __css={styles.modalConsentLink}>
+   140	                Privacy Policy
+   141	              </chakra.a>
+   142	            ) : (
+   143	              <chakra.span __css={styles.modalConsentLink}>Privacy Policy</chakra.span>
+   144	            )}
+   145	            .
+   146	          </chakra.p>
+   147	
+   148	          {/* Accessibility disclaimer (HPC-037) */}
+   149	          <chakra.p __css={styles.modalDisclaimer}>{ACCESSIBILITY_DISCLAIMER_COPY}</chakra.p>
+   150	
+   151	          {/* Actions */}
+   152	          <chakra.div __css={styles.modalActions}>
+   153	            <ZimmButton variant="secondary" size="medium" label="Cancel" type="button" onClick={onClose} />
+   154	            <ZimmButton variant="primary" size="medium" label="Continue" type="submit" />
+   155	          </chakra.div>
+   156	        </form>
+   157	      </chakra.div>
+   158	    </chakra.div>,
+   159	    document.body,
+   160	  );
+   161	};
+   162	
+   163	// ---------------------------------------------------------------------------
+   164	// Subscribe section
+   165	// ---------------------------------------------------------------------------
+   166	// 'unavailable' shown until HPC-036 (Omneo) lands; prevents false "You're on the list!" feedback.
+   167	// 'success'/'error' set only after a confirmed/failed Omneo response (post HPC-036).
+   168	type SubmitState = 'idle' | 'unavailable' | 'success' | 'error';
+   169	
+   170	// The HPC-036 sign-up payload: footer email (HPC-034) + modal names (HPC-035).
+   171	// Assembled across two steps, POSTed to Omneo → Emarsys when the integration lands.
+   172	type PendingSignup = { email: string; firstName: string; lastName: string };
+   173	
+   174	type SubscribeSectionProps = {
+   175	  heading: string;
+   176	  body: string;
+   177	  initialSubscribed?: boolean;
+   178	  privacyPolicyHref: string;
+   179	  enableNameCapture?: boolean;
+   180	};
+   181	
+   182	const SUBSCRIBE_SUCCESS_MESSAGE = "You're on the list! Be the first to know about new collections and new arrivals.";
+   183	const SUBSCRIBE_UNAVAILABLE_MESSAGE = 'Subscription is temporarily unavailable. Please try again later.';
+   184	
+   185	const SubscribeSection = ({
+   186	  heading,
+   187	  body,
+   188	  initialSubscribed = false,
+   189	  privacyPolicyHref,
+   190	  enableNameCapture = false,
+   191	}: SubscribeSectionProps) => {
+   192	  // Map the Storybook-only `initialSubscribed` flag to the success state.
+   193	  // Post HPC-036, 'success' will only be reached via a confirmed Omneo response.
+   194	  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+   195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+   196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+   197	  // captured here at step 1 or it is unrecoverable at step 2.
+   198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+   199	  const [modalOpen, setModalOpen] = useState(false);
+   200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+   201	
+   202	  const handleEmailSubmit = (email: string) => {
+   203	    pendingSignupRef.current.email = email;
+   204	    if (enableNameCapture) {
+   205	      setModalOpen(true);
+   206	      return;
+   207	    }
+   208	    // Descoped path, and the default. SFCC-55's AC scopes this section to "an email input field
+   209	    // and submit button as a placeholder component" and defers the Omneo sign-up to a separate
+   210	    // story. The name-capture modal is HPC-035/HPC-037 (both confirmed in .docs/prd/homepage.md
+   211	    // §6) but has no Figma node — all nine of its theme parts are undesigned, unlike the 27
+   212	    // Figma-referenced parts around it. So it does not ship enabled: submitting a valid email
+   213	    // goes straight to the placeholder message. Flip this prop on once Kiera supplies the design
+   214	    // and HPC-035 is scheduled; the modal and its coverage are already built and tested.
+   215	    setSubmitState('unavailable');
+   216	    pendingSignupRef.current = { email: '', firstName: '', lastName: '' };
+   217	  };
+   218	
+   219	  const handleModalSubmit = (firstName: string, lastName: string) => {
+   220	    pendingSignupRef.current = { ...pendingSignupRef.current, firstName, lastName };
+   221	    // PLACEHOLDER until HPC-036 (Omneo integration) lands: POST pendingSignupRef.current here.
+   222	    // On confirmed response → setSubmitState('success'). On failure → setSubmitState('error').
+   223	    // 'unavailable' is shown until the integration is live; never show false success.
+   224	    setModalOpen(false);
+   225	    setSubmitState('unavailable');
+   226	    // Nothing was sent, so nothing needs retaining — the record holds customer PII and there
+   227	    // is no request for it to outlive. When HPC-036 adds the POST above, this reset stays; it
+   228	    // just moves to after a confirmed response. React memory only, never storage, never logged.
+   229	    pendingSignupRef.current = { email: '', firstName: '', lastName: '' };
+   230	  };
+   231	
+   232	  return (
+   233	    <div>
+   234	      <chakra.p __css={styles.subscribeHeading}>{heading}</chakra.p>
+   235	      <chakra.p __css={styles.subscribeBody}>{body}</chakra.p>
+   236	      <chakra.div aria-live="polite" __css={styles.subscribeControl}>
+   237	        {submitState === 'idle' && (
+   238	          <ZimmInputAction
+   239	            label="Email"
+   240	            type="email"
+   241	            name="footer-email"
+   242	            icon="chevron-right"
+   243	            buttonLabel="Subscribe"
+   244	            inverse
+   245	            onSubmit={handleEmailSubmit}
+   246	          />
+   247	        )}
+   248	        {submitState === 'success' && <chakra.p __css={styles.subscribeSuccess}>{SUBSCRIBE_SUCCESS_MESSAGE}</chakra.p>}
+   249	        {(submitState === 'unavailable' || submitState === 'error') && (
+   250	          <chakra.p __css={styles.subscribeSuccess}>{SUBSCRIBE_UNAVAILABLE_MESSAGE}</chakra.p>
+   251	        )}
+   252	      </chakra.div>
+   253	
+   254	      {enableNameCapture && (
+   255	        <SubscribeModal
+   256	          isOpen={modalOpen}
+   257	          onClose={() => setModalOpen(false)}
+   258	          onSubmit={handleModalSubmit}
+   259	          privacyPolicyHref={privacyPolicyHref}
+   260	        />
+   261	      )}
+   262	    </div>
+   263	  );
+   264	};
+   265	
+   266	// ---------------------------------------------------------------------------
+   267	// Contact icon row — rendered below the link list in the Contact column
+   268	// ---------------------------------------------------------------------------
+   269	// Figma: Icon-list has pt-4px (alias/space/100) above it and 4px internal gap between icons.
+   270	// hrefs sourced from Contentful FooterConfigEntry (HPC-034). Until that integration lands,
+   271	// all hrefs are undefined and each icon renders as a non-interactive but labelled <span> —
+   272	// visible in the layout and announced by screen readers, but absent from the tab order.
+   273	// See the inline note on the fallback branch below for the full a11y reasoning.
+   274	// When a href arrives it switches to a live <a>, no other changes needed.
+   275	type ContactIconRowProps = {
+   276	  phoneHref?: string; // locale-aware tel: href from Contentful
+   277	  whatsAppHref?: string; // WhatsApp URL from Contentful
+   278	  emailHref?: string; // mailto: address from Contentful
+   279	};
+   280	
+   281	type ContactLink = { href?: string; label: string; icon: 'phone' | 'whatsapp' | 'email' };
+   282	
+   283	/**
+   284	 * True when following the href would navigate away from the storefront.
+   285	 *
+   286	 * Takes `string | undefined` rather than `string` so the caller does not need an `as string`
+   287	 * to satisfy it inside an isSafeHref branch. isSafeHref returns a plain boolean, which carries
+   288	 * no narrowing, and a `href is string` predicate would be unsound — an unsafe value like
+   289	 * `javascript:void(0)` is a string that returns false, so the else branch would narrow to
+   290	 * `undefined` incorrectly. An absent href never leaves the site, so `?? ''` is the honest answer.
+   291	 *
+   292	 * Derived from the scheme rather than keyed to a channel name: tel: and mailto: hand off to
+   293	 * the OS dialer or mail client and never navigate, so a target on them does nothing. An
+   294	 * http(s) channel — WhatsApp today — is a real cross-origin navigation and opens in a new
+   295	 * tab so a shopper mid-browse does not lose the site. Any future http(s) channel inherits
+   296	 * this without another edit here.
+   297	 */
+   298	const leavesTheSite = (href: string | undefined): boolean => /^https?:/i.test(href ?? '');
+   299	
+   300	/** WCAG 3.2.5 — a link that opens a new tab has to say so in its accessible name. */
+   301	const NEW_TAB_SUFFIX = ' — opens in a new tab';
+   302	
+   303	const ContactIconRow = ({ phoneHref, whatsAppHref, emailHref }: ContactIconRowProps) => {
+   304	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+   305	  const links: ContactLink[] = [
+   306	    { href: phoneHref, label: 'Call us', icon: 'phone' },
+   307	    { href: whatsAppHref, label: 'WhatsApp', icon: 'whatsapp' },
+   308	    { href: emailHref, label: 'Email us', icon: 'email' },
+   309	  ];
+   310	  return (
+   311	    <chakra.div __css={styles.contactRow}>
+   312	      {links.map(({ href, label, icon }) =>
+   313	        // isSafeHref, not a truthiness check: these arrive from Contentful, so a
+   314	        // javascript:/data:/protocol-relative value would otherwise be rendered
+   315	        // straight onto an anchor. Rejected values fall through to the span below,
+   316	        // which is already the correct treatment for "no usable destination".
+   317	        isSafeHref(href) ? (
+   318	          <chakra.a
+   319	            key={icon}
+   320	            href={href}
+   321	            // rel is explicit rather than relying on target="_blank" implying noopener:
+   322	            // that is browser default behaviour, not a guarantee, and noreferrer also
+   323	            // stops the storefront URL leaking to the third party.
+   324	            {...(leavesTheSite(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+   325	            aria-label={leavesTheSite(href) ? `${label}${NEW_TAB_SUFFIX}` : label}
+   326	            __css={styles.contactIconLink}
+   327	          >
+   328	            <ZimmIcon type={icon} size="md" aria-hidden={true} />
+   329	          </chakra.a>
+   330	        ) : (
+   331	          // Fallback for a channel with no usable destination — either the field is absent
+   332	          // for this storefront, or isSafeHref rejected the value. Both reach here, and both
+   333	          // want the same treatment. NON-INTERACTIVE but PERCEIVABLE:
+   334	          //   - <span>: no href, no tabIndex, so nothing promises an action that cannot be
+   335	          //     performed (avoids the WCAG 2.4.4 / 3.2.4 false affordance).
+   336	          //   - labelled, not aria-hidden: ZimmIcon emits role="img" + aria-label, so screen
+   337	          //     reader users learn the channel exists instead of getting silence (avoids the
+   338	          //     1.1.1 information loss the previous aria-hidden caused).
+   339	          // Not dead code: contact channels are optional per storefront, so a locale that
+   340	          // supplies only e.g. email still renders the other two icons this way.
+   341	          <chakra.span key={icon} __css={styles.contactIconLink}>
+   342	            <ZimmIcon type={icon} size="md" aria-label={label} />
+   343	          </chakra.span>
+   344	        ),
+   345	      )}
+   346	    </chakra.div>
+   347	  );
+   348	};
+   349	
+   350	// ---------------------------------------------------------------------------
+   351	// Bottom bar
+   352	// ---------------------------------------------------------------------------
+   353	type BottomBarProps = {
+   354	  copyrightYear: number;
+   355	  copyrightOwner: string;
+   356	  legalLinks: ReadonlyArray<{ label: string; href: string }>;
+   357	};
+   358	
+   359	const BottomBar = ({ copyrightYear, copyrightOwner, legalLinks }: BottomBarProps) => {
+   360	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+   361	  return (
+   362	    <chakra.div __css={styles.bottomBar}>
+   363	      <chakra.div __css={styles.bottomInner}>
+   364	        <chakra.button
+   365	          type="button"
+   366	          aria-label="Change locale"
+   367	          __css={styles.localeButton}
+   368	          // PLACEHOLDER: wire to locale selector once available.
+   369	          // Label and destination are hardcoded until sourced from active locale/site config.
+   370	          onClick={undefined}
+   371	        >
+   372	          {/* localeText = Figma "footer-item": py-8px on text only, icon sits outside.
+   373	                        Typography and colour are inherited from the parent localeButton theme. */}
+   374	          <chakra.span __css={styles.localeText}>{LOCALE_LABEL_PLACEHOLDER}</chakra.span>
+   375	          <ZimmIcon type="chevron-right" size="sm" aria-hidden={true} />
+   376	        </chakra.button>
+   377	
+   378	        <chakra.div __css={styles.bottomRight}>
+   379	          {/* Copyright is a direct flex child of bottomRight to match Figma's flat Legal row.
+   380	                        py-8px matches the legal link py used in ZimmNavItem style below. */}
+   381	          <chakra.span __css={styles.copyright}>
+   382	            Copyright &copy; {copyrightYear} {copyrightOwner}
+   383	          </chakra.span>
+   384	          <chakra.div __css={styles.legalGrid}>
+   385	            {legalLinks.map((link) => (
+   386	              <ZimmNavItem
+   387	                key={link.label}
+   388	                href={link.href}
+   389	                label={link.label}
+   390	                inverse
+   391	                // Figma Small/Default: py-[8px] — override base h-[24px] with height:auto + vertical padding
+   392	                // width is applied via legalGrid's '& > a' child selector in footer.ts
+   393	                sx={styles.legalLink}
+   394	              />
+   395	            ))}
+   396	          </chakra.div>
+   397	        </chakra.div>
+   398	      </chakra.div>
+   399	    </chakra.div>
+   400	  );
+   401	};
+   402	
+   403	// ---------------------------------------------------------------------------
+   404	// Footer
+   405	// ---------------------------------------------------------------------------
+   406	
+   407	/**
+   408	 * Zimmermann global footer — presentational. Receives its content as props and
+   409	 * fetches nothing, matching every other Contentful-backed component in the repo
+   410	 * (`DuplexSection`, `HeroBanner`, `ProductHero`, `VideoEmbed`).
+   411	 *
+   412	 * `data` is required by design: static content belongs in the story or in the
+   413	 * container below, never baked into the component that renders production UI.
+   414	 * Omneo email submit and Cookie Settings are separate stories (HPC-035, HPC-038).
+   415	 */
+   416	export const Footer = ({
+   417	  data,
+   418	  copyrightYear = new Date().getFullYear(),
+   419	  initialSubscribed = false,
+   420	  privacyPolicyHref = '#',
+   421	  onLogoClick = noop,
+   422	  enableNameCapture = false,
+   423	}: FooterProps) => {
+   424	  const {
+   425	    subscribeHeading,
+   426	    subscribeBody,
+   427	    navGroups,
+   428	    legalLinks = [],
+   429	    copyrightOwner,
+   430	    phoneHref,
+   431	    whatsAppHref,
+   432	    emailHref,
+   433	  } = data.fields;
+   434	
+   435	  const legalItems = legalLinks.map((e) => ({ label: e.fields.label, href: e.fields.href }));
+   436	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+   437	
+   438	  return (
+   439	    <chakra.footer role="contentinfo" __css={styles.container}>
+   440	      <chakra.div __css={styles.main}>
+   441	        <chakra.div __css={styles.contentRow}>
+   442	          <chakra.div __css={styles.subscribe}>
+   443	            <SubscribeSection
+   444	              heading={subscribeHeading ?? ''}
+   445	              body={subscribeBody ?? ''}
+   446	              initialSubscribed={initialSubscribed}
+   447	              privacyPolicyHref={privacyPolicyHref}
+   448	              enableNameCapture={enableNameCapture}
+   449	            />
+   450	          </chakra.div>
+   451	
+   452	          <chakra.div __css={styles.links}>
+   453	            <chakra.div __css={styles.linksInner}>
+   454	              {navGroups.map((group) => (
+   455	                <chakra.div key={group.sys.id} __css={styles.linkCol}>
+   456	                  {/* Figma section column: flex-col gap-16px — the column gap replaces
+   457	                                        marginBottom on the heading. Contact heading has 4px left offset. */}
+   458	                  <chakra.p
+   459	                    __css={{
+   460	                      ...styles.columnHeading,
+   461	                      ...(group.fields.showContactChannels ? { paddingLeft: '2xs' } : {}),
+   462	                    }}
+   463	                  >
+   464	                    {group.fields.heading}
+   465	                  </chakra.p>
+   466	                  {/* Figma Links div (2228:19423): flex-col, items-start, width 100%, gap 0.
+   467	                      DELIBERATE DEVIATION: Figma puts the Contact items at x=0 while indenting
+   468	                      only its heading 4px (wrapper 40000407:22289) — About and Help headings sit
+   469	                      flush at 0, so that asymmetry reads as a stray wrapper rather than intent.
+   470	                      We indent the Contact items to match their heading so the column aligns as a
+   471	                      unit. The icon row below needs no indent: its 24px box centres a 16px glyph,
+   472	                      so the glyph edge already lands at 4px. Pending Kiera. */}
+   473	                  <chakra.ul __css={styles.linkList}>
+   474	                    {group.fields.links.map((link) => (
+   475	                      <chakra.li
+   476	                        key={link.sys.id}
+   477	                        __css={{
+   478	                          ...styles.linkListItem,
+   479	                          ...(group.fields.showContactChannels ? { paddingLeft: '2xs' } : {}),
+   480	                        }}
+   481	                      >
+   482	                        {/* Each item h-[24px] items-center, no gap. ZimmNavItem's baseStyle supplies
+   483	                            minHeight 24px, whiteSpace normal (so the label below can wrap) and uppercase.
+   484	
+   485	                            width:min-content only for labels that carry a non-breaking space. A wrapped
+   486	                            element takes the AVAILABLE width, not its longest line, so without this the
+   487	                            Acknowledgement item filled linkCol's 160px cap while its longest line is
+   488	                            115px — 45px of dead space that pushed the Contact column right, against
+   489	                            Figma where every column hugs its content. min-content resolves to the widest
+   490	                            unbreakable run, which the NBSP makes exactly "ACKNOWLEDGEMENT" (115px).
+   491	                            It must stay gated: applied to a single-line label it collapses to the longest
+   492	                            word and wraps it ("Book an Appointment" 131px -> 76px, two lines). */}
+   493	                        <ZimmNavItem
+   494	                          href={link.fields.href}
+   495	                          label={link.fields.label}
+   496	                          inverse
+   497	                          sx={link.fields.label.includes(NBSP) ? { width: 'min-content' } : undefined}
+   498	                        />
+   499	                      </chakra.li>
+   500	                    ))}
+   501	                    {/* Contact channels are the LAST CHILD OF THE LIST, not a sibling of it —
+   502	                        Figma's Icon-list (40002081:14616) sits inside Links at y=72, directly
+   503	                        after "CONNECT WITH US" ends at y=72, so only its own 4px padding-top
+   504	                        separates them. Rendered outside the <ul> it instead picked up linkCol's
+   505	                        16px column gap and sat 20px low against Figma's 4px. */}
+   506	                    {group.fields.showContactChannels && (
+   507	                      <chakra.li __css={styles.linkListItem}>
+   508	                        <ContactIconRow phoneHref={phoneHref} whatsAppHref={whatsAppHref} emailHref={emailHref} />
+   509	                      </chakra.li>
+   510	                    )}
+   511	                  </chakra.ul>
+   512	                </chakra.div>
+   513	              ))}
+   514	            </chakra.div>
+   515	          </chakra.div>
+   516	        </chakra.div>
+   517	
+   518	        <chakra.div __css={styles.logo}>
+   519	          {/* Button + programmatic nav, matching the header's wordmark rather than an <a href>.
+   520	              The handler comes from FooterContainer — see the note there on why it uses
+   521	              buildUrl + history.push rather than useNavigation. styles.logoButton is a chrome
+   522	              reset only, so the logo keeps its own geometry. */}
+   523	          <chakra.button type="button" aria-label="Zimmermann home" onClick={onLogoClick} __css={styles.logoButton}>
+   524	            <ZimmLogo variant="inverse" />
+   525	          </chakra.button>
+   526	        </chakra.div>
+   527	      </chakra.div>
+   528	
+   529	      <BottomBar copyrightYear={copyrightYear} copyrightOwner={copyrightOwner ?? ''} legalLinks={legalItems} />
+   530	    </chakra.footer>
+   531	  );
+   532	};
+   533	
+   534	// ---------------------------------------------------------------------------
+   535	// Container — the default export
+   536	// ---------------------------------------------------------------------------
+   537	
+   538	/**
+   539	 * The component SFCC actually renders. Base `_app/index.jsx` resolves
+   540	 * `@salesforce/retail-react-app/app/components/footer` through the overrides system
+   541	 * and renders `<Footer />` with **no props**, so there is no upstream container to
+   542	 * own the data. This wrapper is that seam, and the only place static content lives.
+   543	 *
+   544	 * HPC-034: replace FOOTER_FIXTURE with the Contentful CDA fetch **here** — the
+   545	 * presentational Footer above does not change. Note that puts a fetch inside
+   546	 * `components/`, which components.md reserves for containers; if that matters,
+   547	 * HPC-034 should override `_app` instead (Tier 2 shared shell — coordinate first).
+   548	 */
+   549	const FooterContainer = (props: Omit<FooterProps, 'data'>) => {
+   550	  // buildUrl + history.push, not useNavigation. useNavigation special-cases the home path
+   551	  // (`path === '/' ? '/' : updatedHref`), so navigate('/') pushes a bare '/' and skips the
+   552	  // site/locale prefix — on a prefixed storefront that drops the shopper onto the default
+   553	  // site. This is the exact pair base _app's onLogoClick uses, so both wordmarks resolve
+   554	  // home the same way on every storefront.
+   555	  const { buildUrl } = useMultiSite();
+   556	  const history = useHistory();
+   557	  return <Footer data={FOOTER_FIXTURE} onLogoClick={() => history.push(buildUrl(HOME_HREF))} {...props} />;
+   558	};
+   559	
+   560	export default FooterContainer;

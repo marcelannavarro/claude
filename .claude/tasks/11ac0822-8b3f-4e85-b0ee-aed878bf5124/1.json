@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Pre-flight: confirm branch, clean tree, baselines",
+  "description": "Re-verify feature/SFCC-91_pdp-colour-swatches is current branch, tree clean, and the four cheap-gate baselines (tsc, test, lint, audit:tokens) still hold before Step 1.",
+  "activeForm": "Confirming pre-flight state",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

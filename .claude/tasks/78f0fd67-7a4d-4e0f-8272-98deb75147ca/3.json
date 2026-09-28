@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "MRT execution/concurrency model and blast-radius effect — resolved via official MRT docs",
+  "description": "Confirmed: Node/Express serverless auto-scaling; unhandled promise rejections break rendering (shared-process blast radius); 20s/16s hard execution timeout; one immutable bundle per environment (deploy/rollback granularity = per-app, not per-integration, under Option A).",
+  "activeForm": "Assessing MRT execution/concurrency model",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

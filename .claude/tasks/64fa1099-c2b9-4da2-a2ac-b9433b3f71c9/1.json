@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Scaffold Arche monorepo foundation",
+  "description": "git init at /Users/marcel.a.n.navarro/Dev/arche; pnpm workspace + turbo + root tsconfig/package.json + .gitignore + Vitest config base. Establish packages/, providers/, packs/, e2e/ structure.",
+  "activeForm": "Scaffolding monorepo foundation",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

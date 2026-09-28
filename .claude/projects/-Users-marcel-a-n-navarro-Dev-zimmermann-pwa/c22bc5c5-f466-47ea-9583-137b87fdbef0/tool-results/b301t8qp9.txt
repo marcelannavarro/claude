@@ -1,0 +1,300 @@
+Bundle size check	UNKNOWN STEP	﻿2026-09-14T04:53:07.8620670Z Current runner version: '2.337.0'
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8646573Z ##[group]Runner Image Provisioner
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8647897Z Hosted Compute Agent
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8648938Z Version: 20260828.587
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8649610Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8650505Z Build Date: 2026-08-28T16:44:25Z
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8651217Z Worker ID: {889d2564-c95d-43ee-8f52-e69d7c651f17}
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8652004Z Azure Region: northcentralus
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8652657Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8654217Z ##[group]Operating System
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8655019Z Ubuntu
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8655585Z 24.04.5
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8656193Z LTS
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8656745Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8657308Z ##[group]Runner Image
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8658101Z Image: ubuntu-24.04
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8659224Z Version: 20260907.300.1
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8660613Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8662209Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8663303Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8664539Z ##[group]GITHUB_TOKEN Permissions
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8666820Z Contents: write
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8667468Z Issues: write
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8668070Z Metadata: read
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8668995Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8671076Z Secret source: Actions
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8672170Z Cache mode: write
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.8673155Z Prepare workflow directory
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.9140190Z Prepare all required actions
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:07.9209908Z Getting action download info
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.1664446Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.2654340Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.4797712Z Complete job name: Bundle size check
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5547837Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5556870Z ##[group]Run actions/checkout@v4
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5557662Z with:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5558542Z   repository: ZimmermannAU/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5562577Z   token: ***
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5563042Z   ssh-strict: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5563507Z   ssh-user: git
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5563983Z   persist-credentials: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5564509Z   clean: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5564986Z   sparse-checkout-cone-mode: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5565527Z   fetch-depth: 1
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5565990Z   fetch-tags: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5566468Z   show-progress: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5566936Z   lfs: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5567423Z   submodules: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5567911Z   set-safe-directory: true
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5568593Z   allow-unsafe-pr-checkout: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.5569481Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6792874Z Syncing repository: ZimmermannAU/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6796537Z ##[group]Getting Git version info
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6799084Z Working directory is '/home/runner/work/zimmermann-pwa/zimmermann-pwa'
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6804373Z [command]/usr/bin/git version
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6863542Z git version 2.55.0
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6895774Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6904904Z Temporarily overriding HOME='/home/runner/work/_temp/c114a107-e46b-4abf-ba5c-ece357860014' before making global git config changes
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6915204Z Adding repository directory to the temporary git global config as a safe directory
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6918553Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/zimmermann-pwa/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6968679Z Deleting the contents of '/home/runner/work/zimmermann-pwa/zimmermann-pwa'
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6984121Z ##[group]Initializing the repository
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.6986330Z [command]/usr/bin/git init /home/runner/work/zimmermann-pwa/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7151801Z hint: Using 'master' as the name for the initial branch. This default branch name
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7154613Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7158862Z hint: to use in all of your new repositories, which will suppress this warning,
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7163478Z hint: call:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7164958Z hint:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7189536Z hint: 	git config --global init.defaultBranch <name>
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7192406Z hint:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7193816Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7196085Z hint: 'development'. The just-created branch can be renamed via this command:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7197868Z hint:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7199646Z hint: 	git branch -m <name>
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7200816Z hint:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7202501Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7204807Z Initialized empty Git repository in /home/runner/work/zimmermann-pwa/zimmermann-pwa/.git/
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7210176Z [command]/usr/bin/git remote add origin https://github.com/ZimmermannAU/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7258867Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7260176Z ##[group]Disabling automatic garbage collection
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7261279Z [command]/usr/bin/git config --local gc.auto 0
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7263757Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7264887Z ##[group]Setting up auth
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7317390Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7323990Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7828592Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.7869540Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8397472Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8401407Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8576535Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8619109Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8621513Z ##[group]Fetching the repository
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:08.8631933Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ece4fc5dba111f1634d756773cd72fc4e983c283:refs/remotes/origin/develop
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6220618Z From https://github.com/ZimmermannAU/zimmermann-pwa
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6239949Z  * [new ref]         ece4fc5dba111f1634d756773cd72fc4e983c283 -> origin/develop
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6264722Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6266793Z ##[group]Determining the checkout info
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6269375Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6271260Z [command]/usr/bin/git sparse-checkout disable
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6370765Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6438478Z ##[group]Checking out the ref
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.6440890Z [command]/usr/bin/git checkout --progress --force -B develop refs/remotes/origin/develop
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7301434Z Switched to a new branch 'develop'
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7309581Z branch 'develop' set up to track 'origin/develop'.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7342584Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7376212Z [command]/usr/bin/git log -1 --format=%H
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7405860Z ece4fc5dba111f1634d756773cd72fc4e983c283
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7809716Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7813060Z ##[group]Run actions/setup-node@v4
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7813984Z with:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7814779Z   node-version: 24
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7815610Z   cache: npm
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7816417Z   always-auth: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7817265Z   check-latest: false
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7822048Z   token: ***
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.7822886Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.9434983Z Found in cache @ /opt/hostedtoolcache/node/24.20.0/x64
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.9438406Z (node:1991) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.9442780Z ##[group]Environment details
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:09.9449816Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.4870500Z node: v24.20.0
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.4871403Z npm: 11.19.0
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.4872100Z yarn: 1.22.22
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.4888959Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.4915868Z [command]/opt/hostedtoolcache/node/24.20.0/x64/bin/npm config get cache
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.6074042Z /home/runner/.npm
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.7367264Z Cache hit for: node-cache-Linux-x64-npm-940e85fea712e3feec55ae9921758fee4d74d09dc27b7fb4a6a1f05797d9adf3
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:10.7496914Z (node:1991) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:11.8625221Z Received 121634816 of 202824739 (60.0%), 115.3 MBs/sec
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:12.3534823Z Received 202824739 of 202824739 (100.0%), 128.6 MBs/sec
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:12.3544970Z Cache Size: ~193 MB (202824739 B)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:12.3660361Z [command]/usr/bin/tar -xf /home/runner/work/_temp/8dec729e-890d-437c-aa63-994a2ae02bb5/cache.tzst -P -C /home/runner/work/zimmermann-pwa/zimmermann-pwa --use-compress-program unzstd
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.8288062Z Cache restored successfully
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.8420202Z Cache restored from key: node-cache-Linux-x64-npm-940e85fea712e3feec55ae9921758fee4d74d09dc27b7fb4a6a1f05797d9adf3
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.8657506Z ##[group]Run npm install --include=dev
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.8657921Z ^[[36;1mnpm install --include=dev^[[0m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.9835318Z shell: /usr/bin/bash -e {0}
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:13.9835638Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.2501853Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.4060108Z npm warn deprecated source-map-url@0.4.1: See https://github.com/lydell/source-map-url#deprecated
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.6707463Z npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.7522224Z npm warn deprecated urix@0.1.0: Please see https://github.com/lydell/urix#deprecated
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.7668035Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.8049726Z npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:27.8769626Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.1495953Z npm warn deprecated resolve-url@0.2.1: https://github.com/lydell/resolve-url#deprecated
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.1929661Z npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.2063739Z npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.3896430Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.4783722Z npm warn deprecated whatwg-encoding@1.0.5: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.4916968Z npm warn deprecated jest-process-manager@0.4.0: ⚠️ The 'jest-process-manager' package is deprecated. Please migrate to Playwright's built-in test runner (@playwright/test) which now includes full Jest-style features and parallel testing. See https://playwright.dev/docs/intro for details.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.5420068Z npm warn deprecated whatwg-encoding@2.0.0: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.7281235Z npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.8630188Z npm warn deprecated source-map-resolve@0.5.3: See https://github.com/lydell/source-map-resolve#deprecated
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:28.9780095Z npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:29.5162596Z npm warn deprecated domexception@4.0.0: Use your platform's native DOMException instead
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:29.7303023Z npm warn deprecated intl-messageformat-parser@1.8.1: We've written a new parser that's 6x faster and is backwards compatible. Please use @formatjs/icu-messageformat-parser
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:32.1597069Z npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:32.2514273Z npm warn deprecated expect-playwright@0.8.0: ⚠️ The 'expect-playwright' package is deprecated. The Playwright core assertions (via @playwright/test) now cover the same functionality. Please migrate to built-in expect. See https://playwright.dev/docs/test-assertions for migration.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.3687075Z npm warn deprecated uuid@9.0.1: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.5681543Z npm warn deprecated glob@9.3.5: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.5690871Z npm warn deprecated glob@9.3.5: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.6068818Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.6095559Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:34.6139037Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:35.3422895Z npm warn deprecated uuid@10.0.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:41.5248599Z npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:48.8366906Z npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.7759532Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.7760433Z > zimmermann@0.0.1 postinstall
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.7779607Z > npm run compile-translations && npm run compile-translations:pseudo && npm run generate:registry
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.7788587Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.9134348Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.9135162Z > zimmermann@0.0.1 compile-translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.9136681Z > node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-folder.js translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.9137734Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:58.9441350Z Compiling translations into the folder: overrides/app/static/translations/compiled
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:59.5554299Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:59.5555269Z > zimmermann@0.0.1 compile-translations:pseudo
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:59.5557104Z > node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-pseudo.js translations/en-US.json
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:59.5558570Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:53:59.5865667Z Compiling pseudo translation into the file: overrides/app/static/translations/compiled/en-XA.json
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:00.0040815Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:00.0041857Z > zimmermann@0.0.1 generate:registry
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:00.0043037Z > node scripts/generateRegistry.mjs
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:00.0043712Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:01.6219701Z Generating Claude Code registry...
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.6275095Z   components.md  — 123 entries (Override: 7, Custom: 50, Base: 66)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.8452786Z   hooks.md       — 74 entries (Override: 1, Custom: 17, Base: 56)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.8675945Z   utils.md       — 35 entries (Override: 0, Custom: 6, Base: 29)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9022513Z   pages.md       — 20 entries (Override: 5, Custom: 5, Base: 10)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9039901Z   routes.md      — 20 entries (Inherited: 10, Override: 10)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9040977Z Done.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9167746Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9179117Z > zimmermann@0.0.1 prepare
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9179715Z > husky
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:02.9180123Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.3141437Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.3142527Z added 2816 packages, and audited 2817 packages in 49s
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.3143425Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.3144024Z 391 packages are looking for funding
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.3144903Z   run `npm fund` for details
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5304211Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5305466Z 93 vulnerabilities (12 low, 48 moderate, 32 high, 1 critical)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5306282Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5306929Z To address issues that do not require attention, run:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5307842Z   npm audit fix
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5308749Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5309516Z To address all issues possible (including breaking changes), run:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5311652Z   npm audit fix --force
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5312310Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5329030Z Some issues need review, and may require choosing
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5334922Z a different dependency.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5335586Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5336038Z Run `npm audit` for details.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5340491Z npm warn install-scripts 11 packages have install scripts not yet covered by allowScripts:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5342415Z npm warn install-scripts   core-js@2.6.12 (postinstall: node -e "try{require('./postinstall')}catch(e){}")
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5359679Z npm warn install-scripts   @salesforce/retail-react-app@10.0.0 (postinstall: npm run compile-translations && npm run compile-translations:pseudo)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5361850Z npm warn install-scripts   @swc/core@1.15.43 (postinstall: node postinstall.js)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5369910Z npm warn install-scripts   core-js@3.49.0 (postinstall: node -e "try{require('./postinstall')}catch(e){}")
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5375568Z npm warn install-scripts   core-js-pure@3.49.0 (postinstall: node -e "try{require('./postinstall')}catch(e){}")
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5377434Z npm warn install-scripts   es5-ext@0.10.64 (postinstall:  node -e "try{require('./_postinstall')}catch(e){}" || exit 0)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5379204Z npm warn install-scripts   esbuild@0.27.7 (postinstall: node install.js)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5380517Z npm warn install-scripts   full-icu@1.5.0 (postinstall: node postinstall.js)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5382106Z npm warn install-scripts   msw@1.3.5 (postinstall: node -e "try{require('./config/scripts/postinstall')}catch(e){}")
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5383633Z npm warn install-scripts   spawn-sync@1.0.15 (postinstall: node postinstall)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5385007Z npm warn install-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5386027Z npm warn install-scripts
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.5387326Z npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.7056871Z ##[group]Run npm run test:max-file-size
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.7057418Z ^[[36;1mnpm run test:max-file-size^[[0m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.7095673Z shell: /usr/bin/bash -e {0}
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.7095951Z ##[endgroup]
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.8170117Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.8171020Z > zimmermann@0.0.1 test:max-file-size
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.8172183Z > npm run build && bundlesize
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.8172805Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.9358855Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.9380383Z > zimmermann@0.0.1 build
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.9390510Z > npm run build-translations && pwa-kit-dev build
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:03.9391144Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.0508951Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.0509917Z > zimmermann@0.0.1 build-translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.0511418Z > npm run extract-default-translations && npm run compile-translations && npm run compile-translations:pseudo
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.0512522Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.1580763Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.1581509Z > zimmermann@0.0.1 extract-default-translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.1583272Z > node ./node_modules/@salesforce/retail-react-app/scripts/translations/extract-default-messages.js en-US en-GB
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:04.1584394Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.2978965Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.2980046Z > zimmermann@0.0.1 compile-translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.2981556Z > node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-folder.js translations
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.2982533Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.3313528Z Compiling translations into the folder: overrides/app/static/translations/compiled
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.9245841Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.9246831Z > zimmermann@0.0.1 compile-translations:pseudo
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.9248927Z > node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-pseudo.js translations/en-US.json
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.9250040Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:17.9557869Z Compiling pseudo translation into the file: overrides/app/static/translations/compiled/en-XA.json
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:19.5078957Z Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:19.5079954Z   npx update-browserslist-db@latest
+Bundle size check	UNKNOWN STEP	2026-09-14T04:54:19.5081322Z   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9130214Z client:
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9131973Z   ^[[1m^[[33mWARNING^[[39m^[[22m in ^[[1m./node_modules/@salesforce/retail-react-app/app/pages/home/data.js^[[39m^[[22m ^[[1m^[[32m27:41-51^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9144643Z   ^[[1mexport 'GithubLogo' (imported as 'GithubLogo') was ^[[1m^[[31mnot found^[[39m^[[22m^[[1m in '@salesforce/retail-react-app/app/components/icons' (possible exports: ^[[1m^[[32mAccountIcon, AlertIcon, AmexIcon, AppleIcon, ArrowDownIcon, ArrowLinkIcon, ArrowUpIcon, BagIcon, BagSelectedIcon, BagSolidIcon, BasketIcon, BrandLogo, CVVIcon, CalendarIcon, CarouselIcon, CarouselSelectedIcon, ChatIcon, CheckCircleIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon, CreditCardIcon, DashboardIcon, DeleteIcon, DiscoverIcon, EditIcon, EmailIcon, ExternalLinkIcon, FavouritesIcon, FavouritesSolidIcon, FileIcon, FilterIcon, FlagCAIcon, FlagCNIcon, FlagFRIcon, FlagGBIcon, FlagITIcon, FlagJPIcon, FlagUSIcon, GoogleIcon, HamburgerIcon, HeartIcon, HeartSolidIcon, InfoIcon, InfoSelectedIcon, LikeIcon, LocationIcon, LockIcon, MastercardIcon, MenuIcon, MinusIcon, MuteIcon, PasswordHideIcon, PasswordShowIcon, PauseIcon, PaypalIcon, PhoneIcon, PlayIcon, PlugIcon, PlusIcon, ProfileIcon, ReceiptIcon, SearchIcon, ShareIcon, ShareTwoIcon, SignoutIcon, SocialFacebookIcon, SocialInstagramIcon, SocialPinterestIcon, SocialTwitterIcon, SocialYoutubeIcon, SparkleIcon, StoreIcon, UserIcon, VisaIcon, VisibilityIcon, VisibilityOffIcon, WhatsAppIcon, WishlistIcon, WishlistSolidIcon, ZimmAppleSignInIcon, ZimmGoogleSignInIcon^[[39m^[[22m^[[1m)^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9157230Z    @ ./node_modules/@salesforce/retail-react-app/app/pages/home/index.jsx 24:0-90 184:5-21 288:5-17
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9158382Z    @ ./node_modules/@salesforce/retail-react-app/app/routes.jsx
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9161970Z    @ ./overrides/app/routes.tsx 15:0-76 435:6-13
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9162910Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/universal/components/route-component/index.js
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9163930Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/browser/main.js 14:22-72
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9164679Z    @ ./overrides/app/main.jsx 7:0-94 11:22-27 11:31-52
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9165020Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9165964Z   ^[[1m^[[33mWARNING^[[39m^[[22m in ^[[1m./node_modules/@salesforce/retail-react-app/app/pages/home/data.js^[[39m^[[22m ^[[1m^[[32m57:41-50^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9177550Z   ^[[1mexport 'FigmaLogo' (imported as 'FigmaLogo') was ^[[1m^[[31mnot found^[[39m^[[22m^[[1m in '@salesforce/retail-react-app/app/components/icons' (possible exports: ^[[1m^[[32mAccountIcon, AlertIcon, AmexIcon, AppleIcon, ArrowDownIcon, ArrowLinkIcon, ArrowUpIcon, BagIcon, BagSelectedIcon, BagSolidIcon, BasketIcon, BrandLogo, CVVIcon, CalendarIcon, CarouselIcon, CarouselSelectedIcon, ChatIcon, CheckCircleIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon, CreditCardIcon, DashboardIcon, DeleteIcon, DiscoverIcon, EditIcon, EmailIcon, ExternalLinkIcon, FavouritesIcon, FavouritesSolidIcon, FileIcon, FilterIcon, FlagCAIcon, FlagCNIcon, FlagFRIcon, FlagGBIcon, FlagITIcon, FlagJPIcon, FlagUSIcon, GoogleIcon, HamburgerIcon, HeartIcon, HeartSolidIcon, InfoIcon, InfoSelectedIcon, LikeIcon, LocationIcon, LockIcon, MastercardIcon, MenuIcon, MinusIcon, MuteIcon, PasswordHideIcon, PasswordShowIcon, PauseIcon, PaypalIcon, PhoneIcon, PlayIcon, PlugIcon, PlusIcon, ProfileIcon, ReceiptIcon, SearchIcon, ShareIcon, ShareTwoIcon, SignoutIcon, SocialFacebookIcon, SocialInstagramIcon, SocialPinterestIcon, SocialTwitterIcon, SocialYoutubeIcon, SparkleIcon, StoreIcon, UserIcon, VisaIcon, VisibilityIcon, VisibilityOffIcon, WhatsAppIcon, WishlistIcon, WishlistSolidIcon, ZimmAppleSignInIcon, ZimmGoogleSignInIcon^[[39m^[[22m^[[1m)^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9196669Z    @ ./node_modules/@salesforce/retail-react-app/app/pages/home/index.jsx 24:0-90 184:5-21 288:5-17
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9197621Z    @ ./node_modules/@salesforce/retail-react-app/app/routes.jsx
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9199266Z    @ ./overrides/app/routes.tsx 15:0-76 435:6-13
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9200181Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/universal/components/route-component/index.js
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9201220Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/browser/main.js 14:22-72
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9201967Z    @ ./overrides/app/main.jsx 7:0-94 11:22-27 11:31-52
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9202317Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9203128Z   ^[[1m^[[33mWARNING^[[39m^[[22m in ^[[1m./node_modules/@contentful/experiences-components-react/dist/index.js^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9204520Z   ^[[1mModule Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9208040Z   ^[[1m^[[31mFailed^[[39m^[[22m^[[1m to parse source map from '/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx' file: ^[[1m^[[31mError^[[39m^[[22m^[[1m: ENOENT: no such file or directory, open '/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx'^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9213746Z   ^[[1m^[[31mError^[[39m^[[22m: ^[[1m^[[31mFailed^[[39m^[[22m to parse source map from '/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx' file: ^[[1m^[[31mError^[[39m^[[22m: ENOENT: no such file or directory, open '/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx'
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9216983Z       at fetchFromFilesystem (/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/source-map-loader/dist/utils.js:115:11)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9218983Z       at async fetchFromURL (/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/source-map-loader/dist/utils.js:208:9)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9220620Z       at async /home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/source-map-loader/dist/index.js:91:11
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9221563Z       at async Promise.all (index 23)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9222547Z       at async Object.loader (/home/runner/work/zimmermann-pwa/zimmermann-pwa/node_modules/source-map-loader/dist/index.js:73:27)
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9224872Z    @ ./node_modules/@contentful/experiences-sdk-react/dist/core/componentRegistry.js 1:0-71 55:19-49 66:19-49 77:19-37 81:19-42 91:19-36 92:20-56 98:19-37 99:20-57 105:19-35 106:20-55 110:19-38 111:20-58 117:19-34 118:20-54 124:19-47 131:19-38 132:20-49 2:0-160 56:20-39 67:20-37 78:20-37 82:20-42 125:20-37
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9226622Z    @ ./node_modules/@contentful/experiences-sdk-react/dist/index.js 9:0-63 9:0-63
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9227358Z    @ ./overrides/app/pages/experience/index.tsx
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9227979Z    @ ./overrides/app/routes.tsx 134:13-54 116:21-91
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9229258Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/universal/components/route-component/index.js
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9230288Z    @ ./node_modules/@salesforce/pwa-kit-react-sdk/ssr/browser/main.js 14:22-72
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9230988Z    @ ./overrides/app/main.jsx 7:0-94 11:22-27 11:31-52
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9231312Z 
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9232067Z   ^[[1m^[[33mWARNING^[[39m^[[22m in ^[[1m./node_modules/@contentful/experiences-components-react/dist/index.js^[[39m^[[22m
+Bundle size check	UNKNOWN STEP	2026-09-14T04:56:24.9233141Z   ^[[1mModule Warning (from ./node_modules/source-map-loader/dist/cjs.js):

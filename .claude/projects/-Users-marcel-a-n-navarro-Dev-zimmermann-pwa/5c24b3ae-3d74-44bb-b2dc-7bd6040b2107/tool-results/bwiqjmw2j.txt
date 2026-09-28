@@ -1,0 +1,729 @@
+=====FILE: overrides/app/components/footer/index.tsx
+     1	import React, { useEffect, useState } from 'react';
+     2	import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+     3	import { ZimmLogo } from 'app/components/ui-kits/atoms/zimmLogo';
+     4	import { ZimmSubscribeSection } from 'app/components/ui-kits/organisms/zimmSubscribeSection';
+     5	import { noop } from '@salesforce/retail-react-app/app/utils/utils';
+     6	import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site';
+     7	import { useHistory } from 'react-router-dom';
+     8	import { HOME_HREF } from '@salesforce/retail-react-app/app/constants';
+     9	import { useContentfulClient } from 'app/hooks/useContentfulClient';
+    10	import { filterByRegion, pickMostSpecificByRegion } from 'app/utils/resolveByRegion';
+    11	import type { FooterConfigEntry, FooterNavGroupEntry, LinkEntry } from 'app/types/contentful';
+    12	import { FooterNavColumn } from './footerNavColumn';
+    13	import { BottomBar } from './bottomBar';
+    14	
+    15	const ZIMM_FOOTER_RECIPE = 'ZimmFooter';
+    16	
+    17	// Contentful resolves nested references `include` levels deep, and the footer model is exactly
+    18	// three: footerConfig → navGroups (1) → links (2) → regions (3). Depth 3 is the minimum that
+    19	// populates `entry.fields.regions[].fields.siteId`, which isEligible reads.
+    20	//
+    21	// Getting this wrong fails hard, not gracefully. At 2, a region-scoped link's `regions` array
+    22	// arrives as unresolved link stubs with no `fields` (the SDK keeps unresolvable links by default
+    23	// — `withoutUnresolvableLinks` is not passed), so `region.fields.siteId` throws, the `.catch`
+    24	// below swallows it, footerData stays null and the *entire* footer renders nothing — columns,
+    25	// logo band and bottom bar included. Not a house default either: useContentful.ts hardcodes 2
+    26	// for asset resolution, per its own comments, which is a different concern.
+    27	const FOOTER_INCLUDE_DEPTH = 3;
+    28	
+    29	// ---------------------------------------------------------------------------
+    30	// Types
+    31	// ---------------------------------------------------------------------------
+    32	type FooterProps = {
+    33	  /** Contentful FooterConfigEntry. Pass FOOTER_FIXTURE from index.stories.content.ts in stories/tests. */
+    34	  data: FooterConfigEntry;
+    35	  copyrightYear?: number;
+    36	  /** Forces SubscribeSection into its post-submit state. For Storybook/tests only. */
+    37	  initialSubscribed?: boolean;
+    38	  /**
+    39	   * Opt in to the HPC-035 first/last-name capture modal. Defaults to false: SFCC-55 ships the
+    40	   * Stay in Touch section as an input plus submit button only, and the modal has no design yet.
+    41	   */
+    42	  enableNameCapture?: boolean;
+    43	  /** Click handler for the wordmark. Mirrors the header's onLogoClick prop, defaulting to
+    44	   *  noop so the presentational Footer never navigates on its own. */
+    45	  onLogoClick?: () => void;
+    46	  /** href for the Privacy Policy link inside the subscribe modal (HPC-037). Locale-aware at runtime. */
+    47	  privacyPolicyHref?: string;
+    48	};
+    49	
+    50	// ---------------------------------------------------------------------------
+    51	// Footer
+    52	// ---------------------------------------------------------------------------
+    53	
+    54	/**
+    55	 * Zimmermann global footer — presentational. Receives its content as props and fetches
+    56	 * nothing, matching every other Contentful-backed component in the repo (`DuplexSection`,
+    57	 * `HeroBanner`, `ProductHero`, `VideoEmbed`).
+    58	 *
+    59	 * Composed from independently-exported organisms/molecules (ui-kits/organisms/
+    60	 * zimmSubscribeSection, ui-kits/molecules/zimmContactIconRow via FooterNavColumn) rather than
+    61	 * defining them inline — see .claude/rules/overrideStyling.md for the reasoning. This file owns
+    62	 * only the footer's own shell layout: content row, nav-column wrapper, logo band, bottom bar.
+    63	 *
+    64	 * `data` is required by design: static content belongs in the story or in the container below,
+    65	 * never baked into the component that renders production UI. Omneo email submit and Cookie
+    66	 * Settings are separate stories (HPC-035, HPC-038).
+    67	 */
+    68	export const Footer = ({
+    69	  data,
+    70	  copyrightYear = new Date().getFullYear(),
+    71	  initialSubscribed = false,
+    72	  privacyPolicyHref = '#',
+    73	  onLogoClick = noop,
+    74	  enableNameCapture = false,
+    75	}: FooterProps) => {
+    76	  const {
+    77	    subscribeHeading,
+    78	    subscribeBody,
+    79	    navGroups,
+    80	    legalLinks = [],
+    81	    copyrightOwner,
+    82	    phoneHref,
+    83	    whatsAppHref,
+    84	    emailHref,
+    85	  } = data.fields;
+    86	
+    87	  const legalItems = legalLinks.map((e) => ({ label: e.fields.label, href: e.fields.href }));
+    88	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+    89	
+    90	  return (
+    91	    <chakra.footer role="contentinfo" __css={styles.container}>
+    92	      <chakra.div __css={styles.main}>
+    93	        <chakra.div __css={styles.contentRow}>
+    94	          <chakra.div __css={styles.subscribe}>
+    95	            <ZimmSubscribeSection
+    96	              heading={subscribeHeading ?? ''}
+    97	              body={subscribeBody ?? ''}
+    98	              initialSubscribed={initialSubscribed}
+    99	              privacyPolicyHref={privacyPolicyHref}
+   100	              enableNameCapture={enableNameCapture}
+   101	            />
+   102	          </chakra.div>
+   103	
+   104	          <chakra.div __css={styles.links}>
+   105	            <chakra.div __css={styles.linksInner}>
+   106	              {navGroups.map((group) => (
+   107	                <FooterNavColumn
+   108	                  key={group.sys.id}
+   109	                  group={group}
+   110	                  phoneHref={phoneHref}
+   111	                  whatsAppHref={whatsAppHref}
+   112	                  emailHref={emailHref}
+   113	                />
+   114	              ))}
+   115	            </chakra.div>
+   116	          </chakra.div>
+   117	        </chakra.div>
+   118	
+   119	        <chakra.div __css={styles.logo}>
+   120	          {/* Button + programmatic nav, matching the header's wordmark rather than an <a href>.
+   121	              The handler comes from FooterContainer — see the note there on why it uses
+   122	              buildUrl + history.push rather than useNavigation. styles.logoButton is a chrome
+   123	              reset only, so the logo keeps its own geometry. */}
+   124	          <chakra.button type="button" aria-label="Zimmermann home" onClick={onLogoClick} __css={styles.logoButton}>
+   125	            <ZimmLogo variant="inverse" />
+   126	          </chakra.button>
+   127	        </chakra.div>
+   128	      </chakra.div>
+   129	
+   130	      <BottomBar copyrightYear={copyrightYear} copyrightOwner={copyrightOwner ?? ''} legalLinks={legalItems} />
+   131	    </chakra.footer>
+   132	  );
+   133	};
+   134	
+   135	// ---------------------------------------------------------------------------
+   136	// Container — the default export
+   137	// ---------------------------------------------------------------------------
+   138	
+   139	/**
+   140	 * Contentful's `include`-resolved response nests navGroups/links/regions but applies no
+   141	 * region scoping of its own — narrow each region-aware array down to the current
+   142	 * storefront via the shared resolveByRegion utilities.
+   143	 */
+   144	export const scopeToRegion = (config: FooterConfigEntry, siteId: string): FooterConfigEntry => {
+   145	  const navGroups: FooterNavGroupEntry[] = config.fields.navGroups.map(
+   146	    (group): FooterNavGroupEntry => ({
+   147	      ...group,
+   148	      fields: { ...group.fields, links: filterByRegion<LinkEntry>(group.fields.links, siteId) },
+   149	    }),
+   150	  );
+   151	  const legalLinks: LinkEntry[] | undefined = config.fields.legalLinks
+   152	    ? filterByRegion<LinkEntry>(config.fields.legalLinks, siteId)
+   153	    : undefined;
+   154	
+   155	  return { ...config, fields: { ...config.fields, navGroups, legalLinks } };
+   156	};
+   157	
+   158	/**
+   159	 * The component SFCC actually renders. Base `_app/index.jsx` resolves
+   160	 * `@salesforce/retail-react-app/app/components/footer` through the overrides system and renders
+   161	 * `<Footer />` with **no props**, so there is no upstream container to own the data. This
+   162	 * wrapper is that seam, and the only place the Contentful fetch lives.
+   163	 *
+   164	 * HPC-034: fetches `footerConfig` entries via the Delivery API, then picks the entry scoped
+   165	 * to the current storefront's region (falls back to the global/unscoped entry once one
+   166	 * exists). Renders nothing while loading, on fetch failure, or when no entry resolves for
+   167	 * this region — no fallback to placeholder content once wired to live data, so a Contentful
+   168	 * outage doesn't silently ship stale placeholder copy to real shoppers. Note this puts a
+   169	 * fetch inside `components/`, which components.md reserves for containers; if that matters,
+   170	 * this should move into an `_app` override instead (Tier 2 shared shell — coordinate first).
+   171	 */
+   172	const FooterContainer = (props: Omit<FooterProps, 'data'>) => {
+   173	  // buildUrl + history.push, not useNavigation. useNavigation special-cases the home path
+   174	  // (`path === '/' ? '/' : updatedHref`), so navigate('/') pushes a bare '/' and skips the
+   175	  // site/locale prefix — on a prefixed storefront that drops the shopper onto the default
+   176	  // site. This is the exact pair base _app's onLogoClick uses, so both wordmarks resolve home
+   177	  // the same way on every storefront.
+   178	  //
+   179	  // useMultiSite ships untyped from the base SFCC package. site.id here is the resolved
+   180	  // SFCC site ID — confirmed against useCountryConfig.ts's identical client-side pattern
+   181	  // (`c.sfccSiteId === site?.id`), the existing precedent for this exact lookup.
+   182	  const { site, buildUrl } = useMultiSite() as {
+   183	    site: { id: string };
+   184	    buildUrl: (path: string, siteRef?: string, localeRef?: string) => string;
+   185	  };
+   186	  const history = useHistory();
+   187	  const { client } = useContentfulClient();
+   188	  const [footerData, setFooterData] = useState<FooterConfigEntry | null>(null);
+   189	
+   190	  useEffect(() => {
+   191	    if (!client) return;
+   192	    let cancelled = false;
+   193	
+   194	    client
+   195	      .getEntries({ content_type: 'footerConfig', include: FOOTER_INCLUDE_DEPTH })
+   196	      .then((response) => {
+   197	        if (cancelled) return;
+   198	        // The contentful SDK client is loosely typed (see useContentfulClient.ts) —
+   199	        // FooterConfigEntry mirrors the exact nested-resolved shape `include: 3` produces
+   200	        // for this content model.
+   201	        const configs = response.items as unknown as FooterConfigEntry[];
+   202	        const resolved = pickMostSpecificByRegion<FooterConfigEntry>(configs, site.id);
+   203	        setFooterData(resolved ? scopeToRegion(resolved, site.id) : null);
+   204	      })
+   205	      .catch(() => {
+   206	        if (!cancelled) setFooterData(null);
+   207	      });
+   208	
+   209	    return () => {
+   210	      cancelled = true;
+   211	    };
+   212	  }, [client, site.id]);
+   213	
+   214	  if (!footerData) return null;
+   215	
+   216	  return <Footer data={footerData} onLogoClick={() => history.push(buildUrl(HOME_HREF))} {...props} />;
+   217	};
+   218	
+   219	export default FooterContainer;
+=====FILE: overrides/app/components/footer/footer.css.ts
+     1	import { BP } from 'app/theme/components/footerShared';
+     2	
+     3	// Provisional spacing/size values — kept here as named references until the UI designer
+     4	// confirms the token in foundation/spacing.ts or foundation/sizes.ts.
+     5	//
+     6	// SPACE_SECTION is NOT a missing token: --zimm-scale-1200 (48px) already carries the same
+     7	// value. Kept as rem here because that foundation alias is px, which does not scale under
+     8	// browser zoom (WCAG 1.4.4 — see .claude/rules/overrideStyling.md Units). Collapse onto the var
+     9	// once the foundation alias moves to rem.
+    10	const SPACE_SECTION = '3rem'; // alias/space/section (48px)
+    11	const SIZE_COL_SUB = '20rem'; // alias/size/footer/col-width-subscribe (320px)
+    12	const SIZE_COL_MAP = '37.5rem'; // alias/size/footer/col-width-sitemap (600px)
+    13	const COLOUR_HALF_INV = 'rgba(255, 255, 255, 0.5)'; // alias/color/opacity-50-inverse
+    14	
+    15	// footer.css.ts owns only the footer's own shell — root container, main layout, the
+    16	// subscribe/links content row, and the logo band. Subscribe content, the subscribe modal, nav
+    17	// columns, contact icons, and the bottom bar each own their own recipe now — see
+    18	// zimmSubscribeSection.css.ts, zimmSubscribeModal.css.ts, footerNavColumn.css.ts,
+    19	// zimmContactIconRow.css.ts, bottomBar.css.ts.
+    20	export const ZimmFooter = {
+    21	  parts: ['container', 'main', 'contentRow', 'subscribe', 'links', 'linksInner', 'logo', 'logoButton'],
+    22	  baseStyle: {
+    23	    // ─── Root container ────────────────────────────────────────────────
+    24	    container: {
+    25	      backgroundColor: 'var(--zimm-color-bg-05)',
+    26	      width: '100%',
+    27	    },
+    28	
+    29	    // ─── Main layout ───────────────────────────────────────────────────
+    30	    // Figma: Content area and Logo area are siblings inside the dark footer.
+    31	    main: {
+    32	      display: 'flex',
+    33	      flexDirection: 'column',
+    34	    },
+    35	
+    36	    // Figma mobile Content (node 40000407-22493): px-[32px] py-[48px]
+    37	    // Figma tablet/desktop Content (node 40000407-23484): pt-[64px] pb-[48px] px-[40px]
+    38	    contentRow: {
+    39	      display: 'flex',
+    40	      flexDirection: 'column',
+    41	      gap: SPACE_SECTION,
+    42	      padding: `${SPACE_SECTION} var(--zimm-scale-2xl)`,
+    43	      [`@media (min-width: ${BP.tablet})`]: {
+    44	        flexDirection: 'row',
+    45	        justifyContent: 'space-between',
+    46	        gap: 0,
+    47	        padding: `var(--zimm-scale-4xl) var(--zimm-scale-3xl) ${SPACE_SECTION}`,
+    48	      },
+    49	    },
+    50	
+    51	    // Subscribe column — capped at 320px at every breakpoint
+    52	    subscribe: {
+    53	      maxWidth: SIZE_COL_SUB,
+    54	      [`@media (min-width: ${BP.tablet})`]: {
+    55	        flex: `0 0 ${SIZE_COL_SUB}`,
+    56	        maxWidth: 'none',
+    57	      },
+    58	    },
+    59	
+    60	    // Site-map column — fills remaining space at tablet, fixed 600px at desktop
+    61	    links: {
+    62	      [`@media (min-width: ${BP.tablet})`]: {
+    63	        flex: 1,
+    64	      },
+    65	      [`@media (min-width: ${BP.desktop})`]: {
+    66	        flex: `0 0 ${SIZE_COL_MAP}`,
+    67	      },
+    68	    },
+    69	
+    70	    // Figma: flex-wrap on mobile (2-col), nowrap on tablet, justify-between on desktop
+    71	    linksInner: {
+    72	      display: 'flex',
+    73	      flexWrap: 'wrap',
+    74	      gap: 'var(--zimm-scale-3xl)',
+    75	      alignContent: 'flex-start',
+    76	      alignItems: 'flex-start',
+    77	      [`@media (min-width: ${BP.tablet})`]: {
+    78	        flexWrap: 'nowrap',
+    79	        gap: 'var(--zimm-scale-3xl)',
+    80	        justifyContent: 'flex-end',
+    81	      },
+    82	      [`@media (min-width: ${BP.tabletWide})`]: {
+    83	        gap: 'var(--zimm-scale-5xl)',
+    84	      },
+    85	      [`@media (min-width: ${BP.desktop})`]: {
+    86	        gap: 0,
+    87	        justifyContent: 'space-between',
+    88	      },
+    89	    },
+    90	
+    91	    // Figma Logo area: px-[32px] py-[48px] on mobile, px-[40px] at tablet/desktop.
+    92	    //
+    93	    // The mobile divider above the logo is INSET, not full-bleed. Figma models it as its own
+    94	    // Container frame (40000407:23093) holding a Divider vector at x=20 w=362 inside a 402px
+    95	    // frame — i.e. 20px clear on each side, bound to alias/space/500 (= spacing.l = 20px). A
+    96	    // border-top cannot express that (it always spans the element), so it is drawn as an inset
+    97	    // pseudo-element instead. Mobile only: neither the tablet (40000407:23483) nor the desktop
+    98	    // (1892:50509) frame contains a Divider node.
+    99	    //
+   100	    // Colour is still COLOUR_HALF_INV (50% white) pending a visual check — Figma binds
+   101	    // alias/color/field/border/inverse/default (#ffffff) on the vector, but the variable list
+   102	    // does not expose layer opacity, so an opaque stroke at 50% layer opacity would look
+   103	    // identical. See the provisional-token audit (D1-6).
+   104	    logo: {
+   105	      padding: `${SPACE_SECTION} var(--zimm-scale-2xl)`,
+   106	      display: 'flex',
+   107	      flexDirection: 'column',
+   108	      justifyContent: 'center',
+   109	      alignItems: 'flex-start',
+   110	      position: 'relative',
+   111	      _before: {
+   112	        content: '""',
+   113	        position: 'absolute',
+   114	        top: 0,
+   115	        left: 'var(--zimm-scale-l)',
+   116	        right: 'var(--zimm-scale-l)',
+   117	        height: 'var(--zimm-border-width-default)',
+   118	        background: COLOUR_HALF_INV,
+   119	      },
+   120	      [`@media (min-width: ${BP.tablet})`]: {
+   121	        _before: { display: 'none' },
+   122	        paddingLeft: 'var(--zimm-scale-3xl)',
+   123	        paddingRight: 'var(--zimm-scale-3xl)',
+   124	      },
+   125	    },
+   126	    // Wordmark button — a reset, not a look. The logo owns its own geometry, so this only
+   127	    // strips the button chrome and supplies the focus ring the anchor-less markup would
+   128	    // otherwise lack (WCAG 2.4.7). Matches the contact icons' ring.
+   129	    logoButton: {
+   130	      display: 'block',
+   131	      background: 'none',
+   132	      border: 'none',
+   133	      padding: 0,
+   134	      cursor: 'pointer',
+   135	      _focusVisible: {
+   136	        outline: 'var(--zimm-border-width-default) solid',
+   137	        outlineColor: 'var(--zimm-color-text-inverse)',
+   138	        outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+   139	      },
+   140	    },
+   141	  },
+   142	};
+=====FILE: overrides/app/components/footer/bottomBar/index.tsx
+     1	import React from 'react';
+     2	import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+     3	import { ZimmIcon } from 'app/components/ui-kits/atoms/zimmIcon';
+     4	import { ZimmNavItem } from 'app/components/ui-kits/atoms/zimmNavItem';
+     5	import { useUiCopy } from 'app/hooks/useUiCopy';
+     6	
+     7	const ZIMM_FOOTER_BOTTOM_BAR_RECIPE = 'ZimmFooterBottomBar';
+     8	
+     9	// Locale control label. Hardcoded, and deliberately NOT fixture data — region and currency come
+    10	// from site config (config/default.js: defaultSite 'ZimmermannAU'), not Contentful, so
+    11	// FooterConfigEntry has no field for them. Set to match the site the app actually serves at
+    12	// '/'; it previously read "United States (USD) / ENG" on an AU storefront. The real fix reads
+    13	// site.l10n.defaultLocale and the site's currency via useMultiSite when the locale selector
+    14	// lands, at which point this constant goes away rather than getting a different literal.
+    15	const LOCALE_LABEL_PLACEHOLDER = 'Australia (AUD) / ENG';
+    16	
+    17	type BottomBarProps = {
+    18	  copyrightYear: number;
+    19	  copyrightOwner: string;
+    20	  legalLinks: ReadonlyArray<{ label: string; href: string }>;
+    21	};
+    22	
+    23	/**
+    24	 * Footer bottom bar — locale switcher (placeholder, not yet wired), copyright, and legal links.
+    25	 * Single-parent internal component (only Footer renders it), so per components.md it doesn't
+    26	 * need its own story — covered by footer/index.stories.tsx's assembly-level coverage.
+    27	 *
+    28	 * @param props see BottomBarProps
+    29	 */
+    30	export const BottomBar = ({ copyrightYear, copyrightOwner, legalLinks }: BottomBarProps) => {
+    31	  const styles = useMultiStyleConfig(ZIMM_FOOTER_BOTTOM_BAR_RECIPE, {});
+    32	  // Sourced directly, not threaded through as a prop — uiCopy is app-wide static microcopy,
+    33	  // safe to read from any component the same way useIntl() already is. Falls back to the
+    34	  // English literal with no UiCopyProvider mounted (Storybook, this component's own tests).
+    35	  const { t } = useUiCopy();
+    36	  const copyrightLabel = t('footer.copyright.label', 'Copyright');
+    37	  return (
+    38	    <chakra.div __css={styles.bar}>
+    39	      <chakra.div __css={styles.inner}>
+    40	        {/* PLACEHOLDER: wire to locale selector once available. Rendered as a non-interactive
+    41	            div, not a button, so nothing promises an action that cannot be performed (WCAG
+    42	            3.2.4 / 4.1.2) — same treatment ZimmContactIconRow gives an unusable channel.
+    43	            Label and destination are hardcoded until sourced from active locale/site config.
+    44	            Swap back to a real button with an onClick when the selector lands. */}
+    45	        <chakra.div __css={styles.localeButton}>
+    46	          {/* localeText = Figma "footer-item": py-8px on text only, icon sits outside.
+    47	              Typography and colour are inherited from the parent localeButton theme. */}
+    48	          <chakra.span __css={styles.localeText}>{LOCALE_LABEL_PLACEHOLDER}</chakra.span>
+    49	          <ZimmIcon type="chevron-right" size="sm" aria-hidden={true} />
+    50	        </chakra.div>
+    51	
+    52	        <chakra.div __css={styles.right}>
+    53	          {/* Copyright is a direct flex child of `right` to match Figma's flat Legal row.
+    54	              py-8px matches the legal link py used in ZimmNavItem style below. */}
+    55	          <chakra.span __css={styles.copyright}>
+    56	            {copyrightLabel} &copy; {copyrightYear} {copyrightOwner}
+    57	          </chakra.span>
+    58	          <chakra.div __css={styles.legalGrid}>
+    59	            {legalLinks.map((link) => (
+    60	              <ZimmNavItem
+    61	                key={link.label}
+    62	                href={link.href}
+    63	                label={link.label}
+    64	                inverse
+    65	                // Figma Small/Default: py-[8px] — override base h-[24px] with height:auto + vertical padding
+    66	                // width is applied via legalGrid's '& > a' child selector in bottomBar.css.ts
+    67	                sx={styles.legalLink}
+    68	              />
+    69	            ))}
+    70	          </chakra.div>
+    71	        </chakra.div>
+    72	      </chakra.div>
+    73	    </chakra.div>
+    74	  );
+    75	};
+=====FILE: overrides/app/components/footer/bottomBar/bottomBar.css.ts
+     1	import { BP, SIZE_COL_NAV } from 'app/theme/components/footerShared';
+     2	
+     3	export const ZimmFooterBottomBar = {
+     4	  parts: ['bar', 'inner', 'right', 'copyright', 'legalLink', 'legalGrid', 'localeText', 'localeButton'],
+     5	  baseStyle: {
+     6	    bar: {
+     7	      backgroundColor: 'var(--zimm-color-bg-06)',
+     8	      width: '100%',
+     9	    },
+    10	
+    11	    // Figma: stacked column on mobile, single row on tablet+
+    12	    inner: {
+    13	      display: 'flex',
+    14	      flexDirection: 'column',
+    15	      alignItems: 'flex-start',
+    16	      gap: 0,
+    17	      padding: 'var(--zimm-scale-xl) var(--zimm-scale-2xl)',
+    18	      [`@media (min-width: ${BP.tablet})`]: {
+    19	        flexDirection: 'row',
+    20	        alignItems: 'center',
+    21	        justifyContent: 'space-between',
+    22	        // Gutter widens here, not at BP.desktop. footer.css.ts's contentRow and logo both step
+    23	        // from 2xl to 3xl at BP.tablet, so holding this at 2xl until 1024px left the whole
+    24	        // 768-1023px band with the bottom bar inset 8px less than the content above it — the
+    25	        // locale control and the legal links sat left of the subscribe column and the logo.
+    26	        padding: 'var(--zimm-scale-xl) var(--zimm-scale-3xl)',
+    27	      },
+    28	    },
+    29	
+    30	    // Right group: copyright span + legalGrid div stacked on mobile, flex-row on tablet.
+    31	    // copyright is a direct flex child (no wrapper div) to match Figma's flat Legal row.
+    32	    right: {
+    33	      display: 'flex',
+    34	      flexDirection: 'column',
+    35	      alignItems: 'flex-start',
+    36	      gap: 'var(--zimm-scale-xs)',
+    37	      width: '100%',
+    38	      [`@media (min-width: ${BP.tablet})`]: {
+    39	        flexDirection: 'row',
+    40	        alignItems: 'center',
+    41	        justifyContent: 'flex-end',
+    42	        gap: `0 var(--zimm-scale-xl)`,
+    43	        width: 'auto',
+    44	      },
+    45	      [`@media (min-width: ${BP.desktop})`]: {
+    46	        gap: `0 var(--zimm-scale-2xl)`,
+    47	      },
+    48	    },
+    49	
+    50	    // Copyright + legal links share the footer text style; py-8px matches Figma Small/Default.
+    51	    copyright: {
+    52	      textStyle: 'footer',
+    53	      color: 'var(--zimm-color-text-muted)',
+    54	      whiteSpace: 'nowrap',
+    55	      paddingY: 'var(--zimm-scale-xs)',
+    56	      paddingX: 0,
+    57	    },
+    58	    legalLink: {
+    59	      textStyle: 'footer',
+    60	      color: 'var(--zimm-color-text-muted)',
+    61	      justifyContent: 'flex-start',
+    62	      // No height override — ZimmNavItem's baseStyle uses minHeight, so the py-8px below grows
+    63	      // the item naturally. Figma Small/Default: py-[8px].
+    64	      paddingY: 'var(--zimm-scale-xs)',
+    65	      paddingX: 0,
+    66	    },
+    67	
+    68	    // Legal links: 2-col flex-wrap grid on mobile; inline flex row inside `right` at tablet+.
+    69	    // Avoids display:contents (unreliable in Emotion __css media queries) — legalGrid stays a
+    70	    // normal flex container but switches from a full-width wrap to an auto-width nowrap row.
+    71	    legalGrid: {
+    72	      display: 'flex',
+    73	      flexWrap: 'wrap',
+    74	      alignContent: 'flex-start',
+    75	      gap: `0 var(--zimm-scale-3xl)`,
+    76	      width: '100%',
+    77	      '& > a': { width: SIZE_COL_NAV },
+    78	      [`@media (min-width: ${BP.tablet})`]: {
+    79	        flexWrap: 'nowrap',
+    80	        gap: `0 var(--zimm-scale-xl)`,
+    81	        width: 'auto',
+    82	        '& > a': { width: 'auto' },
+    83	      },
+    84	      [`@media (min-width: ${BP.desktop})`]: {
+    85	        gap: `0 var(--zimm-scale-2xl)`,
+    86	      },
+    87	    },
+    88	
+    89	    // Locale button inner text span — py-8px at EVERY breakpoint. Figma's Language item is h=23
+    90	    // (8px + 7px text + 8px) identically on desktop (40000407:14372) and mobile
+    91	    // (40000407:23934), and its Legal row opposite is also h=23, so both ends of the bottom bar
+    92	    // share a height. A previous tablet+ `padding: 0` override collapsed this to 14px against
+    93	    // the 31px legal links — removed.
+    94	    localeText: {
+    95	      display: 'flex',
+    96	      alignItems: 'center',
+    97	      justifyContent: 'center',
+    98	      paddingY: 'var(--zimm-scale-xs)',
+    99	      paddingX: 0,
+   100	      whiteSpace: 'nowrap',
+   101	    },
+   102	
+   103	    // textStyle: 'footer' consolidates: FONT_MEDIUM / 10px / 500 / 14px / 0.4px / uppercase.
+   104	    // No cursor/_focusVisible here: index.tsx renders this on a non-interactive div (see the
+   105	    // PLACEHOLDER comment there), and a pointer cursor or focus ring would promise an action
+   106	    // the control cannot perform (WCAG 3.2.4). Restore both when it becomes a real button.
+   107	    localeButton: {
+   108	      textStyle: 'footer',
+   109	      color: 'var(--zimm-color-text-inverse)',
+   110	      display: 'inline-flex',
+   111	      alignItems: 'center',
+   112	      gap: 'var(--zimm-scale-2xs)',
+   113	      background: 'none',
+   114	      border: 'none',
+   115	      padding: 0,
+   116	      whiteSpace: 'nowrap',
+   117	    },
+   118	  },
+   119	};
+=====FILE: overrides/app/components/footer/footerNavColumn/index.tsx
+     1	import React from 'react';
+     2	import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+     3	import { ZimmNavItem } from 'app/components/ui-kits/atoms/zimmNavItem';
+     4	import { ZimmContactIconRow } from 'app/components/ui-kits/molecules/zimmContactIconRow';
+     5	import type { FooterNavGroupEntry } from 'app/types/contentful';
+     6	
+     7	const ZIMM_FOOTER_NAV_COLUMN_RECIPE = 'ZimmFooterNavColumn';
+     8	
+     9	// Non-breaking space. Marks a label whose line break is intentional — see the nav item below.
+    10	const NBSP = ' ';
+    11	
+    12	/**
+    13	 * True when a label carries a deliberate NBSP wrap point (e.g. "Acknowledgement of Country")
+    14	 * — see the width:min-content comment below for why this must stay gated rather than applied to
+    15	 * every label. Extracted as a named export so the gate itself is unit-testable without asserting
+    16	 * on Chakra's `sx`-generated CSS output.
+    17	 */
+    18	export const hasIntentionalLineBreak = (label: string): boolean => label.includes(NBSP);
+    19	
+    20	type FooterNavColumnProps = {
+    21	  group: FooterNavGroupEntry;
+    22	  phoneHref?: string;
+    23	  whatsAppHref?: string;
+    24	  emailHref?: string;
+    25	};
+    26	
+    27	/**
+    28	 * One footer nav column: heading, link list, and (for the Contact group) the contact-channel
+    29	 * icon row. Extracted from Footer's inline JSX — this is where the Figma pixel-precision
+    30	 * workarounds below actually live now, rather than being buried in the footer assembly.
+    31	 *
+    32	 * @param props see FooterNavColumnProps
+    33	 */
+    34	export const FooterNavColumn = ({ group, phoneHref, whatsAppHref, emailHref }: FooterNavColumnProps) => {
+    35	  const styles = useMultiStyleConfig(ZIMM_FOOTER_NAV_COLUMN_RECIPE, {});
+    36	
+    37	  return (
+    38	    <chakra.div __css={styles.col}>
+    39	      {/* Figma section column: flex-col gap-16px — the column gap replaces marginBottom on the
+    40	          heading. Contact heading has 4px left offset. */}
+    41	      <chakra.p
+    42	        __css={{
+    43	          ...styles.heading,
+    44	          ...(group.fields.showContactChannels ? { paddingLeft: 'var(--zimm-scale-2xs)' } : {}),
+    45	        }}
+    46	      >
+    47	        {group.fields.heading}
+    48	      </chakra.p>
+    49	      {/* Figma Links div (2228:19423): flex-col, items-start, width 100%, gap 0.
+    50	          DELIBERATE DEVIATION: Figma puts the Contact items at x=0 while indenting only its
+    51	          heading 4px (wrapper 40000407:22289) — About and Help headings sit flush at 0, so that
+    52	          asymmetry reads as a stray wrapper rather than intent. We indent the Contact items to
+    53	          match their heading so the column aligns as a unit. The icon row below needs no
+    54	          indent: its 24px box centres a 16px glyph, so the glyph edge already lands at 4px.
+    55	          Pending Kiera. */}
+    56	      <chakra.ul __css={styles.list}>
+    57	        {group.fields.links.map((link) => (
+    58	          <chakra.li
+    59	            key={link.sys.id}
+    60	            __css={{
+    61	              ...styles.listItem,
+    62	              ...(group.fields.showContactChannels ? { paddingLeft: 'var(--zimm-scale-2xs)' } : {}),
+    63	            }}
+    64	          >
+    65	            {/* Each item h-[24px] items-center, no gap. ZimmNavItem's baseStyle supplies
+    66	                minHeight 24px, whiteSpace normal (so the label below can wrap) and uppercase.
+    67	
+    68	                width:min-content only for labels that carry a non-breaking space. A wrapped
+    69	                element takes the AVAILABLE width, not its longest line, so without this the
+    70	                Acknowledgement item filled the column's 160px cap while its longest line is
+    71	                115px — 45px of dead space that pushed the Contact column right, against Figma
+    72	                where every column hugs its content. min-content resolves to the widest
+    73	                unbreakable run, which the NBSP makes exactly "ACKNOWLEDGEMENT" (115px). It must
+    74	                stay gated: applied to a single-line label it collapses to the longest word and
+    75	                wraps it ("Book an Appointment" 131px -> 76px, two lines). */}
+    76	            <ZimmNavItem
+    77	              href={link.fields.href}
+    78	              label={link.fields.label}
+    79	              inverse
+    80	              sx={hasIntentionalLineBreak(link.fields.label) ? { width: 'min-content' } : undefined}
+    81	            />
+    82	          </chakra.li>
+    83	        ))}
+    84	        {/* Contact channels are the LAST CHILD OF THE LIST, not a sibling of it — Figma's
+    85	            Icon-list (40002081:14616) sits inside Links at y=72, directly after "CONNECT WITH
+    86	            US" ends at y=72, so only its own 4px padding-top separates them. Rendered outside
+    87	            the <ul> it instead picked up the column's 16px gap and sat 20px low against
+    88	            Figma's 4px. */}
+    89	        {group.fields.showContactChannels && (
+    90	          <chakra.li __css={styles.listItem}>
+    91	            <ZimmContactIconRow phoneHref={phoneHref} whatsAppHref={whatsAppHref} emailHref={emailHref} />
+    92	          </chakra.li>
+    93	        )}
+    94	      </chakra.ul>
+    95	    </chakra.div>
+    96	  );
+    97	};
+=====FILE: overrides/app/components/footer/footerNavColumn/footerNavColumn.css.ts
+     1	import { BP, SIZE_COL_NAV } from 'app/theme/components/footerShared';
+     2	
+     3	export const ZimmFooterNavColumn = {
+     4	  parts: ['col', 'heading', 'list', 'listItem'],
+     5	  baseStyle: {
+     6	    // Figma: flex-col, gap-16px, 140px wide on mobile; content-sized on tablet+ but CAPPED.
+     7	    //
+     8	    // The cap reproduces a per-item constraint in the design. Figma's "ACKNOWLEDGEMENT OF
+     9	    // COUNTRY" item (40000407:11004) is 118x38 — its 118px is the box AFTER wrapping (the
+    10	    // width of the word "ACKNOWLEDGEMENT"), not its natural width, which is ~188px. Every other
+    11	    // nav label is narrower and stays on one line, including "BOOK AN APPOINTMENT" at 135x24.
+    12	    // So the design's implicit threshold sits between 135 and 188.
+    13	    //
+    14	    // 160px (--zimm-scale-7xl) is inside that window under BOTH fonts, which matters because
+    15	    // the fallback stack renders ~13% wider than Futura Round. Both are measured because the
+    16	    // cap has to hold before the self-hosted face loads as well as after. Widths, fallback /
+    17	    // Futura:
+    18	    //   ACKNOWLEDGEMENT OF COUNTRY  212 / ~188  -> wraps under both            (> 160)
+    19	    //   "ACKNOWLEDGEMENT" alone     130 / ~115  -> break lands after it        (< 160)
+    20	    //   BOOK AN APPOINTMENT         149 / ~135  -> stays on one line under both (< 160)
+    21	    // A 140px cap (SIZE_COL_NAV) was tried first and wrongly wrapped BOOK AN APPOINTMENT.
+    22	    //
+    23	    // Exact column widths still will not match Figma (Help 120 vs 106) — those are
+    24	    // content-driven and follow the font. Not a build defect.
+    25	    // Pending Kiera: confirm a column cap is the right rule vs a per-item wrap.
+    26	    col: {
+    27	      display: 'flex',
+    28	      flexDirection: 'column',
+    29	      gap: 'var(--zimm-scale-m)',
+    30	      alignItems: 'flex-start',
+    31	      width: SIZE_COL_NAV,
+    32	      minWidth: 0,
+    33	      flexShrink: 0,
+    34	      [`@media (min-width: ${BP.tablet})`]: {
+    35	        width: 'auto',
+    36	        maxWidth: 'var(--zimm-scale-7xl)', // 10rem (160px) — see the threshold note above
+    37	        flexShrink: 1,
+    38	      },
+    39	    },
+    40	
+    41	    // Nav column headings (About / Contact / Help) — Figma "Default/Navigation".
+    42	    // fontFamily overrides the heading family textStyles.navigation carries: Figma binds
+    43	    // brand/font/family/body here (node 40000407:11736).
+    44	    heading: {
+    45	      textStyle: 'navigation',
+    46	      fontFamily: 'var(--zimm-font-family-body)',
+    47	      margin: 0,
+    48	      color: 'var(--zimm-color-text-inverse-grey)', // alias/color/text/inverse/subtle
+    49	    },
+    50	
+    51	    // Figma Links div: flex-col, items-start, width 100%.
+    52	    list: {
+    53	      listStyle: 'none',
+    54	      padding: 0,
+    55	      margin: 0,
+    56	      display: 'flex',
+    57	      flexDirection: 'column',
+    58	      alignItems: 'flex-start',
+    59	      width: '100%',
+    60	      gap: 0,
+    61	    },
+    62	
+    63	    // display:flex, not the default list-item. ZimmNavItem renders an inline-flex <a> of
+    64	    // exactly 24px, but a block-level <li> wraps it in a line box whose 24px strut adds
+    65	    // descender space below the baseline — measured 25.5px against the anchor's 24px. That
+    66	    // 1.5px leaked once per row (and 3px on the wrapped "Acknowledgement of Country"), making
+    67	    // the links column 9px taller than Figma's 158px. Making the <li> a flex container removes
+    68	    // the line box entirely, so its height is just the anchor's.
+    69	    listItem: { listStyle: 'none', display: 'flex' },
+    70	  },
+    71	};

@@ -1,0 +1,666 @@
+name: QA
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - 'release/**'
+
+permissions:
+  contents: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Detect which expensive suites are actually relevant to this diff.
+  # Unit tests always run (cheap, and the fastest signal). Storybook and
+  # E2E are skipped — not omitted from the trigger, actually run and
+  # reported as "skipped" — when nothing under their relevant paths
+  # changed, so a PR touching only e.g. .github/workflows/ or AGENTS.md
+  # doesn't pay for a browser-driven Storybook build or a full Playwright
+  # run against the dev org. A job-level `if:` is used deliberately
+  # instead of an `on.pull_request.paths` filter: GitHub treats a skipped
+  # required check as passing, but a workflow that never triggers at all
+  # leaves a required check stuck "Expected" forever and blocks merging.
+  # ─────────────────────────────────────────────────────────────
+  detect-changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      storybook: ${{ steps.changed.outputs.storybook_any_changed }}
+      e2e: ${{ steps.changed.outputs.e2e_any_changed == 'true' || steps.deps.outputs.runtime_changed == 'true' }}
+      vitest: ${{ steps.changed.outputs.vitest_any_changed == 'true' || steps.deps.outputs.runtime_changed == 'true' }}
+      e2e_scope: ${{ steps.scope.outputs.e2e_scope }}
+      jira_keys: ${{ steps.jira.outputs.keys }}
+    env:
+      # Written below and uploaded as an artifact so
+      # e2e-browserstack-preview.yml (workflow_run off Deploy Preview,
+      # develop-PR path) can pick up the same e2e-relevance gate this job
+      # already computed, with a single non-looping API call — instead of
+      # either re-running the whole tj-actions/changed-files matrix itself
+      # or, worse, polling for it. See that workflow's own comment.
+      E2E_RELEVANT_OUT: e2e-scope.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # e2e_homepage below implements change-scoped E2E: on a develop-
+      # targeted PR, e2e-localhost only runs the tests tagged for an area
+      # (Playwright `{tag: '@<area>'}`, matching the Gherkin `@area` tag
+      # documented in e2e/features/README.md) when EVERY changed path that
+      # matters to E2E (the `e2e` group above) also falls inside that area's
+      # own allow-list — see "Compute E2E scope" below for the subset check.
+      # Anything outside every area's allow-list — a shared/global-impact
+      # path (Global Shell, theme, hooks, config/, shared E2E infra — see
+      # .claude/rules/frozenFiles.md and protectedFiles.md) or simply a path
+      # no area has claimed yet — falls back to the full suite by
+      # construction, deliberately, rather than needing its own deny-list to
+      # maintain. Adding a new area: give it its own allow-list group here,
+      # add the matching `@area` Playwright tag to its specs, and see
+      # testing.md > Layer 3.
+      - name: Get changed files
+        id: changed
+        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2 # v44
+        with:
+          # Diff against the previous push on this PR branch, not the PR's
+          # merge-base with develop/release. Without this, once ANY commit in
+          # the PR's history touches a relevant path (e.g. config/**), every
+          # later push re-triggers Storybook/E2E for the rest of the PR's
+          # life — including a docs-only follow-up commit — because the
+          # cumulative base...head diff still contains that earlier change.
+          # Safe for required-status-check semantics: GitHub gates merge on
+          # the latest SHA's checks, and a "skipped" job counts as passing
+          # (see the always()/skipped handling on e2e-localhost below) — so
+          # skipping here just means nothing e2e/storybook-relevant changed
+          # since the last time those suites ran. Does not help across a
+          # force-push/rebase (no well-defined "previous remote commit" in
+          # that case) — not this project's normal workflow per AGENTS.md.
+          since_last_remote_commit: true
+          # Default separator is a space, which breaks the exact-line match
+          # ("grep -qxF") "Compute E2E scope" does below against a multi-file
+          # *_all_changed_files output — a space-joined string only matches
+          # when there's exactly one file. Newline-joined lets grep -x match
+          # each changed file independently regardless of how many there are.
+          separator: "\n"
+          files_yaml: |
+            storybook:
+              - 'overrides/app/components/**'
+              - 'overrides/app/pages/**'
+              - 'overrides/app/hooks/**'
+              - 'overrides/app/theme/**'
+              - 'overrides/app/types/**'
+              - '.storybook/**'
+              - 'package.json'
+              - 'package-lock.json'
+            e2e:
+              - 'overrides/**'
+              - 'e2e/**'
+              - 'config/**'
+              - 'worker/**'
+              - 'mobify.config.js'
+              - 'playwright.config.*'
+              - '.github/workflows/qa.yml'
+              - '.github/workflows/e2e-browserstack-preview.yml'
+              - 'browserstack.yml'
+              - 'scripts/computeBuildName.mjs'
+            e2e_homepage:
+              - 'overrides/app/pages/home/**'
+              - 'overrides/app/components/header/**'
+              - 'e2e/tests/zimm/homepage/**'
+              - 'e2e/features/homepage/**'
+              - 'e2e/support/pages/HomePage.js'
+            vitest:
+              - 'overrides/**'
+              - 'vitest.config.*'
+              - 'vitest.setup.ts'
+              - 'tsconfig.json'
+              - 'babel.config.js'
+
+      # Resolve e2e_scope to "full", a single area name (e.g. "homepage")
+      # consumed by e2e-localhost's --grep filter, or "skip". Defaults to
+      # "full" on release/** (unchanged — a release PR aggregates a whole
+      # sprint and gets the supervised, thorough pre-merge treatment per
+      # releaseBranchesRules.md). On a develop-targeted PR, anything that
+      # can't be narrowed to one area now resolves to "skip" instead of
+      # "full" (changed 2026-08-25, at the developer's request) --
+      # e2e-localhost no longer runs the entire suite on every PR whose
+      # diff touches a shared/global path or an unclaimed area; that
+      # broader regression coverage is deferred to the existing post-merge
+      # P0 gates instead (deploy-test.yml's gate, digital-sit.yml's
+      # playwright-p0 on release/**). Deliberate trade-off: a develop PR
+      # that can't be scoped gets no PR-time E2E run at all now, only
+      # unit tests / Storybook / BrowserStack (if a Jira key matches) —
+      # full/non-P0 regressions on such a PR are caught later, at Test/SIT
+      # deploy, not before merge. See testing.md > Change-scoped E2E.
+      - name: Compute E2E scope
+        id: scope
+        # ALL/HOMEPAGE go through env: rather than being interpolated
+        # directly into the script — a changed_files output is built from
+        # real filenames in the diff, and interpolating one straight into
+        # `run:` would let a filename containing quotes/shell syntax break
+        # out of the assignment and execute on the runner (zizmor:
+        # template-injection). Reading from env avoids that entirely.
+        env:
+          ALL: ${{ steps.changed.outputs.e2e_all_changed_files }}
+          HOMEPAGE: ${{ steps.changed.outputs.e2e_homepage_all_changed_files }}
+        run: |
+          if [[ "${{ github.base_ref }}" == release/* ]]; then
+            echo "e2e_scope=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ -z "$ALL" ]]; then
+            echo "e2e_scope=skip" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Narrow to "homepage" only if every e2e-relevant changed file is
+          # also in the homepage allow-list — a single file outside it (a
+          # shared/global path, or one no area has claimed) skips the
+          # PR-time run entirely, on purpose (see the step comment above).
+          SCOPE="homepage"
+          while IFS= read -r f; do
+            [[ -z "$f" ]] && continue
+            if ! grep -qxF "$f" <<< "$HOMEPAGE"; then
+              SCOPE="skip"
+              break
+            fi
+          done <<< "$ALL"
+          echo "e2e_scope=$SCOPE" >> "$GITHUB_OUTPUT"
+
+      # Extracts Jira issue keys (project key SFCC, per e2e/features/README.md's
+      # @SFCC-NNN tag convention) referenced anywhere in the PR title, PR body,
+      # or branch name — the same signal the GitHub-for-Jira app uses to link a
+      # PR to an issue, so this needs no Jira API credentials of its own. Uses
+      # `env:` rather than interpolating PR title/body directly into the run
+      # script, since both are attacker-controllable text.
+      # Consumed by e2e-browserstack: on a develop-targeted PR, BrowserStack
+      # only runs when at least one key is found, scoped to that story's
+      # Playwright tag(s). See testing.md > BrowserStack story scoping.
+      - name: Detect Jira story keys
+        id: jira
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          KEYS=$(printf '%s\n%s\n%s\n' "$PR_TITLE" "$PR_BODY" "$BRANCH" \
+            | grep -oE 'SFCC-[0-9]+' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          echo "keys=$KEYS" >> "$GITHUB_OUTPUT"
+
+      # package.json/package-lock.json deliberately aren't in the e2e/vitest path
+      # lists above: those two suites care about *runtime* behaviour, and most
+      # lockfile churn (a devDependency bump, a transitive-dep resync) can't
+      # affect what ships to the browser. Only a change to package.json's own
+      # "dependencies" block (a real runtime dependency) should force them to
+      # run. Storybook keeps the blanket file-level check above — it's cheap
+      # enough that being conservative there doesn't matter.
+      #
+      # Diffs against the previous push (github.event.before, only present on
+      # "synchronize"), not the base branch — same per-push reasoning as
+      # since_last_remote_commit on "Get changed files" above. Without this,
+      # a real dependency change on an earlier commit in the PR would leave
+      # runtime_changed=true (and so e2e/vitest forced on) for every later
+      # push, even a docs-only one, since it ORs into both outputs below.
+      # Falls back to the base branch on "opened"/"reopened", where there's
+      # no meaningful previous-push SHA yet.
+      - name: Check whether runtime dependencies changed
+        id: deps
+        run: |
+          if [[ "${{ github.event.action }}" == "synchronize" ]]; then
+            BASE_SHA="${{ github.event.before }}"
+            git fetch origin "$BASE_SHA" --depth=1
+          else
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            BASE_SHA="origin/${{ github.base_ref }}"
+          fi
+          BASE_DEPS=$(git show "$BASE_SHA:package.json" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.stringify(JSON.parse(d).dependencies||{})))")
+          HEAD_DEPS=$(node -e "console.log(JSON.stringify(require('./package.json').dependencies||{}))")
+          if [ "$BASE_DEPS" != "$HEAD_DEPS" ]; then
+            echo "runtime_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "runtime_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Persist e2e relevance for e2e-browserstack-preview.yml
+        env:
+          E2E_RELEVANT: ${{ steps.changed.outputs.e2e_any_changed == 'true' || steps.deps.outputs.runtime_changed == 'true' }}
+        run: printf '{"e2e":"%s"}\n' "$E2E_RELEVANT" > "$E2E_RELEVANT_OUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2e-scope
+          path: ${{ env.E2E_RELEVANT_OUT }}
+          retention-days: 1
+
+  # ─────────────────────────────────────────────────────────────
+  # Unit tests — runs on every PR to develop and release/**
+  # This project uses Vitest (see package.json "test": "vitest run").
+  # ─────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit tests (Vitest)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.vitest == 'true'
+    permissions:
+      contents: read
+      pull-requests: write # to post/update the coverage summary comment below
+    # No timeout-minutes previously meant this job defaulted to GitHub's
+    # 360-minute ceiling — same unbounded-hang risk e2e-browserstack had
+    # before a real run burned an hour on a stuck job (2026-08-25). Vitest
+    # unit tests are fast and deterministic (the full suite runs in well
+    # under a minute locally as of 2026-08-26), so 10 is generous headroom,
+    # not a tight measured budget.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+
+      - name: Run Vitest unit tests with coverage
+        run: npm run test:coverage
+        env:
+          CI: true
+
+      # Parses vitest's own JSON reporter output (test-results.json) and the
+      # v8 coverage provider's json-summary (coverage/coverage-summary.json,
+      # both produced by test:coverage's flags / vitest.config.ts's
+      # coverage.reporter) into a single PR comment — pass/fail counts plus
+      # a per-top-level-directory coverage breakdown. Upserts on an exact
+      # HTML-comment marker so a redeploy updates the same comment instead
+      # of spamming the thread, same pattern deploy-preview.yml's MRT
+      # preview comment already uses. Runs even when the test step above
+      # failed (always()) so a failing PR still gets the pass/fail count —
+      # the coverage half of the comment degrades gracefully if the files
+      # are missing (a hard crash before coverage was even written).
+      - name: Post coverage/results summary to the PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+
+            const marker = '<!-- vitest-summary -->'
+            let body = `${marker}\n## 🧪 Vitest Results\n\n`
+
+            let testResults = null
+            try {
+              testResults = JSON.parse(fs.readFileSync('test-results.json', 'utf8'))
+            } catch (e) {
+              body += `⚠️ Could not read test results (${e.message}) — the test run likely crashed before writing output.\n`
+            }
+
+            if (testResults) {
+              const { numTotalTests, numPassedTests, numFailedTests, numPendingTests, success } = testResults
+              const icon = success ? '✅' : '❌'
+              body += `${icon} **${numPassedTests}/${numTotalTests} passed**`
+              if (numFailedTests) body += `, **${numFailedTests} failed**`
+              if (numPendingTests) body += `, ${numPendingTests} skipped`
+              body += '\n\n'
+            }
+
+            let summary = null
+            try {
+              summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'))
+            } catch (e) {
+              body += `_Coverage summary unavailable (${e.message})._\n`
+            }
+
+            if (summary) {
+              const total = summary.total
+              body += `**Coverage — ${total.lines.pct}% lines** (${total.lines.covered}/${total.lines.total}), `
+              body += `${total.branches.pct}% branches, ${total.functions.pct}% functions\n\n`
+
+              // Roll up per top-level directory under overrides/app/ — the
+              // per-file table from the raw summary is too long to be a
+              // useful PR comment; this is the same rollup grain the local
+              // text reporter already prints.
+              const dirs = {}
+              for (const [filePath, data] of Object.entries(summary)) {
+                if (filePath === 'total') continue
+                const match = filePath.match(/overrides\/app\/([^/]+)\//)
+                const dir = match ? match[1] : 'other'
+                dirs[dir] ??= { total: 0, covered: 0 }
+                dirs[dir].total += data.lines.total
+                dirs[dir].covered += data.lines.covered
+              }
+
+              body += '| Directory | Line coverage |\n|---|---|\n'
+              for (const [dir, { total: t, covered: c }] of Object.entries(dirs).sort()) {
+                const pct = t > 0 ? ((c / t) * 100).toFixed(1) : '100.0'
+                body += `| \`app/${dir}\` | ${pct}% (${c}/${t}) |\n`
+              }
+              body += '\n<sub>Full HTML report: see the `vitest-coverage-report` artifact on this run.</sub>\n'
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            })
+            const existing = comments.find(
+              (c) => (c.body ?? '').includes(marker) && c.user?.login === 'github-actions[bot]'
+            )
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              })
+            }
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-coverage-report
+          path: coverage/
+          retention-days: 30
+
+  # ─────────────────────────────────────────────────────────────
+  # Storybook interaction + a11y tests — runs on every PR to develop
+  # and release/**. Exercises play() functions and @storybook/addon-a11y
+  # component-level checks headless. Runs in parallel with unit-tests.
+  # Runner: @storybook/test-runner (Playwright-based). Storybook is built
+  # to storybook-static/, served by http-server, tested by test-storybook.
+  # ─────────────────────────────────────────────────────────────
+  storybook-test:
+    name: Storybook interaction & a11y tests
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.storybook == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Run Storybook interaction and a11y tests
+        run: |
+          npx http-server storybook-static --port 6006 --silent &
+          npx wait-on http://127.0.0.1:6006 --timeout 60000
+          node_modules/.bin/test-storybook --ci --url http://127.0.0.1:6006
+        env:
+          CI: true
+
+      - name: Upload Storybook test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-test-results
+          path: storybook-test-results/
+          retention-days: 30
+
+  # ─────────────────────────────────────────────────────────────
+  # Playwright E2E — every PR to develop and release/**.
+  # Boots the PWA Kit dev server on localhost:3000 against the SFCC dev
+  # org (real API, no mocks). Runs desktop Chromium + mobile Chrome.
+  # BrowserStack cross-browser coverage is a separate job (release only).
+  # ─────────────────────────────────────────────────────────────
+  e2e-localhost:
+    name: Playwright E2E (localhost)
+    runs-on: ubuntu-latest
+    # Binds this job to the "dev" GitHub Environment so vars.* below resolves
+    # against it. Since scripts/switchEnv.mjs's `push <tier>` now pushes a
+    # shared+tier merge (see that script's buildPushEntries), "dev" alone is
+    # self-sufficient — no second environment binding needed for shared-scope
+    # values like the Commerce API short code / site id. No protection rules
+    # are configured on "dev" (confirmed via `gh api repos/.../environments/dev`),
+    # so this doesn't add an approval gate or branch restriction to PR runs.
+    environment: dev
+    # Without this, a genuinely unreachable SFCC dev org (or any other
+    # unbounded hang outside Playwright's own per-test timeout/retry
+    # budget) rides GitHub's default 6-hour job ceiling instead of failing
+    # fast with a clear signal. 15 is measured, not padded: setup (checkout
+    # -> deps -> browsers -> dev server) took ~1m30s and a real full-retry
+    # SFCC-dev-org-down failure took 12m13s on the Playwright step alone
+    # (run 29178792019, job 86612779025, 2026-07-12) — 15 gives that ~1.5min
+    # of margin for normal CI variance without hiding a dead job for long.
+    timeout-minutes: 15
+    needs: [unit-tests, detect-changes]
+    # Re-enabled 2026-07-16 on bugfix/ci-e2e-test to actively debug the
+    # homepage smoke test failure — now confirmed fixed (see
+    # .docs/memory/projectState.md) with better diagnostics: an HTML report
+    # now gets generated (playwright.config.js), while Playwright retains
+    # its default two retries for each CI iteration.
+    # unit-tests may now report "skipped" rather than "success" (see
+    # detect-changes above) — GitHub's implicit success() over all `needs`
+    # would otherwise treat a skipped unit-tests as blocking this job too.
+    # !cancelled() bypasses that default so we can explicitly allow skipped
+    # — unlike always(), it still stops this job from continuing on a
+    # cancelled workflow run (e.g. superseded by a newer push), instead of
+    # burning a 15-minute runner slot on a run nobody's waiting on.
+    if: |
+      !cancelled() &&
+      needs.detect-changes.outputs.e2e == 'true' &&
+      needs.detect-changes.outputs.e2e_scope != 'skip' &&
+      (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start dev server
+        # Output wasn't captured anywhere before — a backgrounded process's
+        # stdout/stderr doesn't show up in the step's own log. Redirecting to
+        # a file (uploaded below, always) is the only way to see an SSR
+        # crash/error server-side instead of just the client-visible symptom
+        # (a non-200 response, or a page that never finishes rendering).
+        run: npm start > dev-server.log 2>&1 &
+        env:
+          # DEPLOY_TARGET (not ENVIRONMENT_NAME) is what
+          # @salesforce/pwa-kit-runtime's getConfig() reads to pick
+          # config/<target>.js — must be a real process env var before
+          # `pwa-kit-dev start` launches, since getConfig() resolves it
+          # before config/default.js's own .env-loading code ever runs.
+          DEPLOY_TARGET: dev
+          ENVIRONMENT_NAME: dev
+          # PWA_KIT_SLAS_CLIENT_SECRET stays on the repo Secret (encrypted)
+          # rather than the "dev" Environment's plaintext Variable copy of
+          # the same key — no reason to downgrade now that environment: dev
+          # also exposes it via vars.*.
+          PWA_KIT_SLAS_CLIENT_SECRET: ${{ secrets.PWA_KIT_SLAS_CLIENT_SECRET }}
+          COMMERCE_API_CLIENT_ID: ${{ vars.COMMERCE_API_CLIENT_ID }}
+          COMMERCE_API_ORGANIZATION_ID: ${{ vars.COMMERCE_API_ORGANIZATION_ID }}
+          COMMERCE_API_SHORT_CODE: ${{ vars.COMMERCE_API_SHORT_CODE }}
+          COMMERCE_API_SITE_ID: ${{ vars.COMMERCE_API_SITE_ID }}
+
+      - name: Wait for dev server
+        run: npx wait-on http://localhost:3000 --timeout 120000
+
+      - name: Wait for webpack build to finish
+        # wait-on above only confirms the port is accepting connections —
+        # pwa-kit-dev answers requests (redirects, in practice) before the
+        # client bundle has actually finished compiling, so Playwright could
+        # start racing a still-building app and fail on missing elements
+        # with no clear signal why. "webpack built client" in dev-server.log
+        # is the real readiness marker; polling for it adapts to actual
+        # build time instead of guessing a fixed delay.
+        run: |
+          for i in $(seq 1 60); do
+            grep -q "webpack built client" dev-server.log && exit 0
+            sleep 2
+          done
+          echo "Timed out waiting for webpack build to finish after 120s" >&2
+          exit 1
+
+      - name: Run Playwright (desktop + mobile)
+        # e2e_scope is "full" or an area name (e.g. "homepage") computed by
+        # detect-changes — see the comments on that job's "Get changed
+        # files" / "Compute E2E scope" steps and testing.md > Layer 3.
+        run: |
+          if [[ "${{ needs.detect-changes.outputs.e2e_scope }}" == "full" ]]; then
+            npx playwright test --project=chromium --project=mobile-chrome
+          else
+            npx playwright test --project=chromium --project=mobile-chrome --grep "@${{ needs.detect-changes.outputs.e2e_scope }}"
+          fi
+        env:
+          SITE_ID: au
+          PWA_E2E_USER_EMAIL: ${{ secrets.PWA_E2E_USER_EMAIL }}
+          PWA_E2E_USER_PASSWORD: ${{ secrets.PWA_E2E_USER_PASSWORD }}
+          E2E_STANDARD_PRODUCT_SKU: ${{ secrets.E2E_STANDARD_PRODUCT_SKU }}
+          E2E_VARIANT_PRODUCT_SKU: ${{ secrets.E2E_VARIANT_PRODUCT_SKU }}
+          E2E_OOS_PRODUCT_SKU: ${{ secrets.E2E_OOS_PRODUCT_SKU }}
+          E2E_SALE_PRODUCT_SKU: ${{ secrets.E2E_SALE_PRODUCT_SKU }}
+          E2E_FIXTURE_ORDER_NUMBER: ${{ secrets.E2E_FIXTURE_ORDER_NUMBER }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-localhost
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload dev server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-server-log
+          path: dev-server.log
+          retention-days: 30
+
+  # ─────────────────────────────────────────────────────────────
+  # BrowserStack cross-browser regression — release/** only. Zephyr-linked,
+  # cost-conscious. Complements the SIT gate (digital-sit.yml).
+  #
+  # Always the full e2e/tests/zimm suite, unscoped — a release aggregates
+  # a whole sprint's stories, so per-story scoping doesn't apply. Zephyr
+  # traceability still works in a full run since every test carries its
+  # own @SFCC-NNN tag individually.
+  #
+  # The develop-PR, per-story path used to live here too, gated on a Jira
+  # key and waiting (by polling) for this same commit's Deploy Preview run
+  # so it could test the PR's own code instead of the static test tier.
+  # That polling loop billed up to ~17 minutes of pure idle runner time
+  # per push (2026-08-25, cost review) — moved to
+  # e2e-browserstack-preview.yml instead, which is workflow_run-triggered
+  # off Deploy Preview's completion and therefore never polls at all: it
+  # doesn't start running (or billing) until the preview it needs already
+  # exists. release/** PRs don't get a Deploy Preview run in the first
+  # place (deploy-preview.yml excludes fix/release-* branches), so there's
+  # nothing to wait for here — straight to the static test tier, always.
+  # ─────────────────────────────────────────────────────────────
+  e2e-browserstack:
+    name: Cross-browser E2E (BrowserStack)
+    runs-on: ubuntu-latest
+    needs: [unit-tests, detect-changes]
+    # No timeout-minutes previously meant this job defaulted to GitHub's
+    # 360-minute ceiling. A real run on PR #61 (2026-08-25) hung for over
+    # an hour when BrowserStack requests were rejected (missing access-gate
+    # header) instead of failing fast, and needed a manual force-cancel --
+    # left alone it could have burned hours of billable minutes on a single
+    # bad run. 30 covers install + the full unscoped suite with no waiting
+    # on anything else.
+    timeout-minutes: 30
+    # RETAIL_APP_HOME lives as a Variable in the `test` GitHub Environment
+    # (confirmed live via the Environments API, 2026-08-25) -- not a Secret,
+    # and not under a `_SIT` suffix (there is no such secret anywhere in
+    # this repo; `sit` the environment has no RETAIL_APP_HOME at all).
+    # Without this binding the job can't see it, RETAIL_APP_HOME resolves
+    # empty, and BasePage.goto() falls back to a hardcoded localhost URL
+    # that BrowserStack's remote browsers can never reach anyway (real CI
+    # failure on PR #61, 2026-08-25: every test failed page.goto with
+    # net::ERR_CONNECTION_REFUSED at http://localhost:3000/).
+    environment: test
+    # Same always()/skipped handling as e2e-localhost above.
+    if: |
+      always() &&
+      needs.detect-changes.outputs.e2e == 'true' &&
+      (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') &&
+      contains(github.base_ref, 'release/')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+
+      # release/** has no single primary story, so build-name always uses
+      # the plain run-number naming (scripts/computeBuildName.mjs's
+      # per-story Jira lookup is only meaningful on the develop-PR path,
+      # which now lives in e2e-browserstack-preview.yml).
+      - name: Compute build name
+        id: build-name
+        run: echo "name=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      # zephyr-results-sync.yml downloads this rather than recomputing it
+      # — see that workflow's own comment for why (spec-file-set drift
+      # between what qa.yml saw and what the sync job's own checkout sees).
+      - name: Persist build name for the Zephyr sync job
+        env:
+          BUILD_NAME: ${{ steps.build-name.outputs.name }}
+        run: printf '%s\n' "$BUILD_NAME" > browserstack-build-name.txt
+
+      - name: Upload build name artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: browserstack-build-name
+          path: browserstack-build-name.txt
+          retention-days: 7
+
+      - name: Run Zimmermann e2e on BrowserStack
+        run: npx browserstack-node-sdk playwright test e2e/tests/zimm
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          SPRINT_NUMBER: ${{ steps.build-name.outputs.name }}
+          RETAIL_APP_HOME: ${{ vars.RETAIL_APP_HOME }}
+          # The `test` tier is access-gated (confirmed with the developer,
+          # 2026-08-25) -- without this header every request is rejected
+          # before the page can load. See BasePage.js's applyExtraHeaders()
+          # and testing.md > Access-gated preview URLs.
+          E2E_EXTRA_HEADER_NAME: ${{ secrets.E2E_EXTRA_HEADER_NAME }}
+          E2E_EXTRA_HEADER_VALUE: ${{ secrets.E2E_EXTRA_HEADER_VALUE }}
+          PWA_E2E_USER_EMAIL: ${{ secrets.PWA_E2E_USER_EMAIL }}
+          PWA_E2E_USER_PASSWORD: ${{ secrets.PWA_E2E_USER_PASSWORD }}
+          E2E_STANDARD_PRODUCT_SKU: ${{ secrets.E2E_STANDARD_PRODUCT_SKU }}
+          E2E_VARIANT_PRODUCT_SKU: ${{ secrets.E2E_VARIANT_PRODUCT_SKU }}
+          E2E_OOS_PRODUCT_SKU: ${{ secrets.E2E_OOS_PRODUCT_SKU }}
+          E2E_SALE_PRODUCT_SKU: ${{ secrets.E2E_SALE_PRODUCT_SKU }}
+          E2E_FIXTURE_ORDER_NUMBER: ${{ secrets.E2E_FIXTURE_ORDER_NUMBER }}
+          SITE_ID: au  # Default — parameterise for multi-region runs

@@ -1,0 +1,1057 @@
+     1	# FED Build Manual — Manual UI Build & Delivery
+     2	
+     3	**Owner:** Marcel Angelo Navarro · **Started:** August 2026
+     4	
+     5	This is the guide to building the UI manually — not via a Figma-to-React generator. F2R outputs are an
+     6	input we leverage where they exist; they are not the delivery mechanism. You are writing the component.
+     7	
+     8	Read §3 (Design Foundations) before your first component. It contains traps that will cost you time
+     9	each if you meet them by surprise.
+    10	
+    11	---
+    12	
+    13	## 1. The Operating Principles
+    14	
+    15	Four things were agreed that change how you build. They apply to every story.
+    16	
+    17	### Static-first
+    18	
+    19	Where an integration isn't available yet, **build against static data and move on.** Do not block, and
+    20	do not stub out a fake integration layer.
+    21	
+    22	- Props in, markup out. The component takes the data it renders as props.
+    23	- Static/mock data lives in the **story**, not in the component.
+    24	- No data-fetching hooks inside `overrides/app/components/` — that's the container/presentational rule
+    25	  in `.claude/rules/components.md`, and it's what makes the later wiring a one-file change instead of
+    26	  a rewrite.
+    27	
+    28	When Contentful (or SFCC, or Omneo) comes online, the component doesn't change — the page or container
+    29	that feeds it does. If you find yourself writing "temporary" fetch logic inside a component, stop:
+    30	that's the thing static-first exists to prevent.
+    31	
+    32	### Leverage what exists before building
+    33	
+    34	In priority order — this is the ladder, and you should be able to say which rung you landed on:
+    35	
+    36	```
+    37	Salesforce / PWA Kit base capability
+    38	        ↓  nothing fits
+    39	Existing shared component in overrides/
+    40	        ↓  nothing fits
+    41	Existing pattern in the codebase
+    42	        ↓  nothing fits
+    43	New implementation  ← justify this in the PR description
+    44	```
+    45	
+    46	F2R outputs count as "existing": the onshore design team's outputs, Jersey's work (currently mostly
+    47	primitive/foundation-level), and the design foundations now in the codebase. Use them where they fit
+    48	rather than starting clean.
+    49	
+    50	**The default is override, not build.** Not for tidiness — because an override **inherits the wiring for
+    51	free.** Override `product-view` and you get `addToCart([{product, variant, quantity}])`, the add-to-cart
+    52	modal, bundle handling and `updateCart` already connected. Build a bespoke equivalent and every one of
+    53	those has to be re-derived, re-tested and re-reviewed — none of which is visible in the story points, and
+    54	all of which lands on you.
+    55	
+    56	There's a second effect worth understanding, because it changes where your work shows up. PWA Kit's
+    57	resolver rewires imports transparently, so **overriding a component that SFCC's own base components
+    58	already import means the entire base template inherits your version** — zero call sites touched. A
+    59	bespoke component in a new folder only reaches the pages someone remembers to wire it into. Same result
+    60	on the page you're building; very different coverage across the site.
+    61	
+    62	⚠️ **One documented exception: `shared/ui/`.** That directory is consumed through a barrel
+    63	(`shared/ui/index.jsx`), and the barrel's own re-exports are **relative** (`export {Button} from
+    64	'./Button'`). The `ccExtensibility` resolver only rewrites `@salesforce/retail-react-app/...`
+    65	specifiers, so a relative import inside `node_modules` is never redirected. **208 base files import
+    66	that barrel; none import `shared/ui/Button` directly — so overriding `shared/ui/<Name>/` intercepts
+    67	nothing.** It is a place to put raw Zimmermann primitives for *our own* code to import explicitly, not
+    68	an interception point. See "Two component families" below.
+    69	
+    70	If you do land on "build custom", expect to justify it in the PR — that's not a formality, it's the one
+    71	question review will always ask.
+    72	
+    73	### Figma stays open the whole time
+    74	
+    75	Figma is not a one-time handoff you read and close. Keep it open and use it to actively find problems:
+    76	
+    77	- Validate the build against the design as you go, not at the end.
+    78	- Spot **missing tokens** — a value in Figma with no counterpart in `theme/foundation/`.
+    79	- Spot **missing design definitions** — a state (hover, disabled, error, empty) with no design.
+    80	- Catch discrepancies between design and implementation.
+    81	
+    82	When you find a gap, **raise it** — §7 covers where it goes. Silently inventing a value is the failure
+    83	mode; a hardcoded hex that "looked right" is how a design system dies.
+    84	
+    85	**Check the Figma link on the card actually points at your story's frame.** Because we work through the
+    86	Figma MCP, that link isn't a reference — it's effectively the spec, and whatever it points at is what
+    87	gets built.
+    88	
+    89	A wrong or stale link doesn't announce itself. It produces a component built to the wrong design, AC
+    90	signed off against a different frame, and QA testing a third source — none of which surfaces until page
+    91	assembly. If the link looks wrong, **ask the BA (Jas) to fix the card**, don't just work it out in a DM.
+    92	A verbal fix repairs one person's understanding and leaves the card — which the BA and QA both read —
+    93	still wrong.
+    94	
+    95	### Ask in the group chat
+    96	
+    97	Work it out together rather than solo. If you've been stuck more than ~30 minutes, or you're about to
+    98	make a decision that affects more than your own component, post it. These threads are how the team
+    99	learns as a group — a question you think is basic is usually three people's question.
+   100	
+   101	Claude is part of the workflow where it fits. Treat its output the way you'd treat a colleague's
+   102	first draft: useful, and checked before it ships.
+   103	
+   104	### The bar you're building to
+   105	
+   106	Worth knowing, because it explains why review here is stricter than you may be used to:
+   107	**the SOW allows no more than 10 defects across the build, and no Sev3.**
+   108	
+   109	Zimmermann is a luxury brand and is exceptionally particular about UI. That combination removes the usual
+   110	"ship it, fix it in QA" option — a visual defect that would be a shrug elsewhere consumes part of a very
+   111	small budget. Practically, for you:
+   112	
+   113	- Expect UI PRs to be reviewed against the preview environment **and** Figma, not just the diff.
+   114	- Self-review the same way before you open it (§8). It's faster than a review round-trip.
+   115	- Where design is missing or contradictory, **flag it** rather than picking something plausible. An
+   116	  invented value becomes a defect *and* a design-system divergence — two problems instead of none.
+   117	
+   118	---
+   119	
+   120	## 2. Before you write any code
+   121	
+   122	Five minutes here saves a day later.
+   123	
+   124	### Run the session start
+   125	
+   126	```bash
+   127	/session-start
+   128	```
+   129	
+   130	Reads the tracking docs, checks your branch, states where the project is. Do it once per session.
+   131	
+   132	### Confirm your branch
+   133	
+   134	```bash
+   135	git branch --show-current
+   136	```
+   137	
+   138	`feature/*` or `fix/*`, branched from `develop`. **If it says `develop` or `main`, stop.** No exceptions.
+   139	
+   140	### Check what already exists
+   141	
+   142	| Question | Where to look |
+   143	|---|---|
+   144	| Does a Base / Override / Custom component already cover this? | `.claude/registry/components.md` |
+   145	| Same for hooks, utils, pages, routes | `.claude/registry/{hooks,utils,pages,routes}.md` |
+   146	| What's in the base package? | `node_modules/@salesforce/retail-react-app/app/components/` |
+   147	| Which tier am I about to touch? | Registry `Tier` column, or `/audit-tier <path>` |
+   148	| Is another squad the owner? | Registry `Squad` column · `.claude/rules/squad{A,B}.md` |
+   149	
+   150	The registry's **`Origin`** column is the one that matters most:
+   151	
+   152	- **`Custom`** — a Zimmermann component already in `overrides/`. Extend it.
+   153	- **`Override`** — a base component already scaffolded into `overrides/`. Edit it directly.
+   154	- **`Base`** — it exists upstream but is **not** in `overrides/` yet. **This has a cost.** See below.
+   155	
+   156	### Three component families — and they do different jobs
+   157	
+   158	`overrides/app/components/` holds three kinds of thing. Knowing which you're writing decides the path, the
+   159	naming, and whether it affects anything but your own page.
+   160	
+   161	| | `components/<kebab-name>/` | `components/ui-kits/{atoms,molecules}/<camelName>/` | `components/shared/ui/<PascalName>/` |
+   162	|---|---|---|---|
+   163	| **What it is** | An override of an SFCC component | A Zimmermann design-system component | A raw primitive — Link, Text, Image, Button |
+   164	| **Naming** | Keep SFCC's kebab-case exactly (`product-tile/`) | **camelCase** (`zimmButton/`) | Mirror upstream's PascalCase (`Button/`) |
+   165	| **Layout** | `index.tsx` + story | `index.tsx` + story, one folder per component | `index.tsx` |
+   166	| **Intercepts SFCC?** | **Yes** — base files import by full package path | No | **No** — see the barrel exception above |
+   167	| **Who consumes it** | Every base page that used it, plus you | Our own pages and components | Explicit importers — chiefly Contentful renderers |
+   168	| **Reach for it when** | Changing how an SFCC component looks or behaves | Building a Zimmermann component from the F2R design library | You want a plain branded primitive, no commerce semantics |
+   169	
+   170	The `shared/ui` family exists because **Contentful renderers need primitives, not commerce components.**
+   171	Every Contentful component on `develop` already pulls them in — `duplexSection` (`Box`, `Text`),
+   172	`collectionHero` (`Box`, `Button`, `Heading`, `Text`), `hotspotPopup` (`Box`, `Image`, `Link`, `Skeleton`,
+   173	`Text`), `imageText`, `heroBanner`, `shoppableImage`. Upstream those resolve to bare Chakra
+   174	(`shared/ui/Button/index.jsx` is literally `export {Button} from '@chakra-ui/react'`). A CMS rich-text
+   175	renderer mapping a `hyperlink` node to a `Link` wants exactly that — predictable and unopinionated — not a
+   176	component carrying SFCC's locale-routing and commerce behaviour.
+   177	
+   178	**Status: the intent is agreed, the wiring is not built.** A `shared/ui/Button` exists on
+   179	`feature/pdp-token-class-spike`, its only consumer is the `/dev/components` catalogue page, there is no
+   180	`overrides/app/components/shared/ui/index.tsx` barrel, and `collectionHero` still imports `Button` from
+   181	the SFCC barrel — so it still gets raw Chakra. Don't build against this family until the barrel question
+   182	is settled (see the playbook).
+   183	
+   184	### Atoms and molecules — where they go and what they're called
+   185	
+   186	**Decided.** Zimmermann design-system components live under:
+   187	
+   188	```
+   189	overrides/app/components/ui-kits/
+   190	  atoms/       zimmButton/  zimmIcon/  zimmLogo/  zimmNavItem/  zimmTextInput/
+   191	  molecules/   zimmInputAction/
+   192	  organisms/   (when the first one lands)
+   193	               └── index.tsx  +  index.stories.tsx
+   194	```
+   195	
+   196	**Naming is `camelCase`, one folder per component, `index.tsx` inside.** That follows
+   197	`conventions.md` — these are Zimmermann-authored, so camelCase; the kebab-case rule applies *only* to files
+   198	mirroring a base Salesforce file, and there is no `@salesforce/…/zimm-button` to mirror. It also satisfies
+   199	`components.md`'s rule that **the named export matches the folder name** — `zimmButton/` exports
+   200	`ZimmButton`. Precedents already in the repo: `pageContainer/`, `pdpProductInfo/`.
+   201	
+   202	Three casings exist and each is correct in its own family — don't generalise from one to another:
+   203	
+   204	| Family | Casing | Why |
+   205	|---|---|---|
+   206	| SFCC override | `product-tile/` kebab | Must match upstream; their files import that path |
+   207	| **ui-kit component** | **`zimmButton/` camelCase** | **Zimmermann-authored — the default rule** |
+   208	| `shared/ui` primitive | `Button/` PascalCase | Mirrors upstream's own PascalCase exactly |
+   209	
+   210	**Which tier?** Atom / molecule / organism is decided by **what the component's own template renders**,
+   211	not by how big it looks:
+   212	
+   213	- **Atom** — renders no other component. Markup, CSS and tokens only.
+   214	- **Molecule** — renders only atoms.
+   215	- **Organism** — renders at least one molecule.
+   216	
+   217	Two rules that settle most arguments: **an icon passed as a prop doesn't count** (`icon="close"` keeps a
+   218	Button an atom), and **slotted children don't count** — only what your own template renders. A top bar
+   219	composing just Button + Logo is a molecule even though it spans the viewport; tier follows composition,
+   220	not pixel size.
+   221	
+   222	If you're porting from the F2R design library, the tier is already recorded there as `composes: [...]` —
+   223	use it rather than re-deriving. Add a `@see f2r/02-design/library/elements/<name>` line in the JSDoc so
+   224	the link back to the contract survives.
+   225	
+   226	### What's actually overridden today
+   227	
+   228	Worth knowing before you estimate anything: **`overrides/app/components/` currently contains seven
+   229	directories.** As of `develop` @ `2dfeb4d`:
+   230	
+   231	```
+   232	_app-config   button   contentful   foundation   header   icons   pageContainer
+   233	```
+   234	
+   235	That's it. `product-tile`, `display-price`, `swatch-group`, `image-gallery`, `link`, `footer`,
+   236	`list-menu`, `drawer-menu` and `seo` are all still **`Origin = Base`** — they exist upstream and are
+   237	referenced throughout `.claude/rules/` and the protected-file lists, but they have **not** been scaffolded
+   238	into `overrides/` yet.
+   239	
+   240	Two consequences:
+   241	
+   242	- **Most stories you pick up will pay copy-first** (below). Assume it until the registry says otherwise.
+   243	- **When a rules file points at one of those as an example, the file won't be there.** The convention is
+   244	  real; the worked example often isn't yet. Check before you go looking.
+   245	
+   246	### If `Origin = Base`, the copy-first rule applies
+   247	
+   248	Before any functional work, AGENTS.md requires:
+   249	
+   250	1. Copy the base file → mirrored path in `overrides/` (keep the kebab-case filename exactly)
+   251	2. Convert to TypeScript (`.ts`/`.tsx`), fix imports
+   252	3. `npx tsc --noEmit`
+   253	4. Add a temporary `console.log('[overrides] product-tile.tsx')` marker
+   254	5. **Stop.** A human confirms the override is rendering instead of the base
+   255	6. Then build; remove the markers
+   256	
+   257	It's serialised and human-gated, and **the first story against a given base component pays it — later
+   258	ones don't.** This is the single most common reason a story looks small and isn't. Flag it at refinement,
+   259	not on day three of the sprint.
+   260	
+   261	### Sanity-check the scope
+   262	
+   263	```bash
+   264	/scope-check
+   265	```
+   266	
+   267	Classifies everything you're about to touch by tier and tells you if the change is safe, risky, or
+   268	blocked. Worth it any time you're not certain.
+   269	
+   270	---
+   271	
+   272	## 3. Design Foundations — read this before your first component
+   273	
+   274	**Canonical reference: `.claude/rules/overrideStyling.md`.** That file is the authority on styling an
+   275	override; this section is the orientation for it. If the two ever disagree, the rules file wins — and
+   276	this section needs a fix, so raise it.
+   277	
+   278	The design system lives in `overrides/app/theme/`. It has **one** source of truth and derives outward:
+   279	
+   280	```
+   281	foundation/  colour.ts · typography.ts · spacing.ts · sizes.ts · motion.ts · gridSystem.ts
+   282	        |  imported and derived from — never retyped
+   283	foundation/zimmTokens.ts          -> the --zimm-* CSS custom properties
+   284	        |  consumed by
+   285	theme/components/*.ts (recipes)   ·   globalStyles.ts (.zimm-* classes)
+   286	```
+   287	
+   288	`zimmTokens.ts` is **derived**, not a second copy — it imports `colors.grey[900]` rather than retyping
+   289	`#191919`. That is why you never edit it directly, and why two values cannot drift apart.
+   290	`theme/index.test.tsx` guards the arrangement with 125 tests; a failure there is a real drift signal,
+   291	not test noise.
+   292	
+   293	### The styling hierarchy — reach for these in order
+   294	
+   295	This is the load-bearing rule of the whole section.
+   296	
+   297	1. **`textStyle` prop** for anything textual — `textStyle="body2"`, never a raw `fontSize`
+   298	2. **Semantic token strings** — `color="text.default"`, `bg="background.02"`,
+   299	   `padding={{ base: 'm', md: 'xl' }}`
+   300	3. **The component's own `theme/components/<name>.ts`** for anything that varies by variant / size /
+   301	   state. For an interactive component with Chakra support (buttons, inputs, links) that file is the
+   302	   **single source of truth**
+   303	4. **`sx` prop** for a genuine one-off gap in the Chakra prop system
+   304	5. **Scoped `.scss`** only when `sx` truly cannot express it (complex pseudo-selectors, keyframes)
+   305	
+   306	**Never** a raw hex / px / rem / em literal in a component file. The one standing exception is
+   307	`button.ts`'s provisional constants — trap 2 below.
+   308	
+   309	Registered component recipes today: `Button`, `Header`, `ListMenu` (`theme/components/index.ts`).
+   310	Adding a new one is yours to do — one file per Chakra component, registered in that index.
+   311	
+   312	### Setting type — always `textStyle`, never `fontSize`
+   313	
+   314	```tsx
+   315	<Text textStyle="body1">…</Text>          // ✅
+   316	<Heading textStyle="heading3">…</Heading>  // ✅
+   317	<Text fontSize="md">…</Text>               // ❌ never
+   318	```
+   319	
+   320	**Why this is a hard rule, not a preference.** Four Zimmermann font-size keys collide with Chakra
+   321	defaults, and the base retail-react-app uses those names at ~199 call sites:
+   322	
+   323	| Key | Zimmermann | Chakra |
+   324	|---|---|---|
+   325	| `md` | 24px | 16px |
+   326	| `xs` | 16px | 12px |
+   327	| `2xs` | 14px | 10px |
+   328	| `3xs` | 12px | 7.2px |
+   329	
+   330	The Zimmermann font scale is **deliberately not registered** as `theme.fontSizes` for exactly this
+   331	reason. If you write `fontSize="md"` expecting 24px you get 16px. If you "fix" that by registering the
+   332	scale, you silently restyle every base component on the site. There's a test guarding against it —
+   333	don't fight it, use `textStyle`.
+   334	
+   335	**The 22 available text styles:**
+   336	
+   337	`heading1Strong` `heading1` `heading2` `heading3` · `body1Strong` `body1` `body2Strong` `body2` ·
+   338	`mobileBody1Strong` `mobileBody1` `mobileBody2` · `label` `caption` · `linkLg` `linkSm` ·
+   339	`button` `buttonSm` · `productNames` `price` · `navigation` · `footer` · `serif`
+   340	
+   341	Browse them rendered in Storybook under **Foundation → Typography**.
+   342	
+   343	### Colour — use the semantic aliases
+   344	
+   345	```tsx
+   346	<Box bg="background.01" color="text.default" borderColor="border.default" />   // ✅
+   347	<Box bg="#f9f8f6" color="#191919" />                                          // ❌
+   348	```
+   349	
+   350	Two layers exist. Reach for the **semantic** layer; the primitives are what the semantics are built from.
+   351	
+   352	| Group | Keys |
+   353	|---|---|
+   354	| `text.*` | `default` `inverse` `inverseGrey` `secondary` `muted` |
+   355	| `background.*` | `01`–`07` (`01`–`04` light/ivory, `05`–`06` dark, `07` white) |
+   356	| `border.*` | `default` `secondary` `focus` `forms` `error` |
+   357	| `status.*` | `success` `error` `errorBackground` `storeClosed` |
+   358	| `link.*` · `icon.*` | `default` `hover` · `default` |
+   359	| `action.primary.*` | `bgDefault` `bgHover` `bgPressed` `bgDisabled` `bgFocused` `text` `textDisabled` |
+   360	| `action.secondary.*` | `border` `bgHover` `text` `textInverse` `textDisabled` |
+   361	| Primitives | `grey.{black,900,800,700,600,500,300,200,100,white}` `ivory.{100..400}` `coral/green/orange/red.500` `opacity.{15,30,40,50}` |
+   362	
+   363	Browse under **Foundation → Colour**.
+   364	
+   365	### Spacing
+   366	
+   367	Both scales work — Chakra's numerics are preserved and the Zimmermann named scale is added on top.
+   368	**Prefer the named scale**, since it's what the design system speaks:
+   369	
+   370	```tsx
+   371	<Box padding="m" marginBottom="xl" />   // ✅ 1rem, 1.5rem
+   372	<Box padding={4} />                      // works, but not the design vocabulary
+   373	```
+   374	
+   375	`3xs` 0.125 · `2xs` 0.25 · `xs` 0.5 · `s` 0.75 · `m` 1 · `l` 1.25 · `xl` 1.5 · `2xl` 2 · `3xl` 2.5 ·
+   376	`4xl` 4 · `5xl` 5 · `6xl` 8 · `7xl` 10 — **in `rem`**, i.e. 2/4/8/12/16/20/24/32/40/64/80/128/160px at
+   377	the default 16px root font-size.
+   378	
+   379	**The scale is `rem`, not `px`** — spacing and type scale with the user's root font-size and browser
+   380	zoom (WCAG 1.4.4). Hairline geometry deliberately does not:
+   381	
+   382	- `borderWidth="default"` → `1px`, registered as a Chakra scale
+   383	- `focusRingOffsets.{default, secondary}` → `2px` / `3px`, imported as a constant from
+   384	  `app/theme/foundation` (`secondary` exists to clear the secondary button's 1px border)
+   385	
+   386	**Unit rule:** `rem` for anything that should scale (type, spacing) · `px` only for hairline geometry
+   387	(border widths, focus-ring offsets) · `em` only for breakpoints. Never a raw literal of any unit in a
+   388	component file.
+   389	
+   390	⚠️ **Don't use the `--zimm-scale-NNN` numeric aliases in JSX.** You'll see them in `zimmTokens.ts`
+   391	(`--zimm-scale-500`, `--zimm-scale-1100`, …). They exist **only** so the `.zimm-*` global classes have
+   392	something to reference. The named scale is the Chakra-facing surface:
+   393	
+   394	```tsx
+   395	<Box mb="var(--zimm-scale-500)" />   // ❌ 20px, but bypasses the scale
+   396	<Box mb="l" />                        // ✅ same 20px, traceable to the token
+   397	```
+   398	
+   399	If the value you need has no named entry — 28px and 44px are both in use with nothing between `xl` (24)
+   400	and `2xl` (32), or `3xl` (40) and `4xl` (64) — that's a **token gap to raise** (§7), not a reason to reach
+   401	for the numeric alias.
+   402	
+   403	### Icon sizes, action sizes and motion are NOT theme tokens
+   404	
+   405	These collide with Chakra scales too (`theme.sizes.lg` is 32rem and backs `w`/`h`/`boxSize` everywhere),
+   406	so they're **imported as constants** instead:
+   407	
+   408	```tsx
+   409	import { iconSizes, actionSizes, motion } from 'app/theme/foundation';
+   410	
+   411	<Icon boxSize={iconSizes.lg} />                                    // 20px
+   412	<Button height={actionSizes.height.lg} />                          // 52px
+   413	transition: `opacity ${motion.duration.fast} ${motion.easing.standard}`
+   414	```
+   415	
+   416	`iconSizes` — `lg` 20 · `md` 16 · `sm` 12
+   417	`actionSizes` — `height.{lg:52, md:40}` · `paddingX.{lg:32, md:20}` · `gap:16`
+   418	`motion` — `duration.{fast:200ms, default:300ms, slow:500ms}` · `easing.{standard, slides, fades}`
+   419	
+   420	⚠️ **Motion values are PROVISIONAL** and pending designer sign-off. Use them, but expect them to move.
+   421	
+   422	#### The trap: a spacing token key on a sizing prop
+   423	
+   424	This one shipped a completely broken footer, so it's worth being blunt about.
+   425	
+   426	**`width` / `height` / `boxSize` / `min|maxWidth` / `min|maxHeight` resolve through `theme.sizes`.
+   427	`margin` / `padding` / `gap` / `top`-`right`-`bottom`-`left` resolve through `theme.space`.**
+   428	
+   429	The Zimmermann named scale (`xs`, `m`, `l`, `xl`, `2xl`…) is registered as **`space` only** — deliberately,
+   430	for the collision reason above. So a scale key on a *sizing* prop falls through to **Chakra's default
+   431	`sizes`**, which reuses the same names for completely different values:
+   432	
+   433	```tsx
+   434	// theme/components/footer.ts — intended a 24px icon touch target
+   435	width: 'xl',    // ❌ → var(--chakra-sizes-xl) = 36rem = 576px
+   436	height: 'xl',   // ❌   every contact icon became 576px; the footer layout collapsed on every page
+   437	
+   438	width: 'var(--zimm-scale-xl)',   // ✅ 1.5rem = 24px — literal CSS, no scale lookup
+   439	```
+   440	
+   441	Chakra's `sizes` are container widths: `xs` 20rem · `sm` 24rem · `md` 28rem · `lg` 32rem · `xl` 36rem.
+   442	Each is a plausible-looking, silent 20–30× blow-up.
+   443	
+   444	**The rule:** on a sizing property use `var(--zimm-scale-*)`, an imported constant (`iconSizes`,
+   445	`actionSizes`), or an explicit unit — **never a bare scale key**. Bare keys are safe on spacing
+   446	properties only.
+   447	
+   448	Nothing catches this. `'xl'` is a valid `SystemStyleObject` value so TypeScript is satisfied, no lint rule
+   449	exists, and no test asserts layout. It passed `tsc`, `eslint`, `vitest`, CodeRabbit (local *and* PR) and
+   450	the Storybook a11y run — only rendering the page found it.
+   451	
+   452	#### Four more layout traps, all found by rendering rather than by any tool
+   453	
+   454	**A shorthand resets a longhand you declared above it — in your own recipe.** The note above about not
+   455	introducing a shorthand where the *base* sets longhands has a sibling: order matters inside your own
+   456	object too.
+   457	
+   458	```ts
+   459	paddingBlock: '4.5px',
+   460	// …twelve lines later…
+   461	padding: 0,          // ← silently wipes paddingBlock
+   462	```
+   463	
+   464	The first attempt at the footer nav item had exactly this and appeared to do nothing at all. Use
+   465	`paddingInline: 0` when you mean "no horizontal padding". `recipeGuards.test.ts` catches a bare scale key
+   466	*inside* a shorthand; it does not catch this.
+   467	
+   468	**A wrapped element takes the width available to it, not the width of its longest line.** The footer's
+   469	ABOUT column sat at its 160px cap while its longest rendered line was 115px — 45px of dead space that
+   470	pushed the next column right. `width: min-content` resolves to the widest *unbreakable run*, which is
+   471	what you want — but only for a label whose break is deliberate. On a single-line label it collapses to
+   472	the longest word and wraps it. Gate it on a signal that means "this break is intentional".
+   473	
+   474	**Height from `minHeight` + `align-items: center` breaks the moment content wraps.** Centring only
+   475	distributes what a single line leaves over. A two-line label overflows the floor, so the leading
+   476	collapses to zero and the item sits flush against the one above. Derive height from `lineHeight` plus
+   477	padding instead — it holds at any line count.
+   478	
+   479	**A block `<li>` wrapping an `inline-flex` `<a>` leaks ~1.5px per row.** The line box's strut adds
+   480	descender space below the baseline. Five rows cost 9px against Figma. `display: flex` on the list item
+   481	removes the line box entirely; axe confirmed list semantics survive.
+   482	
+   483	#### Figma's text boxes are cap-height. Browser line boxes are not.
+   484	
+   485	Figma reports a single-line footer item as 8px of text and two lines as 22px; the same text in a browser
+   486	measures ~14.5px and ~29px. **Transfer the rule, not the numbers.** For the nav item the rule was "equal
+   487	space above and below, height follows the line count" — expressed in our units as `lineHeight: 14px` plus
+   488	4.5px block padding, which lands on Figma's 24px and 38px exactly. Copying 8/22 would have produced
+   489	nonsense.
+   490	
+   491	#### Type metrics change layout decisions — get the real font in first
+   492	
+   493	Before the real faces were served, the fallback stack rendered roughly **13% wider**. Several sizing
+   494	decisions taken against it were simply wrong and had to be redone: a nav-column cap chosen to make one
+   495	label wrap stopped working once labels shrank, and a 768px overflow disappeared on its own. If a build
+   496	depends on measured text, self-host the font before you start measuring.
+   497	
+   498	#### When no single value satisfies two constraints, constrain the text instead
+   499	
+   500	The ACK label needed to wrap after the first word while "BOOK AN APPOINTMENT" stayed on one line. The
+   501	viable column cap was **[131, 132.9) — 1.9px**, a coincidence rather than a tolerance. A non-breaking
+   502	space between the words that must stay together widened the safe window to 71px. Content-level fixes are
+   503	sometimes the robust ones — but note the dependency: production copy has to carry the same character.
+   504	
+   505	### The `.zimm-*` global classes — and the one rule about them
+   506	
+   507	**27** global classes exist: `.zimm-text-*` (typography), `.zimm-form-*` (form-field layout),
+   508	`.zimm-grid`, `.zimm-focus-visible`. They mirror the design system as static CSS so handover markup can
+   509	be pasted and look right. They are **not** the preferred authoring route for new Zimmermann components —
+   510	default to the hierarchy above.
+   511	
+   512	**There are no `.zimm-btn-*` classes, and there must never be.** The whole family was deleted
+   513	deliberately, and the reason generalises:
+   514	
+   515	> **One canonical styling surface per component type.** If a component has interactive state, its
+   516	> `theme/components/<name>.ts` recipe is the only place its look is defined. A static CSS class cannot
+   517	> express `_hover` / `_active` / `_disabled` / `_focusVisible`, so a class "mirror" of a recipe is
+   518	> structurally incomplete from birth — and nothing stops the two drifting apart afterwards.
+   519	
+   520	So: **every button is Chakra's `<Button>` styled by `theme/components/button.ts`.** Never a class, never
+   521	a hand-rolled `<button>` with its own styles. `.zimm-*` classes remain the right tool only for genuinely
+   522	static, non-interactive, heavily-reused treatments — typography, the grid, form-field layout.
+   523	
+   524	⚠️ Worth knowing: `globalStyles.ts` has almost no consumers today (one Storybook demo uses `.zimm-grid`)
+   525	and it ships on every page. Don't reach for a class where a prop or a recipe will do.
+   526	
+   527	### Interaction state goes in CSS, never in React state
+   528	
+   529	This is the rule most likely to cost you a rewrite, so it's worth being blunt about.
+   530	
+   531	Hover, press, focus and disabled belong in the component's theme recipe as Chakra's pseudo-props. They do
+   532	**not** belong in `useState`.
+   533	
+   534	```tsx
+   535	// ❌ never — interaction state in React
+   536	const [hovered, setHovered] = useState(false)
+   537	<button onMouseEnter={() => setHovered(true)} style={{background: hovered ? a : b}}>
+   538	
+   539	// ✅ theme/components/myThing.ts — the browser does the work
+   540	_hover:        { bg: 'var(--zimm-color-action-primary-bg-hover)' },
+   541	_active:       { bg: 'var(--zimm-color-action-primary-bg-pressed)' },
+   542	_disabled:     { bg: 'var(--zimm-color-border-secondary)', cursor: 'not-allowed' },
+   543	_focusVisible: { outline: 'var(--zimm-focus-ring)', outlineOffset: 'var(--zimm-focus-ring-offset-default)' },
+   544	```
+   545	
+   546	It looks identical in a screenshot. It behaves differently in five ways that all matter here:
+   547	
+   548	| JS state | CSS pseudo-class |
+   549	|---|---|
+   550	| Dead until hydration — the button renders but doesn't respond | Works on first paint, no JS needed |
+   551	| No way to express `@media (hover: hover)` → sticky hover on touch after a tap | Opts out on touch devices properly |
+   552	| Inline styles win every specificity fight — the theme **cannot** override them | Overridable by variant, later |
+   553	| The keyboard focus ring built for WCAG 2.4.7 lives in the recipe, so it never applies | Inherited automatically |
+   554	| Every hover re-renders the component | No React work at all |
+   555	
+   556	With a ≤2s p75 mobile LCP budget and a WCAG 2.2 AA target, the first and fourth rows are the ones that
+   557	turn into defects.
+   558	
+   559	**Corollary — a theme recipe nothing consumes is dead code.** If you write
+   560	`theme/components/myThing.ts` and register it, the component has to actually read it — Chakra's
+   561	`<Button>`/`<Link>` etc. do so automatically; a custom multipart component needs
+   562	`useStyleConfig('MyThing')`. A registered-but-unread recipe looks like compliance and changes nothing.
+   563	
+   564	### The styling surface for a ui-kit component — decided
+   565	
+   566	**A theme recipe, always.** Not inline styles, not a `.zimm-*` class, not a co-located CSS file. Pick the
+   567	case that matches what you're building:
+   568	
+   569	| Case | What you write |
+   570	|---|---|
+   571	| It **is** a Chakra component (`Button`, `Link`, `Input`) | A recipe at `theme/components/<name>.ts`. Chakra resolves `variant`/`size` automatically — your component is a thin prop-mapping layer |
+   572	| A **bespoke multipart** Zimmermann component | A recipe + register it + read it with `useMultiStyleConfig` + build on the `chakra()` factory |
+   573	| Genuinely **static, non-interactive, heavily reused** | A `.zimm-*` class in `globalStyles.ts` |
+   574	| Nothing above fits | `sx`, then a co-located `.scss` — last resort, per `css.md` |
+   575	
+   576	**The bespoke case, worked** — this is the one people get stuck on, because a recipe can't style a bare
+   577	`<input>`. The `chakra()` factory is the bridge: it makes a native element theme-aware, so you keep native
+   578	semantics *and* get recipe styling.
+   579	
+   580	```ts
+   581	// theme/components/zimmTextInput.ts
+   582	import type { SystemStyleObject } from '@chakra-ui/react';
+   583	// Figma node 40000265:374 — field/border/* tokens
+   584	const BORDER = { default: 'var(--zimm-color-border-forms)', … } as const;
+   585	export const ZimmTextInput = { parts: [...], baseStyle: {...}, variants: {...} };
+   586	```
+   587	```ts
+   588	// theme/components/index.ts — register it, or destructuring throws at runtime
+   589	export const components = { Button, Footer, Header, ListMenu, ZimmNavItem, ZimmTextInput };
+   590	```
+   591	```tsx
+   592	// components/ui-kits/atoms/zimmTextInput/index.tsx
+   593	import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+   594	const styles = useMultiStyleConfig('ZimmTextInput', { inverse, disabled });
+   595	```
+   596	
+   597	Note the theme key is **PascalCase** (`ZimmTextInput`) while the file is camelCase
+   598	(`zimmTextInput.ts`) — the key is the Chakra component name, the filename follows our convention. Same
+   599	split as `listMenu.ts` → `ListMenu`.
+   600	
+   601	**Why not co-located CSS, when plain CSS handles `:hover` perfectly well?** Because a stylesheet can only
+   602	see `var(--zimm-*)`, and those are **derived output** — the bottom of the token pipeline. Author there and
+   603	you give up `textStyle`, the named `theme.space` scale, semantic colour tokens, responsive arrays, and the
+   604	125 drift-guard tests in `theme/index.test.tsx`. It isn't bad CSS; it's the wrong end of the pipeline.
+   605	
+   606	*(You may see `.styles.ts` files using `.zimm-*` classes on the F2R conversion branch. They're a faithful
+   607	Figma→CSS transcription and excellent raw material for writing a recipe — convert them, don't copy the
+   608	pattern. `.zimm-btn-*` classes in particular were deliberately removed from `globalStyles.ts`; don't
+   609	reintroduce them anywhere.)*
+   610	
+   611	### Adding a new token
+   612	
+   613	**You don't.** `overrides/app/theme/foundation/` is Tier 1 and designer-owned (Hard Rule #3). If Figma
+   614	has a value with no token, that's a §7 escalation, not a local addition. Same for
+   615	`theme/globalStyles.ts` (Tier 2, needs a named owner's nod).
+   616	
+   617	Per-component theme overrides in `theme/components/` **are** yours to add — one file per Chakra
+   618	component, registered in `theme/components/index.ts`.
+   619	
+   620	### Naming a recipe — `extendTheme` MERGES, it does not replace
+   621	
+   622	`theme/index.ts` composes with `extendTheme(baseTheme, overrides)`, and that is a **deep merge**. If your
+   623	recipe key matches an SFCC base recipe key, you are not replacing theirs — **you are inheriting it.**
+   624	
+   625	Base SFCC ships recipes for `Footer`, `Header`, `ListMenu`, `Button`, `CheckoutFooter` and more. Register
+   626	a recipe called `Footer` and every part name you happen to share silently inherits the base's properties.
+   627	
+   628	Two failure modes, both seen on this project:
+   629	
+   630	**1 · Properties you never chose.** SFCC's `Footer.copyright` is `{fontSize: 'sm', marginBottom: 6}`. Our
+   631	recipe set `textStyle: 'footer'` (10px) — the base's literal `fontSize: 'sm'` won, so copyright rendered
+   632	at **14px with a stray 24px bottom margin** nobody wrote.
+   633	
+   634	**2 · Reordered output — the dangerous one.** A key that already exists in the base keeps the *base's*
+   635	position in the merged object; a key you add that the base lacks is appended **last**. So:
+   636	
+   637	```ts
+   638	// ours
+   639	subscribeHeading: { margin: 0, /* … */ marginBottom: 'xl' }   // 24px gap intended
+   640	```
+   641	```css
+   642	/* merged output — base already had marginBottom, so ours took its early slot;
+   643	   `margin` was new, so it landed last and reset the shorthand */
+   644	margin-bottom: var(--chakra-space-xl);   /* 24px */
+   645	margin: 0px;                             /* ← wins. Gap is now 0. */
+   646	```
+   647	
+   648	In isolation Chakra emits these in the correct order. **Only the merge inverts them.**
+   649	
+   650	**The rule:**
+   651	
+   652	- **Full rewrite** (your recipe shares almost nothing with the base) → **namespace the key**:
+   653	  `ZimmFooter`, not `Footer`, consumed as `useMultiStyleConfig('ZimmFooter')`. Same convention
+   654	  `ZimmNavItem` and `ZimmTextInput` already follow.
+   655	- **Genuine partial override** (you want the base's other parts — `Header`, `ListMenu`, `Button`) → keep
+   656	  the base key, but **never introduce a CSS shorthand on a part where the base sets longhands.** Your
+   657	  `margin`/`padding`/`background`/`border` is appended last and will wipe them.
+   658	- Always declare your own `parts` array. A recipe with no `parts` inherits the base's list, so any
+   659	  Zimmermann part you add is undeclared.
+   660	
+   661	To see exactly what you're inheriting, diff the merged recipe against your source:
+   662	
+   663	```js
+   664	theme.components.Header.baseStyle   // merged — what actually applies
+   665	```
+   666	
+   667	---
+   668	
+   669	## 4. The build sequence
+   670	
+   671	Four steps, in order. This is the agreed approach.
+   672	
+   673	### Step 1 — Does it already exist?
+   674	
+   675	§2. Check the registry and the base package. Report what you found in the PR description, even when the
+   676	answer is "nothing" — that's the evidence the ladder was walked.
+   677	
+   678	### Step 2 — Use as-is, override/extend, or build custom?
+   679	
+   680	| Verdict | When | What you do |
+   681	|---|---|---|
+   682	| **Use as-is** | Base behaviour and markup are right; only styling differs | Style it via `theme/components/<name>.ts`. No component file at all |
+   683	| **Override / extend** | Base structure is right, behaviour or markup needs changing | Copy-first (§2), then modify. **Minimal changes** — don't remove base functionality you weren't asked to touch |
+   684	| **Build custom** | Nothing upstream is close | `/new-component` scaffolds it. Justify the call in the PR |
+   685	
+   686	Most work should land in the first two columns. If you're reaching for "custom" often, raise it — either
+   687	the ladder isn't being walked or there's a real gap worth naming.
+   688	
+   689	**If SFCC's own components import the thing you're overriding, use the bridge pattern.** Check first:
+   690	
+   691	```bash
+   692	grep -r "from '@salesforce/retail-react-app/app/components/<name>'" \
+   693	  node_modules/@salesforce/retail-react-app/app/
+   694	```
+   695	
+   696	Any hits mean base components depend on it, so its **default export must stay a faithful, undecorated
+   697	port** — full original prop surface, same `forwardRef` behaviour. Put Zimmermann-only styling behind a
+   698	**named export** that wraps the default. Get this wrong and you restyle or break base cart / checkout /
+   699	account screens you never opened.
+   700	
+   701	Where the brand difference is purely token-driven you don't need the split at all — put it in
+   702	`theme/components/<name>.ts` instead, and leave the default export untouched.
+   703	
+   704	⚠️ **No worked precedent exists in the repo yet.** `overrideStyling.md` describes this pattern using
+   705	`product-tile` (`CardBaseline` + faithful default), `link`, `image-gallery`, `display-price` and
+   706	`swatch-group` — **none of which are overrides on `develop` today.** The pattern is the agreed approach;
+   707	you may well be the one who establishes the first example of it. If you are, say so in the PR so the rule
+   708	file can be updated to point at something real.
+   709	
+   710	### Step 3 — Execute the swap / override / build
+   711	
+   712	Component folder layout (`.claude/rules/conventions.md`):
+   713	
+   714	```
+   715	overrides/app/components/productTile/
+   716	  index.tsx            ← the component (named export matching the folder)
+   717	  index.stories.tsx    ← mandatory
+   718	  index.test.ts        ← only if logic-heavy
+   719	  types.ts             ← only if props are shared with siblings
+   720	  productTile.scss     ← only if Chakra props genuinely can't express it
+   721	```
+   722	
+   723	- **Zimmermann-authored files:** `camelCase` (`productTile.tsx`)
+   724	- **Override files mirroring a base file:** keep the original kebab-case exactly (`product-tile.tsx`)
+   725	- **TypeScript only inside `overrides/`.** No `.js`/`.jsx`, including stories and config
+   726	- Named export matches the folder; props type is `<ComponentName>Props`
+   727	- Callbacks are `onEventName`; required props non-optional, optional props use `?`
+   728	- Australian spelling in Zimmermann-authored code (`colour`, `centre`) — override files keep upstream
+   729	  spelling verbatim
+   730	- No magic numbers or strings — name the constant
+   731	- JSDoc required on anything with ≥2 callers and on every exported hook
+   732	
+   733	**Split it up when:** the component passes ~150 lines, branches heavily, or accumulates ≥2 related
+   734	`useState` calls (→ extract a hook in `overrides/app/hooks/use<Component><Feature>.ts`).
+   735	
+   736	### Step 4 — Apply the design styles
+   737	
+   738	§3. Chakra props first, tokens always, `textStyle` for type. Then check it against Figma at the
+   739	breakpoints the design defines, and raise what doesn't line up.
+   740	
+   741	---
+   742	
+   743	## 5. Storybook — non-negotiable, and your build surface
+   744	
+   745	Every component exported from its folder needs a `*.stories.tsx`. Internal sub-components that only
+   746	render inside one parent don't — cover their variants through the parent.
+   747	
+   748	Build **in** Storybook rather than building and then adding a story. It's the fastest loop you have,
+   749	and it's the only place a reviewer can see every state at once.
+   750	
+   751	```bash
+   752	npm run storybook
+   753	```
+   754	
+   755	**Two things Storybook will not show you truthfully.**
+   756	
+   757	Base-template SVGs are `ignore-loader`ed in `.storybook/main.js`, mirroring the browser build. Any icon
+   758	sourced from `@salesforce/retail-react-app` therefore renders as an **empty box** in Storybook while
+   759	rendering correctly in the app. Twelve of `ZimmIcon`'s types are currently in that state. Our own icons
+   760	in `zimm.tsx` are unaffected — so an icon that appears blank in Storybook is usually a sourcing signal,
+   761	not a broken glyph.
+   762	
+   763	`test-storybook` needs a **built** Storybook (`build-storybook` + a static server), which is what CI does.
+   764	Pointing it at a running dev server produces wholesale failures that mean nothing.
+   765	
+   766	**Categorisation** (drives the sidebar; pick the first that matches):
+   767	
+   768	| Category | What goes here |
+   769	|---|---|
+   770	| `Foundation/` | Design tokens — Colour, Typography, Spacing, Icons |
+   771	| `Elements/` | Generic building blocks — Button, Input, Badge, Link, Checkbox. *Tiebreaker: usable outside a form?* → `Elements/` |
+   772	| `Layout/` | Global chrome and structure — Header, Footer, DrawerMenu, Breadcrumb, Pagination |
+   773	| `Commerce/` | Commerce-specific shared — ProductTile, OrderSummary, PromoCode, DisplayPrice |
+   774	| `Forms/` | Composed form assemblies — AddressForm, NewsletterSignup |
+   775	| `Pages/` | Full page assemblies |
+   776	| `Contentful/` | CMS-driven — use mock Contentful data so variants are visible without a live CMS |
+   777	
+   778	```ts
+   779	export default { title: 'Commerce/ProductTile' };   // ✅
+   780	export default { title: 'Elements/DisplayPrice' };  // ❌ commerce-specific → Commerce/
+   781	```
+   782	
+   783	**Content:** every file has a `Default` export. Add named exports for meaningful states (`Loading`,
+   784	`OutOfStock`, `WithDiscount`, `Empty`) — not for every prop permutation. This is where your static-first
+   785	data lives.
+   786	
+   787	**`play` functions** only where there's interactive behaviour worth asserting — validation on blur,
+   788	disclosure open/close, focus movement. Query through `within(canvasElement)`, prefer `getByRole` with
+   789	an accessible name, and import `userEvent` from `@storybook/test` (not `@testing-library/user-event`).
+   790	
+   791	⚠️ **If a component looks wrong in Storybook but right in the app, suspect your imports before your
+   792	CSS.** `--zimm-*` variables now resolve correctly in Storybook (§3 trap 1). The likely cause is §3 trap
+   793	1b: a base-path import of an already-overridden component renders the *base* SFCC version in Storybook
+   794	and Vitest while working fine in the app. Switch it to a relative import.
+   795	
+   796	### Your branch gets a live URL, automatically
+   797	
+   798	Separate from Storybook, and new: every push to a `feature/*` or `fix/*` branch now builds and deploys
+   799	itself to its own dedicated MRT environment, then posts the URL as a comment on the PR.
+   800	
+   801	- Created on first push and **reused** on later pushes — one environment per branch, not per commit. The
+   802	  comment updates in place rather than piling up.
+   803	- **Torn down automatically** when the PR closes or the branch is deleted.
+   804	- A real Sydney-hosted (`ap-southeast-2`) storefront with real dev environment variables — not a mock.
+   805	- Excluded: `fix/release-*` sub-branches and `hotfix/*`.
+   806	
+   807	Use it for design review, QA sign-off, and anything cross-device. Nobody needs your branch checked out
+   808	locally to look at your work, and it's why you should never have to fight over the shared dev target
+   809	again.
+   810	
+   811	Storybook is still where you **build** — fastest loop, every state visible at once. The preview
+   812	environment is where other people **review**.
+   813	
+   814	---
+   815	
+   816	## 6. Accessibility — written as AC, not added later
+   817	
+   818	Baseline is **WCAG 2.2 AA**. Fall back to 2.1 AA only where 2.2 is technically infeasible, and document
+   819	why in the story.
+   820	
+   821	### The standing set — apply to every component
+   822	
+   823	- Keyboard operability and reachability
+   824	- Focus order, and a **visible** focus state
+   825	- All interaction states: hover, active, disabled, focused
+   826	- Screen-reader behaviour for images and icon-only controls
+   827	- Behaviour when optional content is absent (no empty box, no layout break)
+   828	- Target size ≥ 24×24 CSS px for interactive controls (SC 2.5.8)
+   829	
+   830	### Already mechanically enforced — you'll be caught anyway
+   831	
+   832	| Check | By |
+   833	|---|---|
+   834	| `<img>` without `alt` (`alt=""` is fine when decorative) | ast-grep |
+   835	| `IconButton` / `IconButtonWithRegistration` without `aria-label` | ast-grep |
+   836	| `onClick` on a non-interactive element without `role` | ast-grep |
+   837	| Unsanitised `dangerouslySetInnerHTML` | semgrep |
+   838	| Storybook a11y violations | `@storybook/addon-a11y`, `test: 'error'` — **fails CI** |
+   839	
+   840	⚠️ **The `<img>` rule matches lowercase `<img>` only.** Chakra's `<Image>` is *not* covered. Most
+   841	components here use `<Image>` — that one is on you.
+   842	
+   843	### Not enforced anywhere — genuinely your responsibility
+   844	
+   845	Keyboard flow, focus order, colour-contrast in states, screen-reader semantics beyond the above, and
+   846	whether the disabled state is actually communicated rather than just faded.
+   847	
+   848	---
+   849	
+   850	## 7. When you find a gap
+   851	
+   852	You will find them. Figma will be missing a state, a token won't exist, a requirement will contradict
+   853	itself. **Raise, don't invent.**
+   854	
+   855	| What you found | Where it goes |
+   856	|---|---|
+   857	| Value in Figma with no token | Design review (Kiera) via the lead — never add to `foundation/` yourself |
+   858	| Missing design for a state (hover/disabled/error/empty) | Design review, and flag on the story before it's sized |
+   859	| Design contradicts a signed-off PRD in `.docs/prd/` | **Stop.** Cite doc + section + requirement ID, ask which wins. Don't proceed silently either way |
+   860	| Requirement unclear, ambiguous, or unconfirmed | Ask in the group chat first; if it changes scope, it goes back to refinement |
+   861	| Contrast/a11y failure in the tokens themselves | Raise with the lead — several are already known (§3) |
+   862	| Needs a new npm package | **Stop.** Integration team approval required. Check `package.json` first — something installed may already do it |
+   863	| Needs a shared hook's signature changed | **Stop.** Team RFC |
+   864	| Touches a Tier 1 file | **Stop.** See `.claude/rules/frozenFiles.md` |
+   865	
+   866	Ask **one question at a time** and wait for the answer — batching them gets them half-answered.
+   867	
+   868	---
+   869	
+   870	## 8. Before you open a PR
+   871	
+   872	**Green locally before you open it.** Not a nicety — a PR that doesn't compile spends a reviewer's whole
+   873	budget on nothing, and review here runs an hour or more per UI PR.
+   874	
+   875	```bash
+   876	npx tsc --noEmit          # must be clean
+   877	npm run lint              # must not add new errors
+   878	npm test                  # Vitest
+   879	npm run build-storybook && npx test-storybook   # play functions + a11y — Vitest does NOT cover these
+   880	/code-quality             # naming, imports, structure, missing stories/tests
+   881	```
+   882	
+   883	**Vitest does not run `play` functions.** A change that breaks a story passes `npm test` and fails in CI.
+   884	That happened on the footer PR: making a text-input control opt-in removed a button a `play` function
+   885	clicked, `tsc`/`lint`/`vitest` were all green, and CI caught it at 1 failure in 73.
+   886	
+   887	Two failure modes specific to this repo, both seen already:
+   888	
+   889	- **A `develop` merge can silently delete a type declaration.** If your branch added something to
+   890	  `overrides/app/types/vendor.d.ts` and `develop` also changed that file, the merge can resolve to
+   891	  develop's version and drop yours. Re-run `tsc` **after** every merge from `develop`, not just before.
+   892	- **Sometimes the rule is wrong, not your code.** One recent failure came from following a repo rules file
+   893	  that named a package which doesn't exist on the installed Storybook major. If a documented import
+   894	  doesn't resolve, check the package actually exists before assuming you mistyped it — then flag the rule.
+   895	
+   896	### Self-review across the same three surfaces the reviewer will use
+   897	
+   898	Cheaper to catch it yourself than in a review round-trip:
+   899	
+   900	| Surface | What you're checking |
+   901	|---|---|
+   902	| **The diff** | Correct tokens in the correct layer, reuse over reimplementation, no raw literals |
+   903	| **The preview environment** | What it actually renders — every state, every breakpoint, hover and focus genuinely working |
+   904	| **Figma, side by side** | Parity at the breakpoints the design defines |
+   905	
+   906	Your branch's preview URL is posted on the PR automatically (§5). If a difference from Figma is a *design*
+   907	gap rather than a build gap, say so in the PR description — don't quietly resolve it.
+   908	
+   909	Then a local CodeRabbit review — **required, not optional**:
+   910	
+   911	```bash
+   912	coderabbit auth status && cr review --light --base develop
+   913	```
+   914	
+   915	If the CLI isn't installed or authenticated, install it (coderabbit.ai/cli) and run
+   916	`npm run env -- init` for the shared key rather than committing without a review. The GitHub PR review
+   917	is still the real gate; this one catches things earlier.
+   918	
+   919	### Self-check
+   920	
+   921	- [ ] Ladder walked — reuse checked and reported, "custom" justified
+   922	- [ ] Copy-first done and confirmed if `Origin = Base`; `console.log` markers removed
+   923	- [ ] All design values are tokens — **no hardcoded hex, no raw px/rem/em** (still not mechanically
+   924	      enforced: `overrideStyling.md` points at `scripts/auditTokenUsage.mjs`, which does not exist yet —
+   925	      so this stays the highest-frequency violation in review)
+   926	- [ ] Type set with `textStyle`, never `fontSize`
+   927	- [ ] Storybook story exists, categorised correctly, `Default` plus meaningful states
+   928	- [ ] Vitest where logic is non-obvious — data mapping, transforms, complex state
+   929	- [ ] Accessibility AC met, including the parts no tool checks
+   930	- [ ] Optional/absent content handled — no empty space, no layout break
+   931	- [ ] No data-fetching hooks inside a `components/` file
+   932	- [ ] No `console.log`/`console.error` left behind
+   933	- [ ] Existing comments and commented-out code left alone (only remove alongside the code they describe)
+   934	- [ ] One protection tier touched, not several
+   935	- [ ] `/pr-checklist` run to generate the description
+   936	
+   937	**Commits, pushes and PRs happen only when explicitly asked.** Finishing the work is not the trigger.
+   938	
+   939	---
+   940	
+   941	## 9. Hard stops
+   942	
+   943	Non-negotiable. From AGENTS.md.
+   944	
+   945	- **Never work on `develop` or `main`.**
+   946	- **Never modify `overrides/app/theme/foundation/`** — designer-owned.
+   947	- **Never modify** `overrides/app/ssr.js`, `config/default.js`, `config/sites.js`, `worker/main.js` —
+   948	  absolute, no approver exception.
+   949	- **Never modify test config** — `vitest.config.*`, `playwright.config.*`, `.storybook/`, `lighthouserc.js`.
+   950	- **Never add or remove packages** without integration-team approval. Use `npm install`, don't hand-edit
+   951	  `package.json`.
+   952	- **Never delete files** unless explicitly asked. Propose it and let a human confirm.
+   953	- **Never refactor upward** — fixing a component doesn't license changing the hook it calls.
+   954	- **Never rename or move a shared hook or component.**
+   955	- **Never reference a later sprint's code** — check `.docs/memory/sprintScope.md`.
+   956	- **Never run `npm start`** — ask; the dev server is shared.
+   957	- **Never load a third-party script outside a Didomi consent callback.** Fail closed: unknown consent
+   958	  state means load nothing.
+   959	
+   960	### Shared-shell coordination
+   961	
+   962	`header/` `footer/` `drawer-menu/` `list-menu/` `seo/` `_app/` `_app-config/` `routes.tsx` are Tier 2
+   963	shared shell — **coordinate with the other squad before touching.** Same for
+   964	`product-tile/` `product-item/` `display-price/` `image-gallery/` `swatch-group/` (Squad B owns) and
+   965	`order-summary/` `promo-code/` `pickup-or-delivery/` (Squad A owns).
+   966	
+   967	---
+   968	
+   969	## 10. Performance — it's a requirement, not a polish pass
+   970	
+   971	Mobile page speed is a top project priority. **LCP budget ≤ 2s at p75 mobile.**
+   972	
+   973	- **Images:** always lazy-load, always serve correctly sized. Never render a full-res image at thumbnail size.
+   974	- **Code splitting:** dynamic `import()` for heavy components not needed on first render.
+   975	- **Data fetching:** request only the fields you need. No waterfalls — parallelise.
+   976	- **Third-party scripts:** must not block LCP. `defer`/`async`/post-hydration only, and always behind Didomi.
+   977	- **Bundle size:** gated at `main.js` ≤ 180 kB, `vendor.js` ≤ 550 kB. Don't introduce a large dependency
+   978	  without asking. *(Note: there is currently no CSS budget in CI — that doesn't mean CSS is free.)*
+   979	
+   980	---
+   981	
+   982	## 11. Quick reference
+   983	
+   984	### Commands
+   985	
+   986	```bash
+   987	/session-start                    # start-of-session ritual
+   988	/audit-tier <path>                # tier, owner, blast radius
+   989	/scope-check                      # is this prompt safe to run
+   990	/new-component                     # scaffold component + story
+   991	/code-quality                     # audit before PR
+   992	/pr-checklist                     # generate PR description
+   993	npx tsc --noEmit                  # type check
+   994	npm run lint                      # ESLint
+   995	npm test                          # Vitest
+   996	npm run storybook                 # Storybook at :6006
+   997	cr review --light --base develop  # local CodeRabbit
+   998	```
+   999	
+  1000	### Paths
+  1001	
+  1002	| What | Where |
+  1003	|---|---|
+  1004	| Components | `overrides/app/components/` |
+  1005	| Hooks | `overrides/app/hooks/` |
+  1006	| Pages | `overrides/app/pages/` |
+  1007	| Shared types | `overrides/app/types/{commerce,components,hooks}.ts` |
+  1008	| Design tokens (Tier 1, read-only) | `overrides/app/theme/foundation/` |
+  1009	| Component theme overrides (yours) | `overrides/app/theme/components/` |
+  1010	| **Styling rules — canonical, read this** | `.claude/rules/overrideStyling.md` |
+  1011	| `--zimm-*` injection (app + Storybook) | `overrides/app/theme/zimmTokensGlobal.tsx` |
+  1012	| Icons — **single source of truth** | `overrides/app/components/icons/` |
+  1013	| Registries | `.claude/registry/*.md` |
+  1014	| Rules | `.claude/rules/*.md` |
+  1015	| Requirements | `.docs/prd/` · integrations `.docs/integration/NN-*.md` |
+  1016	
+  1017	**Icons:** import only from `overrides/app/components/icons`. Never from
+  1018	`@salesforce/retail-react-app/app/components/icons`. If an icon is missing, **ask** — don't substitute
+  1019	a visually different one.
+  1020	
+  1021	### The eight things people get wrong most
+  1022	
+  1023	1. **Interaction state in `useState` instead of the recipe's `_hover` / `_active` / `_focusVisible`** →
+  1024	   identical in a screenshot; dead until hydration, sticky on touch, and unstylable by the theme (§3)
+  1025	2. `fontSize="md"` instead of `textStyle` → wrong size, silently
+  1026	3. **A spacing scale key on a sizing prop** — `width: 'xl'` → `theme.sizes.xl` = **36rem**, not
+  1027	   `space.xl` = 1.5rem. A silent 24× blow-up that no tool catches. Use `var(--zimm-scale-*)` (§3)
+  1028	4. **Naming a recipe after an SFCC base recipe** — `extendTheme` merges, so `Footer` inherits SFCC's
+  1029	   `Footer`, and any shorthand you add lands last and wipes the base's longhands. Namespace it
+  1030	   (`ZimmFooter`) for a rewrite (§3)
+  1031	5. Importing an already-overridden component by its `@salesforce/...` base path → your story or test
+  1032	   silently exercises the unstyled **base** component while the app renders fine (§3 trap 1b)
+  1033	6. A hardcoded hex or px that "matched the design" → no tool catches it; review will. Reaching for a
+  1034	   `--zimm-scale-NNN` alias instead of the named scale counts as the same mistake
+  1035	7. Data-fetching inside a `components/` file → makes the later integration a rewrite
+  1036	8. Skipping copy-first on an `Origin = Base` component → the override never renders and you debug the
+  1037	   wrong file
+  1038	
+  1039	**3 and 4 are the two that a screenshot won't reveal and a reviewer won't spot in a diff** — both were
+  1040	found on SFCC-55 only by rendering the page and measuring it. They are the strongest argument for the
+  1041	three-surface self-review in §8.
+  1042	
+  1043	---
+  1044	
+  1045	*Verified against `develop` @ `2dfeb4d` on 18 August 2026. Confirmed exact: the 22 text styles, the 27
+  1046	`.zimm-*` classes, the 125 theme guard tests, the three registered recipes, every colour group and key,
+  1047	`iconSizes` / `actionSizes` / `motion`, `BTN_HEIGHT_LG`/`SM`/`BTN_PADDING_Y`, `NAV_LETTER_SPACING`,
+  1048	`FONT_SERIF`, `--zimm-scale-500 = spacing.l`, the bundlesize budgets, and all six npm scripts. Corrected in
+  1049	this pass: several components the rules files describe as existing overrides are still base — see "What's
+  1050	actually overridden today" in §2.*
+  1051	
+  1052	*Working document, aligned to `develop` as of 18 August 2026 — PRs #53 (token foundation), #54 (preview
+  1053	environments) and #56 (token architecture hardening + the styling rules file).
+  1054	
+  1055	*§3 is the part that moves. Its canonical source is `.claude/rules/overrideStyling.md` — if that file and
+  1056	this section disagree, the rules file wins and this one needs correcting. Raise anything here that's gone
+  1057	stale rather than working around it.*

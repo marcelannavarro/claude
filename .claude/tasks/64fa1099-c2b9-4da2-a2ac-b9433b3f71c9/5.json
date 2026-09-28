@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Phase 1: build @arche/cli + create-arche",
+  "description": "arche binary (init/plan/apply, filesystem-only first), greenfield/brownfield detection, @clack/prompts flow, create-arche npm-init shim. Sandbox-repo e2e: init into temp dir, second apply is no-op.",
+  "activeForm": "Building CLI + create-arche",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,850 @@
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
+index ba61e33..dc914ae 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
+@@ -37,7 +37,7 @@ import { MemoryRouter } from 'react-router-dom';
+ import theme from 'app/theme';
+ import { RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS } from 'app/constants';
+ import { ZimmRecentlyViewedRail } from './index';
+-import type { ZimmProductCardProps } from '../zimmProductCard';
++import type { ZimmRecentlyViewedCardProps } from './index';
+ 
+ // jsdom has no matchMedia implementation, and this component's own `useBreakpointValue` call
+ // (RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS, added 2026-09-08 for the hard per-breakpoint cap) needs
+@@ -116,7 +116,7 @@ const wrap = (ui: React.ReactElement) =>
+     </ChakraProvider>,
+   );
+ 
+-const buildCard = (id: string): ZimmProductCardProps => ({
++const buildCard = (id: string): ZimmRecentlyViewedCardProps => ({
+   id,
+   variation: 'recentlyViewed',
+   name: `Product ${id}`,
+diff --git a/overrides/app/pages/recentlyViewed/index.test.tsx b/overrides/app/pages/recentlyViewed/index.test.tsx
+index 81fa9c3..ce24178 100644
+--- a/overrides/app/pages/recentlyViewed/index.test.tsx
++++ b/overrides/app/pages/recentlyViewed/index.test.tsx
+@@ -1,17 +1,21 @@
+ /**
+- * SFCC-84 build plan step B2 — asserts only this container's own contract
+- * (`.claude/rules/testing.md`'s no-duplicate-coverage rule): given `useRecentlyViewedHistory`'s
+- * return value, does it render `ZimmRecentlyViewedGrid` (with the right computed `title`/
+- * `itemCountLabel`/`cards`) or this page's own empty state, correctly branched on
+- * `isRegistered`; and does the item-count label actually pluralize via real ICU `plural`
+- * resolution. `useRecentlyViewedHistory`, `useRecentlyViewedProductFetch`,
+- * `selectRecentlyViewedFullHistoryCard` and `ZimmRecentlyViewedGrid` are all mocked at the
+- * smallest surface — their own internals already have their own coverage elsewhere
+- * (`useRecentlyViewedHistory.test.ts`, `recentlyViewedProductFetch.test.ts`,
+- * `recentlyViewedFullHistoryCard.test.ts`, `zimmRecentlyViewedGrid/index.test.tsx`). Same
+- * smallest-surface-mocking convention `recommended-products/index.test.tsx` already establishes
+- * for an almost identical container shape (mocks the child organism it renders, the history hook,
+- * and the product-fetch utility).
++ * SFCC-84 build plan step E2 — asserts only this container's own contract
++ * (`.claude/rules/testing.md`'s no-duplicate-coverage rule): given `useEinstein()`'s own
++ * `isLoading`/`recommendations`, does it render `ZimmRecentlyViewedGrid` (with the right computed
++ * `title`/`itemCountLabel`/`cards`), this page's own empty state (correctly branched on
++ * `isRegistered`), or neither — and does the item-count label actually pluralize via real ICU
++ * `plural` resolution. `selectRecentlyViewedFullHistoryCard`, `resolveOrderableVariant`, and
++ * `ZimmRecentlyViewedGrid` are all mocked at the smallest surface — their own internals already
++ * have their own coverage elsewhere (`recentlyViewedFullHistoryCard.test.ts`,
++ * `zimmRecentlyViewedGrid/index.test.tsx`).
++ *
++ * **Rewritten for build plan step E2** — the interim mechanism's own view-history-hook and
++ * product-fetch-utility mocks are gone (both real modules deleted in build plan step E4; see
++ * index.tsx's own module docblock, which names them directly). Every test case below now drives
++ * its scenario entirely through `mockUseEinstein`, matching the exact pattern build plan step E1
++ * already established (`recommended-products/index.test.tsx`). Product fixtures keep the same
++ * `RecentlyViewedFullHistoryProduct` shape as before — a hydrated Einstein rec is a strict
++ * superset of it (see index.tsx's own module docblock) — only the mock supplying them changed.
+  *
+  * `useMultiSite` is mocked the same way `footer/index.test.tsx` already does for the same reason:
+  * the empty state's CTAs use the base SFCC `Link` (`@salesforce/retail-react-app/app/components/
+@@ -32,8 +36,8 @@ import { IntlProvider } from 'react-intl';
+ import { MemoryRouter } from 'react-router-dom';
+ import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site';
+ import { useCustomerType, useShopperBasketsMutationHelper } from '@salesforce/commerce-sdk-react';
+-import { useRecentlyViewedHistory } from '../../hooks/useRecentlyViewedHistory';
+-import { useRecentlyViewedProductFetch } from '../../utils/recentlyViewedProductFetch';
++import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
++import { EINSTEIN_RECOMMENDERS } from '@salesforce/retail-react-app/app/constants';
+ import {
+   selectRecentlyViewedFullHistoryCard,
+   resolveOrderableVariant,
+@@ -65,12 +69,8 @@ vi.mock('@salesforce/retail-react-app/app/hooks/use-toast', () => ({
+   useToast: () => vi.fn(),
+ }));
+ 
+-vi.mock('../../hooks/useRecentlyViewedHistory', () => ({
+-  useRecentlyViewedHistory: vi.fn(),
+-}));
+-
+-vi.mock('../../utils/recentlyViewedProductFetch', () => ({
+-  useRecentlyViewedProductFetch: vi.fn(),
++vi.mock('@salesforce/retail-react-app/app/hooks/use-einstein', () => ({
++  default: vi.fn(),
+ }));
+ 
+ vi.mock('../../utils/recentlyViewedFullHistoryCard', () => ({
+@@ -89,8 +89,7 @@ vi.mock('../../components/ui-kits/organisms/zimmRecentlyViewedGrid', () => ({
+ const mockUseMultiSite = vi.mocked(useMultiSite);
+ const mockUseCustomerType = vi.mocked(useCustomerType);
+ const mockUseShopperBasketsMutationHelper = vi.mocked(useShopperBasketsMutationHelper);
+-const mockUseRecentlyViewedHistory = vi.mocked(useRecentlyViewedHistory);
+-const mockUseRecentlyViewedProductFetch = vi.mocked(useRecentlyViewedProductFetch);
++const mockUseEinstein = vi.mocked(useEinstein);
+ const mockSelectRecentlyViewedFullHistoryCard = vi.mocked(selectRecentlyViewedFullHistoryCard);
+ const mockResolveOrderableVariant = vi.mocked(resolveOrderableVariant);
+ const mockZimmRecentlyViewedGrid = vi.mocked(ZimmRecentlyViewedGrid);
+@@ -103,11 +102,33 @@ const mockProducts: RecentlyViewedFullHistoryProduct[] = [
+   { id: 'rv-2', name: 'Product Two' } as RecentlyViewedFullHistoryProduct,
+ ];
+ 
++/**
++ * The exact `useEinstein()` return shape this container reads (`isLoading`,
++ * `recommendations.recs`, `getRecommendations`) — matching the pattern
++ * `recommended-products/index.test.tsx` (build plan step E1) already established for the same
++ * hook. No `as never` cast needed here (unlike the other mocks above): `useEinstein` is a base
++ * SFCC hook with no real TypeScript types of its own (covered by `vendor.d.ts`'s wildcard
++ * `any`-typed module declaration), so `mockReturnValue` imposes no shape constraint — confirmed
++ * against E1's own committed test file, which passes a plain object literal the same way.
++ */
++const mockEinsteinReturn = (
++  isLoading: boolean,
++  recs: RecentlyViewedFullHistoryProduct[],
++  getRecommendations: (...args: unknown[]) => unknown = vi.fn(),
++) => {
++  mockUseEinstein.mockReturnValue({ isLoading, recommendations: { recs }, getRecommendations });
++};
++
+ const renderPage = (
+   isRegistered: boolean,
+   addItemToNewOrExistingBasket: (...args: never[]) => Promise<unknown> = vi.fn().mockResolvedValue(undefined),
++  // Identity by default — every existing test in this file (the empty-state CTA hrefs
++  // particularly) is about a different concern, so an identity buildUrl keeps their expectations
++  // meaningful. The one test that needs to prove this container's own selectRecentlyViewedFullHistoryCard
++  // wiring (2026-09-15, CodeRabbit finding, confirmed) passes a distinguishing prefix instead.
++  buildUrl: (path: string) => string = (path) => path,
+ ) => {
+-  mockUseMultiSite.mockReturnValue({ buildUrl: (path: string) => path } as never);
++  mockUseMultiSite.mockReturnValue({ buildUrl } as never);
+   mockUseCustomerType.mockReturnValue({ isRegistered } as never);
+   mockUseShopperBasketsMutationHelper.mockReturnValue({ addItemToNewOrExistingBasket } as never);
+ 
+@@ -124,22 +145,21 @@ afterEach(() => {
+   vi.clearAllMocks();
+ });
+ 
+-describe('RecentlyViewed — cards render when history exists', () => {
+-  test('renders ZimmRecentlyViewedGrid, not the empty state, when hasRecentlyViewed is true', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++describe('RecentlyViewed — cards render when Einstein has recs', () => {
++  test('renders ZimmRecentlyViewedGrid, not the empty state, when recs has items, and fires getRecommendations once on mount', () => {
++    const mockGetRecommendations = vi.fn();
++    mockEinsteinReturn(false, mockProducts, mockGetRecommendations);
+     // rv-2 deliberately maps to `null` (e.g. no usable image/name) — proves this container's own
+-    // `.filter()` drops it instead of forwarding a null card or crashing.
+-    mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) =>
++    // `.filter()` drops it instead of forwarding a null card or crashing. `href` is built via the
++    // injected `buildUrl` (not a hand-built `/product/...` literal) so the assertion below proves
++    // this container actually threads a real `buildUrl` through to the mapper (2026-09-15,
++    // CodeRabbit finding, confirmed).
++    mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product, _formatPrice, buildUrl) =>
+       product?.id === 'rv-2'
+         ? null
+         : {
+             id: product?.id ?? '',
+-            href: `/product/${product?.id ?? ''}`,
++            href: buildUrl(`/product/${product?.id ?? ''}`),
+             name: product?.name ?? '',
+             headingLevel: 'h3',
+             primaryImage: { src: 'https://example.test/image.jpg', alt: product?.name ?? '' },
+@@ -147,45 +167,55 @@ describe('RecentlyViewed — cards render when history exists', () => {
+           },
+     );
+ 
+-    renderPage(true);
++    // Distinguishing, unmistakable prefix — not the identity default every other test in this
++    // file relies on — so the href assertion below would fail if this page stopped passing its
++    // own `buildUrl` through, rather than passing regardless of whether the wiring is real.
++    renderPage(true, undefined, (path) => `/en-GB${path}`);
+ 
+     expect(screen.getByTestId('zimm-recently-viewed-grid-stub')).toBeInTheDocument();
+     expect(screen.queryByTestId('recently-viewed-empty')).not.toBeInTheDocument();
+ 
++    // Build plan step E2: this container fires getRecommendations once on mount, for this one
++    // recommender, with no seed products — matches recommended-products/index.tsx's own RV branch
++    // (build plan step E1; open question 3: Einstein derives from cookieId/userId, not seed
++    // products, for this recommender).
++    expect(mockGetRecommendations).toHaveBeenCalledWith(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED);
++
+     expect(mockZimmRecentlyViewedGrid).toHaveBeenCalledTimes(1);
+     const gridProps = mockZimmRecentlyViewedGrid.mock.calls[0][0];
+     expect(gridProps.title).toBe('Recently Viewed');
+     expect(gridProps.cards).toHaveLength(1);
+     expect(gridProps.cards[0]).toMatchObject({ id: 'rv-1', variation: 'plp' });
+-
+-    // The product-fetch utility is fed this shopper's real tracked ids, in the order the history
+-    // hook returned them.
+-    expect(mockUseRecentlyViewedProductFetch).toHaveBeenCalledWith(['rv-1', 'rv-2']);
++    expect(gridProps.cards[0].href).toBe('/en-GB/product/rv-1');
+   });
+ });
+ 
+ describe('RecentlyViewed — page heading (2026-09-10 fix: this page had no Heading element at all)', () => {
+   test('renders a real h1 with the page title, in the populated branch', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
+-    mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(null);
++    mockEinsteinReturn(false, mockProducts);
++    // A real mapped card for every product (not `null`) -- this scenario must actually land on the
++    // grid branch to match its own "populated branch" label. Before the 2026-09-15 gate fix (see
++    // the "all-stale-history gate" test below), this fixture's own `null` return meant `cards`
++    // was empty regardless, which no longer takes the grid branch now that the gate reads
++    // `cards.length` instead of `recs.length` -- corrected here so this test still exercises what
++    // its name says it does.
++    mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) => ({
++      id: product?.id ?? '',
++      href: `/product/${product?.id ?? ''}`,
++      name: product?.name ?? '',
++      headingLevel: 'h3',
++      primaryImage: { src: 'https://example.test/image.jpg', alt: product?.name ?? '' },
++      variation: 'plp',
++    }));
+ 
+     renderPage(true);
+ 
+     expect(screen.getByRole('heading', { level: 1, name: 'Recently Viewed' })).toBeInTheDocument();
++    expect(screen.getByTestId('zimm-recently-viewed-grid-stub')).toBeInTheDocument();
+   });
+ 
+   test('renders a real h1 with the page title, in the empty branch', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(true);
+ 
+@@ -195,12 +225,7 @@ describe('RecentlyViewed — page heading (2026-09-10 fix: this page had no Head
+ 
+ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+   test('registered: shows the registered body copy and only the Continue Shopping CTA', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(true);
+ 
+@@ -214,12 +239,7 @@ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+   });
+ 
+   test('guest: shows the guest body copy and both Continue Shopping and Sign In CTAs', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(false);
+ 
+@@ -231,35 +251,50 @@ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+     expect(signInLink).toHaveAttribute('href', '/account');
+   });
+ 
+-  test('empty state gate is hasRecentlyViewed, not cards.length: renders the grid, not the empty state, while the product fetch is still in flight for a shopper with real tracked ids', () => {
+-    // The exact race this container's own docblock documents: recentlyViewedIds is non-empty
+-    // (hasRecentlyViewed true) but the fetch hasn't resolved yet, so products (and therefore
+-    // cards) is still []. Gating on cards.length === 0 would incorrectly show the empty-state
+-    // copy here; gating on hasRecentlyViewed must not.
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: true });
++  test('race-safe gate (build plan step E2, decision #3): does not render the empty state while isLoading is true, even with zero recs resolved so far', () => {
++    // This is the exact race the race-safe gate exists to prevent: a genuine returning shopper's
++    // getRecommendations request is still in flight (isLoading true) and recs has not resolved yet
++    // (still empty) — gating on `!isLoading && recs.length === 0` (rather than `recs.length === 0`
++    // alone) is what stops "you haven't viewed anything yet" from flashing during that window.
++    // Verified directly, not just asserted: temporarily removing the `!isLoading` half of that
++    // condition in index.tsx (leaving only `recs.length === 0`) makes this exact test fail — the
++    // empty-state testid renders — and restoring the real gate makes it pass again.
++    mockEinsteinReturn(true, []);
+ 
+     renderPage(true);
+ 
+     expect(screen.queryByTestId('recently-viewed-empty')).not.toBeInTheDocument();
+-    expect(screen.getByTestId('zimm-recently-viewed-grid-stub')).toBeInTheDocument();
+-    const gridProps = mockZimmRecentlyViewedGrid.mock.calls[0][0];
+-    expect(gridProps.cards).toHaveLength(0);
++    expect(screen.queryByTestId('zimm-recently-viewed-grid-stub')).not.toBeInTheDocument();
++    expect(mockSelectRecentlyViewedFullHistoryCard).not.toHaveBeenCalled();
++  });
++
++  test('all-stale-history gate (2026-09-15 fix, CodeRabbit finding, personally verified before treating as valid): renders the empty state, not a blank page, when recs has items but every one fails to map to a card', () => {
++    // The exact bug this closes: with the old `recs.length`-based gate, a shopper with real (if
++    // all-stale) history -- every returned rec now offline/deleted, so
++    // `selectRecentlyViewedFullHistoryCard` returns `null` for every one of them -- saw
++    // `recs.length > 0` (2 items) evaluate true and took the grid branch with `cards={[]}`, which
++    // `ZimmRecentlyViewedGrid` renders as `null` per its own documented contract: a blank page with
++    // no explanation, not this page's own empty state.
++    //
++    // Verified directly, not just asserted (this codebase's prove-don't-assert discipline):
++    // temporarily reverting index.tsx's gate back to `recs.length > 0` /
++    // `!isLoading && recs.length === 0` made this exact test fail -- `recently-viewed-empty` was
++    // absent and `zimm-recently-viewed-grid-stub` was present instead -- and restoring the
++    // `cards.length` gate made it pass again.
++    mockEinsteinReturn(false, mockProducts);
++    mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(null);
++
++    renderPage(true);
++
++    expect(screen.getByTestId('recently-viewed-empty')).toBeInTheDocument();
++    expect(screen.queryByTestId('zimm-recently-viewed-grid-stub')).not.toBeInTheDocument();
++    expect(screen.getByText("You haven't viewed anything yet.")).toBeInTheDocument();
+   });
+ });
+ 
+ describe('RecentlyViewed — item count pluralization (real ICU plural resolution)', () => {
+   test('renders "1 item" (singular) for a single card', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [mockProducts[0]], isLoading: false });
++    mockEinsteinReturn(false, [mockProducts[0]]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue({
+       id: 'rv-1',
+       href: '/product/rv-1',
+@@ -276,12 +311,7 @@ describe('RecentlyViewed — item count pluralization (real ICU plural resolutio
+   });
+ 
+   test('renders "2 items" (plural) for two cards', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++    mockEinsteinReturn(false, mockProducts);
+     mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) => ({
+       id: product?.id ?? '',
+       href: `/product/${product?.id ?? ''}`,
+@@ -310,15 +340,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test("with no size selected, adds the product's own default id/price and never calls resolveOrderableVariant", () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: [{ ...mockProducts[0], price: 250 }],
+-      isLoading: false,
+-    });
++    mockEinsteinReturn(false, [{ ...mockProducts[0], price: 250 }]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(buildCard('rv-1', 'Product One'));
+ 
+     renderPage(true, addItemToNewOrExistingBasket);
+@@ -334,12 +356,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test('selecting a size chip then adding to bag resolves the real orderable variant for that card only', () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++    mockEinsteinReturn(false, mockProducts);
+     mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) =>
+       buildCard(product?.id ?? '', product?.name ?? ''),
+     );
+@@ -371,15 +388,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test("a selection matching no real variant falls back to the product's own default id/price, same as no selection at all", () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: [{ ...mockProducts[0], price: 250 }],
+-      isLoading: false,
+-    });
++    mockEinsteinReturn(false, [{ ...mockProducts[0], price: 250 }]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(buildCard('rv-1', 'Product One'));
+     mockResolveOrderableVariant.mockReturnValue(null);
+ 
+diff --git a/overrides/app/utils/recentlyViewedCard.test.ts b/overrides/app/utils/recentlyViewedCard.test.ts
+index 0f6f456..e4e049e 100644
+--- a/overrides/app/utils/recentlyViewedCard.test.ts
++++ b/overrides/app/utils/recentlyViewedCard.test.ts
+@@ -1,7 +1,8 @@
+ /**
+- * Ties the plain Commerce API product shape (`recentlyViewedProductFetch.ts`'s own `getProducts`
+- * result — see `recentlyViewedCard.ts`'s 2026-09-08 input-source revision) to the rendered
+- * `ZimmProductCard` props, the same doctrine `productInfo.test.ts` documents as "G1": every
++ * Ties the plain Commerce API product shape (Einstein's own merged rec, superseding the interim
++ * build's own dedicated fetch utility, since removed — see `recentlyViewedCard.ts`'s own docblock
++ * for the full input-source history) to the rendered `ZimmProductCard` props, the same doctrine
++ * `productInfo.test.ts` documents as "G1": every
+  * assertion below uses a value unique to its own field (see `FULL` below — the 'large' image
+  * group's `alt` is deliberately a value that must never be picked) so a mapping that reads the
+  * wrong key fails rather than coincidentally matching.
+@@ -18,6 +19,12 @@ import { selectRecentlyViewedCard, type FormatPrice, type RecentlyViewedProduct
+ 
+ const formatPrice: FormatPrice = (amount, currency) => `${currency} ${amount.toFixed(2)}`;
+ 
++// Identity by default — every test below except the dedicated "applies buildUrl's real prefix"
++// one (below) is about a different field entirely, so an identity buildUrl keeps their existing
++// bare-path href expectations meaningful without a second, unrelated concern to reason about.
++// Mirrors formatPrice's own fixed-fixture treatment above.
++const buildUrl = (path: string): string => path;
++
+ const FULL: RecentlyViewedProduct = {
+   id: 'REC-PRODUCT-ID-0001',
+   name: 'Natura Mini Dress',
+@@ -46,7 +53,7 @@ const FULL: RecentlyViewedProduct = {
+ 
+ describe('selectRecentlyViewedCard — happy path', () => {
+   test('maps every field to its correct prop, picking the medium imageGroups image', () => {
+-    expect(selectRecentlyViewedCard(FULL, formatPrice)).toEqual({
++    expect(selectRecentlyViewedCard(FULL, formatPrice, buildUrl)).toEqual({
+       id: 'REC-PRODUCT-ID-0001',
+       href: '/product/REC-PRODUCT-ID-0001',
+       name: 'Natura Mini Dress',
+@@ -59,18 +66,31 @@ describe('selectRecentlyViewedCard — happy path', () => {
+   });
+ 
+   test('id and href are built from the product id', () => {
+-    const card = selectRecentlyViewedCard(FULL, formatPrice);
++    const card = selectRecentlyViewedCard(FULL, formatPrice, buildUrl);
+     expect(card?.id).toBe('REC-PRODUCT-ID-0001');
+   });
+ 
+-  test('href is a bare /product/{id} path — no site-prefix of its own', () => {
+-    const card = selectRecentlyViewedCard(FULL, formatPrice);
++  test("href is productUrlBuilder's bare /product/{id} path when buildUrl is the identity fixture", () => {
++    const card = selectRecentlyViewedCard(FULL, formatPrice, buildUrl);
+     expect(card?.href).toBe('/product/REC-PRODUCT-ID-0001');
+     expect(card?.href).not.toMatch(/^https?:\/\//);
+   });
+ 
++  // Fixed 2026-09-15 (CodeRabbit finding, confirmed): this mapper used to build `href` from
++  // `productUrlBuilder` alone, with no site/locale prefix at all — on a non-default storefront,
++  // every Recently Viewed card silently linked back to the default site/locale instead of the one
++  // actually being browsed. `buildUrl` is now applied to that bare path (see
++  // recentlyViewedCard.ts's own docblock) — proven here with a fixture that prepends a
++  // distinguishing, unmistakable prefix, not the identity fixture every other test in this file
++  // uses (which would pass even if `buildUrl` were silently ignored).
++  test("applies buildUrl to productUrlBuilder's output, not just the caller-supplied identity fixture", () => {
++    const prefixingBuildUrl = (path: string) => `/en-GB${path}`;
++    const card = selectRecentlyViewedCard(FULL, formatPrice, prefixingBuildUrl);
++    expect(card?.href).toBe('/en-GB/product/REC-PRODUCT-ID-0001');
++  });
++
+   test('omits headingLevel, variation, hoverImage and images entirely — not just empty', () => {
+-    const card = selectRecentlyViewedCard(FULL, formatPrice) as object | null;
++    const card = selectRecentlyViewedCard(FULL, formatPrice, buildUrl) as object | null;
+     expect(card).not.toBeNull();
+     expect(card).not.toHaveProperty('headingLevel');
+     expect(card).not.toHaveProperty('variation');
+@@ -81,16 +101,16 @@ describe('selectRecentlyViewedCard — happy path', () => {
+ 
+ describe('selectRecentlyViewedCard — no usable name, no card', () => {
+   test('returns null when name is missing', () => {
+-    expect(selectRecentlyViewedCard({ ...FULL, name: undefined }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard({ ...FULL, name: undefined }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when name is an empty string', () => {
+-    expect(selectRecentlyViewedCard({ ...FULL, name: '' }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard({ ...FULL, name: '' }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null for a nullish product (still loading)', () => {
+-    expect(selectRecentlyViewedCard(undefined, formatPrice)).toBeNull();
+-    expect(selectRecentlyViewedCard(null, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard(undefined, formatPrice, buildUrl)).toBeNull();
++    expect(selectRecentlyViewedCard(null, formatPrice, buildUrl)).toBeNull();
+   });
+ });
+ 
+@@ -102,11 +122,11 @@ describe('selectRecentlyViewedCard — no usable image, no card', () => {
+   // contract (there is no returned object for alt to be empty on). See selectPrimaryImage's own
+   // docblock in recentlyViewedCard.ts for the same note at the point of the decision.
+   test('returns null when imageGroups is absent entirely (no flat-image fallback exists any more)', () => {
+-    expect(selectRecentlyViewedCard({ ...FULL, imageGroups: undefined }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard({ ...FULL, imageGroups: undefined }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when imageGroups is an empty array', () => {
+-    expect(selectRecentlyViewedCard({ ...FULL, imageGroups: [] }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard({ ...FULL, imageGroups: [] }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when imageGroups filtering matches nothing (no medium viewType)', () => {
+@@ -114,7 +134,7 @@ describe('selectRecentlyViewedCard — no usable image, no card', () => {
+       ...FULL,
+       imageGroups: [{ viewType: 'large', images: [{ link: 'https://example.test/large-only.jpg' }] }],
+     };
+-    expect(selectRecentlyViewedCard(noMediumGroup, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard(noMediumGroup, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when the medium group has no images at all', () => {
+@@ -122,7 +142,7 @@ describe('selectRecentlyViewedCard — no usable image, no card', () => {
+       ...FULL,
+       imageGroups: [{ viewType: 'medium', images: [] }],
+     };
+-    expect(selectRecentlyViewedCard(emptyMediumGroup, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedCard(emptyMediumGroup, formatPrice, buildUrl)).toBeNull();
+   });
+ });
+ 
+@@ -137,7 +157,7 @@ describe('selectRecentlyViewedCard — disBaseLink/alt fallbacks within the sele
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(linkOnlyMedium, formatPrice);
++    const card = selectRecentlyViewedCard(linkOnlyMedium, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/link-only.jpg');
+   });
+ 
+@@ -156,7 +176,7 @@ describe('selectRecentlyViewedCard — disBaseLink/alt fallbacks within the sele
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(noAltMedium, formatPrice);
++    const card = selectRecentlyViewedCard(noAltMedium, formatPrice, buildUrl);
+     expect(card?.primaryImage.alt).toBe('Natura Mini Dress');
+   });
+ });
+@@ -182,7 +202,7 @@ describe('selectRecentlyViewedCard — colour-scoped image resolution', () => {
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(multiColour, formatPrice);
++    const card = selectRecentlyViewedCard(multiColour, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/red.jpg');
+   });
+ 
+@@ -198,7 +218,7 @@ describe('selectRecentlyViewedCard — colour-scoped image resolution', () => {
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(singleColourUntagged, formatPrice);
++    const card = selectRecentlyViewedCard(singleColourUntagged, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/untagged.jpg');
+   });
+ 
+@@ -220,7 +240,7 @@ describe('selectRecentlyViewedCard — colour-scoped image resolution', () => {
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(multiColourWithUntaggedDecoy, formatPrice);
++    const card = selectRecentlyViewedCard(multiColourWithUntaggedDecoy, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/red.jpg');
+   });
+ });
+@@ -241,7 +261,7 @@ describe('selectRecentlyViewedCard — image sequence ordering', () => {
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(outOfOrder, formatPrice);
++    const card = selectRecentlyViewedCard(outOfOrder, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/1.product.jpg');
+   });
+ 
+@@ -259,7 +279,7 @@ describe('selectRecentlyViewedCard — image sequence ordering', () => {
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedCard(nonNumericNames, formatPrice);
++    const card = selectRecentlyViewedCard(nonNumericNames, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/front-view.jpg');
+   });
+ });
+@@ -267,21 +287,21 @@ describe('selectRecentlyViewedCard — image sequence ordering', () => {
+ describe('selectRecentlyViewedCard — price without a paired currency (no guessed currency)', () => {
+   test('currentPrice is undefined when currency is missing, and formatPrice is never called', () => {
+     const spy = vi.fn(formatPrice);
+-    const card = selectRecentlyViewedCard({ ...FULL, currency: undefined }, spy);
++    const card = selectRecentlyViewedCard({ ...FULL, currency: undefined }, spy, buildUrl);
+     expect(card?.currentPrice).toBeUndefined();
+     expect(spy).not.toHaveBeenCalled();
+   });
+ 
+   test('currentPrice is undefined when price is missing, and formatPrice is never called', () => {
+     const spy = vi.fn(formatPrice);
+-    const card = selectRecentlyViewedCard({ ...FULL, price: undefined }, spy);
++    const card = selectRecentlyViewedCard({ ...FULL, price: undefined }, spy, buildUrl);
+     expect(card?.currentPrice).toBeUndefined();
+     expect(spy).not.toHaveBeenCalled();
+   });
+ 
+   test('calls the injected formatter exactly once, with the real price and currency, when both are present', () => {
+     const spy = vi.fn(formatPrice);
+-    selectRecentlyViewedCard(FULL, spy);
++    selectRecentlyViewedCard(FULL, spy, buildUrl);
+     expect(spy).toHaveBeenCalledOnce();
+     expect(spy).toHaveBeenCalledWith(895, 'AUD');
+   });
+diff --git a/overrides/app/utils/recentlyViewedFullHistoryCard.test.ts b/overrides/app/utils/recentlyViewedFullHistoryCard.test.ts
+index bdc6448..9175d3e 100644
+--- a/overrides/app/utils/recentlyViewedFullHistoryCard.test.ts
++++ b/overrides/app/utils/recentlyViewedFullHistoryCard.test.ts
+@@ -1,6 +1,7 @@
+ /**
+- * Ties the plain Commerce API product shape (`recentlyViewedProductFetch.ts`'s own `getProducts`
+- * result) to the rendered `plp`-variation `ZimmProductCard` props, the same "G1" doctrine
++ * Ties the plain Commerce API product shape (Einstein's own merged rec, superseding the interim
++ * build's own dedicated fetch utility, since removed, finding #11) to the rendered `plp`-variation
++ * `ZimmProductCard` props, the same "G1" doctrine
+  * `recentlyViewedCard.test.ts`/`productInfo.test.ts` document: every assertion below uses a value
+  * unique to its own field (the 'large' image group's `alt` is deliberately a value that must never
+  * be picked) so a mapping that reads the wrong key fails rather than coincidentally matching.
+@@ -29,6 +30,13 @@ import {
+ 
+ const formatPrice: FormatPrice = (amount, currency) => `${currency} ${amount.toFixed(2)}`;
+ 
++// Identity by default — every test below except the dedicated "applies buildUrl's real prefix"
++// one (below) is about a different field entirely, so an identity buildUrl keeps their existing
++// bare-path href expectations meaningful without a second, unrelated concern to reason about.
++// Mirrors formatPrice's own fixed-fixture treatment above, and recentlyViewedCard.test.ts's own
++// identical fixture.
++const buildUrl = (path: string): string => path;
++
+ // On sale: two tiered prices (500, 650) with no promotions -- getPriceData's own findLowestPrice
+ // resolves currentPrice to the base 500 (no promotion beats it), and listPrice to the higher
+ // tiered price, 650, so isOnSale (500 < 650) is true. Verified independently against a real
+@@ -80,7 +88,7 @@ const ON_SALE: RecentlyViewedFullHistoryProduct = {
+ 
+ describe('selectRecentlyViewedFullHistoryCard — happy path (on sale)', () => {
+   test('maps every field to its correct prop, including was/now pricing, badge (absent on this fixture), and size chips', () => {
+-    expect(selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice)).toEqual({
++    expect(selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice, buildUrl)).toEqual({
+       id: 'FH-PRODUCT-ID-0001',
+       href: '/product/FH-PRODUCT-ID-0001',
+       name: 'Natura Mini Dress',
+@@ -109,17 +117,31 @@ describe('selectRecentlyViewedFullHistoryCard — happy path (on sale)', () => {
+     const independent = getPriceData(ON_SALE);
+     expect(independent.isOnSale).toBe(true);
+ 
+-    const card = selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice, buildUrl);
+     expect(card?.currentPrice).toBe(formatPrice(independent.currentPrice, 'AUD'));
+     expect(card?.originalPrice).toBe(formatPrice(independent.listPrice, 'AUD'));
+   });
+ 
+-  test('href is a bare /product/{id} path, built from the product id', () => {
+-    const card = selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice);
++  test("href is productUrlBuilder's bare /product/{id} path when buildUrl is the identity fixture", () => {
++    const card = selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice, buildUrl);
+     expect(card?.href).toBe('/product/FH-PRODUCT-ID-0001');
+     expect(card?.href).not.toMatch(/^https?:\/\//);
+   });
+ 
++  // Fixed 2026-09-15 (CodeRabbit finding, confirmed): this mapper used to build `href` from
++  // `productUrlBuilder` alone, with no site/locale prefix at all — on a non-default storefront,
++  // every Full History card silently linked back to the default site/locale instead of the one
++  // actually being browsed. `buildUrl` is now applied to that bare path (see this mapper's own
++  // docblock) — proven here with a fixture that prepends a distinguishing, unmistakable prefix,
++  // not the identity fixture every other test in this file uses (which would pass even if
++  // `buildUrl` were silently ignored). Same proof, same reasoning, as
++  // recentlyViewedCard.test.ts's own identical test.
++  test("applies buildUrl to productUrlBuilder's output, not just the caller-supplied identity fixture", () => {
++    const prefixingBuildUrl = (path: string) => `/en-GB${path}`;
++    const card = selectRecentlyViewedFullHistoryCard(ON_SALE, formatPrice, prefixingBuildUrl);
++    expect(card?.href).toBe('/en-GB/product/FH-PRODUCT-ID-0001');
++  });
++
+   test('maps the single highest-priority badge when c_productBadges is present (real shape confirmed live on 4673TS251, incl. the unconsumed productBadgeUrl field)', () => {
+     const withBadge: RecentlyViewedFullHistoryProduct = {
+       ...ON_SALE,
+@@ -128,12 +150,12 @@ describe('selectRecentlyViewedFullHistoryCard — happy path (on sale)', () => {
+         { productBadge: 'Exclusive', productBadgeUrl: '/category/exclusive' },
+       ],
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(withBadge, formatPrice)?.badge).toBe('Runway');
++    expect(selectRecentlyViewedFullHistoryCard(withBadge, formatPrice, buildUrl)?.badge).toBe('Runway');
+   });
+ 
+   test('leaves badge undefined when c_productBadges is absent', () => {
+     expect(
+-      selectRecentlyViewedFullHistoryCard({ ...ON_SALE, c_productBadges: undefined }, formatPrice)?.badge,
++      selectRecentlyViewedFullHistoryCard({ ...ON_SALE, c_productBadges: undefined }, formatPrice, buildUrl)?.badge,
+     ).toBeUndefined();
+   });
+ });
+@@ -152,7 +174,7 @@ describe('selectRecentlyViewedFullHistoryCard — not on sale', () => {
+     const independent = getPriceData(NOT_ON_SALE);
+     expect(independent.isOnSale).toBe(false);
+ 
+-    const card = selectRecentlyViewedFullHistoryCard(NOT_ON_SALE, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(NOT_ON_SALE, formatPrice, buildUrl);
+     expect(card?.originalPrice).toBeUndefined();
+     expect(card?.currentPrice).toBe('AUD 500.00');
+   });
+@@ -160,26 +182,28 @@ describe('selectRecentlyViewedFullHistoryCard — not on sale', () => {
+ 
+ describe('selectRecentlyViewedFullHistoryCard — no usable name, no card', () => {
+   test('returns null when name is missing', () => {
+-    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, name: undefined }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, name: undefined }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when name is an empty string', () => {
+-    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, name: '' }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, name: '' }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null for a nullish product (still loading)', () => {
+-    expect(selectRecentlyViewedFullHistoryCard(undefined, formatPrice)).toBeNull();
+-    expect(selectRecentlyViewedFullHistoryCard(null, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard(undefined, formatPrice, buildUrl)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard(null, formatPrice, buildUrl)).toBeNull();
+   });
+ });
+ 
+ describe('selectRecentlyViewedFullHistoryCard — no usable image, no card', () => {
+   test('returns null when imageGroups is absent entirely', () => {
+-    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, imageGroups: undefined }, formatPrice)).toBeNull();
++    expect(
++      selectRecentlyViewedFullHistoryCard({ ...ON_SALE, imageGroups: undefined }, formatPrice, buildUrl),
++    ).toBeNull();
+   });
+ 
+   test('returns null when imageGroups is an empty array', () => {
+-    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, imageGroups: [] }, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard({ ...ON_SALE, imageGroups: [] }, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when imageGroups filtering matches nothing (no medium viewType)', () => {
+@@ -187,7 +211,7 @@ describe('selectRecentlyViewedFullHistoryCard — no usable image, no card', ()
+       ...ON_SALE,
+       imageGroups: [{ viewType: 'large', images: [{ link: 'https://example.test/large-only.jpg' }] }],
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(noMediumGroup, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard(noMediumGroup, formatPrice, buildUrl)).toBeNull();
+   });
+ 
+   test('returns null when the medium group has no images at all', () => {
+@@ -195,14 +219,14 @@ describe('selectRecentlyViewedFullHistoryCard — no usable image, no card', ()
+       ...ON_SALE,
+       imageGroups: [{ viewType: 'medium', images: [] }],
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(emptyMediumGroup, formatPrice)).toBeNull();
++    expect(selectRecentlyViewedFullHistoryCard(emptyMediumGroup, formatPrice, buildUrl)).toBeNull();
+   });
+ });
+ 
+ describe('selectRecentlyViewedFullHistoryCard — price without a paired currency (no guessed currency)', () => {
+   test('currentPrice and originalPrice are both undefined when currency is missing, and formatPrice is never called', () => {
+     const spy = vi.fn(formatPrice);
+-    const card = selectRecentlyViewedFullHistoryCard({ ...ON_SALE, currency: undefined }, spy);
++    const card = selectRecentlyViewedFullHistoryCard({ ...ON_SALE, currency: undefined }, spy, buildUrl);
+     expect(card?.currentPrice).toBeUndefined();
+     expect(card?.originalPrice).toBeUndefined();
+     expect(spy).not.toHaveBeenCalled();
+@@ -274,7 +298,7 @@ describe('selectGalleryImages — single vs multi image, medium-viewtype-scoped
+         },
+       ],
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(product, formatPrice)?.images).toEqual([
++    expect(selectRecentlyViewedFullHistoryCard(product, formatPrice, buildUrl)?.images).toEqual([
+       { src: 'front.jpg', alt: 'front' },
+       { src: 'back.jpg', alt: 'back' },
+     ]);
+@@ -302,7 +326,7 @@ describe('selectRecentlyViewedFullHistoryCard — colour-scoped image resolution
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedFullHistoryCard(multiColour, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(multiColour, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/red.jpg');
+   });
+ 
+@@ -318,7 +342,7 @@ describe('selectRecentlyViewedFullHistoryCard — colour-scoped image resolution
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedFullHistoryCard(whitespaceAlt, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(whitespaceAlt, formatPrice, buildUrl);
+     expect(card?.primaryImage.alt).toBe(ON_SALE.name);
+   });
+ 
+@@ -334,7 +358,7 @@ describe('selectRecentlyViewedFullHistoryCard — colour-scoped image resolution
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedFullHistoryCard(singleColourUntagged, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(singleColourUntagged, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/untagged.jpg');
+   });
+ 
+@@ -354,7 +378,7 @@ describe('selectRecentlyViewedFullHistoryCard — colour-scoped image resolution
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedFullHistoryCard(multiColourWithUntaggedDecoy, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(multiColourWithUntaggedDecoy, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/red.jpg');
+   });
+ 
+@@ -373,7 +397,7 @@ describe('selectRecentlyViewedFullHistoryCard — colour-scoped image resolution
+         },
+       ],
+     };
+-    const card = selectRecentlyViewedFullHistoryCard(outOfOrder, formatPrice);
++    const card = selectRecentlyViewedFullHistoryCard(outOfOrder, formatPrice, buildUrl);
+     expect(card?.primaryImage.src).toBe('https://example.test/medium/1.product.jpg');
+   });
+ });
+@@ -384,7 +408,7 @@ describe('selectRecentlyViewedFullHistoryCard — isUnavailable from product.mas
+       ...ON_SALE,
+       master: { masterId: ON_SALE.id, orderable: false },
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(soldOut, formatPrice)?.isUnavailable).toBe(true);
++    expect(selectRecentlyViewedFullHistoryCard(soldOut, formatPrice, buildUrl)?.isUnavailable).toBe(true);
+   });
+ 
+   test('isUnavailable is false when the master record is orderable', () => {
+@@ -392,12 +416,12 @@ describe('selectRecentlyViewedFullHistoryCard — isUnavailable from product.mas
+       ...ON_SALE,
+       master: { masterId: ON_SALE.id, orderable: true },
+     };
+-    expect(selectRecentlyViewedFullHistoryCard(available, formatPrice)?.isUnavailable).toBe(false);
++    expect(selectRecentlyViewedFullHistoryCard(available, formatPrice, buildUrl)?.isUnavailable).toBe(false);
+   });
+ 
+   test('isUnavailable is false when there is no master record at all (never treats missing data as unavailable)', () => {
+     const noMaster: RecentlyViewedFullHistoryProduct = { ...ON_SALE, master: undefined };
+-    expect(selectRecentlyViewedFullHistoryCard(noMaster, formatPrice)?.isUnavailable).toBe(false);
++    expect(selectRecentlyViewedFullHistoryCard(noMaster, formatPrice, buildUrl)?.isUnavailable).toBe(false);
+   });
+ });
+ 

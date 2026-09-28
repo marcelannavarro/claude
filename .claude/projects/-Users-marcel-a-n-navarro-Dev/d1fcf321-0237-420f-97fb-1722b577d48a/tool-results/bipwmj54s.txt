@@ -1,0 +1,400 @@
+====================================================================================================
+### [handover] [2026-07-28] ZIMM - SFCC-123 — 53 user turns — 5227c015-436f-4bb1-87bf-c8c5365625a0.jsonl
+====================================================================================================
+
+--- turn 1 ---
+hey claude - ready to work?
+
+--- turn 2 ---
+ensure all active local repos are up-to-date with the remote
+
+--- turn 3 ---
+leave those as is
+
+--- turn 4 ---
+now, let's work on SFCC-123 - access the codebase, confluence, JIRA, and the specific JIRA ticket to gather information about this spike task - report back
+
+--- turn 5 ---
+for this task, utilize /Users/marcel.a.n.navarro/Downloads/Zimmermann-PWA/TSD-Templates/specific-tsds/sfcc-123-contentful-integration-tsd.md as the template for this spike
+
+--- turn 6 ---
+for execution: perform a recursive execution - create,  check, improve, repeat until DoD is achieved
+
+--- turn 7 ---
+perform another in-depth confirmatory validation pass - go again: check current -> validate against codebase, confluence, jira -> based on findings, fix or pass
+
+--- turn 8 ---
+seems like we're all good - check confluence as to where we'll add this as a page/draft
+
+--- turn 9 ---
+DC002 is empty
+
+--- turn 10 ---
+execute
+
+--- turn 11 ---
+remove the use of emojis on SFCC-123 TSD confluence page - check on the practice we did for SFCC-122 TSD confluence page for reference
+
+--- turn 12 ---
+given this spike task in Jira: https://zimmermannworkboard.atlassian.net/browse/SFCC-123
+
+there are 2 TSDs drafted as the solution to this spike task:
+a) https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/351207428/DRAFT+TSD+Contentful+Integration+-+SFCC-Side+Design+Content+Model+Spike+SFCC-123
+b)  https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/346783750/Contentful+Integration+Technical+Design+Content+Model+SFCC-123
+
+perform an in-depth no-bias comparative analysis on both drafts and create a verdict on which draft is better as the solution for spike task SFCC-123; for fact-checking: check against the codebase, confluence, and jira
+
+--- turn 13 ---
+additional points for the verdict:
+
+* Tim's feedback for a TSD: "A TSD is only focusing on the problem to solve.. IE: Contentful Configuring SFCC IDs to obtain conditional rendering" "But it only needs to be addressing the problem/solution" "Not all the other stuff"
+* approved template for SFCC-123: /Users/marcel.a.n.navarro/Downloads/Zimmermann-PWA/TSD-Templates/specific-tsds/sfcc-123-contentful-integration-tsd.md
+* codebase, confluence, jira
+
+--- turn 14 ---
+here's our plan:
+
+* perform the harvest from b - take
+   * check the harvested content
+* plan how to lay it into a - plan
+   * check the insertion of b-harvest into a
+* once approved, execute - do
+   * then check the output
+* once checked-confirmed-validated, then we edit the Confluence page
+
+--- turn 15 ---
+execute into the repo
+
+--- turn 16 ---
+update confluence - execute
+
+--- turn 17 ---
+no - tim will be the one to decide on that
+
+--- turn 18 ---
+given this Confluence page: https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/346783750/Contentful+Integration+Technical+Design+Content+Model+SFCC-123 - the TSD for SFCC-123
+
+check into it and gather context and knowledge into the 2 comments that have mentions of me @Marcel Angelo Navarro
+
+--- turn 19 ---
+for this task:
+
+"1. Separate TSD for "MRT apps — how we solution/build those" (comment 351731719, anchored to a table in the doc — the MRT environment/deployment content):
+
+"In the below table, I would like to understand our approach to MRT apps and how we solution/build those. Not in this TSD, but as a separate TSD. [Marcel Angelo Navarro] — Please work with [Gideon R. Linsangan]"
+
+Knowledge / action for you: Tim wants the "how we build & solution MRT apps" topic pulled out of the Contentful TSD into its own dedicated TSD — and he's assigned you + Gideon R. Linsangan to author it. (This is consistent with Tim's TSD-focus rule: keep the Contentful TSD on the Contentful problem; MRT-app build approach is a separate problem/solution.)" 
+
+is it aligned to this spike task that me and tim have talked about?
+"Proposed Spike Task
+ 
+Topic: MRT Application Architecture Strategy
+Objective: Produce a TSD comparing the following approaches:
+ 
+Option A
+
+* Single MRT node application responsible for all integrations
+
+Option B
+
+* Dedicated MRT node application per integration/domain
+
+Suggested Assignees
+
+* Senior developers
+* Strong problem-solvers / free-thinkers"
+
+--- turn 20 ---
+what do we need to do for this:
+
+2. Monitoring/alerting — New Relic procurement (comment 352026636, in the Error Handling & Monitoring section, on the incident-logging thread):
+
+"I agree with this [Jhoan]... but similar to the Log comment above, what are we doing with this incident? [Marcel Angelo Navarro] — we should be asking Emma/IT if they are going to procure New Relic as that would be an ideal solution for them to monitor and setup these types of alerts"
+
+Knowledge / action for you: the error-handling section raised "log the incident / what do we do with it" (CDA-down, HMAC-reject, etc.), and Tim's answer is an observability tool. Your action: raise with Emma / IT whether they'll procure New Relic as the monitoring + alerting solution. Until that's decided, the TSD's "log the error / alert on incident" lines have no confirmed destination.
+
+--- turn 21 ---
+draft the message
+
+--- turn 22 ---
+perform an in-depth audit and analysis of the codebase-confluence-&-jira to validate and verify:  "2. Monitoring/alerting — New Relic procurement (comment 352026636, in the Error Handling & Monitoring section, on the incident-logging thread):
+
+"I agree with this [Jhoan]... but similar to the Log comment above, what are we doing with this incident? [Marcel Angelo Navarro] — we should be asking Emma/IT if they are going to procure New Relic as that would be an ideal solution for them to monitor and setup these types of alerts"
+
+Knowledge / action for you: the error-handling section raised "log the incident / what do we do with it" (CDA-down, HMAC-reject, etc.), and Tim's answer is an observability tool. Your action: raise with Emma / IT whether they'll procure New Relic as the monitoring + alerting solution. Until that's decided, the TSD's "log the error / alert on incident" lines have no confirmed destination."
+
+--- turn 23 ---
+rewrite the message
+
+--- turn 24 ---
+with this in mind - before i go ahead and directly reach out to Emma/IT - i want to run this by @Natasha Lay first, create a message to Tash asking her about this matter, whether to directly reach out or allow her or Lucy or other BAs to handle this inquiry
+
+--- turn 25 ---
+aside from the assignment of a new spike and the reachout to emma/IT do i have any other tasks/to-dos for SFCC-123?
+
+--- turn 26 ---
+pull the latest from https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF
+
+what's the latest with it? changes? comments?
+
+--- turn 27 ---
+side task:
+
+* going back to the reachout task as assigned by tim, how is it email:
+
+Hi Emma,
+I hope you're well.
+Our technical design for the SFCC storefront includes New Relic as the application-monitoring and alerting solution — the environment variables and server-side integration points for it are already defined in the frontend TSD, tagged per environment (dev/SIT/stage/UAT/prod). It's how we'll monitor storefront health and get alerted to incidents like CMS or API outages, and it came out of our Contentful integration design work under the observability workstream.
+The design work is done; what isn't yet locked is procurement and account ownership on Zimmermann's side. To avoid this becoming a late surprise near go-live, we need three things confirmed:
+
+1. Zimmermann's intent to procure New Relic — licence type/plan, and who owns the account.
+2. The right IT contact to action provisioning — we'll need licence keys per environment and the SFCC Log Centre streaming to New Relic switched on.
+3. Who owns alerting configuration on Zimmermann's side (thresholds, notification channels). Under the shared-responsibility model, our team provides recommended thresholds; your team operates the alerts.
+
+We've also flagged Sentry (error tracking) at the same design level, alongside New Relic — happy to fold that into the same conversation if it's in scope.
+No impact on the current build — this doesn't block anything today — but we'd like procurement confirmed and provisioning underway well ahead of go-live. Happy to set up a short call with the right people if that's easiest.
+Many thanks,
+Marcel Angelo Navarro
+FED Lead · Accenture Song X Zimmermann
+
+--- turn 28 ---
+as per Natasha:
+Hi Tash — quick process check. Out of Tim's SFCC-123 TSD review there's an observability item needing Emma/IT: New Relic is already our chosen APM (per the Observability deck), so it's not a tooling call — just need Zimmermann to confirm the licence/procurement and enable SFCC Log Centre → New Relic streaming (sits under the NFRs & Observability epic, SFCC-21). Tim suggested I ask Emma/IT. Before I go direct — do you want me to reach out myself, or would you/Lucy/a BA rather own or route it? I've got a message drafted either way, happy to send it or hand it over.
+ 
+Happy for you to reach out and just CC me in, thanks so much
+ 
+Thanks Tash! Have a great weekend.
+ 
+Quick question — aside from Emma, is there anyone else I should include as a recipient on the email?
+ 
+Emma, Lucy, myself & tim thanks
+
+--- turn 29 ---
+back to this: "pull the latest from https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF
+
+what's the latest with it? changes? comments?"
+
+re-provide me the findings
+
+--- turn 30 ---
+execute an in-depth analysis for SFCC-123: https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF (this is the final working version)
+
+look into the current version - but also the previous versions  - the comments (conversations and back & forths, especially Tim's comments/feedbacks)
+
+guided by the codebase, confluence, and JIRA - provide me report on how this TSD stands
+
+run this recursively - check TSD - versions and comments, check codebase, confluence, and JIRA, compare against each other, flag anything if needed, then recheck, recompare, and so on until there are no more surfaced flags raised
+
+--- turn 31 ---
+execute another in-depth analysis for SFCC-123: https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF (this is the final working version)
+
+look into the current version - but also the previous versions  - the comments (conversations and back & forths, especially Tim's comments/feedbacks)
+
+guided by the codebase, confluence, and JIRA - provide me report on how this TSD stands
+
+run this recursively - check TSD - versions and comments, check codebase, confluence, and JIRA, compare against each other, flag anything if needed, then recheck, recompare, and so on until there are no more surfaced flags raised
+
+this also serves as a validating/verifiying/checking audit against the previous findings
+
+--- turn 32 ---
+what are you referring to as (a)
+
+the TSD i authored?
+
+--- turn 33 ---
+draft a is not part of the equation anymore - it's just https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF and only that
+
+with that in mind:
+execute another in-depth analysis for SFCC-123: https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF (this is the final working version)
+
+look into the current version - but also the previous versions  - the comments (conversations and back & forths, especially Tim's comments/feedbacks)
+
+guided by the codebase, confluence, and JIRA - provide me report on how this TSD stands
+
+run this recursively - check TSD - versions and comments, check codebase, confluence, and JIRA, compare against each other, flag anything if needed, then recheck, recompare, and so on until there are no more surfaced flags raised
+
+this also serves as a validating/verifiying/checking audit against the previous findings
+
+no more draft a vs. b referencing
+
+--- turn 34 ---
+which of these to-do/to-fix items have no existing documentation in the codebase, confluence, or jira and need external research/looking into or escalation to the leads / product owners?
+
+--- turn 35 ---
+execute another in-depth analysis for SFCC-123: https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF (this is the final working version)
+
+for the approach on this review, review tim's comments on this TSD and that same approach/mentality/attack is what we need for this re-review - adapt it, the end-result for this re-review is the final feedback/audit result which i will send to jhoan for her to apply and implement
+
+look into the current version - but also the previous versions  - the comments (conversations and back & forths, especially Tim's comments/feedbacks)
+
+guided by the codebase, confluence, and JIRA - provide me report on how this TSD stands
+
+run this recursively - check TSD - versions and comments, check codebase, confluence, and JIRA, compare against each other, flag anything if needed, then recheck, recompare, and so on until there are no more surfaced flags raised
+
+this also serves as a validating/verifiying/checking audit against the previous findings
+
+no more draft a vs. b referencing
+
+--- turn 36 ---
+execute another in-depth analysis for SFCC-123: https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF (this is the final working version)
+
+for the approach on this review, review tim's comments on this TSD and that same approach/mentality/attack is what we need for this re-review - adapt it, the end-result for this re-review is a verification on the suggested/implied solutions for jhoan to apply
+
+guided by the codebase, confluence, and JIRA
+
+run this recursively - check TSD - versions and comments, check codebase, confluence, and JIRA, compare against each other, flag anything if needed, then recheck, recompare, and so on until there are no more surfaced flags raised
+
+--- turn 37 ---
+provide me the feedback and recommended action for jhoan which i will place as a confluence comment
+
+--- turn 38 ---
+no emojis - clean formatting
+
+--- turn 39 ---
+now, explain to me the findings - ELI5 but i'm the Frontend Development Lead of the project - i need to know what the problem/conflict is are, what are the options and their implications, why we are suggesting the approach already in the list so i have an understanding of it and can defend it if jhoan or tim pushes back
+
+--- turn 40 ---
+i did a scan on the review: 
+Hi Jhoan - strong progress on this, the SFCC Product & Category ID reference pattern in particular is exactly what the spike needed. Before we share it with the incoming Contentful squad, here's my review, grouped by priority. (JUST GREET AND SAY THAT HERE' S MY REVIEW...)
+
+Fix before we share
+
+1. Bootstrap Status, CMA token as GitHub Actions secret. You've marked this Complete, but your own Blockers #5 and Open Items #4 say incomplete, and the Setup & Ops page (checklist item 9) also has it incomplete. Let's land on one status: if it's genuinely done, tick it everywhere and I'll confirm with the Integration Lead; otherwise mark it incomplete consistently. (WHAT IS THE ACTUAL STATUS? DO WE HAVE BASIS OF WHAT THE STATUS IS? LET'S DIRECT JHOAN TO THAT INSTEAD OF LEAVING IT UP TO HER)
+2. Integration Architecture, "Key behaviours confirmed in 02-contentful.md." SSR-first fetch, GraphQL, and the publish webhook are listed as current behaviour, and useContentful.ts sits under "Already built", but the live hook is browser-side REST, the experience route also fetches client-side, and there's no GraphQL client, SSR editorial fetch, or webhook receiver in the repo yet. Let's split "built today" from "target architecture (to build)" so the squad doesn't assume SSR editorial is live. Also: where will the webhook receiver live, and is that this-integration scope or a separate story?
+3. Blockers #1, locale count. The body correctly says nine locales (matches config/sites.js and the ops page), but Blocker #1 still says "confirm the canonical 11-locale set." That's resolved: it's 9 (the "11" in 02-contentful.md is wrong; en-AU is BM's default that the AU site narrows to en). Let's close Blocker #1 and drop the 11-locale wording. (IS THERE A HARD PROOF OF THIS? LET'S CONFIRM BEFORE WE DO A HARD DIRECTIVE TO JHOAN)
+4. Sprint-2 content-types table. Checkout Trust Messaging (SFCC-67) sits under Checkout Flow & Delivery, which is Sprint 4, and Returns/Refund (SFCC-14) is an Epic (you noted this in the capability table), which is Sprint 7, so neither belongs in Sprint 2. Let's move them to their real sprints, and reference the SFCC-14 child story once it's raised. (DO A VERIFICATION AND VALIDATION OF THIS FIRST PLEASE)
+5. Handoff Boundary, still marked "[FOR UPDATE]." This is the first thing the incoming squad reads, and the ownership split (especially the Z.immerse rows) reads muddled. Tim owns the update, so let's sync with him and finalise it before we share. (IS THIS REALLY NEEDED?)
+
+Validate before finalising
+
+6. Sprint-2 content types. You rightly flagged these are assumed, not confirmed (SFCC-82, SFCC-190, SFCC-67 defer their model to stories not yet created; none map to an HPC requirement in 04.1.1). Let's get the Emma and Dani authoring session booked before we lock those field sets. (THIS DOESN'T FEEL LIKE MY CALL TO MAKE, PERHAPS BETTER TO MENTION TIM IN THE COMMENT AND ASK HIM FOR THIS)
+7. Mega Menu fields. Design-dependent: SFCC-96 needs the Figma spec first. Let's mark those fields provisional pending the design.
+
+Spikes and to-dos to raise (not blocking)
+
+8. PLP Inline Grid Insert. The ID pattern presents the PLP inject as resolved, but Tim flagged we still need a spike to confirm we can inject a Contentful item into the SFCC PLP grid without breaking item counts or pagination. Let's add a "pending feasibility spike" note and raise the card (Hazel is tagged).
+9. PDP Accordion, mixed content. Contentful tabs plus SFCC-sourced tabs (Details & Care, Size & Fit), with the exact SFCC fields still TBD. Let's make sure the mixed-content-rendering spike card gets raised.
+10. MRT-apps section. As agreed, we'll scratch this. Gideon and I WIIL DO the separate MRT-apps TSD and link it here.
+
+Raise with leads / POs (decisions outside our control)
+
+11. Error Handling & Monitoring, New Relic. Two things: (a) it's currently anchored to the Integration Reconciliation working doc, which is a draft and actually lists New Relic as "Not Required", so please re-anchor to the "CDN, eCDN & Security Configuration" page (page 339935324), which references the Accenture Observability, Tracing & Security Assurance deck and holds the Log Centre to New Relic streaming checklist; (b) New Relic isn't procured or on the credentials tracker yet, so let's frame the alert policies as "recommended, pending procurement" while I raise procurement with Emma/IT. (I HAVE ALREADY RAISED AND PENDING REPLY)
+12. "What is NOT in Contentful", product imagery. You've asserted SFCC BM, but it isn't decided: the PWA TSD says imagery is served from Contentful, and the DC002 decision page is empty. Let's mark it "pending DC002" rather than stating it; I'll push for the decision (Digital / Integration). (ASK TIM)
+13. Cache and graceful degradation. Since footer and homepage always render from Contentful, a full CDA outage gives a broken bare page, currently noted as "risk accepted." Let's take a firmer position with Tim: is Contentful effectively a hard dependency there, and do we need a minimal static fallback?
+
+Minor
+
+14. "Tell No Lies" link (Didomi row and monitoring) points back to this page, so please repoint or drop it. (WHAT'S THIS)
+
+
+Net: items 1 to 5 are the gate to sharing; 6 and 7 need a design/authoring check; 8 to 10 are spikes and to-dos to raise; 11 to 13 need a lead or PO call (I'll drive 11 and 12). Really close, nice work. Happy to pair on any of these.
+
+--- turn 41 ---
+i did a further review:
+
+Hi Jhoan - here's my review, grouped by priority.
+Fix before we share
+
+1. Bootstrap Status, CMA token as GitHub Actions secret. This is marked Complete, but it should be Incomplete: the Setup & Ops runbook (page 318472193, checklist item 9) is the source of truth for setup state and has it incomplete, and the content-type sync/migrate steps aren't wired into CI yet, so the token isn't in use. Your own Blockers #5 and Open Items #4 also say incomplete. Let's set it to Incomplete to match the runbook. (If it's since been added, let's update the runbook first, then the TSD.) (DIDN'T TIM MAKE A COMMENT ON THIS SAYING THAT IT'S DONE? CAN YOU RUN A CHECK FIRST)
+2. Integration Architecture, "Key behaviours confirmed in 02-contentful.md." SSR-first fetch, GraphQL, and the publish webhook are listed as current behaviour, and useContentful.ts sits under "Already built", but the live hook is browser-side REST, the experience route also fetches client-side, and there's no GraphQL client, SSR editorial fetch, or webhook receiver in the repo yet. Let's split "built today" from "target architecture (to build)" so the squad doesn't assume SSR editorial is live. Also: where will the webhook receiver live, and is that this-integration scope or a separate story? (IS THIS QUESTION NOT TOO PUSHY OR OUT OF SCOPE: lso: where will the webhook receiver live, and is that this-integration scope or a separate story?)
+3. Blockers #1, locale count. It's 9, and this is confirmed: `contentfulMapping.generated.ts` (auto-generated from live SFCC via SCAPI) lists exactly nine locales, and `sites.overlay.js` maps the 10 PWA sites onto those 9. The "11" in 02-contentful.md is a stale line. Let's close Blocker #1 and set it to 9. (HOW SURE ARE YOU OF THIS? CHECK INTO TIM'S COMMENTS IF HE HAS ADDRESSED THIS OR THE DOCS - SHOW ME WHY IT'S 9 AND NOT 11)
+4. Sprint-2 content-types table. Verified against Jira and the sprint plan: SFCC-67 (Checkout Trust Messaging) sits under the Checkout Flow & Delivery epic = Sprint 4, and SFCC-14 (Returns/Refund) is an Epic = Sprint 7 - so neither belongs in Sprint 2. Let's move them to their real sprints, and reference the SFCC-14 child story once it's raised (we build to the story, not the epic). (WHAT DOES LET'S MOVE THEM MEAN? WHAT IS THIS DIRECTIVE? HAS TIM ADDRESSED THIS VIA COMMENTS? WHAT THE BASIS?)
+
+Validate before finalising
+
+5. Sprint-2 content types. You rightly flagged these are assumed, not confirmed (SFCC-82, SFCC-190, SFCC-67 defer their model to stories not yet created; none map to an HPC requirement in 04.1.1). @Tim - you'd flagged running the Sprint-2 authoring approach by Emma and Dani; could we get that session set up before we lock these field sets? (DO NOT DIRECT TIM, ASK HIM CONFIRMATORILY WHAT IS TO BE DONE) Jhoan, let's mark the Sprint-2 types provisional until then.
+6. Mega Menu fields. Design-dependent: SFCC-96 needs the Figma spec first. Let's mark those fields provisional pending the design. (CONFIRM THIS FIRST PLEASE)
+
+Spikes and to-dos to raise (not blocking)
+
+7. PLP Inline Grid Insert. The ID pattern presents the PLP inject as resolved, but Tim flagged we still need a spike to confirm we can inject a Contentful item into the SFCC PLP grid without breaking item counts or pagination. Let's add a "pending feasibility spike" note and raise the card (Hazel is tagged). (CHECK JIRA IF THERE'S ALREADY A SPIKE TASK CREATED FOR THIS AND LINK / MENTION IT TOGETHER WITH THE REVIEW)
+8. PDP Accordion, mixed content. Contentful tabs plus SFCC-sourced tabs (Details & Care, Size & Fit), with the exact SFCC fields still TBD. Let's make sure the mixed-content-rendering spike card gets raised. (HAS TIM ADDRESSED THIS VIA A COMMENT? CHECK JIRA IF THERE'S ALREADY A SPIKE TASK CREATED FOR THIS AND LINK / MENTION IT TOGETHER WITH THE REVIEW)
+9. MRT-apps section. As agreed, we'll scratch this - Gideon and I will do the separate MRT-apps TSD and link it here. 
+
+Raise with leads / POs (decisions outside our control)
+
+10. Error Handling & Monitoring, New Relic. Two things: (a) it's currently anchored to the Integration Reconciliation working doc, which is a draft and actually lists New Relic as "Not Required", so please re-anchor to the "CDN, eCDN & Security Configuration" page (339935324), which references the Accenture Observability, Tracing & Security Assurance deck and holds the Log Centre to New Relic streaming checklist; (b) New Relic isn't procured or on the credentials tracker yet - I've already raised procurement with Emma/IT and we're pending their reply, so let's frame the alert policies as "recommended, pending procurement."
+11. "What is NOT in Contentful", product imagery. This is asserted as SFCC BM, but it isn't decided: the PWA TSD says imagery is served from Contentful, and the DC002 decision page is empty. @Tim - can you steer the DC002 call on where product imagery lives? Jhoan, let's mark it "pending DC002" meanwhile rather than stating SFCC BM. (CHECK THE STATUS OF THIS - IMPROVE THE ASK TO TIM - DO NOT DIRECT TIM)
+12. Cache and graceful degradation. Since footer and homepage always render from Contentful, a full CDA outage gives a broken bare page, currently noted as "risk accepted." @Tim - worth a firmer position here: is Contentful effectively a hard dependency for that chrome, and do we want a minimal static or last-known-good fallback rather than a bare render? (CHECK THE STATUS OF THIS, AND ASK TIM BUT DO NOT DIRECT HIM)
+
+Minor
+
+13. "Tell No Lies" link (Didomi row and monitoring) currently points back to this page - please repoint it to the actual Tell No Lies/GTM reference or drop the hyperlink.
+14. 
+
+Net: items 1 to 4 are the gate to sharing (plus the Handoff Boundary table, which Tim already has flagged [FOR UPDATE] to finalise); 5 and 6 need a design/authoring check; 7 to 9 are spikes and to-dos to raise; 10 to 12 need a lead or PO call - I've raised 10 with Emma/IT, and 11 and 12 are for Tim. Really close, nice work. Happy to pair on any of these.
+
+--- turn 42 ---
+i don't like this category title: Fix before we share
+
+--- turn 43 ---
+Sign-off blockers - titles/categories in Title Case please
+
+--- turn 44 ---
+another review:
+
+Hi Jhoan - here's my review, grouped by priority.
+Sign-Off Blockers
+
+1. Bootstrap Status, CMA token as GitHub Actions secret. The status is inconsistent: the Bootstrap table has it Complete, but Blockers #5, Open Items #4, and the Setup & Ops runbook (318472193, checklist item 9) all have it Incomplete. Tim's earlier note that the Environments and aliases are bootstrapped covers a different checklist item, not this one, and CI doesn't reference the token yet. Can we confirm the actual state and make it consistent - if the CI CMA secret has genuinely been added, tick it everywhere and update the runbook; if not, mark it Incomplete?
+2. Integration Architecture, "Key behaviours confirmed in 02-contentful.md." SSR-first fetch, GraphQL, and the publish webhook are listed as current behaviour, and useContentful.ts sits under "Already built", but the live hook is browser-side REST, the experience route also fetches client-side, and there's no GraphQL client, SSR editorial fetch, or webhook receiver in the repo yet. Let's split "built today" from "target architecture (to build)" so the squad doesn't assume SSR editorial is live. (CHECK AND CONFIRM GRAPHQL, SSR EDITORIAL, ETC. AGAINST THE CODEBASE, CONFLUENCE, AND JIRA FOR VALIDATION AND VERIFICATION)
+3. Blockers #1, locale count. It's 9, and this is machine-confirmed: `contentfulMapping.generated.ts` is auto-generated from the live SFCC config via SCAPI and lists exactly nine locales, and `sites.overlay.js` maps the 10 PWA sites onto those 9. The "11" in 02-contentful.md is a stale line (it counts en-AU, which AU narrows to en, plus a duplicate EU en). Let's close Blocker #1 and set it to 9. (MACHINE-CONFIRMED SOUNDS TOO 'AI DID THIS FOR ME' - LET'S REPHRASE THAT WHILE ALSO MAKING A VALIDATION/VERIFICATION FOR THE 9 VS. 11 STOREFRONTS COUNT AND DECISION)
+4. Sprint-2 content-types table. Two of these belong in later sprints: SFCC-67 (Checkout Trust Messaging) sits under the Checkout Flow & Delivery epic, which is Sprint 4, and SFCC-14 (Returns/Refund) is an Epic, which is Sprint 7 - and as you and Tim both noted, we build to a child story, not the epic. Let's remove both rows from the Sprint-2 table and relocate them: SFCC-67 under Sprint 4, SFCC-14 under Sprint 7 (attaching to its child story once it's raised).
+
+Validate Before Finalising
+
+5. Sprint-2 content types. You rightly flagged these are assumed, not confirmed (SFCC-82, SFCC-190, SFCC-67 defer their model to stories not yet created; none map to an HPC requirement in 04.1.1). @Tim - you'd mentioned running the Sprint-2 authoring approach by Emma and Dani; is that still the plan, and how would you like us to sequence it before we lock the field sets? In the meantime, Jhoan, let's mark the Sprint-2 types provisional.
+6. Mega Menu fields. Design-dependent, as you noted - SFCC-96 needs the Figma spec first (it's flagged DesignDependent in Jira). Let's mark those fields provisional pending the design.
+
+Spikes and To-Dos to Raise (Not Blocking)
+
+7. PLP Inline Grid Insert. The ID pattern presents the PLP inject as resolved, but Tim flagged we need to confirm we can inject a Contentful item into the SFCC PLP grid without breaking item counts or pagination. There's already a spike for this area - SFCC-238 (Contentful-to-PWA Kit Product/Category ID Rendering) - let's link it here and confirm it covers the pagination/item-count check, and mark the PLP inject "pending SFCC-238" in the meantime.
+8. PDP Accordion, mixed content. Tim raised whether the accordion body can pull SFCC content via a simple SFCC var or needs a dedicated component, and you suggested a spike - there's no card for it yet, so let's raise one (or fold it into SFCC-238's scope) and reference it here.
+9. MRT-apps section. As agreed, we'll scratch this - the MRT app architecture is covered by its own spike, SFCC-237 (MRT Application Architecture Strategy), which Gideon and I will take; we'll link that TSD here once it's done.
+
+Raise with Leads / POs (Decisions Outside Our Control)
+
+10. Error Handling & Monitoring, New Relic. Two things: (a) it's currently anchored to the Integration Reconciliation working doc, which is a draft and actually lists New Relic as "Not Required", so please re-anchor to the "CDN, eCDN & Security Configuration" page (339935324), which references the Accenture Observability, Tracing & Security Assurance deck and holds the Log Centre to New Relic streaming checklist; (b) New Relic isn't procured or on the credentials tracker yet - I've already raised procurement with Emma/IT and we're pending their reply, so let's frame the alert policies as "recommended, pending procurement."
+11. "What is NOT in Contentful", product imagery. This is asserted as SFCC BM, but it isn't settled: the PWA TSD says imagery is served from Contentful, and the DC002 decision page has no decision recorded yet. @Tim - what's your read on where product imagery lands, and should DC002 be the place we lock it? Jhoan, let's mark it "pending DC002" meanwhile rather than stating SFCC BM.
+12. Cache and graceful degradation. Since footer and homepage always render from Contentful, a full CDA outage gives a broken bare page, currently noted as "risk accepted." @Tim - you'd raised the cache/invalidation angle here; do you see Contentful as effectively a hard dependency for that chrome, or should we plan a minimal static / last-known-good fallback? Keen on your steer before we lock the degradation stance.
+
+Minor
+
+13. "Tell No Lies" link (Didomi row and monitoring) currently points back to this page - please repoint it to the actual Tell No Lies/GTM reference or drop the hyperlink.
+
+
+Net: items 1 to 4 are the sign-off blockers (plus the Handoff Boundary table, which Tim already flagged [FOR UPDATE] to finalise); 5 and 6 need a design/authoring check; 7 to 9 are spikes and to-dos (SFCC-238 and SFCC-237 already exist); 10 to 12 need a lead or PO call - I've raised 10 with Emma/IT, and 11 and 12 are for Tim's steer. Really close, nice work. Happy to pair on any of these.
+
+--- turn 45 ---
+how many mentions to tim are in this review?
+
+--- turn 46 ---
+show me this:
+Bootstrap Status, CMA token as GitHub Actions secret. The status is inconsistent: the Bootstrap table has it Complete, but Blockers #5, Open Items #4, and the Setup & Ops runbook (318472193, checklist item 9) all have it Incomplete. Tim's earlier note that the Environments and aliases are bootstrapped covers a different checklist item, not this one, and CI doesn't reference the token yet. Can we confirm the actual state and make it consistent - if the CI CMA secret has genuinely been added, tick it everywhere and update the runbook; if not, mark it Incomplete?
+
+where are the inconsistencies in the draft?
+
+--- turn 47 ---
+as per jhoan, given the review, she was able to make the changes to the spike - run a in-depth analysis of the spike TSD at https://zimmermannworkboard.atlassian.net/wiki/x/BoCrF against the review action items we provided her with
+
+--- turn 48 ---
+for this: Item 1 (CMA token status) - tim commented that it's been completed no?
+
+--- turn 49 ---
+fold this correction into the comparison report as the revised item-1 verdict
+
+--- turn 50 ---
+list down those that are not yet resolved and are still pending
+
+--- turn 51 ---
+for each of the 4 items that need fixing - show me the current state and how it would be when revised
+
+--- turn 52 ---
+for item #3 - which is the correct state?
+
+--- turn 53 ---
+i agree with this
+
+====================================================================================================
+### [handover] [2026-07-31] ZIMM - SFCC-123 — 70 user turns — 52821eb5-8c18-4631-aa4f-7a9d644f0def.jsonl
+====================================================================================================

@@ -1,0 +1,688 @@
+     1	# FED Lead Playbook
+     2	
+     3	**Owner:** Marcel Navarro · **Started:** August 2026 · **Revised:** 25 August 2026
+     4	
+     5	The lead role: what you say, to whom, and when. Judgement and process, not procedure.
+     6	
+     7	**Companions:** `fedBuild-manual.md` (how to build a component) · `uiBuild-knowledge.md` (why
+     8	the machine behaves the way it does).
+     9	
+    10	**Authority on styling:** `.claude/rules/overrideStyling.md`. If this file disagrees with it,
+    11	that file wins.
+    12	
+    13	*This document absorbed `zimmermann_frontend_lead_playbook.md` (retired 25 Aug 2026). Its
+    14	durable operating principles are §3; its training-vehicle material — a Next.js/Tailwind stack
+    15	that isn't this one — was dropped.*
+    16	
+    17	---
+    18	
+    19	## 1. The mandate
+    20	
+    21	Sixteen responsibilities landed across two Contentful-vs-PWA-Kit alignment meetings. They
+    22	reduce to two mandates:
+    23	
+    24	- **M1 — Protect the build.** Reuse, conventions, review, accessibility, performance.
+    25	- **M2 — Protect the plan.** Estimation, scope, dependencies, escalation.
+    26	
+    27	**The one to resist as stated:** being a serial refinement gate across both squads. It won't
+    28	scale and it will slip. Name that rather than absorbing it — an unresourced ask that quietly
+    29	becomes yours is the failure mode here.
+    30	
+    31	### The quality bar this serves
+    32	
+    33	The SOW allows **10 defects, no Sev3**, for the whole project. Three consequences:
+    34	
+    35	1. **Vigilance is the job**, not an overhead on it.
+    36	2. **Budget real time per UI PR** — an hour or more. That's the cost of the review, not
+    37	   slippage.
+    38	3. **Flag rather than invent.** A guessed value that ships is a defect with your name on it.
+    39	
+    40	---
+    41	
+    42	## 2. Operating rhythm
+    43	
+    44	| Moment | Plays |
+    45	|---|---|
+    46	| Story drafting | 1, 3, 4 |
+    47	| Refinement | 1, 2, 8 |
+    48	| Pre-sprint planning | 2, 8 |
+    49	| PR review | 5, 5b, 6 |
+    50	| Weekly design review | 9 |
+    51	
+    52	---
+    53	
+    54	## 3. Principles
+    55	
+    56	*Absorbed from the retired playbook. These are the parts that survived contact with the
+    57	codebase.*
+    58	
+    59	### The quality ceiling is set by the human
+    60	
+    61	An AI assistant has no standards of its own — the standards and the constraints are things you
+    62	supply. Its real value is making your assumptions visible faster, not making decisions.
+    63	
+    64	### The dual mandate
+    65	
+    66	You hold two hats and the failure mode is collapsing into one.
+    67	
+    68	| | IC | Lead |
+    69	|---|---|---|
+    70	| Think | about the component | about the system |
+    71	| Ask | until the spec is unambiguous | until the *team's* spec is unambiguous |
+    72	| Decide | how to build it | whether it should be built now |
+    73	| Review | your own output hardest | the pattern, not the line |
+    74	| Protect | the build | the plan |
+    75	| Multiply | — | the highest-leverage thing you do |
+    76	
+    77	**IC drift:** you're the only one who knows how something works. **Lead drift:** you haven't
+    78	written code in a week and your review comments are getting vaguer.
+    79	
+    80	### Defeating agreeableness
+    81	
+    82	An assistant that agrees with you is worth nothing. Four techniques that work:
+    83	
+    84	- **Role framing** — "you are a reviewer whose job is to find what's wrong with this."
+    85	- **Steelman** — "give me the strongest argument *against* this approach."
+    86	- **Critique-first** — ask for the problems before asking for the solution.
+    87	- **Constraint injection** — name the constraint it must satisfy, so it can't hand-wave.
+    88	
+    89	Make it a team norm, not a private trick.
+    90	
+    91	### Polishing is procrastination
+    92	
+    93	If an edit to a rules file didn't change what someone can or can't do, it wasn't a real edit.
+    94	
+    95	### Define done, or nothing stops
+    96	
+    97	This applies to people and tools equally. "Improve the footer" has no terminal state.
+    98	
+    99	---
+   100	
+   101	## 4. Working with AI tooling
+   102	
+   103	*New section. The expensive failures on this project were not bad code — they were unrequested
+   104	work and unrequested commits.*
+   105	
+   106	### The authorisation ladder — three separate levels
+   107	
+   108	**Investigate ≠ fix ≠ commit.** "Run it" and "have a look" are investigation requests. They are
+   109	not approval to change code, and changing code is not approval to commit it.
+   110	
+   111	Correct shape: **change → verify → stop and show the diff → wait.**
+   112	
+   113	This sharpens AGENTS.md Hard Rule #15 with the distinction the rule leaves implicit. Resuming
+   114	from a session summary, a task list, or a "natural next step" is **not** an instruction to
+   115	commit.
+   116	
+   117	### The audit-loop failure mode
+   118	
+   119	A build can become a self-sustaining audit-and-fix cycle that feels productive and isn't.
+   120	Measured on one stretch of SFCC-55: **55 commits, a 3.0:1 rework ratio, `footer/index.tsx`
+   121	touched 32 times in 5 days.** The work wasn't wasted — it was mis-ordered.
+   122	
+   123	**The diagnostic that separates real work from generated work:** where did the finding come
+   124	from? Six findings fixed things that were actually broken. Seven came from *reading code we'd
+   125	just written*. If a finding's origin is your own fresh output rather than a spec, a reproduced
+   126	failure, or a review comment, it is probably not the next thing to do.
+   127	
+   128	Two correctives:
+   129	
+   130	- **Read the review queue before starting a self-directed pass.** A six-hour-old Major finding
+   131	  named a live security bypass while the loop was polishing comment placement.
+   132	- **Ban "it's good practice" as a justification.** A fix needs a named requirement, a
+   133	  reproduced failure, or a review comment behind it.
+   134	
+   135	### Present verdicts, don't auto-fix
+   136	
+   137	When a pass produces a list of possible improvements, separate the ones traceable to a
+   138	spec/failure/review from the ones traceable to your own just-written code — and **offer** the
+   139	second group rather than doing them.
+   140	
+   141	### Don't take an agent's report at face value
+   142	
+   143	Two agent claims were overturned by direct verification in a single session this week: that
+   144	a11y is ungated (it is gated — the agent was reasoning from Storybook 8), and that the CLI
+   145	would work with the repo's management token (it reads neither that env var nor any other).
+   146	
+   147	Both were confidently stated and internally coherent. **The check is cheap; the propagation
+   148	cost is not** — a wrong claim in a doc gets cited for months.
+   149	
+   150	### Local-only docs stay local
+   151	
+   152	These three files live on this machine. **Never cite them in a PR reply, a commit message, or
+   153	a code comment.** A citation nobody else can open reads as an appeal to a private authority,
+   154	and for CodeRabbit specifically it teaches the bot nothing.
+   155	
+   156	When a local doc is the real reason for a decision, find the public equivalent in `AGENTS.md`,
+   157	`.claude/rules/` or `.docs/` and cite that. If none exists, argue the merits directly.
+   158	
+   159	No `Co-Authored-By` trailer on commits.
+   160	
+   161	---
+   162	
+   163	## Play 1 — The reuse & dependency check
+   164	
+   165	*Covers responsibilities 5, 16*
+   166	
+   167	Four rungs: use as-is → override → compose existing atoms → build new. Rung 4 is rarest and
+   168	needs justification.
+   169	
+   170	**Where to look:** `.claude/registry/` for `Origin` (`Custom` / `Override` / **`Base`**), then
+   171	`ui-kits/`. ⚠️ The registry's `Tier` column is unreliable — `generateRegistry.mjs:122`
+   172	hardcodes tiers, lists no `ui-kits` path, and defaults everything to Tier 4.
+   173	
+   174	**`Origin = Base` is the hidden cost.** It means copy-first: mirror the file, convert to TS,
+   175	verify the override renders, *then* build. That's real effort and it belongs in the estimate.
+   176	Eight components referenced throughout `.claude/rules/` are still base.
+   177	
+   178	**The `shared/ui` barrel exception.** Overriding `shared/ui/<Name>` to propagate styling into
+   179	base cart/checkout/account looks like enormous leverage. It intercepts nothing — the barrel
+   180	re-exports relatively, which the resolver doesn't rewrite, and 208 base files import the barrel
+   181	while 0 import the individual module. Don't scope a story around it.
+   182	
+   183	**Duplicate atoms are a human problem.** No tool detects "this is a second Button." The fix
+   184	that makes it self-service is one line in the BA's story template: *name the component, and
+   185	state whether it exists.*
+   186	
+   187	### The atoms governance model — decided
+   188	
+   189	```
+   190	overrides/app/components/ui-kits/{atoms,molecules,organisms}/<camelCase>/
+   191	```
+   192	
+   193	Tier by composition (what the component's own template renders), camelCase for
+   194	Zimmermann-authored, a registered recipe always.
+   195	
+   196	⚠️ **The rules set is split on this.** `components.md` and `conventions.md` contain **zero**
+   197	occurrences of `ui-kits`, `atoms`, `molecules` or `organisms`. `new-component/SKILL.md:29`
+   198	still scaffolds to the flat path. `.docs/architecture.md` contradicts itself. Reconciling this
+   199	is a standing item.
+   200	
+   201	---
+   202	
+   203	## Play 2 — Estimation validation
+   204	
+   205	*Covers responsibilities 2, 6*
+   206	
+   207	**The re-baseline to say once:** pages go *down*, components go *up by more*. Component-based
+   208	decomposition front-loads the work.
+   209	
+   210	Split component-build effort from page-composition effort in every estimate. They have
+   211	different risk profiles and different owners.
+   212	
+   213	Challenge list:
+   214	
+   215	1. Is it `Origin = Base`? Add copy-first.
+   216	2. Does it exist in `ui-kits` already?
+   217	3. Is a Contentful content type needed? That's a second story.
+   218	4. Is the Figma frame signed off, or "Not Confirmed"?
+   219	5. Does it depend on an integration that isn't wired? Most aren't.
+   220	6. Does its data exist on the tiers it must demo on?
+   221	7. Is it multi-site? Eight storefronts, eleven locales, by default.
+   222	
+   223	---
+   224	
+   225	## Play 3 — Component completeness & variant review
+   226	
+   227	*Covers responsibilities 3, 9*
+   228	
+   229	**Configuration variant** (a prop) vs **composition variant** (a container or slot —
+   230	structurally a second component). Getting this wrong at story time produces a component that
+   231	can't express what the design needs.
+   232	
+   233	⚠️ **Contentful sync is additive-only**, so a variant modelled wrongly is semi-permanent. Field
+   234	deletion is opt-in (`--delete-deleted-fields`) and off by default, deliberately.
+   235	
+   236	Optional fields need explicit AC for the absent case — see the three-tier absent-data policy in
+   237	`uiBuild-knowledge.md` §7.
+   238	
+   239	---
+   240	
+   241	## Play 4 — The renderer contract
+   242	
+   243	*Covers responsibilities 4, 12*
+   244	
+   245	One field-ID table, **identical in both stories** of a Contentful pair. You own the template,
+   246	the BA fills it, you sign off the field IDs.
+   247	
+   248	The IDs are the contract. A rename after authoring begins is a migration, not an edit.
+   249	
+   250	---
+   251	
+   252	## Play 5 — PR review
+   253	
+   254	*Covers responsibilities 7, 10, 11*
+   255	
+   256	### Already mechanical — don't spend review time here
+   257	
+   258	Conventional commit format · registry regeneration · derived-config edit blocking ·
+   259	`.env.sample` secret shapes · tag naming · Storybook a11y (`preview.tsx` sets
+   260	`a11y.test: 'error'`; the installed test-runner enforces it).
+   261	
+   262	### Gate zero — does it build
+   263	
+   264	⚠️ **Read the check *history*, not the head SHA.** `detect-changes` diffs
+   265	`since_last_remote_commit`, so a docs-only final commit flips both required checks green even
+   266	if an earlier push failed them. **A skipped required check counts as passing.** PR #59 merged
+   267	with all four suites `skipping` and zero test evidence on its head SHA.
+   268	
+   269	Also: `Playwright E2E` and `Cross-browser E2E` are **required nowhere** — they can be red and
+   270	the PR merges.
+   271	
+   272	### Review across three surfaces
+   273	
+   274	1. **The diff** — tokens, naming, dead code, test coverage.
+   275	2. **The preview environment** — every `feature/**` push gets its own MRT URL automatically.
+   276	3. **Figma, side by side**, mobile *and* desktop.
+   277	
+   278	Layout defects are invisible in a diff and invisible to every automated gate. `width: 'xl'`
+   279	resolving to 576px destroyed the footer on every page while passing `tsc`, `eslint`, `vitest`,
+   280	CodeRabbit twice, and the a11y run.
+   281	
+   282	### The token checklist
+   283	
+   284	- Bare token key on a **sizing** or **typography** prop → wrong or dropped silently
+   285	- Bare token string where `var(--zimm-*)` is now required
+   286	- Raw hex/px/rem/em without a `provisional`/`pending`/`audit-allow` comment
+   287	- Recipe not namespaced → silent deep-merge into a base SFCC recipe
+   288	- Recipe not registered → runtime throw
+   289	- Compound value (`padding: 'xs 0'`) → emitted verbatim, dropped
+   290	
+   291	### Tests and stories — the minimum
+   292	
+   293	A story for anything exported. A test where there's branching or event wiring. Resolve
+   294	duplicate coverage by **scoping what the test asserts** — mock the child whose internals are
+   295	proven elsewhere — not by leaving the component with no test of its own.
+   296	
+   297	### Ten questions, in order
+   298	
+   299	1. Does it build, and did the checks actually *run*?
+   300	2. Does it match Figma at both breakpoints?
+   301	3. Is anything here already in `ui-kits`?
+   302	4. Any raw design value?
+   303	5. Any bare token key on a sizing/typography prop?
+   304	6. Is the recipe namespaced and registered?
+   305	7. Keyboard operable, focus visible, names on controls, 24×24 targets?
+   306	8. Does the absent-data case render something perceivable?
+   307	9. Does its data exist on the tiers it must demo on?
+   308	10. Does the protection-tier block in the PR body match the actual diff?
+   309	
+   310	---
+   311	
+   312	## Play 5b — Verifying a claim before you act on it
+   313	
+   314	*Learned expensively. Reversals here would each have shipped a wrong change.*
+   315	
+   316	- **Absence in an extracted spec is not a decision.** A field missing from a Figma export may
+   317	  mean "not specified" or "deliberately none" — those are different, and you can't tell from
+   318	  the absence.
+   319	- **A codebase value isn't a spec until you find its source.** Someone typed it. Find out who
+   320	  and why before treating it as intent.
+   321	- **Ask for the node.** A Figma *screenshot* in a ticket is not the frame. Node type decides
+   322	  whether a measurement is even comparable.
+   323	- **Value-matching audits produce confident nonsense.** "These 41 literals should be tokens"
+   324	  inflated from 19 by matching `.rem` inside `removeEventListener`.
+   325	- **A grep count is not a coverage verdict.** When a count returns zero, establish *which*
+   326	  zero: untested, tested elsewhere, or unused.
+   327	- **A passing test can encode the bug.** A tie-break suite named "order doesn't change the
+   328	  outcome" used only distinct timestamps — the one arrangement already order-independent. It
+   329	  passed while the bug was live.
+   330	
+   331	**The shape all of these share: a proxy reported as the finding.**
+   332	
+   333	The standard: **make the check fail on purpose before its pass counts.** If something is
+   334	asserted rather than proven, say so.
+   335	
+   336	---
+   337	
+   338	## Play 6 — Accessibility
+   339	
+   340	*Covers responsibility 13*
+   341	
+   342	WCAG **2.2** AA. Per-component AC: keyboard operable · visible focus · accessible name ·
+   343	correct semantic element · contrast 4.5:1 / 3:1 · **24×24 target size** (2.5.8, a 2.2 addition).
+   344	
+   345	**What the tooling misses**, so don't treat a clean run as clearance: the `<img>` ast-grep rule
+   346	matches `^img$` only and is blind to Chakra's `<Image>`; the `IconButton` rule rejects
+   347	`aria-labelledby` — the more correct answer — because of a word-boundary bug; the
+   348	clickable-non-interactive rule checks neither `tabIndex` nor `onKeyDown`. All three are
+   349	`severity: warning`.
+   350	
+   351	**Open item:** whether missing alt text should be absent or `alt=""` is a content-model
+   352	question, not a code one. Needs a decision from Tim.
+   353	
+   354	---
+   355	
+   356	## Play 7 — Page-level validation
+   357	
+   358	*Covers responsibilities 14, 15*
+   359	
+   360	| Part | Where it lands today |
+   361	|---|---|
+   362	| E2E | partial — **two spec files exist in the entire repo** |
+   363	| Lighthouse | yes, at SIT tier |
+   364	| **Design parity** | **no automated home — defaults to you** |
+   365	
+   366	⚠️ **No page has a Storybook story**, despite `components.md` requiring one for page-level
+   367	assemblies.
+   368	
+   369	---
+   370	
+   371	## Play 8 — Pushing back before sizing
+   372	
+   373	*Covers responsibilities 1, 8*
+   374	
+   375	**The Figma link on the card is a build input.** A stale link propagates three ways: the dev
+   376	builds the wrong thing, the BA signs off against a different frame, QA tests a third source.
+   377	Ask the BA to fix the card.
+   378	
+   379	**Decisions need a findable home.** A decision recorded only in a Teams thread will be
+   380	re-litigated within a month.
+   381	
+   382	---
+   383	
+   384	## Play 9 — Design-system escalation
+   385	
+   386	*Covers responsibility 9*
+   387	
+   388	Standing route for missing tokens: the weekly design review.
+   389	
+   390	Live gaps: `zimmButton`'s provisional heights (50px/41px) disagree with Handover's
+   391	`actionSizes` (52px/40px); `BTN_PADDING_Y` (5px) has no token at all; primary-button hover
+   392	fails AA at 2.96:1; there's no inverse focus-ring token.
+   393	
+   394	⚠️ **"Done" in the 04.7 component tracker means design-confirmed, not API-matched.** Those are
+   395	different states and the tracker doesn't distinguish them.
+   396	
+   397	**What to do when the design system itself is wrong** — e.g. a token that fails the project's
+   398	own WCAG 2.2 AA target — is unresolved. Someone has to accept that risk explicitly; right now
+   399	nobody has.
+   400	
+   401	---
+   402	
+   403	## Governance — what actually blocks
+   404	
+   405	*Expanded. The short version: `.claude/rules/` is documentation, `CODEOWNERS` is
+   406	configuration.*
+   407	
+   408	### The real enforcement
+   409	
+   410	Server-side and it works: `require_code_owner_reviews` + `enforce_admins` +
+   411	`bypass_pull_request_allowances: []` on `develop`, `main` and `release/**`. All five CODEOWNERS
+   412	teams exist and have members.
+   413	
+   414	Advisory only: `tier1-guard`, `tier2-warning`, `cross-squad-guard`, and any assistant's
+   415	confirmation prompt. `tier1-guard` is deliberately not a required check — GitHub's Feb-2025
+   416	cross-run check-run lockdown made "hard-fail until approved" unimplementable.
+   417	
+   418	### Where the docs and the configuration disagree
+   419	
+   420	| Path | Declared | CODEOWNERS | CI guard |
+   421	|---|---|---|---|
+   422	| `babel.config.js` | **Tier 1** | **absent** | **absent** |
+   423	| `tsconfig.json` | **Tier 1** | **absent** | **absent** |
+   424	| `theme/globalStyles.ts` | **Tier 2** | **absent** | **absent** |
+   425	| `overrides/app/ssr/**` | Tier 1 | ✓ | absent — the glob is `ssr.*`, a literal dot |
+   426	
+   427	**`CODEOWNERS` has no catch-all rule.** A path absent from it requires zero code-owner review
+   428	regardless of what any rules file says. So editing `tsconfig.json` — strict mode and every path
+   429	alias — currently needs approval from nobody.
+   430	
+   431	Also ungated: `scripts/versionGuard.mjs` (the entire downgrade-protection mechanism),
+   432	`.husky/*` (the shims that invoke the gated hooks — empty one and the gate is off).
+   433	
+   434	### Last-match-wins
+   435	
+   436	`CODEOWNERS:186` (`overrides/app/components/**/*.css.ts` → squads only) is placed last among
+   437	the `components/` rules, deliberately downgrading any co-located recipe inside a Tier 2
+   438	directory. Rationale: a co-located recipe composes established tokens; authoring a new token
+   439	still means `theme/foundation/`.
+   440	
+   441	⚠️ It also means a `.css.ts` inside `_app-config/` or `seo/` would drop the Tier 2 gate the
+   442	same way. Nothing prevents that.
+   443	
+   444	### Squad ownership is stale
+   445	
+   446	`squadA.md` and `squadB.md` are six weeks older than every other rules file. Of squadA's 18
+   447	territory paths, 4 exist; **zero** of squadB's 9 do. Both contradict `CODEOWNERS` on PDP
+   448	ownership — **CODEOWNERS says Squad B and is the one that enforces.**
+   449	
+   450	### Tier 1 approval
+   451	
+   452	Four files are absolute: `ssr.js`, `config/default.js`, `config/sites.js`, `worker/main.js`.
+   453	Everything else Tier 1 is reachable under the verified-session exception — `gh api user`, check
+   454	`tier-1-approvers` membership, then name the file and the reason **in the commit body**.
+   455	
+   456	Being Tier 1 is not by itself disqualifying; being one of the four named absolutes is.
+   457	
+   458	⚠️ **`tier-2-approvers` has 2 members and `tier-1-approvers` has 3.** Any PR touching
+   459	`theme/components/` is a two-person bus factor.
+   460	
+   461	---
+   462	
+   463	## Release, tagging and promotion
+   464	
+   465	*New section.*
+   466	
+   467	### Tags
+   468	
+   469	| Pattern | Who | Enforcement |
+   470	|---|---|---|
+   471	| `vX.Y.Z-rc.N` | any developer | immutable for everyone |
+   472	| `vX.Y.Z` / `-hotfix.N` | tier-1-approvers only | creation restricted |
+   473	
+   474	Always annotated (`-a -m`). Tag-only push — never `npm version`, which creates a
+   475	`package.json` commit that `release/**` protection blocks.
+   476	
+   477	⚠️ **Inverted:** a tier-1-approver *can* delete or move a final `vX.Y.Z` tag (the ruleset's
+   478	bypass is `always`, covering all its rules), while nobody can touch an `-rc.N`. That
+   479	contradicts the documented immutability guarantee.
+   480	
+   481	### Environments
+   482	
+   483	**Continuous:** `dev` (every `develop` merge), `sit` (off the SIT gate on `release/**`).
+   484	**Tag-promoted:** `test`, `uat`, `staging`, `prod` — `workflow_dispatch` with an explicit ref.
+   485	
+   486	Plus an undocumented seventh surface: `deploy-preview.yml` auto-deploys ephemeral per-branch
+   487	MRT previews on every `feature/**`/`fix/**` push. Not in `tagging.md`'s model at all.
+   488	
+   489	### Three things to know before a release
+   490	
+   491	1. **`prod`, `staging` and `uat` have zero protection rules.** Combined with `MRT_USER` /
+   492	   `MRT_API_KEY` at repo scope, anyone with write access can dispatch `deploy-prod.yml` with
+   493	   any ref and no human gate. `rollback=true` is documented as gated by required reviewers —
+   494	   **there are none.** Setting them is the single highest-value fix available.
+   495	2. **A branch ref silently disarms the downgrade guard.** `check` *passes* on any non-version
+   496	   ref and `record` *skips* it — and three of the four tag-promoted workflows default to a
+   497	   branch. After any out-of-band deploy, re-run
+   498	   `node scripts/versionGuard.mjs record <env> <tag>` or the guard's baseline is a lie.
+   499	3. **No `release/**` PR can merge today.** `SIT Gate` is required and admin-enforced; two of
+   500	   its four jobs cannot pass — `lighthouse-ci` needs `LHCI_*` secrets that don't exist, and
+   501	   `playwright-p0` runs against **zero `*.p0.spec` files** with no `passWithNoTests`. Discover
+   502	   this the week you cut `release/v0.1.0` and you're blocked on secrets provisioning, not code.
+   503	
+   504	⚠️ **`main` is the least-protected branch in the repo** — no test gate at all, and stale
+   505	reviews aren't dismissed.
+   506	
+   507	⚠️ **Three-way name divergence:** GitHub Environment (`staging`) ≠ workflow file (`stg`) ≠ MRT
+   508	target (`production` for prod). Tooling must key off the GitHub Environment name.
+   509	
+   510	---
+   511	
+   512	## Sprint, story and Jira/Confluence
+   513	
+   514	*New section.*
+   515	
+   516	### Story decomposition
+   517	
+   518	**Level 1 — component epics.** A PWA-Kit-only component gets one story. A Contentful + PWA-Kit
+   519	component gets **two** — one for the content model, one for rendering.
+   520	
+   521	**Level 2 — page epics.** Shopper-perspective, how components work together. Must not repeat
+   522	Level-1 build detail.
+   523	
+   524	Formalised in Confluence 04.71 (page 400195600). ⚠️ **Encoded nowhere in this repo** — nothing
+   525	in `.claude/`, `.docs/` or CI mentions or enforces it.
+   526	
+   527	### Cutting a UI story
+   528	
+   529	1. **Slice by data source, not UI surface.** One story per tab is the wrong cut.
+   530	2. **Split again where risk differs** — unconfirmed attribute, unauthored content, unbuilt
+   531	   integration.
+   532	3. **Every story a vertical slice.** Give a "shell" story a real first slice so it's demoable.
+   533	4. **Quarantine later-sprint work** (Hard Rule #14) and design for graceful degradation —
+   534	   "renders now, wired later."
+   535	5. **Offer sub-tasks, not more stories,** when a BA wants finer granularity.
+   536	6. **Check the ticket against the PRD** and flag anything it assumes that's still open.
+   537	
+   538	### The Jira key
+   539	
+   540	`SFCC-\d+`, hardcoded in three places that must stay in sync: `qa.yml:166`,
+   541	`runStoryTests.sh:13-16`, `computeMrtPreviewSlug.mjs:47`.
+   542	
+   543	**Not in the PR title** — conventional commits only. The Jira URL goes in the **body**,
+   544	manually, because the Forge app isn't installed.
+   545	
+   546	⚠️ **The two E2E tags fail differently.** A missing `@area` falls back to the full suite (safe).
+   547	A missing `@SFCC-NNN` means BrowserStack reports "no tests found" and **passes as a free
+   548	no-op** — a silent coverage hole.
+   549	
+   550	### ⚠️ `sprintScope.md` is two months stale and load-bearing
+   551	
+   552	Last commit 2026-06-25. It says "Sprint 0 — Foundation (in progress)" while its own table puts
+   553	today in Sprint 5. **AGENTS.md Hard Rule 14 makes it authoritative for scoping every task**,
+   554	and six skills cite it — so `/session-start`, `/feature-spec`, `/qa-generate` and `/onboarding`
+   555	all currently emit stale sprint context. Applied literally it would classify current PDP work
+   556	as past-sprint and trigger a stop-and-ask.
+   557	
+   558	`projectState.md` is fresher but still lists SFCC-55 as "In Progress: PR #59" — that merged
+   559	2026-08-24 and is the head of `develop`.
+   560	
+   561	**Jira is the only authority on the current sprint.** Don't derive it from the repo.
+   562	
+   563	### Confluence
+   564	
+   565	Space key `SFCC`. Boundary rule: **source-of-truth or requirement → `.docs/`; how-to or process
+   566	doc for humans → Confluence.**
+   567	
+   568	---
+   569	
+   570	## Integration and vendor boundaries
+   571	
+   572	*New section. Of 18 documented integrations: **2 live, 5 partially wired, 11 doc-only.***
+   573	
+   574	**Live:** SFCC (SCAPI, SLAS auth) · Contentful.
+   575	
+   576	**Partial:** MuleSoft (no proxy path in any config) · Booxi (falls back to a literal
+   577	`'https://BOOXI_BASE_URL'`) · Adyen (CSP and env done; the package isn't installed) ·
+   578	Global-e (routing model only) · Google Maps · Measmerize (CSP done, no script injection).
+   579	
+   580	**Doc-only:** Omneo · GiveX · reCAPTCHA · Narvar · Didomi · GTM · Inside Chat · Optimizely ·
+   581	Crazy Egg · Vimeo.
+   582	
+   583	### Where the frontend boundary sits
+   584	
+   585	**Tell No Lies** own GTM container contents, Optimizely experiments and Crazy Egg masking —
+   586	we emit the data layer, they consume it. **MuleSoft/Tryzens** own every PWA-direct read
+   587	endpoint. **The SFCC cartridge team** owns all Adyen server-side calls. **Booxi and Omneo** own
+   588	their APIs outright. **Zimmermann Privacy** owns all Didomi Console config — no consent rules
+   589	are hardcoded in the storefront.
+   590	
+   591	**We own:** SCAPI consumption, Contentful rendering, the `dataLayer` emission contract, Consent
+   592	Mode translation, the script *loaders*, the MRT proxy legs, the Global-e `postMessage` listener,
+   593	Measmerize DOM containers — **and rendering payment/PII fields with stable maskable selectors
+   594	so TNL's config doesn't break between releases.** That last one looks like someone else's job
+   595	and isn't.
+   596	
+   597	### Four things that will bite
+   598	
+   599	1. **`.env.sample` is the deployment schema, not documentation.** Only `# mrt:true`-tagged keys
+   600	   sync to MRT, **from `.env.sample`**. `ADYEN_HMAC_KEY`, `RECAPTCHA_SECRET_KEY`,
+   601	   `BOOXI_BASE_URL`, `GTM_SERVER_URL` and the MuleSoft credentials are named in docs and exist
+   602	   in no file — they will never reach MRT no matter how correct the code is.
+   603	2. **The Adyen HMAC failure mode is silent by design.** An absent key doesn't error — it
+   604	   *downgrades* to Basic Auth and keeps accepting webhooks. Combined with #1, the default path
+   605	   is an unauthenticated payment webhook that looks healthy in every log.
+   606	3. **Adding an MRT proxy path is a change to `config/` — one of the four absolutes.** Three
+   607	   integrations are architected around proxy paths that don't exist.
+   608	4. **CSP is the silent gate on everything remaining, and it's mostly empty.** No entries for
+   609	   Didomi, GTM, Optimizely, Crazy Egg, Vimeo, Omneo, Global-e or Narvar. And `useDefaults: true`
+   610	   **replaces rather than merges** a directive, so partially editing an array silently drops the
+   611	   rest.
+   612	
+   613	### Consent
+   614	
+   615	**Fail closed.** If consent state is unknown, load nothing. Implemented as a 5-second timeout —
+   616	explicitly a project decision, not a Didomi-recommended value.
+   617	
+   618	**Never silently substitute a different checkout, payment or commerce flow** when an
+   619	integration is down. Surface an explicit error. The sharpest case: never fall back to SFCC
+   620	checkout for an international destination — wrong flow, and tax/regulatory risk.
+   621	
+   622	⚠️ **Two integrations degrade in ways QA will file as defects:** reCAPTCHA gives zero bot
+   623	protection to a declining EU/UK visitor, and Narvar's EDD line vanishes silently.
+   624	
+   625	---
+   626	
+   627	## Who owns what
+   628	
+   629	| Area | Working owner |
+   630	|---|---|
+   631	| Component conventions, reuse | you |
+   632	| Design tokens, Figma sign-off | UI designer |
+   633	| Story decomposition | BA, with your input |
+   634	| Content model / field IDs | you + Integration |
+   635	| CI/CD, env, secrets | Integration / SI |
+   636	| Release cut, final tags | tier-1-approvers |
+   637	| **Design-parity validation** | **unassigned — defaults to you** |
+   638	
+   639	Run a boundary-setting session rather than discovering these one escalation at a time.
+   640	
+   641	---
+   642	
+   643	## Standing artifacts you own
+   644	
+   645	| Artifact | Cadence |
+   646	|---|---|
+   647	| Component reuse register | per refinement |
+   648	| Token gap list | weekly, into design review |
+   649	| Estimation re-baseline | once, then per sprint |
+   650	| The three docs in this set | after each substantial build |
+   651	| Open-decisions list with owners | continuous |
+   652	
+   653	---
+   654	
+   655	## Current open items
+   656	
+   657	1. **Set required reviewers on `prod`/`staging`/`uat`.** Highest-value fix available;
+   658	   `rollback=true` is an ungated production bypass until then.
+   659	2. **`CODERABBIT_API_KEY` is a plaintext GitHub Actions *variable*** — 61 characters,
+   660	   retrievable by any repo collaborator. So are `CONTENTFUL_PREVIEW_TOKEN` (gates draft
+   661	   content) and `CONTENTFUL_DELIVERY_TOKEN`. The plaintext-variable mechanism is a documented,
+   662	   accepted tradeoff for *public identifiers*; a live API key isn't one.
+   663	3. **Provision `LHCI_*` secrets and write one `*.p0.spec`** — until both exist, no release PR
+   664	   can merge.
+   665	4. **Add `babel.config.js` and `tsconfig.json` to CODEOWNERS.** Declared Tier 1, enforced
+   666	   nowhere.
+   667	5. **Reconcile `squadA.md`/`squadB.md` with CODEOWNERS**, or retire them. They contradict the
+   668	   enforcing artefact on PDP ownership and mostly name paths that don't exist.
+   669	6. **Refresh `sprintScope.md`** or remove Hard Rule 14's dependency on it.
+   670	7. **Reference `overrideStyling.md` from `AGENTS.md` and add it to
+   671	   `scripts/syncCursorRules.mjs`'s manifest.** The largest rules file, holding the entire
+   672	   styling hierarchy, is orphaned from the entry-point doc and invisible to Cursor and Copilot.
+   673	8. **Triage `audit:tokens`' 19 findings**, then wire it into CI.
+   674	9. **`promoteAlias.mjs:70` calls `environmentAlias.createOrUpdate`, which doesn't exist** in
+   675	   `contentful-management@12.3.2` — 0 occurrences in the package. The production content
+   676	   cutover script throws on its first real run. `bootstrapSpace.mjs:238-240` has the correct
+   677	   pattern.
+   678	10. **Contentful content model exists only on `dev`.** Four tiers are empty; the template covers
+   679	    5 of 14 types; there is no forward content promotion at all.
+   680	
+   681	---
+   682	
+   683	*Revised 25 August 2026 against `develop` @ `8362b3c`. This pass absorbed
+   684	`zimmermann_frontend_lead_playbook.md` (§3, §4) and added four sections: working with AI
+   685	tooling, release/tagging/promotion, sprint & Jira/Confluence, and integration boundaries.
+   686	Governance was expanded from a paragraph to a section after verification showed the rules files
+   687	and `CODEOWNERS` disagree on several paths — and that `CODEOWNERS`, which has no catch-all
+   688	rule, is the one that decides.*

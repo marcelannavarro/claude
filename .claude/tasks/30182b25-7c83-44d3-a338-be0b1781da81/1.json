@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Raise separate ticket(s) for the 4 environment-config findings",
+  "description": "Out of scope for SFCC-681 (one TSD = one problem) but found during it, and all pre-go-live relevant: (A) region split — Sydney×5 (DEV/DEV1/SIT/UAT/STG) vs Ohio×2 (TEST/PROD); entire validation chain is region-unrepresentative of prod, and it breaks architecture.md §9.3's explicit \"Stage mirrors production infrastructure\" claim on which contractual LCP sign-off depends. Fixable now — prod/stg have zero env vars, nothing live. (B) Production Environment flag Disabled on prod (no Salesforce priority monitoring, no Log Center) + prod has no env vars, no B2C instance, no site IDs; STG also zero env vars. (C) DEV1 — orphaned test env created by Mani (former Integration Lead), undocumented in Confluence/repo/CI, points at undocumented SFCC instance bkzk_001 while its own org ID reads _002 (mixed-instance). (D) No access-control header and no IP allowlist on any non-prod tier; source maps enabled everywhere except prod (prod correct).",
+  "activeForm": "Raising environment-config findings as separate tickets",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

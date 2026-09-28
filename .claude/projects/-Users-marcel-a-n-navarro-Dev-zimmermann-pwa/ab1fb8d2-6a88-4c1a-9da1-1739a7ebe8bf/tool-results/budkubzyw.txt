@@ -1,0 +1,1000 @@
+=== PDP index.tsx ===
+     1	/*
+     2	 * Copyright (c) 2022, Salesforce, Inc.
+     3	 * All rights reserved.
+     4	 * SPDX-License-Identifier: BSD-3-Clause
+     5	 * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+     6	 */
+     7	
+     8	/*
+     9	 * Copy-first port of
+    10	 * node_modules/@salesforce/retail-react-app/app/pages/product-detail/index.jsx
+    11	 * (retail-react-app 10.0.0), converted to TypeScript per AGENTS.md's copy-first rule.
+    12	 *
+    13	 * The differences from the base file are the TypeScript annotations below, house
+    14	 * formatting, a small number of optional-chaining guards that strictNullChecks
+    15	 * requires — each flagged in place with a `Deviation from the base file` comment —
+    16	 * the relative `product-view` import, which is deliberate and explained at its
+    17	 * import site below, and SFCC-89's static product information: a `renderHeader`
+    18	 * implementation that replaces the base header's title/price block with the
+    19	 * Zimmermann content group, plus the meta block rendered below the accordions.
+    20	 * Both are marked `SFCC-89` in place.
+    21	 */
+    22	
+    23	import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+    24	import { Helmet } from 'react-helmet';
+    25	import { FormattedMessage, useIntl } from 'react-intl';
+    26	import { getUpdateBundleChildArray } from '@salesforce/retail-react-app/app/utils/product-utils';
+    27	
+    28	// Components
+    29	import { Box, Button, Stack, Heading } from '@salesforce/retail-react-app/app/components/shared/ui';
+    30	import {
+    31	  useProduct,
+    32	  useProducts,
+    33	  useCategory,
+    34	  useShopperCustomersMutation,
+    35	  useShopperBasketsV2Mutation as useShopperBasketsMutation,
+    36	  useCustomerId,
+    37	  useShopperBasketsV2MutationHelper as useShopperBasketsMutationHelper,
+    38	} from '@salesforce/commerce-sdk-react';
+    39	
+    40	// Hooks
+    41	import { useCurrentBasket } from '@salesforce/retail-react-app/app/hooks/use-current-basket';
+    42	import { useVariant } from '@salesforce/retail-react-app/app/hooks';
+    43	import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation';
+    44	import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
+    45	import useDataCloud from '@salesforce/retail-react-app/app/hooks/use-datacloud';
+    46	import useActiveData from '@salesforce/retail-react-app/app/hooks/use-active-data';
+    47	import { useServerContext } from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks';
+    48	import usePickupShipment from '@salesforce/retail-react-app/app/hooks/use-pickup-shipment';
+    49	import { useSelectedStore } from '@salesforce/retail-react-app/app/hooks/use-selected-store';
+    50	import { useMultiship } from '@salesforce/retail-react-app/app/hooks/use-multiship';
+    51	import { STORE_LOCATOR_IS_ENABLED } from '@salesforce/retail-react-app/app/constants';
+    52	import { getConfig } from '@salesforce/pwa-kit-runtime/utils/ssr-config';
+    53	// Project Components
+    54	import RecommendedProducts from '@salesforce/retail-react-app/app/components/recommended-products';
+    55	/*
+    56	 * Relative, not `@salesforce/retail-react-app/app/components/product-view`. The overrides
+    57	 * resolver (pwa-kit-dev's OverridesResolverPlugin) deliberately skips any request whose
+    58	 * issuer already lives in `overrides/` — see its `isFromExtends` guard — so a base-path
+    59	 * import from this file resolves to the *base* component even in the real app build, not
+    60	 * just in Storybook/Vitest. Base callers (cart, wishlist, bonus-product) still reach our
+    61	 * override, because their issuer is inside node_modules and so is redirected normally.
+    62	 */
+    63	import ProductView from '../../components/product-view';
+    64	import type { ChildProductOrderability, ProductViewRefScope } from '../../components/product-view';
+    65	
+    66	// SFCC-89 — static product information.
+    67	import { ZimmProductMeta } from '../../components/ui-kits/molecules/zimmProductMeta';
+    68	import { selectPdpProductInfo } from './productInfo';
+    69	import { selectVariantScopedPriceData } from './variantScopedPrice';
+    70	import { StaticProductHeader } from './partials/staticProductHeader';
+    71	import InformationAccordion from '@salesforce/retail-react-app/app/pages/product-detail/partials/information-accordion';
+    72	import Island from '@salesforce/retail-react-app/app/components/island';
+    73	
+    74	import { HTTPNotFound, HTTPError } from '@salesforce/pwa-kit-react-sdk/ssr/universal/errors';
+    75	import logger from '@salesforce/retail-react-app/app/utils/logger-instance';
+    76	
+    77	// constant
+    78	import {
+    79	  API_ERROR_MESSAGE,
+    80	  EINSTEIN_RECOMMENDERS,
+    81	  MAX_CACHE_AGE,
+    82	  TOAST_ACTION_VIEW_WISHLIST,
+    83	  TOAST_MESSAGE_ADDED_TO_WISHLIST,
+    84	  TOAST_MESSAGE_ALREADY_IN_WISHLIST,
+    85	  STALE_WHILE_REVALIDATE,
+    86	} from '@salesforce/retail-react-app/app/constants';
+    87	import { rebuildPathWithParams } from '@salesforce/retail-react-app/app/utils/url';
+    88	import { useHistory, useLocation, useParams } from 'react-router-dom';
+    89	import { useToast } from '@salesforce/retail-react-app/app/hooks/use-toast';
+    90	import { useWishList } from '@salesforce/retail-react-app/app/hooks/use-wish-list';
+    91	import { useStoreLocatorModal } from '@salesforce/retail-react-app/app/hooks/use-store-locator';
+    92	import { isPickupMethod } from '@salesforce/retail-react-app/app/utils/shipment-utils';
+    93	import { useProductInventory } from '@salesforce/retail-react-app/app/hooks/use-product-inventory';
+    94	
+    95	/*
+    96	 * `@salesforce/retail-react-app` ships no TypeScript types (see
+    97	 * overrides/app/types/vendor.d.ts, which falls back to an untyped catch-all for its
+    98	 * subpaths), so the product / variant / category values this page threads between base
+    99	 * hooks and base components have no compile-time shape *from that package*. But the shapes
+   100	 * themselves are `commerce-sdk-isomorphic`'s, and it does export them as
+   101	 * `ShopperProductsTypes.Product` / `.Variant` / `.Category` — so these aliases are a
+   102	 * deliberate temporary gap, not proof that no type is available, and AGENTS.md's Type
+   103	 * Definitions rule says to import those directly. Deferred to a follow-up only because the
+   104	 * substitution also clears three `no-explicit-any` warnings, moving a lint count this branch
+   105	 * holds as an invariant. See the same note in `components/product-view/index.tsx`.
+   106	 */
+   107	type SfccProduct = any;
+   108	type SfccVariant = any;
+   109	type SfccCategory = any;
+   110	
+   111	/*
+   112	 * `@salesforce/commerce-sdk-react` types its query/mutation `parameters` more narrowly than
+   113	 * the base JS page satisfies (it types several always-present values as optional, and takes
+   114	 * `ids` as an array where the base joins them itself). The casts marked "SDK param widening"
+   115	 * below exist only to reconcile that; each passes exactly the value the base file passes, so
+   116	 * none of them changes runtime behaviour.
+   117	 */
+   118	
+   119	/** A basket line item as this page assembles it before handing it to the baskets API. */
+   120	type BasketLineItem = {
+   121	  productId?: string;
+   122	  id?: string;
+   123	  price?: number;
+   124	  quantity?: number;
+   125	  inventoryId?: string;
+   126	  shipmentId?: string;
+   127	  bundledProductItems?: Array<{ productId?: string; quantity?: number }>;
+   128	};
+   129	
+   130	/** A child product selection within a product set or bundle. */
+   131	type ChildProductSelection = {
+   132	  product?: SfccProduct;
+   133	  variant?: SfccVariant;
+   134	  quantity?: number;
+   135	};
+   136	
+   137	/** The imperative handle ProductView exposes for set/bundle child validation. */
+   138	type ChildProductRef = {
+   139	  ref: HTMLDivElement | null;
+   140	  validateOrderability: ProductViewRefScope['validateOrderability'];
+   141	};
+   142	
+   143	/** One row of the array the base ProductView passes to `addToCart`. */
+   144	type ProductSelectionValue = {
+   145	  product?: SfccProduct;
+   146	  variant?: SfccVariant;
+   147	  quantity?: number;
+   148	};
+   149	
+   150	/**
+   151	 * Errors thrown by the commerce SDK carry the originating `Response`, which the base
+   152	 * page reads to map an API status onto an SSR-visible HTTP error.
+   153	 */
+   154	type CommerceApiError = Error & { response?: { status?: number } };
+   155	
+   156	const ProductDetail = () => {
+   157	  // react-intl returns already-bound methods, so destructuring them cannot unbind anything —
+   158	  // the rule cannot see that. `formatNumber` is SFCC-89's addition; the base file destructures
+   159	  // `formatMessage` alone. It feeds `formatPrice` below.
+   160	  // eslint-disable-next-line @typescript-eslint/unbound-method
+   161	  const { formatMessage, formatNumber } = useIntl();
+   162	  const history = useHistory();
+   163	  const location = useLocation();
+   164	  const einstein = useEinstein();
+   165	  const dataCloud = useDataCloud();
+   166	  const activeData = useActiveData();
+   167	  const toast = useToast();
+   168	  const navigate = useNavigation();
+   169	  const customerId = useCustomerId();
+   170	  const { onOpen: onOpenStoreLocator } = useStoreLocatorModal();
+   171	  const multishipEnabled = getConfig()?.app?.multishipEnabled ?? true;
+   172	  const storeLocatorEnabled = getConfig()?.app?.storeLocatorEnabled ?? STORE_LOCATOR_IS_ENABLED;
+   173	
+   174	  /****************************** Basket *********************************/
+   175	  const { data: basket, isLoading: isBasketLoading } = useCurrentBasket();
+   176	  const { addItemToNewOrExistingBasket } = useShopperBasketsMutationHelper();
+   177	  const updateItemsInBasketMutation = useShopperBasketsMutation('updateItemsInBasket');
+   178	  const { res } = useServerContext();
+   179	  if (res) {
+   180	    res.set('Cache-Control', `s-maxage=${MAX_CACHE_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`);
+   181	  }
+   182	
+   183	  /*************************** Pick up in Store ********************/
+   184	  const { selectedStore } = useSelectedStore();
+   185	  const selectedInventoryId = selectedStore?.inventoryId || null;
+   186	
+   187	  const { addInventoryIdsToPickupItems, updateDefaultShipmentIfNeeded, hasPickupItems } = usePickupShipment(basket);
+   188	
+   189	  /*************************** Multiship ********************/
+   190	  const { getShipmentIdForItems } = useMultiship(basket);
+   191	
+   192	  /*************************** Product Detail and Category ********************/
+   193	  const { productId } = useParams<{ productId?: string }>();
+   194	  const urlParams = new URLSearchParams(location.search);
+   195	  // SDK param widening — this component only mounts on `/product/:productId`, so one of the
+   196	  // two is always present. `useParams` types every segment optional by design — see the
+   197	  // comment on the react-router-dom shim in overrides/app/types/vendor.d.ts.
+   198	  const requestedProductId = (urlParams.get('pid') || productId) as string;
+   199	  const {
+   200	    data: productResponse,
+   201	    isLoading: isProductLoading,
+   202	    isError: isProductError,
+   203	    error: productError,
+   204	  } = useProduct(
+   205	    {
+   206	      parameters: {
+   207	        id: requestedProductId,
+   208	        perPricebook: true,
+   209	        expand: [
+   210	          'availability',
+   211	          'promotions',
+   212	          'options',
+   213	          'images',
+   214	          'prices',
+   215	          'variations',
+   216	          'set_products',
+   217	          'bundled_products',
+   218	          'page_meta_tags',
+   219	        ],
+   220	        allImages: true,
+   221	        ...(selectedInventoryId ? { inventoryIds: selectedInventoryId } : {}),
+   222	      },
+   223	    },
+   224	    {
+   225	      // When shoppers select a different variant (and the app fetches the new data),
+   226	      // the old data is still rendered (and not the skeletons).
+   227	      //
+   228	      // Load-bearing for accessibility, beyond the loading behaviour it was added for. The price
+   229	      // carries `aria-live` (zimmProductPrice), and a live region only announces a change if the
+   230	      // region already existed — a region inserted together with its content is silent. Keeping
+   231	      // the previous data means `ZimmProductContent` (rendered by the `StaticProductHeader`
+   232	      // partial) never unmounts on a variant change, so the price element survives and React
+   233	      // mutates its text in place, which is what gets announced.
+   234	      // Remove this option and the region is destroyed and rebuilt on every swatch click, and the
+   235	      // price stops being announced (WCAG 2.2 AA 4.1.3). No gate catches that: the atom's own test
+   236	      // renders it directly, and axe sees a well-formed region either way.
+   237	      keepPreviousData: true,
+   238	    },
+   239	  );
+   240	
+   241	  // Note: Since category needs id from product detail, it can't be server side rendered atm
+   242	  // until we can do dependent query on server
+   243	  const {
+   244	    data: category,
+   245	    isError: isCategoryError,
+   246	    error: categoryError,
+   247	  } = useCategory({
+   248	    parameters: {
+   249	      // SDK param widening — `useCategory` is a no-op until the product resolves, exactly as
+   250	      // in the base file.
+   251	      id: productResponse?.primaryCategoryId as string,
+   252	      levels: 1,
+   253	    },
+   254	  });
+   255	
+   256	  /****************************** Sets and Bundles *********************************/
+   257	  const [childProductSelection, setChildProductSelection] = useState<Record<string, ChildProductSelection>>({});
+   258	  const [childProductOrderability, setChildProductOrderability] = useState<Record<string, ChildProductOrderability>>(
+   259	    {},
+   260	  );
+   261	  const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(1);
+   262	  const childProductRefs = React.useRef<Record<string, ChildProductRef>>({});
+   263	  // Deviation from the base file: `?.` on `type`. The base reads `productResponse?.type.set`,
+   264	  // which throws if the API ever returns a product without `type` (the SDK types it optional).
+   265	  // The two only differ in that already-broken case.
+   266	  const isProductASet = productResponse?.type?.set;
+   267	  const isProductABundle = productResponse?.type?.bundle;
+   268	
+   269	  const childVariantIds =
+   270	    isProductABundle || isProductASet
+   271	      ? Object.keys(childProductSelection)?.map(
+   272	          (key) => childProductSelection[key].variant?.productId || childProductSelection[key].product?.id,
+   273	        )
+   274	      : [];
+   275	
+   276	  const { data: variantProductData } = useProducts(
+   277	    {
+   278	      parameters: {
+   279	        // SDK param widening — the base file joins the ids itself and the SDK forwards the
+   280	        // value verbatim into the query string.
+   281	        ids: childVariantIds.join(',') as unknown as string[],
+   282	        allImages: false,
+   283	        ...(selectedInventoryId ? { inventoryIds: selectedInventoryId } : {}),
+   284	        expand: ['availability', 'variations'],
+   285	        select: '(data.(id,inventory,inventories,master))',
+   286	      },
+   287	    },
+   288	    {
+   289	      enabled: childVariantIds.length > 0,
+   290	      keepPreviousData: true,
+   291	    },
+   292	  );
+   293	
+   294	  const product: SfccProduct = useProductInventory(
+   295	    productResponse,
+   296	    variantProductData,
+   297	    selectedInventoryId,
+   298	    isProductASet,
+   299	    isProductABundle,
+   300	  );
+   301	
+   302	  /**************** Error Handling ****************/
+   303	
+   304	  if (isProductError) {
+   305	    const errorStatus = (productError as CommerceApiError | null)?.response?.status;
+   306	    switch (errorStatus) {
+   307	      case 404:
+   308	        throw new HTTPNotFound('Product Not Found.');
+   309	      default:
+   310	        throw new HTTPError(errorStatus, `HTTP Error ${errorStatus} occurred.`);
+   311	    }
+   312	  }
+   313	  if (isCategoryError) {
+   314	    const errorStatus = (categoryError as CommerceApiError | null)?.response?.status;
+   315	    switch (errorStatus) {
+   316	      case 404:
+   317	        throw new HTTPNotFound('Category Not Found.');
+   318	      default:
+   319	        throw new HTTPError(errorStatus, `HTTP Error ${errorStatus} occurred.`);
+   320	    }
+   321	  }
+   322	
+   323	  const [primaryCategory, setPrimaryCategory] = useState<SfccCategory>(category);
+   324	  const variant = useVariant(product);
+   325	
+   326	  // SFCC-194 — Was/Now sale price.
+   327	  //
+   328	  // Two URL states need correct priceData (mirrors feature/SFCC-194_pdp-was-now-sale-price):
+   329	  //
+   330	  //   Colour-only  → ?color=JJ8UTXX           (no pid; product is still the master)
+   331	  //   Colour+size  → ?color=JJ8UTXX&pid=…M    (pid present; product switches to standalone
+   332	  //                                              variant which lacks tieredPrices reliably)
+   333	  //
+   334	  // Strategy: keep the master product's variants[] as the authoritative tieredPrices source.
+   335	  // Filter them by pid (exact) or colour (set) from the URL, then call getPriceData on the
+   336	  // scoped result. This is overridden into renderHeader so the base ProductView's own
+   337	  // getPriceData call (which reads the standalone variant and loses tieredPrices) is bypassed.
+   338	  const masterProductRef = useRef<SfccProduct | null>(null);
+   339	  useEffect(() => {
+   340	    // Guard matches exactly what the memo reads from the cache: id (for the
+   341	    // cachedMasterMatchesCurrent check) and variants[] (for the filter). A partial SFCC
+   342	    // response that satisfies type.master but lacks either field is not useful — skip it
+   343	    // rather than writing a cache entry that would fall through to the deep-link fallback
+   344	    // one guard too late.
+   345	    if (productResponse?.type?.master && productResponse.id && productResponse.variants?.length) {
+   346	      masterProductRef.current = productResponse;
+   347	    }
+   348	  }, [productResponse]);
+   349	
+   350	  const urlPid = urlParams.get('pid') ?? undefined;
+   351	  const urlColour = urlParams.get('color') ?? undefined;
+   352	  const variantScopedPriceData = useMemo(
+   353	    () => selectVariantScopedPriceData(product, masterProductRef.current, urlPid, urlColour),
+   354	    // Re-runs when the fetched product changes (standalone variant arrives) or the URL
+   355	    // selection changes — both are signals the displayed price must update.
+   356	    // masterProductRef is a ref so it is intentionally absent from deps.
+   357	    // eslint-disable-next-line react-hooks/exhaustive-deps
+   358	    [urlPid, urlColour, product],
+   359	  );
+   360	
+   361	  // True while keepPreviousData holds stale product data during a variant re-fetch (size
+   362	  // selection). The fetched product id hasn't caught up with the URL yet, so any price
+   363	  // derived from the old product is unreliable — suppress it entirely until the fetch
+   364	  // settles rather than showing a briefly-incorrect Was/Now figure.
+   365	  const isPriceStale = requestedProductId !== product?.id;
+   366	
+   367	  // This page uses the `primaryCategoryId` to retrieve the category data. This attribute
+   368	  // is only available on `master` products. Since a variation will be loaded once all the
+   369	  // attributes are selected (to get the correct inventory values), the category information
+   370	  // is overridden. This will allow us to keep the initial category around until a different
+   371	  // master product is loaded.
+   372	  useEffect(() => {
+   373	    if (category) {
+   374	      setPrimaryCategory(category);
+   375	    }
+   376	  }, [category]);
+   377	
+   378	  /**************** Product Variant ****************/
+   379	  useEffect(() => {
+   380	    if (!variant) {
+   381	      return;
+   382	    }
+   383	    // update the variation attributes parameter on
+   384	    // the url accordingly as the variant changes
+   385	    const updatedUrl = rebuildPathWithParams(`${location.pathname}${location.search}`, {
+   386	      pid: variant?.productId,
+   387	    });
+   388	    history.replace(updatedUrl);
+   389	  }, [variant]);
+   390	
+   391	  /**************** Wishlist ****************/
+   392	  const { data: wishlist, isLoading: isWishlistLoading } = useWishList();
+   393	  const createCustomerProductListItem = useShopperCustomersMutation('createCustomerProductListItem');
+   394	
+   395	  const handleAddToWishlist = (product: SfccProduct, variant: SfccVariant, quantity: number) => {
+   396	    const isItemInWishlist = wishlist?.customerProductListItems?.find(
+   397	      (i: { productId?: string }) => i.productId === variant?.productId || i.productId === product?.id,
+   398	    );
+   399	
+   400	    if (!isItemInWishlist) {
+   401	      createCustomerProductListItem.mutate(
+   402	        {
+   403	          parameters: {
+   404	            listId: wishlist.id,
+   405	            // SDK param widening — `useCustomerId` returns `string | null`; this branch is
+   406	            // only reachable once a wishlist has loaded, which requires a customer.
+   407	            customerId: customerId as string,
+   408	          },
+   409	          body: {
+   410	            // NOTE: API does not respect quantity, it always adds 1
+   411	            quantity,
+   412	            productId: variant?.productId || product?.id,
+   413	            public: false,
+   414	            priority: 1,
+   415	            type: 'product',
+   416	          },
+   417	        },
+   418	        {
+   419	          onSuccess: () => {
+   420	            toast({
+   421	              title: formatMessage(TOAST_MESSAGE_ADDED_TO_WISHLIST, { quantity: 1 }),
+   422	              status: 'success',
+   423	              action: (
+   424	                // it would be better if we could use <Button as={Link}>
+   425	                // but unfortunately the Link component is not compatible
+   426	                // with Chakra Toast, since the ToastManager is rendered via portal
+   427	                // and the toast doesn't have access to intl provider, which is a
+   428	                // requirement of the Link component.
+   429	                <Button variant="link" onClick={() => navigate('/account/wishlist')}>
+   430	                  {formatMessage(TOAST_ACTION_VIEW_WISHLIST)}
+   431	                </Button>
+   432	              ),
+   433	            });
+   434	          },
+   435	          onError: () => {
+   436	            showError();
+   437	          },
+   438	        },
+   439	      );
+   440	    } else {
+   441	      toast({
+   442	        title: formatMessage(TOAST_MESSAGE_ALREADY_IN_WISHLIST),
+   443	        status: 'info',
+   444	        action: (
+   445	          <Button variant="link" onClick={() => navigate('/account/wishlist')}>
+   446	            {formatMessage(TOAST_ACTION_VIEW_WISHLIST)}
+   447	          </Button>
+   448	        ),
+   449	      });
+   450	    }
+   451	  };
+   452	
+   453	  /**************** Add To Cart ****************/
+   454	  const showToast = useToast();
+   455	  const showError = (errorMessage?: unknown) => {
+   456	    const errorText = typeof errorMessage === 'string' ? errorMessage : formatMessage(API_ERROR_MESSAGE);
+   457	
+   458	    showToast({
+   459	      title: errorText,
+   460	      status: 'error',
+   461	    });
+   462	  };
+   463	
+   464	  const [pickupInStoreMap, setPickupInStoreMap] = useState<Record<string, boolean>>({});
+   465	
+   466	  const handlePickupInStoreChange = (productId: string, checked: boolean) => {
+   467	    setPickupInStoreMap((prev) => ({
+   468	      ...prev,
+   469	      [productId]: checked,
+   470	    }));
+   471	  };
+   472	
+   473	  const handleAddToCart = async (productSelectionValues: ProductSelectionValue[] = []) => {
+   474	    try {
+   475	      let productItems: BasketLineItem[] = productSelectionValues.map((item) => {
+   476	        const { variant, quantity } = item;
+   477	        // Use variant if present, otherwise use the main product
+   478	        const prod = variant || item.product || product;
+   479	        return {
+   480	          productId: prod?.productId || prod?.id, // productId for variant, id for product
+   481	          price: prod?.price,
+   482	          quantity,
+   483	        };
+   484	      });
+   485	      // Add inventory IDs for pickup items using the hook helper
+   486	      productItems = addInventoryIdsToPickupItems(productItems, pickupInStoreMap, selectedStore);
+   487	      // Defensive check: This block ensures that if, for any reason, pickup is selected for a product but no store (inventoryId) is set,
+   488	      // we show an error. With the current UI logic, this should never be reached, but it guards against unexpected state.
+   489	      if (
+   490	        productItems.some(
+   491	          // Index-type assertion, not one of the "SDK param widening" casts described above:
+   492	          // `pickupInStoreMap` is this page's own `Record<string, boolean>` state, and
+   493	          // `item.productId || item.id` is `string | undefined` on `BasketLineItem`, which
+   494	          // TypeScript rejects as an index (TS2538). Every item here was built above from
+   495	          // `prod?.productId || prod?.id`, and a key that is absent reads as `undefined` —
+   496	          // falsy, exactly as the base file's untyped index behaves.
+   497	          (item) => item.inventoryId === undefined && pickupInStoreMap[(item.productId || item.id) as string],
+   498	        )
+   499	      ) {
+   500	        showError(
+   501	          formatMessage({
+   502	            id: 'product_view.error.no_store_selected_for_pickup',
+   503	            defaultMessage: 'No valid store or inventory found for pickup',
+   504	          }),
+   505	        );
+   506	        return;
+   507	      }
+   508	
+   509	      // Check if any products have pickup selected
+   510	      const hasAnyPickupSelected = hasPickupItems(productSelectionValues, pickupInStoreMap, product);
+   511	
+   512	      const currentShippingMethodIsPickup = isPickupMethod(basket?.shipments?.[0]?.shippingMethod);
+   513	      // Only perform the check if the basket exists and has at least one item
+   514	      if (!multishipEnabled && basket && basket.productItems?.length > 0) {
+   515	        if (hasAnyPickupSelected && !currentShippingMethodIsPickup) {
+   516	          throw new Error(
+   517	            formatMessage({
+   518	              id: 'product_view.error.select_ship_to_address',
+   519	              defaultMessage: "Select 'Ship to Address' to match the delivery method for the items in your cart.",
+   520	            }),
+   521	          );
+   522	        }
+   523	        if (!hasAnyPickupSelected && currentShippingMethodIsPickup) {
+   524	          throw new Error(
+   525	            formatMessage({
+   526	              id: 'product_view.error.select_pickup_in_store',
+   527	              defaultMessage: "Select 'Pick Up in Store' to match the delivery method for the items in your cart.",
+   528	            }),
+   529	          );
+   530	        }
+   531	      }
+   532	
+   533	      // Fetch and assign a suitable shipment for product items
+   534	      const targetShipmentId = await getShipmentIdForItems(hasAnyPickupSelected, selectedStore);
+   535	
+   536	      if (targetShipmentId) {
+   537	        productItems = productItems.map((item) => ({
+   538	          ...item,
+   539	          shipmentId: targetShipmentId,
+   540	        }));
+   541	      }
+   542	
+   543	      const basketResponse = await addItemToNewOrExistingBasket(productItems);
+   544	
+   545	      // Configure shipping method for default shipment based on pickup selection
+   546	      await updateDefaultShipmentIfNeeded(basketResponse, targetShipmentId, hasAnyPickupSelected, selectedStore);
+   547	
+   548	      const productItemsForEinstein = productSelectionValues.map(({ product, variant, quantity }) => ({
+   549	        product,
+   550	        productId: variant?.productId || product?.id,
+   551	        price: variant?.price || product?.price,
+   552	        quantity,
+   553	      }));
+   554	      einstein.sendAddToCart(productItemsForEinstein);
+   555	
+   556	      return productSelectionValues;
+   557	    } catch (error) {
+   558	      // `catch` binds `unknown` under strict mode, and a thrown non-Error has no `.message`,
+   559	      // so narrow instead of asserting. Behaviour is unchanged — the previous
+   560	      // `(error as Error).message` also yielded `undefined` for a non-Error — but this was the
+   561	      // only `as` in this file without the inline reason typescript.md requires.
+   562	      showError(error instanceof Error ? error.message : undefined);
+   563	    }
+   564	  };
+   565	
+   566	  /**************** Product Set/Bundles Handlers ****************/
+   567	  const handleChildProductValidation = useCallback(() => {
+   568	    // Run validation for all child products. This will ensure the error
+   569	    // messages are shown.
+   570	    Object.values(childProductRefs.current).forEach(({ validateOrderability }) => {
+   571	      validateOrderability({ scrollErrorIntoView: false });
+   572	    });
+   573	
+   574	    // Using ot state for which child products are selected, scroll to the first
+   575	    // one that isn't selected and requires a variant selection.
+   576	    const selectedProductIds = Object.keys(childProductSelection);
+   577	    const firstUnselectedProduct = product?.childProducts?.find(
+   578	      ({ product: childProduct }: { product: SfccProduct }) => {
+   579	        // Skip validation for standard products (no variations)
+   580	        if (childProduct.type?.item) {
+   581	          return false;
+   582	        }
+   583	        return !selectedProductIds.includes(childProduct.id);
+   584	      },
+   585	    )?.product;
+   586	
+   587	    if (firstUnselectedProduct) {
+   588	      // Get the reference to the product view and scroll to it.
+   589	      const { ref } = childProductRefs.current[firstUnselectedProduct.id];
+   590	
+   591	      // Deviation from the base file: `?.` on `ref`, required by strictNullChecks —
+   592	      // `ChildProductRef.ref` is typed `HTMLDivElement | null`. The base reads
+   593	      // `ref.scrollIntoView` unguarded and throws when the child view has not mounted; ours
+   594	      // short-circuits and returns `false`. The unguarded call inside the block is reached
+   595	      // only once this guard has passed.
+   596	      if (ref?.scrollIntoView) {
+   597	        ref.scrollIntoView({
+   598	          behavior: 'smooth',
+   599	          block: 'end',
+   600	        });
+   601	      }
+   602	
+   603	      return false;
+   604	    }
+   605	
+   606	    return true;
+   607	  }, [product, childProductSelection]);
+   608	
+   609	  /**************** Product Set Handlers ****************/
+   610	  // 1. Gather the selected child products from state.
+   611	  // 2. Call handleAddToCart with the selected products.
+   612	  // 3. The add-to-cart modal will be opened in handleAddToCart.
+   613	  const handleProductSetAddToCart = () => {
+   614	    // Get all the selected products, and pass them to the addToCart handler which
+   615	    // accepts an array.
+   616	    const productSelectionValues = Object.values(childProductSelection);
+   617	    return handleAddToCart(productSelectionValues);
+   618	  };
+   619	
+   620	  /**************** Product Bundle Handlers ****************/
+   621	  // Top level bundle does not have variants
+   622	  const handleProductBundleAddToCart = async ([{ quantity: selectedQuantity }]: Array<{ quantity?: number }>) => {
+   623	    try {
+   624	      const childProductSelections = Object.values(childProductSelection);
+   625	      // Check if any products have pickup selected (including main product and bundle items)
+   626	      const bundleSelectionValues = [{ product, variant: null, selectedQuantity }, ...childProductSelections];
+   627	      const hasAnyPickupSelected = hasPickupItems(bundleSelectionValues, pickupInStoreMap, product);
+   628	
+   629	      // Check for delivery method conflicts before adding to cart
+   630	      if (!multishipEnabled && basket && basket.productItems?.length > 0) {
+   631	        const currentShippingMethod = basket?.shipments?.[0]?.shippingMethod;
+   632	        const currentShippingMethodIsPickup = isPickupMethod(currentShippingMethod);
+   633	
+   634	        // If there's no shipping method, treat it as non-pickup (ship to address)
+   635	        if (hasAnyPickupSelected && (!currentShippingMethod || !currentShippingMethodIsPickup)) {
+   636	          throw new Error(
+   637	            formatMessage({
+   638	              id: 'product_view.error.select_ship_to_address',
+   639	              defaultMessage: "Select 'Ship to Address' to match the delivery method for the items in your cart.",
+   640	            }),
+   641	          );
+   642	        } else if (!hasAnyPickupSelected && currentShippingMethod && currentShippingMethodIsPickup) {
+   643	          throw new Error(
+   644	            formatMessage({
+   645	              id: 'product_view.error.select_pickup_in_store',
+   646	              defaultMessage: "Select 'Pick Up in Store' to match the delivery method for the items in your cart.",
+   647	            }),
+   648	          );
+   649	        }
+   650	      }
+   651	
+   652	      let productItems: BasketLineItem[] = [
+   653	        {
+   654	          productId: product.id,
+   655	          price: product.price,
+   656	          quantity: selectedQuantity,
+   657	          // The add item endpoint in the shopper baskets API does not respect variant selections
+   658	          // for bundle children, so we have to make a follow up call to update the basket
+   659	          // with the chosen variant selections
+   660	          bundledProductItems: childProductSelections.map((child) => {
+   661	            return {
+   662	              productId: child.variant?.productId || child.product?.id,
+   663	              quantity: child.quantity,
+   664	            };
+   665	          }),
+   666	        },
+   667	      ];
+   668	
+   669	      // Add inventory IDs for pickup items using the hook helper
+   670	      productItems = addInventoryIdsToPickupItems(productItems, pickupInStoreMap, selectedStore);
+   671	
+   672	      // Fetch and assign a suitable shipment for product items
+   673	      const targetShipmentId = await getShipmentIdForItems(hasAnyPickupSelected, selectedStore);
+   674	
+   675	      if (targetShipmentId) {
+   676	        productItems = productItems.map((item) => ({
+   677	          ...item,
+   678	          shipmentId: targetShipmentId,
+   679	        }));
+   680	      }
+   681	
+   682	      const res = await addItemToNewOrExistingBasket(productItems);
+   683	
+   684	      const bundleChildMasterIds = childProductSelections.map((child) => {
+   685	        return child.product.id;
+   686	      });
+   687	
+   688	      // since the returned data includes all products in basket
+   689	      // here we compare list of productIds in bundleProductItems of each productItem to filter out the
+   690	      // current bundle that was last added into cart
+   691	      // Deviation from the base file: `?.` on `productItems`. The SDK types it optional; the
+   692	      // base file assumes the just-created basket always has line items.
+   693	      const currentBundle = res.productItems?.find((productItem: SfccProduct) => {
+   694	        if (!productItem.bundledProductItems?.length) return;
+   695	        const bundleChildIds = productItem.bundledProductItems?.map((item: { productId?: string }) => {
+   696	          // seek out the bundle child that still uses masterId as product id
+   697	          return item.productId;
+   698	        });
+   699	        return bundleChildIds.every((id: string) => bundleChildMasterIds.includes(id));
+   700	      });
+   701	
+   702	      const itemsToBeUpdated = getUpdateBundleChildArray(currentBundle, childProductSelections);
+   703	
+   704	      if (itemsToBeUpdated.length) {
+   705	        // make a follow up call to update child variant selection for product bundle
+   706	        // since add item endpoint doesn't currently consider product bundle child variants
+   707	        await updateItemsInBasketMutation.mutateAsync({
+   708	          // SDK param widening — `method` is a real, honoured option on the v2 baskets
+   709	          // mutation (the base file relies on it to send PATCH rather than the default), but
+   710	          // it is absent from the published mutation-parameter type. Dropping it would change
+   711	          // the HTTP verb, so the argument is asserted instead.
+   712	          method: 'PATCH',
+   713	          parameters: {
+   714	            // `res` is the basket this call just wrote to.
+   715	            basketId: res.basketId as string,
+   716	          },
+   717	          body: itemsToBeUpdated,
+   718	        } as Parameters<typeof updateItemsInBasketMutation.mutateAsync>[0]);
+   719	      }
+   720	
+   721	      // Configure shipping method based on pickup selection
+   722	      await updateDefaultShipmentIfNeeded(res, targetShipmentId, hasAnyPickupSelected, selectedStore);
+   723	
+   724	      einstein.sendAddToCart(productItems);
+   725	
+   726	      return childProductSelections;
+   727	    } catch (error) {
+   728	      showError(error);
+   729	    }
+   730	  };
+   731	
+   732	  /**************** Einstein ****************/
+   733	  useEffect(() => {
+   734	    if (product && product.type.set) {
+   735	      einstein.sendViewProduct(product);
+   736	      dataCloud.sendViewProduct(product);
+   737	      const childrenProducts = product.setProducts;
+   738	      childrenProducts.map((child: SfccProduct) => {
+   739	        try {
+   740	          einstein.sendViewProduct(child);
+   741	        } catch (err) {
+   742	          logger.error('Einstein sendViewProduct error', {
+   743	            namespace: 'ProductDetail.useEffect',
+   744	            additionalProperties: { error: err, child },
+   745	          });
+   746	        }
+   747	        activeData.sendViewProduct(category, child, 'detail');
+   748	        dataCloud.sendViewProduct(child);
+   749	      });
+   750	    } else if (product) {
+   751	      try {
+   752	        einstein.sendViewProduct(product);
+   753	      } catch (err) {
+   754	        logger.error('Einstein sendViewProduct error', {
+   755	          namespace: 'ProductDetail.useEffect',
+   756	          additionalProperties: { error: err, product },
+   757	        });
+   758	      }
+   759	      activeData.sendViewProduct(category, product, 'detail');
+   760	      dataCloud.sendViewProduct(product);
+   761	    }
+   762	  }, [product]);
+   763	
+   764	  /**************** SFCC-89 — static product information ****************/
+   765	  // This formatter never executes. The page reads only `modelInfo` and `styleCode` off the mapper
+   766	  // — the meta block below the accordions carries no price at all (`ZimmProductMeta`'s props are
+   767	  // `modelInfo`/`styleCode`) — so `null` is passed for `priceData` below and the mapper's price
+   768	  // branch (`typeof priceData?.currentPrice === 'number'`) is always false. It exists solely to
+   769	  // satisfy `selectPdpProductInfo`'s required `formatPrice` parameter, which stays required so
+   770	  // that module can hold its own contract of being free of react-intl.
+   771	  //
+   772	  // `partials/staticProductHeader.tsx` declares an identical formatter and that one IS live. The
+   773	  // two cannot disagree on a rendered price, because only one of them ever formats anything.
+   774	  const formatPrice = (amount: number, priceCurrency: string) =>
+   775	    formatNumber(amount, { style: 'currency', currency: priceCurrency });
+   776	
+   777	  // Model copy and the style code are not part of the content group: the design places them at
+   778	  // the foot of the column, below the accordions, so the page positions them itself.
+   779	  const staticInfo = selectPdpProductInfo(product, null, product?.currency ?? '', formatPrice);
+   780	
+   781	  return (
+   782	    <Box className="sf-product-detail-page" layerStyle="page" data-testid="product-details-page">
+   783	      <Heading as="h1" srOnly>
+   784	        <FormattedMessage defaultMessage="Product Details" id="product_detail.title.product_details" />
+   785	      </Heading>
+   786	      <Helmet>
+   787	        <title>{product?.pageTitle}</title>
+   788	        {product?.pageMetaTags?.length > 0 &&
+   789	          product.pageMetaTags.map(({ id, value }: { id: string; value: string }) => (
+   790	            <meta name={id} content={value} key={id} />
+   791	          ))}
+   792	        {/* Fallback for description if not included in pageMetaTags */}
+   793	        {!product?.pageMetaTags?.some((tag: { id: string }) => tag.id === 'description') &&
+   794	          product?.pageDescription && <meta name="description" content={product.pageDescription} />}
+   795	      </Helmet>
+   796	
+   797	      <Stack spacing={16}>
+   798	        {isProductASet || isProductABundle ? (
+   799	          <Fragment>
+   800	            <Island hydrateOn={'visible'}>
+   801	              <ProductView
+   802	                product={product}
+   803	                category={primaryCategory?.parentCategoryTree || []}
+   804	                addToCart={isProductASet ? handleProductSetAddToCart : handleProductBundleAddToCart}
+   805	                addToWishlist={handleAddToWishlist}
+   806	                isProductLoading={isProductLoading}
+   807	                isBasketLoading={isBasketLoading}
+   808	                isWishlistLoading={isWishlistLoading}
+   809	                validateOrderability={handleChildProductValidation}
+   810	                childProductOrderability={childProductOrderability}
+   811	                setSelectedBundleQuantity={setSelectedBundleQuantity}
+   812	                selectedBundleParentQuantity={selectedBundleQuantity}
+   813	                pickupInStore={!!pickupInStoreMap[product?.id]}
+   814	                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+   815	                onOpenStoreLocator={onOpenStoreLocator}
+   816	                showDeliveryOptions={storeLocatorEnabled}
+   817	              />
+   818	            </Island>
+   819	
+   820	            <hr />
+   821	
+   822	            {
+   823	              // Render the child products
+   824	              product?.childProducts?.map(
+   825	                ({ product: childProduct, quantity: childQuantity }: { product: SfccProduct; quantity: number }) => (
+   826	                  <Box key={childProduct.id} data-testid="child-product">
+   827	                    <ProductView
+   828	                      // Do not use an arrow function as we are manipulating the functions scope.
+   829	                      ref={function (this: ProductViewRefScope, ref: ChildProductRef['ref']) {
+   830	                        // Assign the "set" scope of the ref, this is how we access the internal
+   831	                        // validation.
+   832	                        childProductRefs.current[childProduct.id] = {
+   833	                          ref,
+   834	                          validateOrderability: this.validateOrderability,
+   835	                        };
+   836	                      }}
+   837	                      product={childProduct}
+   838	                      isProductPartOfSet={isProductASet}
+   839	                      isProductPartOfBundle={isProductABundle}
+   840	                      childOfBundleQuantity={childQuantity}
+   841	                      selectedBundleParentQuantity={selectedBundleQuantity}
+   842	                      addToCart={
+   843	                        isProductASet
+   844	                          ? (productSelectionValues: ProductSelectionValue[]) => handleAddToCart(productSelectionValues)
+   845	                          : null
+   846	                      }
+   847	                      addToWishlist={isProductASet ? handleAddToWishlist : null}
+   848	                      onVariantSelected={(product: SfccProduct, variant: SfccVariant, quantity: number) => {
+   849	                        if (quantity) {
+   850	                          setChildProductSelection((previousState) => ({
+   851	                            ...previousState,
+   852	                            [product.id]: {
+   853	                              product,
+   854	                              variant,
+   855	                              quantity: isProductABundle ? childQuantity : quantity,
+   856	                            },
+   857	                          }));
+   858	                        } else {
+   859	                          const selections = {
+   860	                            ...childProductSelection,
+   861	                          };
+   862	                          delete selections[product.id];
+   863	                          setChildProductSelection(selections);
+   864	                        }
+   865	                      }}
+   866	                      isProductLoading={isProductLoading}
+   867	                      isBasketLoading={isBasketLoading}
+   868	                      isWishlistLoading={isWishlistLoading}
+   869	                      setChildProductOrderability={setChildProductOrderability}
+   870	                      pickupInStore={!!pickupInStoreMap[childProductSelection[childProduct?.id]?.variant?.productId]}
+   871	                      setPickupInStore={(checked: boolean) =>
+   872	                        childProduct &&
+   873	                        handlePickupInStoreChange(childProductSelection[childProduct?.id]?.variant?.productId, checked)
+   874	                      }
+   875	                      onOpenStoreLocator={onOpenStoreLocator}
+   876	                      showDeliveryOptions={storeLocatorEnabled && !isProductABundle}
+   877	                    />
+   878	                    <InformationAccordion product={childProduct} />
+   879	
+   880	                    <Box display={['none', 'none', 'none', 'block']}>
+   881	                      <hr />
+   882	                    </Box>
+   883	                  </Box>
+   884	                ),
+   885	              )
+   886	            }
+   887	          </Fragment>
+   888	        ) : (
+   889	          <Fragment>
+   890	            <Island hydrateOn={'visible'}>
+   891	              <ProductView
+   892	                product={product}
+   893	                category={primaryCategory?.parentCategoryTree || []}
+   894	                renderHeader={(headerProps) => {
+   895	                  return (
+   896	                    <StaticProductHeader
+   897	                      {...headerProps}
+   898	                      priceData={isPriceStale ? null : variantScopedPriceData ?? headerProps.priceData}
+   899	                      isPriceLoading={isPriceStale}
+   900	                    />
+   901	                  );
+   902	                }}
+   903	                addToCart={handleAddToCart}
+   904	                addToWishlist={handleAddToWishlist}
+   905	                isProductLoading={isProductLoading}
+   906	                isBasketLoading={isBasketLoading}
+   907	                isWishlistLoading={isWishlistLoading}
+   908	                childProductOrderability={childProductOrderability}
+   909	                setChildProductOrderability={setChildProductOrderability}
+   910	                setSelectedBundleQuantity={setSelectedBundleQuantity}
+   911	                selectedBundleParentQuantity={selectedBundleQuantity}
+   912	                pickupInStore={!!pickupInStoreMap[product?.id]}
+   913	                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+   914	                onOpenStoreLocator={onOpenStoreLocator}
+   915	                showDeliveryOptions={storeLocatorEnabled}
+   916	              />
+   917	              {/*
+   918	               * The accordions and the meta block deliberately share one `<Box>`, so the pair is a
+   919	               * single flex item of the outer `<Stack spacing={16}>` rather than two. Chakra spaces
+   920	               * a Stack with `gap` rather than a child selector, and `<Island>` emits no element of
+   921	               * its own while `partialHydrationEnabled` is false, so anything left unwrapped in
+   922	               * here is a direct child taking a 64px push from its neighbour. Sharing one item
+   923	               * lands that 64px above the pair instead of between them, which leaves
+   924	               * `ZimmProductMeta`'s recipe owning both 28px hops — the one below the accordions and
+   925	               * the one between its own two rows. Hence no spacing props on the Box. The molecule
+   926	               * returns null when it has neither value to show.
+   927	               */}
+   928	              <Box>
+   929	                <InformationAccordion product={product} />
+   930	                <ZimmProductMeta modelInfo={staticInfo?.modelInfo} styleCode={staticInfo?.styleCode} />
+   931	              </Box>
+   932	            </Island>
+   933	          </Fragment>
+   934	        )}
+   935	
+   936	        {/* Product Recommendations */}
+   937	        <Stack spacing={16}>
+   938	          {!isProductASet && (
+   939	            <Island hydrateOn={'visible'}>
+   940	              <RecommendedProducts
+   941	                title={
+   942	                  <FormattedMessage
+   943	                    defaultMessage="Complete the Set"
+   944	                    id="product_detail.recommended_products.title.complete_set"
+   945	                  />
+   946	                }
+   947	                recommender={EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET}
+   948	                products={[product]}
+   949	                mx={{ base: -4, md: -8, lg: 0 }}
+   950	                shouldFetch={() => product?.id}
+   951	              />
+   952	            </Island>
+   953	          )}
+   954	          <Island hydrateOn={'visible'}>
+   955	            <RecommendedProducts
+   956	              title={
+   957	                <FormattedMessage
+   958	                  defaultMessage="You might also like"
+   959	                  id="product_detail.recommended_products.title.might_also_like"
+   960	                />
+   961	              }
+   962	              recommender={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
+   963	              products={[product]}
+   964	              mx={{ base: -4, md: -8, lg: 0 }}
+   965	              shouldFetch={() => product?.id}
+   966	            />
+   967	          </Island>
+   968	
+   969	          <Island hydrateOn={'visible'}>
+   970	            <RecommendedProducts
+   971	              // The Recently Viewed recommender doesn't use `products`, so instead we
+   972	              // provide a key to update the recommendations on navigation.
+   973	              key={location.key}
+   974	              title={
+   975	                <FormattedMessage
+   976	                  defaultMessage="Recently Viewed"
+   977	                  id="product_detail.recommended_products.title.recently_viewed"
+   978	                />
+   979	              }
+   980	              recommender={EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED}
+   981	              mx={{ base: -4, md: -8, lg: 0 }}
+   982	            />
+   983	          </Island>
+   984	        </Stack>
+   985	      </Stack>
+   986	    </Box>
+   987	  );
+   988	};
+   989	
+   990	ProductDetail.getTemplateName = () => 'product-detail';
+   991	
+   992	/*
+   993	 * The base file declares `ProductDetail.propTypes = {match: PropTypes.object}` purely as
+   994	 * documentation — the component takes no props and never reads `match`. The TypeScript
+   995	 * signature above expresses the same thing at compile time, so the runtime `prop-types`
+   996	 * declaration is not carried over.
+   997	 */
+   998	
+   999	export default ProductDetail;

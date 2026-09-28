@@ -1,0 +1,312 @@
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/CODEOWNERS:37:overrides/app/hooks/use-einstein.ts                           @ZimmermannAU/tier-1-approvers
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/coderabbit.yaml:84:           corresponding Einstein and DataCloud event. Missing events corrupt analytics and
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/coderabbit.yaml:280:        - Add to cart — confirm ATC still fires the Einstein sendAddToCart event
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/ssr/contentSecurityPolicy.ts:36:      // Connect to Einstein APIs
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/ssr/contentSecurityPolicy.ts:37:      'api.cquotient.com',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/_app-config/index.tsx:81:    einsteinAPI?: unknown;
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/_app-config/index.tsx:196:    einsteinConfig: appConfig.einsteinAPI,
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ko-KR.json:486:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ko-KR.json:1766:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ko-KR.json:1802:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ko-KR.json:1805:      "value": "Einstein 제품 추천"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ko-KR.json:2660:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it-IT.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it-IT.json:1778:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it-IT.json:1814:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it-IT.json:1817:      "value": "Suggerimenti Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it-IT.json:2668:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-XA.json:1704:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-XA.json:5050:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-XA.json:5134:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-XA.json:7618:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ja-JP.json:494:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ja-JP.json:1786:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ja-JP.json:1822:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ja-JP.json:1825:      "value": "Einstein レコメンデーション"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/ja-JP.json:2676:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it.json:1778:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it.json:1814:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it.json:1817:      "value": "Suggerimenti Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/it.json:2668:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-CN.json:504:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-CN.json:1812:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-CN.json:1848:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-CN.json:1851:      "value": "Einstein 推荐"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-CN.json:2716:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/no-NO.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/no-NO.json:1778:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/no-NO.json:1814:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/no-NO.json:1817:      "value": "Einstein-anbefalinger"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/no-NO.json:2668:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-CH.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-CH.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-CH.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-CH.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-CH.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pl-PL.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pl-PL.json:1782:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pl-PL.json:1818:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pl-PL.json:1821:      "value": "Rekomendacje usługi Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pl-PL.json:2672:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/sv-SE.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/sv-SE.json:1778:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/sv-SE.json:1814:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/sv-SE.json:1817:      "value": "Einstein-rekommendationer"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/sv-SE.json:2668:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr.json:496:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr.json:1796:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr.json:1832:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr.json:1835:      "value": "Recommandations Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr.json:2704:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pt-BR.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pt-BR.json:1782:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pt-BR.json:1818:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pt-BR.json:1821:      "value": "Recomendações do Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/pt-BR.json:2672:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-AE.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-AE.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-AE.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-AE.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-AE.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/da-DK.json:486:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/da-DK.json:1774:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/da-DK.json:1810:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/da-DK.json:1813:      "value": "Anbefalinger fra Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/da-DK.json:2664:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/de-DE.json:494:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/de-DE.json:1782:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/de-DE.json:1818:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/de-DE.json:1821:      "value": "Einstein Empfehlungen"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/de-DE.json:2672:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/default.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/default.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/default.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/default.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/default.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-TW.json:490:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-TW.json:1778:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-TW.json:1814:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-TW.json:1817:      "value": "Einstein 推薦"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/zh-TW.json:2664:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr-FR.json:496:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr-FR.json:1796:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr-FR.json:1832:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr-FR.json:1835:      "value": "Recommandations Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fr-FR.json:2704:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/nl-NL.json:494:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/nl-NL.json:1782:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/nl-NL.json:1818:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/nl-NL.json:1821:      "value": "Einstein-aanbevelingen"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/nl-NL.json:2672:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fi-FI.json:494:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fi-FI.json:1782:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fi-FI.json:1818:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fi-FI.json:1821:      "value": "Einsteinin suositukset"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/fi-FI.json:2672:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-GB.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-GB.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-GB.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-GB.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-GB.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-US.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-US.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-US.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-US.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-US.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es-MX.json:496:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es-MX.json:1796:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es-MX.json:1832:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es-MX.json:1835:      "value": "Recomendaciones de Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es-MX.json:2704:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es.json:496:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es.json:1796:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es.json:1832:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es.json:1835:      "value": "Recomendaciones de Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/es.json:2704:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-HK.json:872:  "cart.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-HK.json:2442:  "home.features.description.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-HK.json:2478:  "home.features.heading.einstein_recommendations": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-HK.json:2481:      "value": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/static/translations/compiled/en-HK.json:3610:  "product_detail.recommended_products.title.recently_viewed": [
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/home/index.tsx:23:import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/home/index.tsx:137:  const einstein = useEinstein();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/home/index.tsx:152:    einstein.sendViewPage(pathname);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.cursor/rules/tier1FrozenFiles.mdc:37:overrides/app/hooks/use-einstein.ts
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.cursor/rules/skills/feature-spec.mdc:26:- Does this touch any third-party integration (Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps)?
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.cursor/rules/skills/feature-spec.mdc:110:[Any Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps interaction — or "None". Include graceful-degradation behaviour per AGENTS.md.]
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/memory/projectState.md:87:- **Search/recommendation platform:** SFCC Einstein is confirmed on the Search sheet (SPR-63). **Cross-sheet contradiction (flag, do not resolve):** the Cart & Inventory sheet CAI-005 now states "search / recommendation engine not confirmed" with RJ noting "99% likely we will move away from Athos" — i.e. the engine is being treated as open there. Confirm which sheet is authoritative before relying on Einstein for cart/recommendation surfaces.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/01-sfcc.md:78:| Einstein recommendations endpoints | GET                      | Personalised recommendations slot. Consent-gated (Didomi purpose TBC) — falls back to a static SFCC merchandising group if consent is not given |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/01-sfcc.md:125:| Einstein recommendations 5xx                  | Hide the slot or fall back to a static merchandising group.                                                                                                                     |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:11:- **Salesforce Einstein (SFCC Einstein)** is the confirmed platform for all search, merchandising and product recommendation functionality across all storefronts, enabled natively within the Salesforce platform (SPR-63, Confirmed and signed off 2026-05-08; Third_Party_Integrations sheet, "Search and Recommendations" row).
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:12:- Einstein powers AI-driven product ordering on category and search results pages, recommendations carousels (SPR-58), and algorithmic Popular Search terms (SPR-42).
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:13:- Rules-based merchandising applies as fallback — do not assume Einstein behavioural data is available from day one.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:15:> **FLAG — cross-sheet conflict (do not resolve here):** Third_Party_Integrations and SPR-63 name Salesforce Einstein as the confirmed engine for search/merchandising/recommendations, but the Cart & Inventory sheet (CAI-005) treats the engine as "not confirmed", with RJ noting "99% likely we will move away from Athos". This PRD reconciles to the Search sheet's position (Einstein per SPR-63) as instructed; the conflict needs resolution by the team before build.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:41:| SPR-42 | Confirmed | Popular Search terms: manually curated by business users in SFCC BM, supplemented by Einstein algorithmic suggestions |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:79:## 6. SFCC Einstein Merchandising (SPR-63)
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:81:- **Confirmed and signed off.** SFCC Einstein used for AI-driven product ordering on category and search results pages, based on behavioural data and performance signals.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:82:- Einstein applies to **sub-category pages**; do not apply automated ordering to major editorial pages (e.g. New Arrivals).
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/search.md:92:- Powered by SFCC Einstein Product Recommendations; rules-based fallback at launch until sufficient behavioural data is accumulated.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/plp.md:168:| Search platform, autocomplete, Einstein merchandising | search.md |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/pdp.md:164:- "You May Also Like" carousel powered by SFCC Einstein; rules-based fallback at launch
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/index.md:28:  Search platform (Einstein / Athos TBC), autocomplete with local currency, PLP merchandising, recommendations carousels (You May Also Like, Recently Viewed), open items (filters, Quick Add, colour swatches)
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/cart.md:14:- **"Recommended for You" carousel** beneath bag contents — recommendation engine platform TBC (SFCC Einstein vs Athos Commerce), see Open Items (CAI-005)
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/cart.md:140:- **CAI-005 — Recommendation engine for mini-cart carousel not confirmed.** The requirement text now reads "powered by SFCC Einstein (or Athos Commerce pending search platform decision)", but the row's open comment "Search / reccomendation engine not confirmed" persists and RJ adds "It is 99% likely we will move away from Athos". Treat platform (Einstein vs Athos Commerce) as undecided. **FLAG — cross-sheet contradiction:** Third_Party_Integrations (Search and Recommendations / Salesforce Einstein) states the system "will use Salesforce Einstein for all search, merchandising and product recommendation functionality across all storefronts," which contradicts CAI-005 treating the engine as unconfirmed. Do not silently resolve — confirm with Zimmermann which sheet is authoritative.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prompts/omsIntClaudeCodePrompt.md:328:    // Einstein disabled in SIT — avoid polluting recommendation data
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prompts/omsIntClaudeCodePrompt.md:329:    einsteinAPI: {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:139:    // Einstein api config
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:140:    einsteinAPI: {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:141:      host: 'https://api.cquotient.com',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:142:      einsteinId: '1ea06c6e-c936-4324-bcf0-fada93f83bb1',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:144:      // Flag Einstein activities as coming from a production environment.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js:145:      // By setting this to true, the Einstein activities generated by the environment will appear
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/utils.md:8:| `add-to-cart-utils` | Base | `app/utils/add-to-cart-utils.js` | handleAddToCart, handleProductBundleAddToCart, handleProductSetAddToCart | — | Handles adding products to cart and sending data to Einstein. Refactoring and BOPIS support to be handled in W-18989389 |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/.baseCache.json:394:      "desc": "A component for fetching and rendering product recommendations from the Einstein API by a zone or a recommender name.",
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/.baseCache.json:711:      "key": "use-einstein",
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/.baseCache.json:712:      "name": "useEinstein",
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/.baseCache.json:713:      "path": "app/hooks/use-einstein.js",
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/.baseCache.json:997:      "desc": "Handles adding products to cart and sending data to Einstein. Refactoring and BOPIS support to be handled in W-18989389"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/components.md:58:| RecommendedProducts | Base | `app/components/recommended-products/index.jsx` | title?: any, zone?: string, recommender?: string, products?: array | 2 — Protected | Shared | 0 | — | A component for fetching and rendering product recommendations from the Einstein API by a zone or a recommender name. |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/registry/hooks.md:28:| `useEinstein` | Base | `app/hooks/use-einstein.js` | — | 1 | 1 — Frozen | Shared | — |
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/frozenFiles.md:30:overrides/app/hooks/use-einstein.ts
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/feature-spec/SKILL.md:24:- Does this touch any third-party integration (Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps)?
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/feature-spec/SKILL.md:108:[Any Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps interaction — or "None". Include graceful-degradation behaviour per AGENTS.md.]
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/scripts/generateRegistry.mjs:126:  'app/hooks/use-einstein',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/PULL_REQUEST_TEMPLATE.md:99:- [ ] Adyen / Searchspring / Einstein
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/copilot-instructions.md:361:overrides/app/hooks/use-einstein.ts
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/workflows/protected-file-guard.yml:66:              - 'overrides/app/hooks/use-einstein.*'
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/workflows/protected-file-guard.yml:122:          echo "  overrides/app/hooks/use-einstein    → Integration Lead (#integration)"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/ISSUE_TEMPLATE/feature_request.md:62:- [ ] Adyen / Searchspring / Einstein
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.github/ISSUE_TEMPLATE/bug_report.md:60:<!-- Contentful, Global-e, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps, Adyen, Searchspring, Einstein, … -->
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.vscode/instructions/workflows.md:25:- Does this touch any third-party integration (Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps)?
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.vscode/instructions/workflows.md:109:[Any Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps interaction — or "None". Include graceful-degradation behaviour per AGENTS.md.]
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it-IT.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it-IT.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it-IT.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it-IT.json:755:    "defaultMessage": "Suggerimenti Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it-IT.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-CN.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-CN.json:763:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-CN.json:781:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-CN.json:782:    "defaultMessage": "Einstein 推荐"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-CN.json:1186:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ja-JP.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ja-JP.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ja-JP.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ja-JP.json:755:    "defaultMessage": "Einstein レコメンデーション"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ja-JP.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ko-KR.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ko-KR.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ko-KR.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ko-KR.json:755:    "defaultMessage": "Einstein 제품 추천"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/ko-KR.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/sv-SE.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/sv-SE.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/sv-SE.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/sv-SE.json:755:    "defaultMessage": "Einstein-rekommendationer"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/sv-SE.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/no-NO.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/no-NO.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/no-NO.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/no-NO.json:755:    "defaultMessage": "Einstein-anbefalinger"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/no-NO.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it.json:755:    "defaultMessage": "Suggerimenti Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/it.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr.json:763:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr.json:781:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr.json:782:    "defaultMessage": "Recommandations Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr.json:1186:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-CH.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-CH.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-CH.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-CH.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-CH.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pl-PL.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pl-PL.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pl-PL.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pl-PL.json:755:    "defaultMessage": "Rekomendacje usługi Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pl-PL.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/de-DE.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/de-DE.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/de-DE.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/de-DE.json:755:    "defaultMessage": "Einstein Empfehlungen"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/de-DE.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/da-DK.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/da-DK.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/da-DK.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/da-DK.json:755:    "defaultMessage": "Anbefalinger fra Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/da-DK.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pt-BR.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pt-BR.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pt-BR.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pt-BR.json:755:    "defaultMessage": "Recomendações do Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/pt-BR.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-AE.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-AE.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-AE.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-AE.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-AE.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/nl-NL.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/nl-NL.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/nl-NL.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/nl-NL.json:755:    "defaultMessage": "Einstein-aanbevelingen"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/nl-NL.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr-FR.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr-FR.json:763:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr-FR.json:781:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr-FR.json:782:    "defaultMessage": "Recommandations Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fr-FR.json:1186:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-TW.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-TW.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-TW.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-TW.json:755:    "defaultMessage": "Einstein 推薦"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/zh-TW.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/default.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/default.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/default.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/default.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/default.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-HK.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-HK.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-HK.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-HK.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-HK.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-US.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-US.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-US.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-US.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-US.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-GB.json:315:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-GB.json:985:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-GB.json:1003:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-GB.json:1004:    "defaultMessage": "Einstein Recommendations"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/en-GB.json:1519:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fi-FI.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fi-FI.json:736:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fi-FI.json:754:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fi-FI.json:755:    "defaultMessage": "Einsteinin suositukset"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/fi-FI.json:1159:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es.json:763:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es.json:781:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es.json:782:    "defaultMessage": "Recomendaciones de Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es.json:1186:  "product_detail.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es-MX.json:195:  "cart.recommended_products.title.recently_viewed": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es-MX.json:763:  "home.features.description.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es-MX.json:781:  "home.features.heading.einstein_recommendations": {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es-MX.json:782:    "defaultMessage": "Recomendaciones de Einstein"
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/translations/es-MX.json:1186:  "product_detail.recommended_products.title.recently_viewed": {

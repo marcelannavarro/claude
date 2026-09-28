@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Verify infra additions and merge conflict resolution",
+  "description": "Deep-dive agent: confirm server.js/package.json claims, Full Kit catalog page mechanics, the 3 fixed prototype templates, and quality of the 3-file merge conflict resolution from origin/main.",
+  "activeForm": "Verifying infra additions",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

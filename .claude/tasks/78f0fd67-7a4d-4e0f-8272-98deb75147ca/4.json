@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Define and compare Option A/B/middle",
+  "description": "Resolved: exactly 2 options per user direction. Option A (single app) = viable, matches platform's native model. Option B (per-integration app) = explored in full, then invalidated on architectural grounds (Mani + Salesforce ISV FAQ) — included in the TSD as the explored alternative with a documented discard reason, not silently dropped.",
+  "activeForm": "Comparing topology options",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "SFCC-122: Publish inventory to Confluence + update Dependencies row",
+  "description": "Publish the finished MRT API Capabilities page to the SFCC Confluence space and fill in the blank T2 row (owner/status/notes) on the Dependencies page (310050860).",
+  "activeForm": "Publishing MRT API inventory to Confluence",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

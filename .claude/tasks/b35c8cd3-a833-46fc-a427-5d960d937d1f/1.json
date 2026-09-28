@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Map Figma node IDs to PR #65 components",
+  "description": "From the ~100 recovered Figma URLs, identify which node IDs correspond to header/leftBar/logo, nav/ListMenu, mega menu content+promo image, and mobile drawer menu — the components PR #65 actually touches. Use get_metadata/search_design_system on the Design System 2026 file (wPiWmZZOVKnrENUWk2XWWm) and the one Designs-file node (QQ427wHWEUjsjP7H8v48Rs, node 3051-37191) to confirm what each ID actually is before treating it as a source of truth.",
+  "activeForm": "Mapping Figma nodes to PR #65 components",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

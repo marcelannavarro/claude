@@ -1,0 +1,517 @@
+=== CONVENTIONS ===
+# PDP integration surface — codebase map
+
+Branch surveyed: `feature/SFCC-89_pdp-ui-static-product-information` @ `d526ad1`, clean tree,
+24 commits ahead of `develop` (`cd68e97`). `npx tsc --noEmit` exits 0 on this branch (verified).
+
+Legend: **[V]** verified by reading the file/running the command · **[I]** inferred.
+
+---
+
+## 1. PDP surface that already exists
+
+### 1a. The page
+
+`overrides/app/pages/product-detail/index.tsx` — 95 lines. **It is a full replacement of the base
+page, not a decoration of it.** It renders only: a grey placeholder box where the gallery goes, a
+`PdpProductInfo` block, and a breadcrumb toolbar underneath. **[V]**
+
+| Line | What |
+|---|---|
+| `index.tsx:14` | `export const PDP_OPTIONS_COLUMN_WIDTH = '360px'` — provisional, commented as pending designer sign-off |
+| `index.tsx:21-25` | `useProduct({parameters:{id: productId}}, {enabled: Boolean(productId)})` |
+| `index.tsx:28-31` | `useCategory({parameters:{id: product?.primaryCategoryId ?? null, levels:1}})`, gated on the product having loaded |
+| `index.tsx:35-40` | Builds breadcrumb path from `category.parentCategoryTree`, degrades to `[]` on category error |
+| `index.tsx:42-45` | `intl.formatNumber(product.price, {style:'currency', currency: product.currency})` |
+| `index.tsx:56` | **Gallery column is an empty `<Box>` placeholder** — `aspectRatio={{base:'3/4', md:'49/60'}}`, `backgroundColor="background.02"`. Comment: "images out of scope, placeholder maintains layout" |
+| `index.tsx:65-81` | error / isLoading / loaded three-way branch |
+| `index.tsx:85-87` | `<ZimmPageToolbar variant="breadcrumbs"><Breadcrumb …/></ZimmPageToolbar>` |
+| `index.tsx:92` | `ProductDetail.getTemplateName = () => 'product-detail'` |
+
+Route wiring: `overrides/app/routes.tsx:25` (`loadable(() => import('./pages/product-detail'))`)
+and `:38-40` place `/product/:productId` **before** `..._routes` (`:41`), so the override wins by
+route order regardless of the module resolver. **[V]**
+
+### 1b. What the base has that we have *not* carried over
+
+Base is `node_modules/@salesforce/retail-react-app/app/pages/product-detail/index.jsx` — 876 lines
+vs our 95. Everything below is present in base and **absent** from the override **[V]**:
+
+| Base capability | Base ref | Status in override |
+|---|---|---|
+| `ProductView` (gallery, swatches, qty, add-to-bag) | `index.jsx:41, 675/707/789` | absent |
+| `RecommendedProducts` ×3 zones (Einstein) | `index.jsx:40, 817/832/847` | absent |
+| `InformationAccordion` (`partials/information-accordion.jsx`) | `index.jsx:42, 776/808` | absent |
+| `<Island hydrateOn='visible'>` deferred hydration wrappers | `index.jsx:674, 788, 816…` | absent |
+| `<Helmet>` SEO block | `index.jsx:658-669` | absent |
+| `HTTPNotFound` / `HTTPError` throw on 404/5xx | `index.jsx:194-209` | **absent — we render an inline `<Text>` instead (`index.tsx:66`)** |
+| `res.set('Cache-Control', …)` SSR cache headers | `index.jsx:86-87` | absent |
+| Rich `useProduct` params: `perPricebook`, `allImages`, `expand:[availability, promotions, options, images, prices, variations, set_products, bundled_products, page_meta_tags]`, `inventoryIds`, `keepPreviousData` | `index.jsx:110-136` | **absent — our call requests `id` only** |
+| Set / bundle branch (`isProductASet`, `isProductABundle`) | `index.jsx:155-156, 672` | absent |
+| `useProductInventory`, `useVariant`, `useCurrentBasket`, wishlist, toast, Einstein/DataCloud/ActiveData | `index.jsx:70-240` | absent |
+
+> Note on `allImages: true` — memory file `project_sfcc29_product_display_outage.md` records this
+> flag as implicated in a backend product-display outage. Re-check before adding it back.
+
+### 1c. PDP-adjacent components — override + recipe status
+
+`ls overrides/app/components/` on this branch: `_app-config breadcrumb button contentful foundation
+header icons pageContainer pdpProductInfo ui-kits` — **that is the whole list.** **[V]**
+
+| Component | Override exists? | Theme recipe in `theme/components/`? | Base consumers if you override it later |
+|---|---|---|---|
+| `image-gallery` | **No** (also not on `develop` — `git ls-tree` = 0) | No | 2: `product-view`, `product-view-modal/bundle` |
+| `swatch-group` | **No** | No | 2: `product-tile`, `product-view` |
+| `display-price` | **No** | No | **6**: `product-tile`, `item-variant/item-price`, `product-view`, `use-add-to-cart-modal`, 2× checkout cards |
+| `product-tile` | **No** | No | 2: `product-scroller`, `pages/product-list` |
+| `product-item` | **No** | No | 3 |
+| `recommended-products` | **No** | No | 5 |
+| `product-view` | **No** | No | **6** incl. `product-view-modal`, `bonus-product-view-modal` |
+| `quantity-picker` | **No** | No | 2: `product-view`, `product-item/product-quantity-picker` |
+| `breadcrumb` | **Yes** — `overrides/app/components/breadcrumb/index.tsx` (86 ln) | No (styles inline in the file) | 1 base consumer: `product-view/index.jsx:45` |
+| `pdpProductInfo` (Zimmermann-only) | **Yes** — 69 ln | **Yes** — `theme/components/pdpProductInfo.ts`, registered `theme/components/index.ts:4,10` as `ZimmPdpProductInfo` | n/a |
+| `zimmPageToolbar` (Zimmermann-only) | **Yes** — `ui-kits/atoms/zimmPageToolbar/index.tsx` (73 ln) | **No** — styling is a `PADDING` const at `index.tsx:28-33` | n/a |
+
+**Important correction to a common assumption:** `.claude/rules/overrideStyling.md` talks at length
+about `product-tile/index.tsx`'s `DisplayPrice` import, `image-gallery`/`display-price`/`swatch-group`
+theme configs, and `swatchGroup.ts`/`imageGallery.ts` recipe files. **None of those files exist on
+this branch or on `develop`.** The rules doc describes an intended/aspirational state, or state from
+a branch that never merged. Do not plan work assuming those overrides are there. **[V]**
+
+Theme recipes that actually exist: `button.ts`, `header.ts`, `listMenu.ts`, `navConstants.ts`,
+`pdpProductInfo.ts`, `index.ts`. **[V]**
+
+### 1d. Supporting assets already built for PDP
+
+- `overrides/app/utils/productData.ts` — `extractModelLine(html)`: pulls the `Model is …` `<li>` out
+  of the SFCC `c_sizeFit` HTML. 9 lines, 5 unit tests. **[V]**
+- `overrides/app/types/commerce.ts:7-10` — `ProductWithSizeFit`, re-exported from
+  `overrides/app/types/index.ts:1`. **[V]**
+- `overrides/app/pages/product-detail/index.test.ts` — 5 Vitest cases, all on `extractModelLine`. **[V]**
+- `overrides/app/pages/product-detail/index.stories.tsx` — `title: 'Pages/PDP'`, 3 stories
+  (`Default`/`Loading`/`Error`). Re-implements the page shell (`PageShell`, `:43-65`) rather than
+  rendering `ProductDetail`, because `useProduct` needs a `CommerceApiProvider` Storybook doesn't have
+  (`:12-15`). **This shell is a duplicate of `index.tsx:48-88` and will drift.** **[V]**
+- `overrides/app/components/pdpProductInfo/index.stories.tsx` — `title: 'Commerce/PdpProductInfo'`,
+  2 stories, one with a `play` fn. **[V]**
+- E2E: `e2e/features/pdp/SFCC-89_pdp-static-product-information.feature`,
+  `e2e/tests/zimm/pdp/SFCC-89_pdp-static-product-information.spec.js` (10 tests, all tagged
+  `{tag: ['@pdp','@SFCC-89']}`, 3 currently `test.skip`), and a `ProductPage` POM at
+  `e2e/support/pages/ProductPage.js` with locators already wired to our test-ids. **[V]**
+
+### 1e. The other in-flight PDP branch — read this before starting
+
+`origin/feature/SFCC-91_pdp-ui-colour-swatches-variation-selection` (2026-08-21, `3b531d4`) **branches
+off SFCC-89 at `d904c63`** and adds **[V]**:
+
+- `overrides/app/components/pdpColourSwatches/{index.tsx,index.stories.tsx,index.test.tsx}` (189/204/256 ln)
+- `.docs/specs/SFCC-91_pdp-colour-swatches.md` (883 lines)
+- `e2e/features/pdp/SFCC-91_*.feature` + `e2e/tests/zimm/pdp/SFCC-91_*.spec.js`
+- extensions to `e2e/fixtures/products.js` and `ProductPage.js`
+
+It is **missing SFCC-89's last two commits** (`3e1686b` "move PdpProductInfo styling into a theme
+config", `d526ad1`) — so on SFCC-91, `pdpProductInfo/index.tsx` is still 98 lines with inline styling
+and `theme/components/pdpProductInfo.ts` does not exist. **A rebase of SFCC-91 onto SFCC-89 head will
+conflict in `pdpProductInfo/index.tsx`.** **[V]**
+
+Also: `pdpColourSwatches` is at the **top level of `components/`, not under `ui-kits/`, and has no
+theme recipe** — same divergence as `pdpProductInfo`. **[V]**
+
+---
+
+## 2. What a new PDP component must look like structurally
+
+### 2a. The naming families — keep them straight
+
+| Family | Case | Where | Live examples on this branch |
+|---|---|---|---|
+| SFCC override dirs (shadow a base module) | **kebab-case**, matching the base filename exactly | `overrides/app/components/<kebab>/` | `breadcrumb/`, `header/`, `icons/`, `_app-config/` |
+| Zimmermann-authored components | **camelCase** | `overrides/app/components/<camel>/` or `ui-kits/<tier>/<camel>/` | `pdpProductInfo/`, `pageContainer/`, `button/`, `ui-kits/atoms/zimmPageToolbar/` |
+| SFCC `shared/ui` primitives | **PascalCase** | `node_modules/…/app/components/shared/ui/<Pascal>/` | `Box/`, `Text/`, `Skeleton/` — thin re-exports of Chakra |
+
+Rule source: `.claude/rules/conventions.md` > File naming and folder structure. **[V]**
+
+### 2b. What `ui-kits/` actually contains today
+
+```
+overrides/app/components/ui-kits/
+└── atoms/
+    ├── .gitkeep
+    └── zimmPageToolbar/
+        ├── index.tsx
+        └── index.stories.tsx
+```
+
+**One component. No `molecules/`, no `organisms/` directories exist.** **[V]**
+
+### 2c. Where the `ui-kits/{atoms,molecules,organisms}` convention is written down — and the problem
+
+Grepping the whole repo for `ui-kits` on this branch returns **three hits**: two imports in the PDP
+page/story, and one row in the generated registry. **There is no rules doc on this branch or on
+`develop` that states the ui-kits convention.** **[V]**
+
+The doc exists only on an unmerged branch: `.claude/rules/uikit-components.md`, 512 lines, on
+`origin/feature/f2r-implementation-workflow` (last commit 2026-08-11). **[V]**
+
+**That doc contradicts the styling rules on `develop`.** Read side by side **[V]**:
+
+| `.claude/rules/uikit-components.md` (f2r-implementation-workflow, unmerged) | `.claude/rules/overrideStyling.md` (on `develop` since `5b36062`, 2026-08-18) |
+|---|---|
+| "`import { Box, Flex, Text, … } from '@chakra-ui/react'` is **forbidden** inside `ui-kits/{tier}/{component}/`" | Hierarchy level 1–3 is Chakra `textStyle` props, semantic token strings, then a `theme/components/<name>.ts` config |
+| Co-located `{component}.styles.ts` + Emotion `<Global styles={…}/>` per component; "There is no fallback." | "`.zimm-*` classes remain the right tool for genuinely static, non-interactive… treatments"; a class mirror of an interactive component is "structurally incomplete from the start" |
+| Handover CSS class names via `className`, inline `style={{color:'var(--zimm-color-…)'}}` | "**Never**: a raw hex/px/rem/em literal in a component file"; theme config is "the single source of truth" |
+
+`f2r-implementation-workflow` does **not** contain `overrideStyling.md` at all — the two rule sets are
+mutually exclusive, living on different branches. The newer `origin/feature/f2r-component-registry`
+(2026-08-21, 27 commits ahead, `develop` **is** its ancestor) carries `overrideStyling.md` **and** adds
+`.claude/rules/overrides.md`, but **not** `uikit-components.md`. **[V]**
+
+**[I]** Reading recency: `overrideStyling.md` (Aug 18, on develop) supersedes `uikit-components.md`
+(Aug 11, unmerged), and the surviving f2r branch dropped the latter. Treat `overrideStyling.md` as
+authoritative. **This is a judgement call that should be confirmed with the developer** before a
+takeover commits to one styling model.
+
+### 2d. Missing cross-referenced doc
+
+`.claude/rules/overrideStyling.md` cross-references `[overrides.md](./overrides.md)` in at least five
+places. **`.claude/rules/overrides.md` does not exist on this branch or on `develop`** — it exists only
+on `origin/feature/f2r-component-registry`. **[V]** Its content (verified by `git show`): the
+replacement-not-wrapping rule, four pre-flight checks (default export present, `grep` for internal SFCC
+usage, `forwardRef` contract, Chakra `defineStyleConfig` deep-merge audit), the prop-superset
+default/named-export pattern, and the `vendor.d.ts` ambient-declaration all-or-nothing rule.
+
+### 2e. Concrete path example — a new PDP component per the rules as written
+
+For a hypothetical `PdpSizeSelector`:
+
+```
+overrides/app/components/ui-kits/molecules/pdpSizeSelector/
+  index.tsx            ← named export PdpSizeSelector + default; props type at top of file
+  index.stories.tsx    ← title: 'Commerce/PdpSizeSelector'  (commerce-aware → Commerce/, per components.md)
+  index.test.ts        ← only if logic-heavy
+overrides/app/theme/components/pdpSizeSelector.ts   ← exports `ZimmPdpSizeSelector` (parts + baseStyle)
+overrides/app/theme/components/index.ts             ← add import + key to the `components` object
+```
+
+Existing precedent to copy verbatim — `pdpProductInfo` **[V]**:
+- Component consumes the recipe via `useMultiStyleConfig('ZimmPdpProductInfo', {})` and applies parts
+  as `__css={styles.<part>}` (`pdpProductInfo/index.tsx:27, 32`).
+- Recipe declares `parts: ['name','price','description','modelInfo','styleCode']` and a `baseStyle`
+  per part (`theme/components/pdpProductInfo.ts:56-90`).
+- Values that genuinely can't live in `baseStyle` (conditional margins) are exported as named consts
+  from the theme file and imported by the component — `SPACE_DESCRIPTION_TO_META`,
+  `SPACE_MODEL_INFO_TO_STYLE_CODE` (`pdpProductInfo.ts:47,50` → `index.tsx:4,42,53`). That is the
+  house pattern for "styling that must be at the call site": **name it in the theme file anyway.**
+- The theme file carries a header comment explaining each level-4 (`var(--zimm-*)`) escape and why
+  no `textStyle` exists for it yet (`pdpProductInfo.ts:1-33`).
+
+**Chakra scale caveat (matters for any new recipe):** `theme/index.ts:51-58` registers only
+`borderWidths, breakpoints, colors, fonts, space, textStyles, components`. `fontSizes`, `sizes`, and
+`transition` are **deliberately not registered** because Zimmermann and Chakra use the same key names
+for different values (`theme/index.ts:26-49`). So `fontSize="2xs"` in a recipe silently resolves to
+Chakra's 10px, not Zimmermann's 14px — which is exactly why `pdpProductInfo.ts` uses
+`fontSize: 'var(--zimm-font-size-2xs)'`. `spacing` **is** registered as `space`, so `marginBottom: 'l'`
+is safe. **[V]**
+
+---
+
+## 3. The component registry
+
+**What it is:** `scripts/generateRegistry.mjs` (37 kB) scans `overrides/app/{components,hooks,utils,pages}`
+**plus** `node_modules/@salesforce/retail-react-app/app/`, and writes markdown tables to
+`.claude/registry/{components,hooks,pages,routes,utils}.md` so Claude reads a table instead of grepping.
+Columns: Component · Origin · Path · Props · Tier · Squad · Consumers · Last touched · Description. **[V]**
+
+**Does a new PDP component register itself? No — it is fully automatic.** Nothing is hand-maintained
+**[V]**:
+- `generateRegistry.mjs:670` — `origin: baseMatch ? 'Override' : 'Custom'`, matched by folder-name
+  variants (`folderVariants()` at `:105-109` tries kebab↔camel), so a camelCase Zimmermann folder with
+  no base twin is auto-classified `Custom`.
+- Tier and squad are derived from `.claude/rules/` path lists (`generateRegistry.mjs:~112` onward).
+- `scripts/hooks/pre-commit:49-62` regenerates and `git add`s `.claude/registry/` whenever a staged path
+  matches `overrides/app/{components,hooks,utils,pages}/` or `routes.tsx`.
+- `.claude/settings.json` PostToolUse `Edit|Write` → `.claude/hooks/registryUpdate.sh` → incremental
+  `--file=` regen (skips `*.test.*`, `*.stories.*`, `ContentfulDefinition`).
+- `package.json` `postinstall` runs `npm run generate:registry`.
+
+**Is it a blocker? No.** The registry is **already on `develop`** (`git ls-tree develop` lists all five
+`.claude/registry/*.md`, `scripts/generateRegistry.mjs`, and `.claude/hooks/registryUpdate.sh`) and
+therefore on this branch. **[V]** `feature/f2r-component-registry` adds one extra output
+(`.claude/registry/mocks.md`) and generator refinements, but nothing the PDP work depends on.
+
+The premise in the task brief that the registry might be "not yet merged to develop" is **false** — it
+is merged. **[V]**
+
+Minor: `.claude/registry/components.md:84` shows `ZimmPageToolbar`'s props flattened across its
+discriminated union (`variant: 'breadcrumbs', heading: string, …`). Commit `cf17c3d` on this branch
+("teach extractTsProps to parse discriminated union Props types") fixes the generator; the checked-in
+`.md` is stamped `2026-08-20` and predates it. Cosmetic — a regen will correct it. **[V]**
+
+---
+
+## 4. Intercept traps — which apply
+
+### (a) base-path import → unstyled base component in Storybook & Vitest
+
+**Mechanism confirmed [V]:**
+- `package.json` `ccExtensibility: {extends: '@salesforce/retail-react-app', overridesDir: 'overrides'}`
+  — read by the pwa-kit webpack plugin, i.e. **real builds only**.
+- `.storybook/main.js:25` aliases `'@salesforce/retail-react-app'` → `node_modules/@salesforce/retail-react-app`,
+  bypassing the resolver entirely.
+- `vitest.config.ts:17-20` aliases only `~` and `app` — it never mentions
+  `@salesforce/retail-react-app`, so those imports go straight to `node_modules` by normal resolution.
+
+**Does it apply to the PDP work today? Not yet.** I cross-referenced every base-path import in
+`overrides/` against every existing override directory. The **only** collision in the entire repo is
+`icons`, and it is deliberate (`overrides/app/components/icons/index.tsx:73` re-exports from the base
+icon set — that's the documented single-source-of-truth pattern; `header/index.tsx:44` imports the
+same base path). **[V]**
+
+Every other base-path import in `overrides/` resolves to a module we do **not** override
+(`shared/ui`, `constants`, `contexts`, `utils/*`, `seo`, `link`, `loading-spinner`, `search`,
+`with-registration`, `product-scroller`, `section`, `hooks/use-multi-site`, `hooks/use-current-basket`,
+`hooks/use-navigation`, `hooks/use-einstein`, `app/theme`, `app/routes`, `app/mocks/standard-product`).
+Per `overrideStyling.md` that is simply correct. **[V]**
+
+**It becomes live the moment PDP work adds an override.** Concretely: if you create
+`overrides/app/components/swatch-group/`, then `product-view/index.jsx:55` imports it by base path —
+correct in the app, base-unstyled in Storybook/Vitest. Same for `image-gallery` (`product-view:44,48`),
+`display-price` (`product-view:53` + 5 others), `quantity-picker` (`product-view:50`),
+`breadcrumb` (**already overridden**, and `product-view/index.jsx:45` imports it by base path — so the
+moment anything writes a story or test that renders base `ProductView`, it will render the *base*
+breadcrumb, not ours). **[V]**
+
+Rule for new PDP code, per `overrideStyling.md` > "Importing an already-overridden component":
+import an already-overridden sibling by **relative path** (`'../breadcrumb'`), never by base path. The
+PDP page already does this correctly at `index.tsx:6,8,9` (all relative `../../components/…`). **[V]**
+
+### (b) `shared/ui` barrel — a relative re-export the resolver never rewrites
+
+**Confirmed with hard numbers [V]:**
+- `node_modules/…/app/components/shared/ui/index.jsx` is a pure barrel of **103** relative re-exports
+  (`export {Box} from './Box'`, `export {Button} from './Button'`, …).
+- Base files importing the barrel path `…/components/shared/ui'`: **212**.
+- Base files importing a deep `…/components/shared/ui/<Name>` path: **0**.
+
+Because the re-export is relative (`'./Button'`), the `ccExtensibility` resolver — which only rewrites
+`@salesforce/retail-react-app/...` specifiers — never sees it. Creating
+`overrides/app/components/shared/ui/Button/index.tsx` would intercept **zero** of those 212 consumers.
+You would additionally have to override the barrel itself.
+
+**Does the PDP work depend on this? No, and it should not start.** The sub-modules are one-line Chakra
+re-exports (`shared/ui/Skeleton/index.jsx` is literally `export {Skeleton} from '@chakra-ui/react'`) —
+there is nothing to override there. No `overrides/app/components/shared/` exists on HEAD or `develop`
+(`git ls-tree` = 0 on both). The correct lever for `Box`/`Text`/`Skeleton` styling is the Chakra theme,
+which is already how the repo does it. **[V]**
+
+Style consistency note: `breadcrumb/index.tsx:3` imports `Box, Text` from `@chakra-ui/react` directly
+while `product-detail/index.tsx:5` and `zimmPageToolbar/index.tsx:3` import them from the SFCC
+`shared/ui` barrel. Functionally identical (the barrel is a Chakra re-export), but pick one for new
+files. **[V]**
+
+### (c) conditional render of an alternate module
+
+**The `_app` checkout swap is real but does not touch PDP [V]:**
+`node_modules/…/app/components/_app/index.jsx:216` computes `const isCheckout = /\/checkout$/.test(location?.pathname)`,
+then `:403` swaps `Header` → `CheckoutHeader` and `:484` `{!isCheckout ? <Footer /> : <CheckoutFooter />}`.
+`/product/:productId` never matches that regex, so PDP always gets the normal Header/Footer.
+**No PDP equivalent of this trap exists.** **[V]**
+
+**Two adjacent things worth knowing anyway [V]:**
+1. **`<Island hydrateOn='visible'>`.** Base wraps `ProductView`, `InformationAccordion`, and all three
+   `RecommendedProducts` in `<Island>` (`product-detail/index.jsx:674, 788, 816, 831, 846`) — deferred
+   hydration. Our override uses no Island. If PDP work reintroduces base components, they will hydrate
+   eagerly unless Island is reintroduced too. Relevant to the ≤2s p75 mobile LCP budget in AGENTS.md.
+2. **Set/bundle branch.** `product-detail/index.jsx:672` renders a structurally different tree for
+   `isProductASet || isProductABundle` (per-child `ProductView` + `InformationAccordion`). Our override
+   renders one shape for every product type, so a set or bundle SKU will render as a plain product. Not
+   an override-bypass — a functional gap. **[V]**
+3. `ProductView` is rendered from 6 places, not just PDP (`product-view-modal/index.jsx`,
+   `product-view-modal/bundle.jsx`, `bonus-product-view-modal/index.jsx`, + tests). An override of it
+   is a Tier-2-scale blast radius, not a PDP-local change. **[V]**
+
+---
+
+## 5. Data layer
+
+**Rule** (`.claude/rules/components.md` > Composition): anything under `overrides/app/components/`
+receives data as props and calls **no** data-fetching hook — not `useProduct`, not any
+`@salesforce/commerce-sdk-react` / React Query hook. Fetching lives in `overrides/app/pages/`. **[V]**
+
+**The PDP obeys this today** — `useProduct`/`useCategory` are called only in
+`overrides/app/pages/product-detail/index.tsx:21-31`; `PdpProductInfo`, `Breadcrumb` and
+`ZimmPageToolbar` are all pure prop-driven. **[V]**
+
+**Type chain [V]:**
+
+```
+useProduct  →  node_modules/@salesforce/commerce-sdk-react/hooks/ShopperProducts/query.d.ts:28
+               UseQueryResult<DataType<Client['getProduct']>>
+            →  commerce-sdk-isomorphic ShopperProductsModelTypes.Product
+               (node_modules/commerce-sdk-isomorphic/lib/index.esm.d.ts:59783-59835)
+```
+
+Fields the PDP already reads, all optional on the type: `id: string` (the only required one), `name?`,
+`price?`, `currency?`, `shortDescription?`, `longDescription?`, `primaryCategoryId?`. Also available and
+unused: `imageGroups?: Array<ImageGroup>`, `variants?`, `variationAttributes?`, `variationValues?`,
+`master?`, `inventory?`/`inventories?`, `type?: ProductType`, `setProducts?`, `bundledProducts?`,
+`productPromotions?`, `priceRanges?`, `prices?`, `pageMetaTags?`, `slugUrl?`. **[V]**
+
+**Custom SFCC attributes.** The type ends in `& { [key: string]: any }` (`index.esm.d.ts:59834`), so any
+`c_*` attribute typechecks as `any` for free. The repo deliberately does **not** rely on that — it
+declares a narrowed intersection type instead:
+
+```ts
+// overrides/app/types/commerce.ts:7-10
+export type ProductWithSizeFit = NonNullable<ReturnType<typeof useProduct>['data']> & {
+  c_sizeFit?: string;
+};
+```
+
+Used at `product-detail/index.tsx:78` as `(product as ProductWithSizeFit | undefined)?.c_sizeFit`.
+**Copy this pattern for every new `c_*` attribute** — add the field to `commerce.ts`, re-export from
+`types/index.ts`. It satisfies AGENTS.md > Type Definitions ("don't re-declare types already exported by
+`commerce-sdk-isomorphic`") by deriving from `ReturnType<typeof useProduct>` rather than restating it. **[V]**
+
+**Category shape:** `useCategory(...).data.parentCategoryTree` → `Array<PathRecord>` where
+`PathRecord = {id?: string; name?: string}` (`index.esm.d.ts:~59860`). The PDP narrows it to a local
+`BreadcrumbCategory {id: string; name: string}` with a type predicate at `index.tsx:38-40`. **[V]**
+
+**Mocking policy.** AGENTS.md > Rules: no MSW / hardcoded fixtures in **production paths**. Stories and
+tests are not production paths — `index.stories.tsx:4` imports
+`mockStandardProductOrderable` from `@salesforce/retail-react-app/app/mocks/standard-product` and that is
+compliant. **[V]**
+
+---
+
+## 6. Test requirements & what CI actually enforces
+
+### 6a. Storybook a11y — gated. Confirmed still true.
+
+- `.storybook/preview.tsx:34-50` sets `parameters.a11y.test = 'error'`, with an inline comment:
+  "'error' causes a11y violations to fail `test-storybook --ci` runs". It also excludes the six Chakra
+  toast-manager `role="region"` containers from all a11y checks. **[V]**
+- `.storybook/` contains exactly two files: `main.js`, `preview.tsx`. **There is no
+  `.storybook/test-runner.js`, and none is needed** — `@storybook/test-runner` v0.24 reads
+  `parameters.a11y.test` from `preview.tsx` directly. **[V]**
+- `@storybook/test-runner ^0.24.4` and `@storybook/addon-a11y ^10.4.6` are devDependencies;
+  the addon is registered at `.storybook/main.js:10`. **[V]**
+- `.github/workflows/qa.yml:236-272` job `storybook-test`: builds Storybook, serves `storybook-static`
+  on `:6006` via `http-server`, then `node_modules/.bin/test-storybook --ci --url http://127.0.0.1:6006`.
+  Note it invokes the binary directly — **there is no `test-storybook` npm script** in `package.json`,
+  so locally you must run `node_modules/.bin/test-storybook` yourself. **[V]**
+
+### 6b. What `qa.yml` gates (PRs to `develop` and `release/**` only)
+
+| Job | Gated? | Condition |
+|---|---|---|
+| `unit-tests` (Vitest, `npm test`) | **Yes** | `qa.yml:207-227`; runs if any `overrides/**`, `vitest.config.*`, `vitest.setup.ts`, `tsconfig.json`, `babel.config.js` changed, or `package.json` `dependencies` changed |
+| `storybook-test` (play + a11y) | **Yes** | `qa.yml:236-272`; runs if `overrides/app/{components,pages,hooks,theme,types}/**`, `.storybook/**`, or `package*.json` changed |
+| `e2e-localhost` (Playwright, real SFCC dev org) | **Yes** | `qa.yml:280-409` |
+| `e2e-browserstack` | Conditional | `qa.yml:427-473`; `release/**` → full suite; `develop` PR → only if an `SFCC-\d+` key appears in PR title/body/branch, `--grep`-scoped to it |
+| **ESLint** | **NO** | `grep -rnE 'eslint\|npm run lint' .github/workflows/` → **zero matches across all 15 workflow files** **[V]** |
+| **Prettier / `npm run format`** | **NO** | same grep, zero matches. Only local: `.claude/settings.json` PostToolUse `Write` runs `prettier --write` on newly-written files **[V]** |
+| **`tsc --noEmit`** | **NO** | same grep, zero matches. It is an AGENTS.md hard requirement enforced by nobody but you **[V]** |
+
+Git hooks in `.husky/` are `commit-msg` (conventional commits), `pre-commit` (registry regen + Contentful
+drift + derived-AI-config protection + `.env.sample` secret guard), `pre-push` (tag-name validation).
+**None of the three runs lint, prettier, or tsc.** **[V]**
+
+### 6c. E2E scoping — a PDP change runs the FULL suite
+
+`qa.yml:97-102` defines exactly one area allow-list, `e2e_homepage`. There is **no `e2e_pdp` group**,
+even though 11 specs already carry `@pdp`. `qa.yml:135-146` narrows to an area only when *every*
+e2e-relevant changed file falls inside that one area's list — a PDP file never does, so `e2e_scope`
+falls back to `full`. That is the deliberate fail-safe direction (more tests, not fewer), not a bug —
+but it means every PDP PR pays for the whole Playwright suite. Adding an `e2e_pdp` group is a cheap,
+self-contained follow-up. **[V]**
+
+### 6d. What a new PDP component is actually required to have
+
+Per `.claude/rules/testing.md` and `.claude/rules/components.md` > Storybook **[V]**:
+
+| Layer | Required? |
+|---|---|
+| `*.stories.tsx` | **Yes, always**, for anything exported from its folder under `components/` or `pages/`. Not required for a sub-component that only ever renders inside one parent. Needs a `Default` export; named exports for meaningful states only. |
+| `play` fn inside the story | Only when there is interactive behaviour worth asserting (validation on blur, disclosure open/close, focus movement, controlled-input wiring). Purely visual stories need none. Query via `within(canvasElement)`, `getByRole` first. Import `userEvent`/`expect` from the Storybook re-export — `pdpProductInfo/index.stories.tsx:2` uses `from 'storybook/test'`. |
+| `*.test.ts` (Vitest) | Only when failure would be non-obvious or costly: data mapping, integration boundaries, complex state, pure logic that survives a refactor invisibly. Explicitly **not** for re-exports, one-liners, or framework behaviour. `extractModelLine` is the canonical example of a "yes". |
+| `.feature` + Playwright spec | For a new user journey. Gherkin first, **Lead QA signs off the `.feature` before any Playwright is written** (`.claude/skills/qa-generate/`). Tag every `test()` with both `@<area>` and `@SFCC-NNN`. |
+
+Storybook category for PDP components: **`Commerce/`** (`components.md` > Categorisation — "Commerce-specific
+shared components"). `Pages/` for the full page assembly. Titles in use today are all consistent with
+the rules table **[V]**: `Commerce/PdpProductInfo`, `Pages/PDP`, `Layout/Breadcrumb`,
+`Layout/PageToolbar`, `Elements/Button`. Note `zimmPageToolbar`'s story title is `Layout/PageToolbar`
+(no `Zimm` prefix) while the component and folder are `ZimmPageToolbar`/`zimmPageToolbar` — follow the
+same shape for new ui-kit components.
+
+Accessibility rules are **mechanically enforced** by `.coderabbit/ast-grep-rules/` at PR review:
+`<img>` needs `alt`, `IconButton` needs `aria-label`, non-interactive element with `onClick` needs
+`role` (+ `tabIndex={0}` + `onKeyDown`). `dangerouslySetInnerHTML` must wrap its value in a sanitizer —
+enforced by `semgrep.yml`. `pdpProductInfo/index.tsx:43,54` already does this with
+`DOMPurify.sanitize(...)` from `isomorphic-dompurify`. **[V]**
+
+---
+
+## 7. REUSE OPPORTUNITIES
+
+Things a PDP build should be using rather than rebuilding:
+
+1. **`PdpProductInfo` + its theme recipe** — `overrides/app/components/pdpProductInfo/index.tsx` and
+   `overrides/app/theme/components/pdpProductInfo.ts`. Name / price / sanitized description / model
+   line / style code, all test-id'd, all styled through `useMultiStyleConfig`. **This is the reference
+   implementation of the repo's styling convention** — copy its structure for every new PDP component.
+2. **`Breadcrumb`** — `overrides/app/components/breadcrumb/index.tsx`. Wired to live `useCategory`
+   data, `aria-label="Breadcrumb"`, `aria-current="page"` on the terminal crumb, `aria-hidden`
+   separators, exports its own `BreadcrumbCategory` type. Import it **relatively**.
+3. **`ZimmPageToolbar`** — `ui-kits/atoms/zimmPageToolbar/index.tsx`. Already has `recently-viewed`
+   and `section-title` variants built and **unused**. A "You May Also Like" / "Recently Viewed" PDP
+   section should use `variant="recently-viewed"` rather than a new wrapper.
+4. **`extractModelLine`** — `overrides/app/utils/productData.ts`, plus its 5 passing tests.
+5. **`ProductWithSizeFit`** — `overrides/app/types/commerce.ts`. Extend this file for new `c_*` fields;
+   don't re-derive the Product type per component.
+6. **`PDP_OPTIONS_COLUMN_WIDTH`** — exported from `product-detail/index.tsx:14` and already consumed by
+   the story. Any gallery/options layout work should import it, not restate `360px`.
+7. **`ProductPage` POM** — `e2e/support/pages/ProductPage.js`. Already has `goToProduct()` with the 20s
+   SFCC-API gate, `selectVariant()`, `addToCart()`, `getFirstBreadcrumbCategoryLink()`, and locators for
+   `product-price` / `product-description` / `product-style-code` / `product-model-info` /
+   `sale-price` / `original-price` / `out-of-stock` / `cart-drawer`. **`sale-price`, `original-price`,
+   `out-of-stock` and `cart-drawer` locators exist but nothing renders those test-ids yet** — they are a
+   pre-agreed contract for the next PDP slice. Use those exact test-ids.
+8. **SFCC-91's `pdpColourSwatches`** — 189 lines of component + 256 lines of Vitest + 204 lines of
+   stories + an 883-line spec at `.docs/specs/SFCC-91_pdp-colour-swatches.md`, plus the multi-colour
+   SKU fixture in `e2e/fixtures/products.js`. **Rebase-and-adopt, do not rewrite.** Two caveats: it
+   predates the `pdpProductInfo` theme-recipe refactor (rebase conflict guaranteed in
+   `pdpProductInfo/index.tsx`), and it needs relocating to `ui-kits/` + a theme recipe to match convention.
+9. **`.claude/rules/overrides.md`** on `origin/feature/f2r-component-registry` — the pre-flight checklist
+   (default export, internal-consumer grep, `forwardRef`, Chakra deep-merge audit, prop-superset pattern,
+   `vendor.d.ts` ambient rule). If PDP work overrides any SFCC component, run that checklist. Consider
+   asking for it to be merged to `develop`, since `overrideStyling.md` already links to it and the link
+   is currently dead.
+10. **`overrides/app/utils/sfccImage.ts` — `proxyImageUrl(url)`.** **This one matters a lot for the
+    gallery.** It rewrites an absolute SFCC static-asset URL to `/mobify/proxy/<path>…` by matching the
+    hostname against `getConfig().ssrParameters.proxyConfigs`. Its JSDoc states the reason: direct
+    browser access to the Demandware host "is typically blocked by Cloudflare WAF outside of the
+    Commerce Cloud network." Any code that renders `product.imageGroups[].images[].link` **must** pass
+    it through this helper or images will 403 for real shoppers. It fails open (returns the URL
+    unchanged) on a relative or malformed URL. **[V]**
+
+### Gaps the takeover should decide about explicitly
+
+- **The gallery column is a coloured empty box** (`index.tsx:56`). Everything image-related is unbuilt.
+- **`overrideStyling.md` vs `uikit-components.md`** — two mutually exclusive styling models on two
+  branches (§2c). Get a ruling before writing components.
+- **`ui-kits/` has one component and no rules doc on `develop`** (§2b/2c). Both `pdpProductInfo` and
+  SFCC-91's `pdpColourSwatches` sit outside it. Either relocate them or stop calling ui-kits settled.
+- **The story duplicates the page shell** (`index.stories.tsx:43-65` vs `index.tsx:48-88`) because
+  Storybook has no `CommerceApiProvider`. Adding one to `.storybook/preview.tsx` would delete the
+  duplication — but `.storybook/` is **Tier 1 frozen** (`frozenFiles.md` > Test & Tooling Config), so
+  that needs Integration/SI Partner approval.
+- **Error handling diverges from base**: base throws `HTTPNotFound`/`HTTPError` (`index.jsx:194-209`),
+  ours renders an inline message (`index.tsx:66`). SEO consequence — a bad `productId` returns HTTP 200
+  with an error string instead of a 404. AGENTS.md calls SEO a top requirement; worth raising.
+- **`overrides/app/pages/product-detail/` is Squad A territory** (`.claude/rules/squadA.md:5`, draft),
+  and the shared product components (`product-tile/`, `display-price/`, `image-gallery/`,
+  `swatch-group/`, `recommended-products/`, `product-item/`) are **Tier 2, owned by Squad B**
+  (`protectedFiles.md` > Shared Product Components). Overriding any of them crosses a squad boundary
+  and needs Squad B notification; AGENTS.md Hard Rule #10 also requires stopping to confirm scope
+  before touching more than one protection tier in a change.

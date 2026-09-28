@@ -1,0 +1,1 @@
+{"agentType":"general-purpose","description":"Run full tsc/test gate and imports/DRY check","toolUseId":"toolu_01THMQ8jLuemueyjFGTYfL7N","parentAgentId":"ada0e5574815f596c","spawnDepth":2,"requestShape":"background","requestNonInteractive":true}

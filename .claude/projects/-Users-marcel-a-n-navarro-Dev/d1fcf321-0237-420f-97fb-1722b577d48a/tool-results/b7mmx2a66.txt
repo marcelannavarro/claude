@@ -1,0 +1,584 @@
+### AGENT [08-21 14:21] type=general-purpose depth=1
+### task: Extract FED doc checklists
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+Read these two documents in full:
+- /Users/marcel.a.n.navarro/Desktop/fedLead-playbook.md
+- /Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md
+
+These are the FED Lead's playbook and build manual for the Zimmermann Salesforce PWA Kit project (repo at /Users/marcel.a.n.navarro/Dev/zimmermann-pwa).
+
+Your job: extract a COMPLETE, DEDUPLICATED checklist of every concrete, verifiable requirement or rule these two documents impose on a frontend build/PR. I need to audit six specific commits against them.
+
+For each item, output:
+- A short ID (e.g. PB-01 for playbook, BM-01 for manual)
+- The exact requirement, stated as something checkable (not vague advice)
+- The doc + section/heading it comes from
+- Whether it is MANDATORY (must-do, gate) or ADVISORY (should-do, judgement)
+
+Group the output under these headings, and put each item under exactly one:
+1. Component/atom completeness (variants, states, all-variants-upfront rules)
+2. Testing requirements (which layer, when required, coverage expectations)
+3. Storybook requirements (story required, categorisation, play functions)
+4. Tokens/styling/CSS structure
+5. Accessibility
+6. TypeScript/typing
+7. Commits, branches, PR hygiene
+8. Documentation/comments/annotation of provisional values
+9. Verification/V&V process rules (e.g. "prove a design claim before acting", measure-don't-assume)
+10. Anything else that doesn't fit above
+
+Be exhaustive but do NOT invent requirements — only what the documents actually state. Where a document states a specific numeric threshold, viewport, token name, or file path, quote it exactly. If the two documents conflict on any point, call that out explicitly in a final section titled CONFLICTS.
+
+Do not audit any code. Only produce the checklist.
+
+>>> FINAL REPORT:
+I read both documents in full. Below is the extracted checklist — no code audited.
+
+Convention: **PB-nn** = fedLead-playbook.md, **BM-nn** = fedBuild-manual.md. Items stated in both docs appear once, under the ID of the doc that states them most concretely, with both sources cited. MANDATORY = stated as must/never/required/gate/non-negotiable. ADVISORY = should/prefer/judgement/expect.
+
+---
+
+# 1. Component/atom completeness
+
+| ID | Requirement | Source | Level |
+|---|---|---|---|
+| PB-01 | A component is not complete until it covers **all supported variants**; the page merely configures it. "One Editorial Card, not a Homepage one and a PLP one." | Playbook, Play 3 | MANDATORY |
+| PB-02 | Distinguish **configuration variants** (text alignment, CTA on/off, title on/off, body copy present/absent → props on one component) from **composition variants** (1 vs 2 column, 3-up vs 4-up grids → a separate container/slot component). A composition variant must not be built as a prop; on the Studio Experiences path "a repeating structure can't be a prop — the composition primitive is `children`". | Playbook, Play 3 | MANDATORY |
+| PB-03 | Variant completeness must be settled **upfront** because "the Contentful sync is **additive-only** — it cannot delete a field from a published content type." Getting the variant model wrong is "semi-permanent", not rework. | Playbook, Play 3 | MANDATORY |
+| PB-04 | Every Contentful-backed component needs AC for the **absent optional field** case — "no empty space, no placeholder, no layout break." Standing refinement question, not per-story discovery. | Playbook, Play 3 (#11) | MANDATORY |
+| BM-01 | Optional / absent content is handled at build time — "no empty space, no layout break." | Manual, §8 Self-check; §6 standing set | MANDATORY |
+| PB-05 | A complete component story carries all five: **all variants upfront + accessibility AC + a mandatory Storybook story + a test where logic-heavy + copy-first scaffolding on first touch.** | Playbook, Play 2 (re-baseline) | MANDATORY |
+| PB-06 | "One Editorial Card with all variants" often resolves to **two** components (the card + a container holding one or two) — expect and catch the extra component at refinement. | Playbook, Play 3 | ADVISORY |
+
+---
+
+# 2. Testing requirements
+
+| ID | Requirement | Source | Level |
+|---|---|---|---|
+| BM-02 | `npm test` (Vitest) passes locally before the PR is opened. | Manual, §8 | MANDATORY |
+| BM-03 | Vitest **only where logic is non-obvious** — "data mapping, transforms, complex state". `index.test.ts` in the component folder "only if logic-heavy". | Manual, §8 Self-check; §4 Step 3 | MANDATORY (conditional) |
+| PB-07 | "Unit tests where they earn their place — data mapping, transforms, non-obvious logic. **Not** for re-exports or passthroughs." Coverage must not reach zero while the build focus is UI. | Playbook, Play 5 | MANDATORY (conditional) |
+| BM-04 | `npm run build-storybook && npx test-storybook` must be run before the PR — it is the only thing that runs `play` functions and the a11y checks. **"Vitest does not run `play` functions."** Worked precedent: the footer PR was green on `tsc`/`lint`/`vitest` and CI caught it at "1 failure in 73". | Manual, §8 | MANDATORY |
+| BM-05 | `test-storybook` requires a **built** Storybook (`build-storybook` + static server). Pointing it at a running dev server "produces wholesale failures that mean nothing." | Manual, §5 | MANDATORY |
+| BM-06 | Storybook a11y violations **fail CI** (`@storybook/addon-a11y`, `test: 'error'`). | Manual, §6 | MANDATORY |
+| PB-08 | Reviewer gate zero includes `npx vitest run` alongside `npx tsc --noEmit` and `npm run lint`. | Playbook, Play 5 (Gate zero) | MANDATORY |
+| PB-09 | Coverage for a **slot prop** belongs at the level of the molecule that fills the slot (e.g. three `play` functions in that molecule), not at the atom exposing the slot. | Playbook, Play 5b | ADVISORY |
+| PB-10 | Do **not** put visual/design-parity snapshots in the Vitest budget — `testing.md` explicitly excludes them; spacing/design fidelity has "**No automated home**". | Playbook, Play 7 | MANDATORY |
+| PB-11 | E2E: the `@area` vocabulary is exactly `homepage, checkout, search, account, pdp, plp, integrations`. Only `@homepage` and `@checkout` are applied to any spec today. Each new area's first spec **needs its own allow-list group in the change-scoping config**, or it silently falls back to the full suite (only `e2e_homepage` is mapped today). | Playbook, Play 7 | MANDATORY |
+
+---
+
+# 3. Storybook requirements
+
+| ID | Requirement | Source | Level |
+|---|---|---|---|
+| BM-07 | **Every component exported from its folder** under `overrides/app/components/` or `/pages/` needs a `*.stories.tsx`. `index.stories.tsx` is marked "← mandatory" in the folder layout. | Manual, §5, §4 Step 3; Playbook, Play 1, Play 5 | MANDATORY |
+| BM-08 | Internal sub-components that only render inside one parent do **not** need their own story — "cover their variants through the parent." (Applied to 04.7's `↳ Sub-component` rows: Pause/Play, Footer Item, Footer Textfield, Icons don't each need a story unless independently reusable.) | Manual, §5; Playbook, Play 1 | MANDATORY |
+| BM-09 | Every story file has a **`Default`** export, plus named exports for meaningful states (`Loading`, `OutOfStock`, `WithDiscount`, `Empty`) — "not for every prop permutation." | Manual, §5 | MANDATORY |
+| BM-10 | Story `title` uses the **first matching** category of exactly: `Foundation/` `Elements/` `Layout/` `Commerce/` `Forms/` `Pages/` `Contentful/`. `Elements/` tiebreaker: "usable outside a form?" Worked examples: `title: 'Commerce/ProductTile'` ✅ · `title: 'Elements/DisplayPrice'` ❌ (commerce-specific → `Commerce/`). | Manual, §5; Playbook, Play 1 | MANDATORY |
+| BM-11 | `Contentful/` stories use **mock Contentful data** so variants are visible without a live CMS connection. | Manual, §5; Playbook, Play 7 | MANDATORY |
+| BM-12 | Static/mock data lives **in the story, not in the component**. | Manual, §1 (Static-first), §5 | MANDATORY |
+| BM-13 | `play` functions only where there is interactive behaviour worth asserting — "validation on blur, disclosure open/close, focus movement". When written: query through `within(canvasElement)`, prefer `getByRole` with an accessible name, and import `userEvent` from **`@storybook/test`**, not `@testing-library/user-event`. | Manual, §5 | MANDATORY (when a `play` is written) |
+| PB-12 | The **floor** is a scaffolded story with a `Default` export and the meaningful states — even if the `play` function comes later. | Playbook, Play 5 | MANDATORY |
+| BM-14 | Build **in** Storybook rather than building and then adding a story. | Manual, §5 | ADVISORY |
+| BM-15 | Base-template SVGs are `ignore-loader`ed in `.storybook/main.js`, so any icon sourced from `@salesforce/retail-react-app` renders as an **empty box** in Storybook while rendering correctly in the app (12 of `ZimmIcon`'s types today). A blank icon is a sourcing signal, not a broken glyph. | Manual, §5 | ADVISORY |
+| BM-16 | If a component looks wrong in Storybook but right in the app, **suspect the imports before the CSS** — a base-path import of an already-overridden component renders the base SFCC version in Storybook and Vitest. Switch it to a relative import. | Manual, §5, §11 (#5) | ADVISORY |
+| BM-17 | Storybook is where you **build**; the branch preview environment is where others **review**. | Manual, §5 | ADVISORY |
+
+---
+
+# 4. Tokens / styling / CSS structure
+
+| ID | Requirement | Source | Level |
+|---|---|---|---|
+| BM-18 | The styling hierarchy, in order: **1** `textStyle` for anything textual · **2** semantic token strings (`color="text.default"`, `bg="background.02"`, `padding={{ base: 'm', md: 'xl' }}`) · **3** the component's own `theme/components/<name>.ts` for variant/size/state · **4** `sx` for a genuine one-off prop-system gap · **5** scoped `.scss` only when `sx` truly cannot express it. | Manual, §3; Playbook, Play 5 | MANDATORY 
+
+------------------------------------------------------------------------------------------
+### AGENT [08-21 14:38] type=general-purpose depth=1
+### task: Agent D test and story coverage
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+You are Agent D of a code-quality audit on repo /Users/marcel.a.n.navarro/Dev/zimmermann-pwa, branch feature/SFCC-55_global-footer-ui.
+
+YOUR SCOPE: **Test & story coverage only.** Do not audit naming, imports, or TypeScript typing.
+
+FIRST read:
+- .claude/rules/testing.md
+- .claude/rules/components.md (the "Storybook" section — especially "When a story is required" and "Categorisation")
+- AGENTS.md (the "Testing" section)
+
+For each COMPONENT file under overrides/app/components/ in the list below:
+1. Does a paired *.stories.tsx exist in the same directory? If not → MISSING STORY (mandatory). BUT first check components.md's exemption: purely internal sub-components that only render inside one parent do NOT need their own story. Verify by grepping for importers before flagging.
+2. For logic-heavy components: does a *.test.ts exist, OR a `play` function in the story? If neither → MISSING TEST.
+3. Where a story exists, check: is there a `Default` export? Are there named exports for meaningful states? Is the story `title` in one of the allowed categories (Foundation/ Elements/ Layout/ Commerce/ Forms/ Pages/ Contentful/)?
+4. Where a test exists, verify it has meaningful assertions — flag any test whose sole assertion is toBeTruthy().
+
+For each UTILITY file under overrides/app/utils/:
+- A .test.ts is REQUIRED when the utility has >=1 conditional branch or performs >=1 transformation. Trivial re-exports/one-liners are exempt.
+- Where a test exists, verify it covers the happy path AND at least one edge case.
+
+For each HOOK under overrides/app/hooks/: same test requirement as utilities.
+
+FILES IN SCOPE (components/utils/hooks):
+overrides/app/components/_app-config/index.tsx
+overrides/app/components/footer/index.tsx
+overrides/app/components/footer/contentfulFixture.ts
+overrides/app/components/footer/contentfulSchema.placeholder.ts
+overrides/app/components/header/index.tsx
+overrides/app/components/icons/index.tsx
+overrides/app/components/icons/zimm.tsx
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx
+overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx
+overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx
+overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx
+overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx
+overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx
+overrides/app/hooks/useZimmTextInputState.ts
+overrides/app/utils/safeHref.ts
+
+ALSO REPORT: an inventory of which components in scope have a story, which have a test, and which have a `play` function — a simple table. This is useful even where there is no violation.
+
+CRITICAL — accuracy requirements:
+1. Actually `ls` the directory to confirm a story/test file is absent before flagging it missing. Do not infer.
+2. **A slot prop or behaviour tested through its CONSUMER is correctly covered** — testing.md says pick the cheapest layer that proves the behaviour, and coverage of a slot belongs at the molecule that fills it, not the atom exposing it. Before flagging something untested, check whether a consumer's story or test exercises it. Report where the coverage actually lives.
+3. Do not count a grep miss as absence — if a case-sensitive grep finds nothing, try case-insensitive before concluding.
+4. Do not invent findings. "No issues" is valid.
+
+Report only verified findings, each classified MUST-FIX / SHOULD-FIX / BACKLOG, plus the inventory table. Do not modify files.
+
+>>> FINAL REPORT:
+Verified everything against disk (directory listings, full file reads, `git diff develop...HEAD`, and an actual test run). Report follows.
+
+## Inventory
+
+| File | Story | `title` | `play` | Unit test |
+|---|---|---|---|---|
+| `components/_app-config/index.tsx` | — (exempt, see N1) | — | — | via `theme/fontFace.test.tsx` |
+| `components/footer/index.tsx` | `index.stories.tsx` | `Layout/Footer` ✓ | 2 | — (play is the right layer) |
+| `components/footer/contentfulFixture.ts` | n/a (data) | — | — | exempt (no branches) |
+| `components/footer/contentfulSchema.placeholder.ts` | n/a (data) | — | — | exempt (no branches, 0 importers) |
+| `components/header/index.tsx` | **none** | — | — | none |
+| `components/icons/index.tsx` | `icons.stories.tsx` | `Foundation/Icons` ✓ | 0 | — |
+| `components/icons/zimm.tsx` | same file | `Foundation/Icons` ✓ | 0 | — |
+| `ui-kits/atoms/zimmButton` | ✓ | `Elements/ZimmButton` ✓ | 2 | — (see N5) |
+| `ui-kits/atoms/zimmIcon` | ✓ | `Elements/ZimmIcon` ✓ | 1 | — |
+| `ui-kits/atoms/zimmLogo` | ✓ | `Elements/ZimmLogo` ✓ | 2 | — |
+| `ui-kits/atoms/zimmNavItem` | ✓ | `Elements/ZimmNavItem` ✓ | 2 | — (see N4) |
+| `ui-kits/atoms/zimmTextInput` | ✓ | `Elements/ZimmTextInput` ✓ | 3 | — (see N3) |
+| `ui-kits/molecules/zimmInputAction` | ✓ | `Forms/ZimmInputAction` ✓ | 3 | — |
+| `hooks/useZimmTextInputState.ts` | n/a | — | — | ✓ 10 tests |
+| `utils/safeHref.ts` | n/a | — | — | ✓ 13 cases |
+
+All story files have a `Default` export **except** `icons/icons.stories.tsx`. `npx vitest run` on the two in-scope test files: **23/23 pass**. `play` is a real CI gate (`qa.yml` → `storybook-test` job builds Storybook and runs `test-storybook`).
+
+## MUST-FIX
+
+None.
+
+## SHOULD-FIX
+
+**S1 — `footer/index.tsx`: `leavesTheSite` has no assertion anywhere.** `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/footer/index.tsx:317` branches on scheme to add `target="_blank" rel="noopener noreferrer"` and the WCAG 3.2.5 `" — opens in a new tab"` accessible-name suffix. `FOOTER_FIXTURE` supplies all three schemes (`tel:`, `https:` WhatsApp, `mailto:`), so the `Default` story renders both branches — but neither `play` touches the contact row, and there is no `footer/index.test.ts`. This is security-adjacent (`noreferrer` stops the storefront URL leaking) and exactly testing.md's "pure logic that would survive a refactor invisibly if broken". Cheapest fix: a `play` on `Default` asserting the WhatsApp link's `rel`/name suffix and that `Call us` has neither.
+
+**S2 — `footer`: the `isSafeHref` fallback branch is never rendered by any story.** Every story passes `data: FOOTER_FIXTURE`, which sets all three hrefs, so the non-interactive labelled `<span>` treatment (index.tsx:355-370) is unreachable in Storybook. The code comment explicitly says "Not dead code: contact channels are optional per storefront." `isSafeHref` itself is unit-tested, but this component's rendering of the rejected/absent case is not. components.md asks for named exports for meaningful states — a story with only `emailHref` set (or an unsafe value) covers it.
+
+**S3 — `footer`: `SubscribeModal` dismissal and focus entry untested.** `SubscribeModalOpen` asserts only that the dialog opens. The Escape handler, `handleBackdropClick`, and the `firstFocusRef`/`setTimeout` focus move are unasserted — and testing.md names "Disclosure (modal) opens/closes via keyboard + mouse" and "Focus moves correctly through a flow" as the canonical Layer-2 `play` cases.
+
+**S4 — `header/index.tsx` has no story** (450 lines, exported, Tier 2 Global Shell) — a violation of components.md's mandatory rule. **Pre-existing, and this branch's change is comment-only** (14 added lines, all comments — verified in the diff). Recommend a separate ticket rather than expanding this PR.
+
+## BACKLOG
+
+- **B1** — `overrides/app/components/icons/icons.stories.tsx` has no `Default` export (only `AllIcons`). Pre-existing; file untouched by this branch.
+- **B2** — `Foundation/Icons` is stale w.r.t. the 7 raw icons this branch adds (`PhoneIcon`, `WhatsAppIcon`, `EmailIcon`, `ShareIcon`, `ShareTwoIcon`, `BagSelectedIcon`, `InfoSelectedIcon`). **Not a coverage gap** — all 7 are rendered by `Elements/ZimmIcon` → `AllTypes`, which enumerates all 37 types including the three footer-specific ones. Catalogue drift between two overlapping stories only.
+- **B3** — `FooterContainer` (the default export, and what SFCC actually renders) is not story-covered; the story imports the named `Footer`. Same class as the `product-tile`/`CardBaseline` gap already documented in `.claude/rules/overrideStyling.md`. Value rises when HPC-034 puts a Contentful fetch inside it.
+- **B4** — No `.feature`/E2E for the subscribe journey; `e2e/` contains only `homepage/SMOKE-homepage-load`. Correct to defer until HPC-036 (Omneo) lands — an E2E today could only assert the "temporarily unavailable" placeholder.
+- **B5** — Outside the named scope but under `utils/`/`hooks/`: `overrides/app/utils/sfccImage.ts` (try/catch + `find` + conditional + URL transformation → test required by conventions.md) and `overrides/app/hooks/useContentful.ts` have no tests. Both pre-existing, untouched by this branch.
+
+## Verified non-findings (so they don't get re-flagged)
+
+- **N1 `_app-config`** — story-exempt: it's a provider composition root, and `.storybook/preview.tsx` mirrors its mounts, so every story exercises them. Its only change on this branch (`<ZimmFontFace />`) is covered by `overrides/app/theme/fontFace.test.tsx` (12 assertions).
+- **N2 footer data modules** — `contentfulFixture.ts` / `contentfulSchema.placeholder.ts` are static object literals with zero conditionals → test-exempt; not components → story-exempt. The schema placeholder has zero importers **by design** (its own header says it's dormant until the Contentful story).
+- **N2b footer sub-components** — `SubscribeModal`, `SubscribeSection`, `ContactIconRow`, `BottomBar` are module-private (only `Footer` and `FooterContainer` are exported) and render inside one parent → story-exempt per components.md.
+- **N3 `zimmTextInput` needs no co-located test.** Coverage is correctly split three ways: state → `hooks/useZimmTextInputState.test.ts`; visual cascade → `theme/components/zimmTextInput.test.ts` (21 assertions); interaction → 3 story `play`s. The one hook behaviour absent from the hook test — `inputRef.current?.focus()` on clear — **is** asserted at the consumer: the `Clearable` play does `await expect(input).toHaveFocus()`.
+- **N4 `safeHref`'s consumer-side fallback is covered** by `zimmNavItem`'s `PlaceholderButton` play, which asserts `javascript:`, `data:`, and `//` hrefs all fall back to `<button>` with no `href`.
+- **N5 `zimmButton`'s** `` `${variant}${inverse ? 'Inverse' : ''}` `` variant-name concat is guarded by `theme/components/recipeGuards.test.ts`.
+- **N6 `Forms/ZimmInputAction` is a valid and defensible category** — the component renders its own `<form>` with empty/email validation, so it is a composed form assembly, not a bare control that fails the Elements tiebreaker.
+- **N7 No in-scope test leans on `toBeTruthy()`.** The only occurrences repo-wide are in `overrides/app/theme/index.test.tsx` (out of scope, pre-existing, registration/collision guards where existence *is* the assertion — and never the file's sole assertion at 55 expects / 17 tests).
+
+------------------------------------------------------------------------------------------
+### AGENT [08-21 14:39] type=general-purpose depth=1
+### task: Agent B import analysis
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+You are Agent B of a code-quality audit on repo /Users/marcel.a.n.navarro/Dev/zimmermann-pwa, branch feature/SFCC-55_global-footer-ui.
+
+YOUR SCOPE: **Import analysis only.** Do not audit naming, TypeScript typing, or test coverage.
+
+Read .claude/rules/conventions.md ("Imports" section) and .claude/rules/overrideStyling.md (the section "Importing an already-overridden component from a new component") first. Also read .docs/memory/sprintScope.md if it exists.
+
+For each file below, read its import statements and check:
+1. **No circular imports** — if A imports B, read B's imports and confirm B does not import A.
+2. **No imports from internal node_modules/@salesforce/... source paths** — must use published entrypoints.
+3. **A component must not import data-fetching hooks** (@salesforce/commerce-sdk-react hooks, React Query) — per components.md "Container/presentational separation". Note: files under overrides/app/components/ receive data as props.
+4. **No imports from a later-sprint feature** (cross-check .docs/memory/sprintScope.md).
+5. **No `../../../..` chains longer than 3 levels.**
+6. **THE BIG ONE — base-path vs relative import of an already-overridden component.** overrideStyling.md explains: if component A imports component B via '@salesforce/retail-react-app/app/components/B' but B ALSO has an override in overrides/app/components/B/, then Storybook and Vitest silently render the BASE version, because the ccExtensibility resolver only runs in the real app build. For every base-path import of a component, check whether overrides/app/components/<that-name>/ exists. Report every hit.
+
+FILES:
+.storybook/preview.tsx
+overrides/app/components/_app-config/index.tsx
+overrides/app/components/footer/contentfulFixture.ts
+overrides/app/components/footer/contentfulSchema.placeholder.ts
+overrides/app/components/footer/index.tsx
+overrides/app/components/header/index.tsx
+overrides/app/components/icons/index.tsx
+overrides/app/components/icons/zimm.tsx
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx
+overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx
+overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx
+overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx
+overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx
+overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx
+overrides/app/hooks/useZimmTextInputState.ts
+overrides/app/theme/components/*.ts (all of button.ts, footer.ts, index.ts, zimmNavItem.ts, zimmTextInput.ts)
+overrides/app/theme/fontFace.tsx
+overrides/app/types/contentful.ts
+overrides/app/utils/safeHref.ts
+
+CRITICAL — accuracy requirements:
+1. Give `file:line` for every finding.
+2. **Distinguish pre-existing from new** — run `git diff origin/develop -- <file>` and label PRE-EXISTING if the import line is not newly added on this branch.
+3. For check 6, actually verify the override directory exists with `ls` before reporting. A base-path import of a component with NO local override is CORRECT and must not be flagged.
+4. Do not invent findings. "No issues" is valid.
+
+Report only verified findings, each classified MUST-FIX / SHOULD-FIX / BACKLOG. Do not modify files.
+
+>>> FINAL REPORT:
+Import analysis complete. All checks run mechanically and verified against the filesystem.
+
+## MUST-FIX
+
+**1. `overrides/app/components/header/index.tsx:40-51` — base-path icons import shadows an existing override, and *this branch* is what made the two diverge.**
+
+```
+import { AccountIcon, BasketIcon, BrandLogo, HamburgerIcon, ChevronDownIcon,
+         HeartIcon, SearchIcon, SignoutIcon, StoreIcon, SparkleIcon
+} from '@salesforce/retail-react-app/app/components/icons';   // ← line 51
+```
+
+- Override confirmed to exist: `overrides/app/components/icons/index.tsx`.
+- **The import line itself is PRE-EXISTING** (`git diff origin/develop` on this file shows only surrounding comments added).
+- **The divergence is NEW on this branch.** `overrides/app/components/icons/index.tsx:19-22` was changed here to *stop* re-exporting `ChevronDownIcon`/`Left`/`Right`/`Up` from the base template — they now come from `overrides/app/components/icons/zimm.tsx:102-124`. Before this branch, base and override agreed on `ChevronDownIcon`; they no longer do. `header/index.tsx:277` actually renders `<ChevronDownIcon />`.
+- Effect per overrideStyling.md: real app build resolves to the override (stroked Zimmermann chevron); Storybook (`.storybook/main.js:31` aliases `@salesforce/retail-react-app` → `node_modules`) and Vitest (`vitest.config.ts` has no such alias at all) resolve to base. Worse than a style mismatch — base icons are sprite-based (`node_modules/@salesforce/retail-react-app/app/components/icons/index.jsx:17-60`) and `.storybook/main.js:53-57` routes SFCC `.svg` to `ignore-loader`, so a Storybook render would show **no glyph**.
+- Also a direct violation of AGENTS.md > Rules > **Icons** ("Do not import from `@salesforce/retail-react-app/app/components/icons` directly").
+- **Currently dormant**: `overrides/app/components/header/` contains only `index.tsx` — no story, no test, and no `.stories.tsx`/`.test.ts*` anywhere references `components/header`. Same shape as the documented `product-tile`/`DisplayPrice` case.
+- Fix is one token: `from 'app/components/icons'` — the alias the new `zimmIcon` atom already uses correctly (`overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx:41`). Caveat: `header/` is Tier 2 Global Shell (both squads) per protectedFiles.md, so coordinate or log it rather than fixing silently on a footer branch.
+
+## SHOULD-FIX
+
+**2. `overrides/app/components/footer/index.tsx:14` — `import { HOME_HREF } from '@salesforce/retail-react-app/app/constants'`. NEW on this branch.** `overrides/app/constants/index.ts` exists, so this is the same check-6 pattern. No functional divergence *today* — that override ends with `export * from '@salesforce/retail-react-app/app/constants'` (line 17), so every base constant has an identical value in both resolvers. Still worth switching to `app/constants` while it's new code, since it costs nothing and removes the trap.
+
+## BACKLOG
+
+**3. Pre-existing siblings of finding 2** (same reasoning, same dormancy, not this PR's code): `overrides/app/components/header/index.tsx:59` (`STORE_LOCATOR_IS_ENABLED`) and `overrides/app/components/_app-config/index.tsx:44`. The latent risk across all three: the day someone *changes* rather than *adds* a value in `overrides/app/constants/index.ts` (which today holds only the additive `CUSTOM_HOME_TITLE`, line 8), Storybook/Vitest silently keep the base value with no signal.
+
+**4. `overrides/app/components/header/index.tsx:26` and `:28` — data-fetching hooks in a component**, violating components.md container/presentational separation: `AuthHelpers, useAuthHelper, useCustomerType` from `@salesforce/commerce-sdk-react`, and `useCurrentBasket`. Both **PRE-EXISTING** and untouched by this branch — inherent to the copied base SFCC header (file's own line 1 says "This component was a draft, unfinished"). Not introduced here.
+
+## Verified clean (stating explicitly so these aren't re-flagged)
+
+- **Circular imports: zero.** Mechanically verified across the entire `overrides/**` graph plus `.storybook/preview.tsx`, resolving relative, `app/`, and `~/` specifiers with comments stripped. No cycles anywhere, including footer ↔ `contentfulFixture`, atoms ↔ molecules, and `theme/components` ↔ `theme/foundation`.
+- **Internal `node_modules/...` imports: none.** `@salesforce/pwa-kit-runtime/utils/ssr-namespace-paths` (`overrides/app/theme/fontFace.tsx:3`, `_app-config/index.tsx:24`) is the package's documented published subpath — that package ships no `exports` map and the module's own JSDoc prescribes that path.
+- **Deep relative chains: none in scope.** Deepest in the audited set is 2 levels (`zimmInputAction/index.tsx:3-5`, `_app-config/index.tsx:9-15`). The only 3-level chains in the repo are in `overrides/app/components/contentful/experiences/` — out of scope, pre-existing, and exactly at the limit rather than over it.
+- **Later-sprint imports: none.** The only adjacent symbol is `StoreLocatorProvider` (`_app-config/index.tsx:16`; Store Locator is Sprint 5/Squad B) — upstream SFCC template code, pre-existing, untouched by this diff. Contentful use in the footer is explicitly permitted by `.docs/memory/sprintScope.md`.
+- **The two remaining `OVERRIDE-EXISTS` base-path imports are correct self-shadowing bridges**, not findings: `overrides/app/components/icons/index.tsx:73` and `overrides/app/theme/index.ts:15`. The `@salesforce/retail-react-app/app/components/footer` string at `overrides/app/components/footer/index.tsx:557` is inside a JSDoc comment, not an import.
+- **Every other base-path import has no local override** (checked against the filesystem): `components/link`, `loading-spinner`, `responsive`, `search`, `shared/ui`, `with-registration`, `contexts`, `hooks/use-current-basket`, `hooks/use-multi-site`, `hooks/use-navigation`, `pages/account/constant`, `utils/{auth,config,site,url,utils,sfdc-user-agent}`. Note `overrides/app/hooks/` contains only `useContentful*`, `useCountryConfig*`, `useZimmTextInputState*` — none of the kebab-case SFCC hook overrides listed in frozenFiles.md exist yet, so base-path is correct for them today.
+- **`app/...` alias imports are safe in all four resolvers** — verified `babel.config.js:24`, `tsconfig.json:11`, `.storybook/main.js:30`, `vitest.config.ts` alias block all map `app` → `overrides/app`. The new footer/ui-kits code uses this consistently and thereby sidesteps the check-6 trap entirely.
+- **Footer respects container/presentational separation.** The presentational `Footer` (`overrides/app/components/footer/index.tsx:435`) takes `data: FooterConfigEntry` as a prop and calls only Chakra/React hooks; `FooterContainer` (`:566`) calls `useMultiSite()` and `useHistory()`, neither of which fetches (base `use-multi-site.js` is a pure `useContext(MultiSiteContext)` read). No `@salesforce/commerce-sdk-react` or React Query import exists anywhere under `overrides/app/components/` except header. The container's own JSDoc (`:560-563`) pre-flags the components.md tension for the future HPC-034 Contentful fetch — self-documented, correctly deferred.
+- Files with zero imports, nothing to flag: `overrides/app/utils/safeHref.ts`, `overrides/app/types/contentful.ts`, `overrides/app/components/footer/contentfulSchema.placeholder.ts`, `theme/components/{button,zimmNavItem,zimmTextInput}.ts` (Chakra only).
+
+One informational aside (not an import-rule violation): `overrides/app/components/footer/contentfulSchema.placeholder.ts` is imported by nothing repo-wide — likely an intentional spec artifact for HPC-034, but worth a confirmation from the author.
+
+------------------------------------------------------------------------------------------
+### AGENT [08-21 14:41] type=general-purpose depth=1
+### task: Agent A naming and structure
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+You are Agent A of a code-quality audit on repo /Users/marcel.a.n.navarro/Dev/zimmermann-pwa, branch feature/SFCC-55_global-footer-ui (global footer, SFCC-55).
+
+YOUR SCOPE: **Naming & structure only.** Do not audit imports, TypeScript typing, or test coverage — other agents own those.
+
+FIRST, read these rule files in full:
+- .claude/rules/conventions.md
+- .claude/rules/css.md
+- .claude/rules/components.md
+
+Then audit each file below against the relevant section:
+- Every file → conventions.md "General" section
+- Every file with JSX/Chakra props → css.md "Tokens" section (no hardcoded hex/px values)
+- .tsx under overrides/app/components/ → components.md "Components" + "Composition" sections, plus conventions.md "File naming and folder structure"
+- .ts under overrides/app/hooks/ → components.md "Hooks"
+- .ts under overrides/app/utils/ → conventions.md "Utilities"
+
+FILES:
+.storybook/main.js
+.storybook/preview.tsx
+overrides/app/components/_app-config/index.tsx
+overrides/app/components/footer/contentfulFixture.ts
+overrides/app/components/footer/contentfulSchema.placeholder.ts
+overrides/app/components/footer/index.tsx
+overrides/app/components/header/index.tsx
+overrides/app/components/icons/index.tsx
+overrides/app/components/icons/zimm.tsx
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx
+overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx
+overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx
+overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx
+overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx
+overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx
+overrides/app/hooks/useZimmTextInputState.ts
+overrides/app/theme/components/button.ts
+overrides/app/theme/components/footer.ts
+overrides/app/theme/components/index.ts
+overrides/app/theme/components/zimmNavItem.ts
+overrides/app/theme/components/zimmTextInput.ts
+overrides/app/theme/fontFace.tsx
+overrides/app/types/contentful.ts
+overrides/app/types/vendor.d.ts
+overrides/app/utils/safeHref.ts
+scripts/generateRegistry.mjs
+
+CRITICAL — accuracy requirements:
+1. For every violation give `file:line` and the rule-file section that failed (e.g. "components.md → Components → Props type placement").
+2. **Distinguish pre-existing from new.** Run `git diff origin/develop -- <file>` before flagging. If the offending line is NOT an added line in this branch's diff, label it PRE-EXISTING. This matters a lot — do not report inherited debt as a new violation.
+3. A value that is an annotated provisional constant with a comment explaining it is NOT a violation of the no-hardcoded-values rule — the rules permit this pattern. Check for the comment before flagging.
+4. Do not invent violations to fill the report. "No issues" is a valid finding.
+5. scripts/generateRegistry.mjs is outside overrides/ — the overrides-specific rules do not apply to it. Only apply conventions.md General where genuinely relevant, and say so.
+
+Report ONLY violations you actually verified by reading the file, each classified MUST-FIX / SHOULD-FIX / BACKLOG. Do not modify any files.
+
+>>> FINAL REPORT:
+Audit complete. All 25 files read; every finding verified against `git diff origin/develop...HEAD` before classification.
+
+## MUST-FIX
+
+**1. `overrides/app/components/ui-kits/` — kebab-case Zimmermann-authored folder** — NEW in this branch
+`conventions.md → File naming and folder structure` ("Zimmermann-authored files and folders: `camelCase`")
+
+`ui-kits` is not an override of a base Salesforce path — I confirmed no `ui-*` folder exists in `node_modules/@salesforce/retail-react-app/app/components/`, and `git ls-tree origin/develop:overrides/app/components/` shows it did not exist before this branch. So the kebab-case exemption for override files does not apply. Existing precedent on develop is `pageContainer/`. Should be `uiKits/`; `atoms`/`molecules` are fine as-is.
+
+Fix cost is low today and grows with every consumer: only two files contain the literal path — `overrides/app/components/footer/index.tsx` (6 imports, lines 4-9) and the generated `.claude/registry/components.md`. The stories all use relative imports. Note Hard Rule #6 (never rename/move a shared component) means this needs an explicit human decision, not a silent fix.
+
+## SHOULD-FIX
+
+**2. `overrides/app/components/footer/index.tsx:50-52` — orphaned, truncated comment block**
+`conventions.md → General` (no dead code introduced by this PR)
+Three comment lines describing styling that moved to `footer.ts` in commit `00fb6ab`. Line 52 ends mid-sentence: `// lineHeight override: textStyles.navigation token says 'normal' (≈14.4px at 12px font), but`.
+
+**3. `overrides/app/components/footer/index.tsx:75, 239, 323, 379, 454` — `'ZimmFooter'` repeated 5×**
+`conventions.md → General → No magic numbers or strings` + DRY
+Five separate `useMultiStyleConfig('ZimmFooter', {})` calls. A theme-registry key is a config key, not JSX text, so the rule's exception doesn't cover it. One `const` (or passing `styles` down) removes the drift risk against `theme/components/index.ts`.
+
+**4. `overrides/app/components/footer/index.tsx:70-212` (`SubscribeModal`) — extract-to-hook trigger met**
+`components.md → Composition → Extract-to-hook threshold`
+Four `useEffect`s, three with cleanup functions (`clearTimeout`, body-overflow restore, `removeEventListener`) plus a `useCallback` keydown trap. The rule fires on *any* effect with a cleanup function. The function body is also ~143 lines, right at the ~150 guideline. `overrides/app/hooks/useZimmTextInputState.ts` already establishes the pattern in this same branch.
+
+**5. `overrides/app/components/footer/index.tsx:233, 238` (`SubscribeSection`) — extract-to-hook trigger met**
+`components.md → Composition → Extract-to-hook threshold`
+`submitState` and `modalOpen` are two related `useState`s that change together — `handleModalSubmit` (246-257) sets both.
+
+**6. `overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx:19-41` — misattached JSDoc**
+`components.md → Components → JSDoc` (documentation accuracy)
+Two consecutive JSDoc blocks. The first (19-25) documents the `trailing` slot but is immediately followed by a second block (26-39) that lands on `clearable?: boolean` (40). Result: `clearable` shows the `trailing` docs' successor, and `trailing` (41) has no doc at all in editors. The `trailing` block needs to move below `clearable`.
+
+**7. `overrides/app/hooks/useZimmTextInputState.ts:16, 49, 62` — `floated` is unconsumed; its derivation is duplicated**
+`conventions.md → General → Apply DRY, KISS, and SOLID`
+The hook returns `floated`, but its only consumer (`zimmTextInput/index.tsx:74`) doesn't destructure it — I grepped the whole of `overrides/` and `.storybook/`; the only other references are the hook's own test. Meanwhile `theme/components/zimmTextInput.ts:62` and `:72` each re-derive `Boolean(focused || filled)`. `zimmTextInput.test.ts:7` confirms this is leftover ("assertions moved here … when the derivation moved out"), so it's residue, not intent — three copies of one expression, one of them dead.
+
+**8. `overrides/app/theme/components/footer.ts:265-277` — comment detached from its subject**
+`conventions.md → General` (comment accuracy)
+A 13-line comment about the `logo` part's mobile divider is followed at 278-280 by the `logoButton` comment and then `logoButton` itself (281). `logo` isn't defined until 293, so the divider rationale now reads as documentation for `logoButton`.
+
+**9. `overrides/app/types/contentful.ts:81` — stale path reference (added line)**
+`conventions.md → General` (comment accuracy)
+`// Mirrors scripts/contentful/content-types/footer.js` — that file does not exist. `ls scripts/contentful/content-types/` contains only `shoppableImage.js`. The actual mirror is `footer/contentfulSchema.placeholder.ts`.
+
+**10. `overrides/app/components/footer/contentfulSchema.placeholder.ts:97` — unreferenced export duplicating `types/contentful.ts`**
+`conventions.md → General → DRY / resist speculative abstractions`
+`export const footerContentTypes` is imported by nothing repo-wide (verified by grep excluding `node_modules`), and the file's own header says it is "NOT connected to any Contentful sync script." It hand-maintains a second description of the same schema already typed as `FooterNavLinkEntry`/`FooterNavGroupEntry`/`FooterConfigEntry` in `overrides/app/types/contentful.ts:84-130` — two copies that can drift, with no consumer to catch it. Placement is deliberate and documented (header lines 1-5), so this is about the duplication, not the location. Also note `.placeholder.` has no precedent anywhere else in the repo.
+
+## BACKLOG
+
+- **`overrides/app/theme/components/footer.ts:29`** — `COLOUR_HALF_INV = 'rgba(255, 255, 255, 0.5)'` is the one raw colour literal in the branch. It sits under an annotation block (17-24) whose stated scope is "Provisional **spacing/size** values … `foundation/spacing.ts` or `foundation/sizes.ts`", so a colour is covered only by implication. I confirmed there is genuinely no foundation equivalent — `colours.opacity` is grey-900-based only (`colour.ts:32-36`), no white/inverse variant. One-word comment fix, not a token change.
+- **All five new atoms expose `style?: CSSProperties`** (`zimmButton:17`, `zimmLogo:6`, `zimmNavItem:23`, `zimmTextInput:42`, `zimmInputAction:17`) — a raw-CSS escape hatch at the call site that bypasses the token system. No rule in my three files forbids it; `zimmNavItem:24` already acknowledges the hierarchy ("Preferred over `style`"). Worth a deliberate decision on whether atoms should offer it at all.
+- **`footer/contentfulFixture.ts:56`** — writes `'\u00A0'` inline while `footer/index.tsx:20` defines `const NBSP = '\u00A0'` next door. Same magic value expressed two ways. Constrained: the fixture can't import from `index.tsx` (that file imports the fixture — cycle), so the real fix is hoisting `NBSP` somewhere shared.
+- **`footer/index.tsx:275, 277`** — `styles.subscribeSuccess` renders both the success message and the unavailable/error message. Style-key name contradicts one of its two uses. No explicit rule; naming accuracy.
+- **`footer/index.tsx:163-164, 169, 184`** — `'zimm-subscribe-modal-title'` / `'zimm-subscribe-modal-consent'` each written twice (`id` + `aria-*`). Minor; a `useId` or local const removes the pairing risk.
+- **`footer/index.tsx:385-389`** — `<chakra.button aria-label="Change locale" onClick={undefined}>`: a focusable control that does nothing. Annotated PLACEHOLDER, so not a token/naming breach, but it's a keyboard-reachable false affordance until the locale selector lands.
+- **`overrides/app/theme/fontFace.tsx:72`** — exports `ZimmFontFace` from `fontFace.tsx`, while its sibling `zimmTokensGlobal.tsx` exports `ZimmTokensGlobal` (name matches file). No rule covers non-component-folder theme modules; flagging the inconsistency only.
+- **`footer/contentfulFixture.ts` reaches production** — `FOOTER_FIXTURE` is consumed by the default export `FooterContainer` (`footer/index.tsx:574`), which is what SFCC actually renders. That's `AGENTS.md → Rules → No mocking` ("no hardcoded f
+
+------------------------------------------------------------------------------------------
+### AGENT [08-21 14:42] type=general-purpose depth=1
+### task: Agent C TypeScript coverage
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+You are Agent C of a code-quality audit on repo /Users/marcel.a.n.navarro/Dev/zimmermann-pwa, branch feature/SFCC-55_global-footer-ui.
+
+YOUR SCOPE: **TypeScript typing only.** Do not audit naming, imports, or test coverage.
+
+FIRST read these in full:
+- .claude/rules/typescript.md
+- .claude/rules/components.md (the "Components" and "Hooks" sections)
+
+Then audit each file below:
+- Every .ts/.tsx → typescript.md in full: no `any` without an inline justification comment, `type` vs `interface` preference, no non-null assertion `!` without a comment, discriminated unions for variant/state modelling, utility types over hand-copied shapes, `import type` for type-only imports, `satisfies` over `as`, `readonly` where the receiver must not mutate, generic parameter naming.
+- Components → components.md "Components": props type name matches component name, props type placement, required props non-optional / optional use `?` (no `| undefined` unions), callback props named onEventName, JSDoc required on components with >=2 callers and on every exported hook.
+- Hooks → components.md "Hooks": typed params, explicit return type, JSDoc with @returns.
+
+FILES:
+.storybook/preview.tsx
+overrides/app/components/_app-config/index.tsx
+overrides/app/components/footer/contentfulFixture.ts
+overrides/app/components/footer/contentfulSchema.placeholder.ts
+overrides/app/components/footer/index.tsx
+overrides/app/components/header/index.tsx
+overrides/app/components/icons/index.tsx
+overrides/app/components/icons/zimm.tsx
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx
+overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx
+overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx
+overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx
+overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx
+overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx
+overrides/app/hooks/useZimmTextInputState.ts
+overrides/app/theme/components/button.ts
+overrides/app/theme/components/footer.ts
+overrides/app/theme/components/index.ts
+overrides/app/theme/components/zimmNavItem.ts
+overrides/app/theme/components/zimmTextInput.ts
+overrides/app/theme/fontFace.tsx
+overrides/app/types/contentful.ts
+overrides/app/types/vendor.d.ts
+overrides/app/utils/safeHref.ts
+
+ALSO: run `npx tsc --noEmit` ONCE for the whole branch (not per file) and report any errors, cross-referenced against the files in scope.
+
+CRITICAL — accuracy requirements:
+1. Give `file:line` for every finding.
+2. **Distinguish pre-existing from new** — run `git diff origin/develop -- <file>` and label PRE-EXISTING when the offending line is not newly added on this branch.
+3. An `any` or `as` WITH an adjacent comment explaining why is COMPLIANT per typescript.md — check for the comment before flagging. Same for non-null assertions.
+4. vendor.d.ts is an ambient declaration file for untyped third-party packages — `any` there for genuinely unresolvable vendor types is expected; judge it on whether a comment justifies it.
+5. Do not invent findings. "No issues" is valid.
+
+Report only verified findings, each classified MUST-FIX / SHOULD-FIX / BACKLOG. Do not modify files.
+
+>>> FINAL REPORT:
+Audit complete. Repo left unmodified (the two files showing in `git status` — `.claude/registry/components.md`, `scripts/generateRegistry.mjs` — are another agent's work, not mine).
+
+# Agent C — TypeScript typing audit
+
+Verified against HEAD `706e47d` (other agents committed mid-audit; all finding lines re-confirmed current). Pre-existing vs new determined by `git diff --numstat origin/develop` per file.
+
+## `npx tsc --noEmit` — clean
+
+Exit 0, zero errors. TypeScript 5.9.3, `strict: true`.
+
+**One caveat, verified:** `tsconfig.json:31` sets `include: ["overrides/**/*", "vitest.config.ts", "vitest.setup.ts"]` — `.storybook/` is absent, so **`.storybook/preview.tsx` is never type-checked** by `npx tsc --noEmit`, despite being modified on this branch. I re-ran tsc with `.storybook/**/*.tsx` explicitly included: it compiles clean, so no latent error today. `tsconfig.json` is Tier 1 (Build Pipeline) → BACKLOG for Integration.
+
+---
+
+## MUST-FIX
+
+**1. `overrides/app/utils/safeHref.ts:15` → forces two uncommented assertions at `overrides/app/components/footer/index.tsx:343,344`** — NEW
+
+```ts
+export const isSafeHref = (href: string | undefined): boolean => (href ? SAFE_HREF_RE.test(href) : false);
+```
+
+Returning `boolean` instead of a type predicate means it doesn't narrow, so the footer must re-assert inside the branch the guard already proved:
+
+```tsx
+{...(leavesTheSite(href as string) ? { target: '_blank', ... } : {})}
+aria-label={leavesTheSite(href as string) ? `${label}${NEW_TAB_SUFFIX}` : label}
+```
+
+Neither `as` carries a justifying comment (the comments at 332-335 and 340-342 explain the guard's purpose and `rel`, not the assertion). I confirmed with a scratch `tsc --strict` run that a `boolean` return does not narrow `string | undefined`, and that `href is string` removes both assertions. Worth fixing over the cosmetic version because the assertion sits directly on an XSS guard path — the one place a silently-wrong `as` is expensive.
+
+**2. `overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx:40, 54` — two unnecessary, uncommented assertions** — NEW
+
+```tsx
+onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}   // :40
+onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}   // :54
+```
+
+I compiled the equivalent JSX against this repo's real Chakra types under `strict`: both assignments type-check **with the casts removed** (parameter contravariance handles `MouseEvent<HTMLAnchorElement | HTMLButtonElement>` → `MouseEventHandler<HTMLAnchorElement>`). So these are pure noise that additionally suppress a genuine mismatch if `ZimmNavItemProps.onClick` ever changes. Fix is a deletion, verified safe.
+
+---
+
+## SHOULD-FIX
+
+**3. `overrides/app/components/footer/index.tsx:147, 148` — uncommented assertion that contradicts its own optional chaining** — NEW
+
+```ts
+const firstName = (form.elements.namedItem('firstName') as HTMLInputElement)?.value ?? '';
+```
+
+`namedItem` returns `Element | RadioNodeList | null`; the assertion drops `null`, then `?.` guards for the null it just claimed away. The identical pattern two files away gets it right *and* documents it — `overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx:42-44` uses `as HTMLInputElement | null` with a two-line justification. Mirror that.
+
+**4. `overrides/app/types/contentful.ts:102, 123, 124` and `overrides/app/components/footer/index.tsx:34` — missing `readonly` on read-only props** — NEW
+
+`FooterNavGroupEntry.fields.links: FooterNavLinkEntry[]`, `FooterConfigEntry.fields.navGroups: …[]`, `legalLinks?: …[]`, and `FooterProps.data: FooterConfigEntry` are all parent-owned data the footer only `.map`s. This is exactly typescript.md's `readonly` case. The strongest argument isn't the rule: the same branch already applies it correctly one level down at `footer/index.tsx:375` (`legalLinks: ReadonlyArray<{label: string; href: string}>`), so the convention is inconsistent within one file.
+*Honest caveat:* pre-existing entries in the same types file (`ShoppableImageEntry.fields.hotspots: Hotspot[]`, `ContentfulRichText.content`) are also mutable, so the new types match the file's existing convention — fixing only the footer types trades one inconsistency for another.
+
+**5. `overrides/app/theme/components/footer.ts:40` and `overrides/app/theme/components/zimmTextInput.ts:68` — new multi-part recipes are untyped object literals** — NEW
+
+`satisfies` appears **nowhere** in `overrides/` (verified). Both single-part recipes added on this same branch use Chakra's checked helper (`button.ts:234`, `zimmNavItem.ts:74` → `defineStyleConfig`), so the multi-part ones are the untyped outlier in the same folder. A `parts` typo, a `baseStyle` key missing from `parts`, or a `styles.<typo>` at the call site all compile silently across a 34-part surface.
+*No active drift:* I diffed footer.ts's 34 `parts` entries against the 34 `styles.*` keys read in `footer/index.tsx` — exact 1:1 match. *And* pre-existing `header.ts` uses the same bare-object pattern, so this follows precedent rather than introducing a deviation. Hence SHOULD-FIX, not a blocker: `satisfies ComponentMultiStyleConfig` is additive and buys the check for free.
+
+---
+
+## BACKLOG
+
+**6.** `.storybook/preview.tsx` outside `tsconfig.json:31` `include` — see the tsc caveat above. Tier 1 config; verified clean when checked explicitly.
+
+**7.** `overrides/app/hooks/useZimmTextInputState.ts:16` — `floated` is in the public return type but has **no production consumer**: only `useZimmTextInputState.test.ts:83,88,92` reads it. The real decision is recomputed from `focused`/`filled` inside `theme/components/zimmTextInput.ts:62,72`. Not a typescript.md breach — a public-API/DRY call: drop it from `UseZimmTextInputStateReturn`, or have the component consume it instead of the recipe re-deriving it. NEW.
+
+**8.** `overrides/app/types/vendor.d.ts:35` — new `interface History<TState>` where typescript.md prefers `type` (no declaration merging needed). Counter-argument: every neighbouring ambient declaration (`Location`, `LinkProps`, `match`, `NavLinkProps`) is an `interface`, which is idiomatic for a `.d.ts` mirroring an upstream `@types` package. Generic param correctly named `TState`. Low value.
+
+**9. PRE-EXISTING — `overrides/app/components/_app-config/index.tsx`** (branch added only an import + one JSX line; `--numstat` = 2/0)
+- `:179-187` — `Site` / `SupportedLocale` are hand-copied near-duplicates of `SiteConfig` / `SiteLocale` at `:49-65`. `SupportedLocale` is precisely `Pick<SiteLocale, 'id' | 'alias'>`; two copies that can drift.
+- `:189` `getSites() as Site[]`, `:196-197` `… as SiteLocale`, `:199` `getConfig() as { app: … }` — three assertions with no comment on the cast itself (the comments at 174-176 / 194-195 explain the logic).
+- Root cause: `vendor.d.ts:81` types `getConfig()` as `{ app: Record<string, unknown> }`, and `site-utils` falls under the `@salesforce/retail-react-app/*` catch-all at `vendor.d.ts:127`.
+
+**10. PRE-EXISTING — `overrides/app/components/header/index.tsx`** (this branch's 14 added lines are comments only)
+- `:77` `[key: string]: unknown;` on `HeaderProps` — an index signature that defeats prop typing for the whole component; any misspelled prop type-checks.
+- `:153`, `:171`, `:176`, `:177` — four uncommented assertions (`as boolean | undefined`, `as { oneClickCheckout?: … }`, `as NavLink[]` ×2), same `getConfig()` root cause as #9.
+
+---
+
+## Verified compliant (checked, deliberately not flagged)
+
+- **`any`:** zero in any Zimmermann-authored in-scope file. The only occurrences are `vendor.d.ts:90` (`req?: any`), `:103`, `:108`, `:116` — all PRE-EXISTING, none added on this branch. `:140` is the exemplar, with a proper per-site justification.
+- **Non-null `!`:** zero occurrences anywhere in scope.
+- **Justified assertions (compliant via the comment rule):** `zimmIcon/index.tsx:140-143`, `zimmInputAction/index.tsx:42-44`, `fontFace.tsx:44-46`.
+- **`type` over `interface`:** every Zimmermann-authored in-scope fi
+
+------------------------------------------------------------------------------------------
+### AGENT [08-21 17:08] type=general-purpose depth=1
+### task: Imports and override architecture
+------------------------------------------------------------------------------------------
+
+>>> PROMPT GIVEN:
+Audit repo /Users/marcel.a.n.navarro/Dev/zimmermann-pwa, branch feature/SFCC-55_global-footer-ui, 55 commits ahead of develop.
+
+YOUR SCOPE — imports and override/architecture correctness ONLY. Other agents own tokens/CSS, TypeScript, tests, AC conformance.
+
+READ FIRST, in full:
+- .claude/rules/overrideStyling.md — especially "Importing an already-overridden component from a new component" and "The SFCC bridge pattern"
+- .claude/rules/conventions.md — the "Imports" section

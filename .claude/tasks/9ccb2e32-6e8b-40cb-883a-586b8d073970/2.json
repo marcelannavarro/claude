@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Version diff + cross-source compare",
+  "description": "Diff (b) across versions to trace the evolution; compare every current claim against codebase/Confluence/Jira; surface flags (contradictions, stale claims, design-vs-built conflation, sprint/epic errors).",
+  "activeForm": "Diffing versions + cross-comparing",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

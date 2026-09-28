@@ -1,0 +1,357 @@
+{
+  "allowManagedHooksOnly": true,
+  "allowedMcpServers": [
+    {
+      "serverName": "filesystem"
+    },
+    {
+      "serverName": "shell"
+    },
+    {
+      "serverName": "chrome-devtools-mcp"
+    },
+    {
+      "serverName": "asana"
+    },
+    {
+      "serverName": "context7"
+    },
+    {
+      "serverName": "firebase"
+    },
+    {
+      "serverName": "github"
+    },
+    {
+      "serverName": "gitlab"
+    },
+    {
+      "serverName": "greptile"
+    },
+    {
+      "serverName": "laravel-boost"
+    },
+    {
+      "serverName": "linear"
+    },
+    {
+      "serverName": "playwright"
+    },
+    {
+      "serverName": "serena"
+    },
+    {
+      "serverName": "slack"
+    },
+    {
+      "serverName": "stripe"
+    },
+    {
+      "serverName": "supabase"
+    },
+    {
+      "serverName": "microsoft-learn"
+    },
+    {
+      "serverName": "figma"
+    },
+    {
+      "serverUrl": "https://mcp.figma.com/*"
+    },
+    {
+      "serverName": "azure-devops"
+    },
+    {
+      "serverName": "dde"
+    },
+    {
+      "serverUrl": "http://localhost*"
+    },
+    {
+      "serverUrl": "https://localhost*"
+    },
+    {
+      "serverUrl": "https://gmcstfmcp.accenture.com/mcp"
+    },
+    {
+      "serverUrl": "https://mcp.datadoghq.com/v1/mcp"
+    }
+  ],
+  "availableModels": [
+    "opusplan",
+    "claude-sonnet-4-6",
+    "claude-sonnet-5",
+    "claude-haiku-4-5",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5"
+  ],
+  "cleanupPeriodDays": 90,
+  "companyAnnouncements": [
+    "Welcome to the Accenture deployment of Claude Code. Remember, you are responsible for any actions taken by this tool on your behalf. Not all functionality is currently enabled. This is version 29 of the managed configurations, effective 11 Aug 2026."
+  ],
+  "enableAllProjectMcpServers": false,
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "forceRemoteSettingsRefresh": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // \"\"' | grep -qE '^npm (install|i|ci)' && { AUDIT=$(npm audit --audit-level=high 2>&1); [ $? -ne 0 ] && echo \"{\\\"additionalContext\\\": \\\"npm audit detected vulnerabilities after install. STOP all planned actions. Show the user the following audit output and ask how they would like to proceed: $AUDIT\\\"}\" && exit 2; } || exit 0",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ]
+  },
+  "model": "claude-sonnet-4-6",
+  "permissions": {
+    "additionalDirectories": [],
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(less:*)",
+      "Bash(more:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+      "Bash(whereis:*)",
+      "Bash(file:*)",
+      "Bash(stat:*)",
+      "Bash(wc:*)",
+      "Bash(echo:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git tag:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test*)",
+      "Bash(npm run lint*)",
+      "Bash(pytest:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(go test:*)",
+      "Bash(cargo test:*)",
+      "Bash(mvn test:*)",
+      "Bash(gradle test:*)",
+      "Bash(jest:*)",
+      "Bash(mocha:*)",
+      "Bash(rspec:*)",
+      "Bash(npm run build*)",
+      "Bash(tsc:*)",
+      "Bash(webpack:*)",
+      "Bash(vite build:*)",
+      "Bash(rollup:*)",
+      "Bash(prettier:*)",
+      "Bash(eslint:*)",
+      "Bash(pylint:*)",
+      "Bash(black:*)",
+      "Bash(rustfmt:*)",
+      "Bash(gofmt:*)"
+    ],
+    "ask": [
+      "Read(**/.env*)",
+      "Read(**/secrets/**)",
+      "Read(**/*secret*)",
+      "Read(**/*password*)",
+      "Read(**/*token*)",
+      "Read(**/.git/config)",
+      "Bash(git push:*)",
+      "Bash(git remote add:*)",
+      "Bash(docker:*)",
+      "Bash(kubectl:*)",
+      "Bash(aws:*)",
+      "Bash(az:*)",
+      "Bash(gcloud:*)",
+      "Bash(terraform apply:*)",
+      "Bash(terraform destroy:*)",
+      "Bash(npm publish:*)",
+      "Bash(pip install:*)",
+      "Bash(gem install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(pipenv install:*)",
+      "Bash(poetry add:*)",
+      "Bash(go get:*)",
+      "Bash(go install:*)",
+      "Bash(npm i:*)",
+      "Bash(yarn add:*)",
+      "Bash(pnpm add:*)",
+      "Bash(bundle install:*)",
+      "Bash(cargo install:*)",
+      "Bash(composer require:*)",
+      "Bash(mvn install:*)",
+      "Bash(gradle install:*)",
+      "Bash(apt install:*)",
+      "Bash(apt-get install:*)",
+      "Bash(yum install:*)",
+      "Bash(brew install:*)",
+      "Bash(choco install:*)",
+      "Edit(**/Dockerfile)",
+      "Edit(**/.github/workflows/*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(git clone:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(npm install:*)",
+      "Bash(yarn install:*)",
+      "Bash(composer install:*)",
+      "Bash(cargo build:*)",
+      "Bash(make:*)",
+      "Bash(cmake:*)",
+      "Edit(**/*.sh)",
+      "Edit(**/*.bash)",
+      "Edit(**/*.ps1)",
+      "Edit(**/package-lock.json)",
+      "Edit(**/yarn.lock)",
+      "Edit(**/pnpm-lock.yaml)",
+      "Edit(**/Gemfile.lock)",
+      "Edit(**/poetry.lock)",
+      "Edit(**/Pipfile.lock)",
+      "Edit(**/composer.lock)",
+      "Edit(**/Cargo.lock)",
+      "Edit(**/go.sum)",
+      "Edit(**/.git/**)"
+    ],
+    "defaultMode": "default",
+    "deny": [
+      "Read(~/.aws/**)",
+      "Read(%USERPROFILE%\\.aws\\**)",
+      "Read(~/.ssh/id_*)",
+      "Read(~/.ssh/id_rsa)",
+      "Read(~/.ssh/id_ed25519)",
+      "Read(~/.ssh/id_ecdsa)",
+      "Read(~/.ssh/id_dsa)",
+      "Read(~/.kube/config)",
+      "Read(%APPDATA%\\**\\credentials*)",
+      "Read(**/privatekey*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/*.keystore)",
+      "Read(~/.npmrc)",
+      "Read(~/.pypirc)",
+      "Read(~/.pip/pip.conf)",
+      "Read(~/.cargo/credentials)",
+      "Read(~/.dockercfg)",
+      "Read(~/.docker/config.json)",
+      "Read(**/.git/credentials)",
+      "Read(**/AppData/**/Google/Chrome/**)",
+      "Read(**/AppData/**/Mozilla/Firefox/**)",
+      "Read(**/AppData/**/Microsoft/Edge/**)",
+      "Read(**/Library/Application Support/Google/Chrome/**)",
+      "Read(**/Library/Application Support/Firefox/**)",
+      "Read(**/Library/Application Support/Microsoft/Edge/**)",
+      "Read(**/.mozilla/**)",
+      "Read(**/.config/google-chrome/**)",
+      "Read(**/.config/chromium/**)",
+      "Read(~/Library/Keychains/**)",
+      "Read(/System/Library/**/*.plist)",
+      "Read(/Library/Keychains/**)",
+      "WebFetch(domain:169.254.169.254/**)",
+      "WebFetch(domain:169.254.170.2/**)",
+      "WebFetch(domain:[fd00:ec2::254]/**)",
+      "WebFetch(domain:metadata.google.internal/**)",
+      "WebFetch(domain:metadata/**)",
+      "WebFetch(domain:100.100.100.200/**)",
+      "WebFetch(domain:*.internal)",
+      "WebFetch(domain:*.local)",
+      "WebFetch(domain:*.corp)",
+      "WebFetch(domain:*.lan)",
+      "WebFetch(domain:10.*)",
+      "WebFetch(domain:172.16.*)",
+      "WebFetch(domain:172.17.*)",
+      "WebFetch(domain:172.18.*)",
+      "WebFetch(domain:172.19.*)",
+      "WebFetch(domain:172.20.*)",
+      "WebFetch(domain:172.21.*)",
+      "WebFetch(domain:172.22.*)",
+      "WebFetch(domain:172.23.*)",
+      "WebFetch(domain:172.24.*)",
+      "WebFetch(domain:172.25.*)",
+      "WebFetch(domain:172.26.*)",
+      "WebFetch(domain:172.27.*)",
+      "WebFetch(domain:172.28.*)",
+      "WebFetch(domain:172.29.*)",
+      "WebFetch(domain:172.30.*)",
+      "WebFetch(domain:172.31.*)",
+      "WebFetch(domain:192.168.*)",
+      "WebFetch(domain:169.254.*)",
+      "Edit(**/authorized_keys)",
+      "Edit(**/sudoers*)",
+      "Edit(**/shadow)",
+      "Edit(**/passwd)",
+      "Edit(**/group)",
+      "Edit(**/hosts)",
+      "Edit(**/hostname)",
+      "Edit(**/resolv.conf)",
+      "Edit(**/crontab)",
+      "Edit(/etc/cron.d/**)",
+      "Edit(/etc/cron.daily/**)",
+      "Edit(/etc/cron.hourly/**)",
+      "Edit(/etc/cron.weekly/**)",
+      "Edit(/etc/cron.monthly/**)",
+      "Edit(**/.bashrc)",
+      "Edit(**/.zshrc)",
+      "Edit(**/.profile)",
+      "Edit(**/.bash_profile)",
+      "Edit(**/.zprofile)",
+      "Edit(**/.bash_login)",
+      "Edit(**/known_hosts)",
+      "Edit(**/ssh_config)",
+      "Edit(/etc/ssh/**)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "showClearContextOnPlanAccept": true,
+  "strictKnownMarketplaces": [
+    {
+      "repo": "accenture-rde/311256_frictionless-claude-mktplace",
+      "source": "github"
+    },
+    {
+      "repo": "accenture-rde/311256_claude-plugins-marketplace",
+      "source": "github"
+    },
+    {
+      "repo": "anthropics/skills",
+      "source": "github"
+    },
+    {
+      "repo": "anthropics/claude-plugins-official",
+      "source": "github"
+    },
+    {
+      "repo": "accenture-cio/2731_ClaudePlugins",
+      "source": "github"
+    },
+    {
+      "repo": "microsoftdocs/mcp",
+      "source": "github"
+    },
+    {
+      "repo": "acn-css-ops/sre-ops-ai-tools",
+      "source": "github"
+    },
+    {
+      "repo": "accenture-marketplace/2731_evergreen_marketplace",
+      "source": "github"
+    },
+    {
+      "ref": "develop",
+      "repo": "accenture-marketplace/2731_evergreen_marketplace",
+      "source": "github"
+    }
+  ]
+}

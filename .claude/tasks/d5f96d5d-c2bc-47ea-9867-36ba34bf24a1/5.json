@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "SFCC-123: Draft Contentful integration TSD",
+  "description": "Consolidate .docs/integration/02-contentful.md, tsd-architecture.md §6/§11, Confluence's Contentful CMS Setup & Operations page, and 04.1.17 Homepage and Content requirements into one TSD covering data flow, content model, locale setup, and build scope.",
+  "activeForm": "Drafting Contentful integration TSD",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

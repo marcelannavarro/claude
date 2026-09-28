@@ -1,0 +1,22 @@
+{
+	"worktrees": {},
+	"schemaVersion": 2,
+	"untrackedDirGc": {
+		"sightings": {},
+		"roots": {},
+		"cwds": {
+			"/Users/marcel.a.n.navarro/Dev/zimmermann-pwa": 1790275948503,
+			"/Users/marcel.a.n.navarro/Dev/Zimmermann-Handover": 1790275948503,
+			"/Users/marcel.a.n.navarro/Dev": 1790275948503,
+			"/Users/marcel.a.n.navarro/Downloads": 1790275948503
+		}
+	},
+	"originUrls": {
+		"/users/marcel.a.n.navarro/dev/zimmermann-pwa": {
+			"commonDir": "/users/marcel.a.n.navarro/dev/zimmermann-pwa/.git",
+			"digest": "43c83c13cd74f44e758cb702b801e9b402aaac91bd9c76164ea0f0641378ec7b",
+			"url": "https://github.com/ZimmermannAU/zimmermann-pwa",
+			"recordedAt": 1790136266014
+		}
+	}
+}

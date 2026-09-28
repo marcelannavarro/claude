@@ -1,0 +1,197 @@
+{
+  "version": 2,
+  "plugins": {
+    "frontend-design@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/frontend-design/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:54:57.080Z",
+        "lastUpdated": "2026-09-25T01:13:02.656Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "context7@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/context7/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:00.181Z",
+        "lastUpdated": "2026-09-25T01:13:02.631Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "superpowers@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/superpowers/6.4.1",
+        "version": "6.4.1",
+        "installedAt": "2026-07-09T04:55:06.899Z",
+        "lastUpdated": "2026-09-23T00:59:42.298Z",
+        "gitCommitSha": "5bf4e78011075bcfc0dc295f0724994cd123ee71"
+      }
+    ],
+    "code-review@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/code-review/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:12.617Z",
+        "lastUpdated": "2026-09-25T01:13:02.620Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "github@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/github/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:16.058Z",
+        "lastUpdated": "2026-09-25T01:13:02.636Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "feature-dev@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/feature-dev/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:19.304Z",
+        "lastUpdated": "2026-09-25T01:13:02.625Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "code-simplifier@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/code-simplifier/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:55:22.517Z",
+        "lastUpdated": "2026-07-09T04:55:22.517Z"
+      }
+    ],
+    "ralph-loop@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/ralph-loop/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:55:25.747Z",
+        "lastUpdated": "2026-07-09T04:55:25.747Z"
+      }
+    ],
+    "typescript-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:55:29.225Z",
+        "lastUpdated": "2026-07-09T04:55:29.225Z"
+      }
+    ],
+    "commit-commands@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/commit-commands/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:32.550Z",
+        "lastUpdated": "2026-09-25T01:13:02.660Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "security-guidance@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/security-guidance/2.0.8",
+        "version": "2.0.8",
+        "installedAt": "2026-07-09T04:55:35.933Z",
+        "lastUpdated": "2026-09-11T03:24:00.129Z"
+      }
+    ],
+    "claude-md-management@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/claude-md-management/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:55:39.154Z",
+        "lastUpdated": "2026-07-09T04:55:39.154Z"
+      }
+    ],
+    "figma@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/figma/2.2.120",
+        "version": "2.2.120",
+        "installedAt": "2026-07-09T04:55:45.067Z",
+        "lastUpdated": "2026-09-23T00:59:42.841Z",
+        "gitCommitSha": "172920731eedf414e9b22ae60017d9a5b6c9f81f"
+      }
+    ],
+    "pr-review-toolkit@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/pr-review-toolkit/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:50.353Z",
+        "lastUpdated": "2026-09-25T01:13:02.665Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "claude-code-setup@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/claude-code-setup/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:55:53.710Z",
+        "lastUpdated": "2026-07-09T04:55:53.710Z"
+      }
+    ],
+    "agent-sdk-dev@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/agent-sdk-dev/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:55:56.918Z",
+        "lastUpdated": "2026-09-25T01:13:02.650Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "explanatory-output-style@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/explanatory-output-style/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:56:00.505Z",
+        "lastUpdated": "2026-07-09T04:56:00.505Z"
+      }
+    ],
+    "plugin-dev@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/plugin-dev/ad30d62cd52a",
+        "version": "ad30d62cd52a",
+        "installedAt": "2026-07-09T04:56:03.977Z",
+        "lastUpdated": "2026-09-25T01:13:02.645Z",
+        "gitCommitSha": "ad30d62cd52ad0d0af1beda1eab7f61c601045d0"
+      }
+    ],
+    "vercel@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/vercel/0.50.0",
+        "version": "0.50.0",
+        "installedAt": "2026-07-09T04:56:10.951Z",
+        "lastUpdated": "2026-09-23T00:59:43.874Z",
+        "gitCommitSha": "882e66c2698689324c341b7bb8fd8beb92c27bf6"
+      }
+    ],
+    "learning-output-style@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/learning-output-style/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-07-09T04:56:17.057Z",
+        "lastUpdated": "2026-07-09T04:56:17.057Z"
+      }
+    ]
+  }
+}

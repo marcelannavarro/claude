@@ -1,0 +1,200 @@
+
+
+######################## zm-orchestrator SCOPE  (98 lines) ########################
+[FINAL REPORT 2026-09-02T05:09:20]
+## Method
+
+Diffed the merge-base (`269d5d40`) against head (`a05b257e`), read every changed file in full or in relevant part, read the author's own plan doc (`.docs/temp/SFCC-736-195-drawer-tabs-plan.md`, 754 lines, used as one input per the brief — not treated as ground truth), and pulled the live PR state/CodeRabbit thread via `gh`. 37 files changed, 2595(+)/395(-).
+
+---
+
+## Per-item verdicts
+
+### Core deliverable — ZimmDrawer / ZimmTabs / ZimmPdpDrawer / DetailsAndCareContent / PdpFooterLinks
+**in-scope-for-SFCC-736** (shell) / **in-scope-for-SFCC-195** (content + trigger).
+
+- `overrides/app/components/ui-kits/atoms/zimmDrawer/index.tsx` — generic Chakra-`Drawer`-based shell, header-agnostic (children slot), Large/Small/Mobile via `zimmDrawer.css.ts`'s media-query variants — matches SFCC-736's "shell only, doesn't own tab content" framing exactly.
+- `.../molecules/zimmTabs/index.tsx` — standalone tab switcher, width-measured overflow chevrons, roving tabindex, Arrow/Home/End keys, `aria-controls`/`id` pairing — this is the "full keyboard/focus/ARIA" AC bucket, delivered.
+- `.../organisms/zimmPdpDrawer/index.tsx` — composes the two, renders a plain container (not `null`) when `tabs.length === 0` (AC 11), independently tested at `zimmPdpDrawer/index.stories.tsx`'s `NoTabContentProvided` story (`tabs={[]}`, asserts the dialog still exists) — this is the actual SFCC-736 deliverable.
+- Independent scroll (AC 10): confirmed structurally — `zimmDrawer.css.ts`'s `content` part is `overflow:'hidden'` while `zimmPdpDrawer.css.ts`'s `content` part is `overflowY:'auto'` — header fixed, content scrolls.
+- `overrides/app/pages/product-detail/partials/detailsAndCareContent.tsx` — SFCC-195's actual tab content, presentational, sources `displayName`/`longDescription`/`careInstructions`/`styleCode` — matches AC 4's three merge fields plus the pre-existing style code. `Material` is explicitly and visibly omitted (not silently dropped) with a comment citing the missing SFCC attribute — a disclosed partial gap, not an AC failure, since AC 4 itself names only three fields.
+- One soft gap: no story/test asserts backdrop-click-closes (only close-button-click is tested, at `zimmDrawer/index.stories.tsx`'s `CloseButtonClosesTheDrawer`). Functionally almost certainly fine — `<Drawer isOpen onClose placement="right">` never overrides Chakra's default `closeOnOverlayClick`— but if SFCC-736's AC list has a discrete backdrop-close criterion, it's unverified by any test in this PR, worth a reviewer note.
+
+### Item 1 — ZimmModal/useZimmModal rebuild onto Chakra's `Modal`
+**out-of-scope-flag** — should have been its own ticket/PR, not bundled here.
+
+Neither ticket mentions `ZimmModal`. The plan's own research notes (`plan.md` lines 31-35) record it as a pre-existing, working, single-consumer component with no functional dependency from the new Drawer work — a new `ZimmDrawer` built on Chakra's `Drawer` primitive needs nothing from `ZimmModal`. The stated reason is architectural preference ("Tim doesn't want two different dialog implementations"), not a requirement of either ticket. Its cost is real and lands outside this PR's two tickets:
+- `overrides/app/hooks/useZimmModal.ts` rewritten, `useZimmModal.test.tsx` **deleted** (133 lines).
+- `overrides/app/components/footer/index.stories.tsx` — **Tier 2, Global Shell, "Both Squads" owner** per `protectedFiles.md` — modified solely to update `SubscribeSubmit`/`SubscribeModalOpen` assertions for the new animation timing and the `data-scroll-locked` attribute (Chakra's `react-remove-scroll` replacing the old inline `overflow` style).
+- `zimmModal/index.stories.tsx`, `zimmSubscribeModal/index.stories.tsx` similarly touched for the same reason.
+
+This is precisely the "unasked-for refactor drags in files with different owners, different tiers" pattern: it is what pulled a Global-Shell Tier 2 file into a PDP-feature PR. Technically well-executed (public API preserved, `ZimmSubscribeModal` needed zero code changes, tests re-verified), but execution quality doesn't change that it's work neither ticket asked for.
+
+### Item 2 — `use-modal-state.ts`
+**legitimate-shared-infra** — directly consumed inside this same PR.
+
+Not speculative: `product-detail/index.tsx` calls `useModalState<string>()` and `useModalState<null>()` (lines ~801-816, ~838-843) to drive the two drawers this PR itself wires up. It's a copy-first TS port of a base hook the app already ships (3 existing base consumers per the plan's research), and `protectedFiles.md`'s Tier 2 "Shared Hooks" list already pre-names `use-modal-state.ts` — creating it realizes a slot governance docs already reserved, it doesn't invent new territory. This is the correct minimal-change move, not over-delivery.
+
+### Item 3 — `productInfo.ts` extended `c_*` mapping
+**out-of-scope-flag** for SFCC-736/195 specifically, though low-risk and disclosed.
+
+Verified by direct grep: of the 11 new fields (`colour`, `colourId`, `environmentalNotes`, `fabricComposition`, `hsCode`, `sizeFit`, `styleId`, `styleNumber`, `stylingNotes`, `tabDescription`, `tabDetails`), **zero** are consumed anywhere in this diff — not in `detailsAndCareContent.tsx`, not in `pdpFooterLinks.tsx`, not in `product-detail/index.tsx`, not in `product-view/index.tsx`. Only `careInstructions` (SFCC-195's own field) is actually used. `productInfo.test.ts` gained 11 new sentinel-value test rows purely to prove mappings nothing reads. The PR's own comments concede this explicitly (`productInfo.ts:47`: "Mapped but not yet wired into any UI"). This is squarely "premature/speculative scope expansion that should have waited for the tickets that actually need those fields" (SFCC-266 for `environmentalNotes`, SFCC-102 for `sizeFit`, none yet for the rest) — made more visible by the fact the same PR correctly *withheld* `material` for exactly this reason ("Tim confirmed `material = TBD`, no attribute yet") — the discipline to defer-until-needed was available and used elsewhere in this very PR, just not applied consistently to the other 11 fields.
+
+### Item 4 — Real PDP wiring ("Decision 4 reversed")
+**in-scope-for-SFCC-195**, with a process caveat.
+
+SFCC-195's own AC (per the brief) already requires "click a PDP info link → drawer opens" — the original Decision 4 deferred this only because `product-detail/` didn't exist as an override yet, a technical blocker, not a scope decision that the AC didn't need it. Once a separate branch added real PDP overrides to `develop`, completing this is closing out an AC that was always there, not inventing new scope. Delivered via `pdpFooterLinks.tsx` (trigger UI) + `product-detail/index.tsx`'s two `useModalState` instances + `ZimmPdpDrawer`/`ZimmDrawer` mounts (lines ~793-851).
+
+On the justification question specifically: a live Figma walkthrough (node `40000307:14062`/`40000307:13995`) is a legitimate way to confirm *how* to build something already in scope — it resolved a real structural ambiguity (the 4 rows are trigger-links, not an accordion; Find in Boutique sits outside the tab menu). It is not the same thing as a scope sign-off. Reversing a previously-recorded, PR-visible scope decision (Decision 4) was done on the architect's (Tim's) own authority alone, with no visible loop back to the ticket reporter (Jasmijn Tsang) or PO. Given the AC already covered this, the substantive risk is low, but I'd flag to the reviewer that a retroactive confirmation from the reporter/PO — not because the work is wrong, but because a documented scope decision was reversed unilaterally — is reasonable due diligence before merge, not a reason to block on its own.
+
+**Drive-by, undisclosed, unrelated to any of the four items**: `product-detail/index.tsx`'s diff also removes a `// eslint-disable-next-line react-hooks/exhaustive-deps` comment from the SFCC-194 Was/Now-price `useMemo` (a different, already-shipped ticket, same file) — replaced with a blank line, no rationale anywhere in the 754-line plan doc. Low materiality (comment-only, `npm run lint` reported clean per the plan's own verification claims), but it's an uncommented touch to another ticket's code that doesn't belong to either SFCC-736 or SFCC-195.
+
+---
+
+## AC cross-check summary
+
+No named AC from either ticket appears **silently dropped**. SFCC-736's stated categories (rendering, backdrop-close-by-default, mobile collapse, independent scroll, empty-tabs-still-renders, keyboard/ARIA) are all represented in code with test/story evidence, with the one soft gap noted above (backdrop-click untested, not unimplemented). SFCC-195's AC 4 three merge fields are delivered; the fourth Figma-shown block (`Material`) is explicitly, visibly deferred with a stated reason, not silently cut. I was not given the literal 32 AC line-items (16+however many for SFCC-195) to check exhaustively — this is as far as verification goes against what was provided.
+
+---
+
+## CFD-043 / Find in Boutique placeholder — flag for your write-up
+
+I read this as reasonable scope discipline, not a blocker. Find in Boutique is SFCC-297, "no ticket started" — it was never in scope for SFCC-736 or SFCC-195 to begin with, so building the real NewStore/MuleSoft call here would itself be a much larger over-delivery than any of items 1-4. The "Coming Soon" placeholder makes no false claim — it's the same honest non-implementation treatment given to the other three unbuilt tabs (Size & Fit, Shipping & Returns, Assistance), not a feature dressed up as done. The one thing worth confirming before you close this out: the plan doc says the gap was flagged "for whoever picks up the real SFCC-297 ticket" — worth checking that this landed as an actual comment/flag on the SFCC-297 Jira ticket itself, not only in this PR's thread and a local plan doc, since CFD-043 is a **Confirmed** PRD line and a plan-doc-only flag is easy to lose track of once this PR merges.
+
+---
+
+## Additional findings outside the two-ticket question (scope-guard hard stops)
+
+**Tier 1 file touched.** `.claude/rules/testing.md` (Governance — `.claude/rules/` is explicitly listed in `frozenFiles.md` and routed to `@ZimmermannAU/tier-1-approvers` in `CODEOWNERS` line 72) gained a new "Portal-rendered dialogs" testing exception, mirrored to `.cursor/rules/testing.mdc` via the sanctioned sync convention. This is a real Tier 1 edit, necessitated by legitimate SFCC-736 work (any Chakra-`Drawer`-based story needs `within(document.body)`), but it's still a hard-stop-class file per this task's own brief. Live PR data (`gh pr view 67`) shows no human review in an `APPROVED` state — only CodeRabbit (bot, `APPROVED` at head) and `TimLavelleACC` (human, five separate `COMMENTED` reviews, never `APPROVED`). No tier-1-approver sign-off is currently visible on this PR.
+
+**Hard Rule 10 (multi-tier) drift from the plan's own check.** The plan's own "Tier touch check" (line 285-289) asserted "Tier 4 + one Tier 2 touch each, no multi-tier violation" — but that was written *before* Decision 4 reversed and before the `testing.md` edit. As merged, this PR actually touches: Tier 1 (`testing.md`), plus three separate Tier 2 surfaces (`footer/index.stories.tsx` — Global Shell/Both Squads; `theme/components/index.ts` — UI Designer; `use-modal-state.ts` — Shared Hooks), plus Tier 4 new components. That self-check was never re-run after the scope grew — worth surfacing rather than relying on the stale assessment in the plan doc.
+
+**PR mechanics.** `mergeable: "CONFLICTING"` as of this snapshot — not currently mergeable regardless of review status.
+
+---
+
+## Final verdict
+
+**Ticket-scope question, as asked** ("does this PR deliver its two tickets, neither under nor over"): **OVER** — two named items exceed the two tickets' manifest:
+1. The `ZimmModal`/`useZimmModal` rebuild onto Chakra's `Modal` (`overrides/app/components/ui-kits/atoms/zimmModal/index.tsx`, `overrides/app/hooks/useZimmModal.ts`, plus its Tier 2 `footer/index.stories.tsx` blast radius) — unrelated architecture cleanup riding along, not asked for by SFCC-736 or SFCC-195.
+2. `productInfo.ts`/`productInfo.test.ts`'s 11 unconsumed `c_*` field mappings — speculative groundwork for SFCC-266/SFCC-102/others, confirmed zero consumers in this diff.
+
+No material **under**-delivery found against what was checkable from the brief — the two `SFCC-195`-flagged partial gaps (`Material` section, Find in Boutique real integration) are both disclosed, justified deferrals rather than silent drops.
+
+**Scope-guard hard-stop, independent of the above:** **BLOCKED** on Tier 1 grounds — `.claude/rules/testing.md` (Governance, `@ZimmermannAU/tier-1-approvers`-owned per CODEOWNERS) was modified, and as of the current PR state there is no recorded tier-1-approver `APPROVED` review, only a bot approval and a human's unresolved comment-only reviews, plus a currently-conflicting merge state. This PR should not proceed to merge until that review lands, independent of whether the two over-delivery items above get split out.
+
+**Relevant paths** (all absolute):
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/testing.md`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.cursor/rules/testing.mdc`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/footer/index.stories.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmModal/index.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/hooks/useZimmModal.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/productInfo.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/productInfo.test.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/index.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/hooks/use-modal-state.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/index.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/partials/detailsAndCareContent.tsx`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/temp/SFCC-736-195-drawer-tabs-plan.md`
+
+
+######################## zm-tester FANOUT  (126 lines) ########################
+[FINAL REPORT 2026-09-02T05:16:50]
+# PR #67 Review — feat(pdp): ZimmDrawer/ZimmTabs/ZimmPdpDrawer + real PDP info-link wiring
+
+**Tooling note up front:** my actual tool list this session is `Read` + `Bash` only — no Task/Agent dispatch tool and no callable Figma/browser tool were present despite an MCP server description appearing in context (it did not correspond to an invokable function). I ran every angle below myself, sequentially, as its own rigorous pass rather than fanning out to sub-agents, and I flag every place that limitation actually bit.
+
+---
+
+## Angle 1 — Correctness/regression + contract fidelity
+
+**🔴 Must-fix — CONFIRMED (via direct source trace, not rendered) — UNIFORM (same bug shape already found+fixed once, missed a second time).**
+`overrides/app/components/ui-kits/atoms/zimmModal/index.tsx` (lines ~62-68) still passes `__css` to `<ModalOverlay>` and `<ModalContent>`:
+```
+<ModalOverlay __css={{ background: styles.overlay.background, zIndex: styles.overlay.zIndex }} />
+<ModalContent ref={setContentNode} __css={{ ...styles.panel, maxWidth, margin: styles.overlay.padding }}>
+```
+The plan doc (`.docs/temp/SFCC-736-195-drawer-tabs-plan.md`, "Fixed — width-clip + overlay bug") documents finding and fixing this *exact* bug on `zimmDrawer/index.tsx` by switching `__css`→`sx` on `DrawerOverlay`/`DrawerContent`. I traced the actual installed `node_modules/@chakra-ui/modal@2.7.0` source to check whether the fix was needed here too:
+- `node_modules/@chakra-ui/modal/dist/drawer.mjs` literally re-exports `ModalOverlay as DrawerOverlay` — it is the **same component**, not a lookalike.
+- `DrawerContent` (`chunk-JIPYISAW.mjs`) and `ModalContent` (`chunk-6TYU4DP7.mjs`) share byte-for-byte identical prop-spread order: `{..., ...dialogProps, __css: dialogStyles, children}` — the literal `__css: dialogStyles` sits *after* the spread, so Chakra's own internal style wins and the caller's `__css` (which survives inside `dialogProps.__css` via `getDialogProps`'s passthrough, confirmed in `chunk-XG6IELTC.mjs`) is silently discarded.
+- `ModalOverlay` has the opposite collision: `{...motionProps, __css: overlayStyle, ref, className, ...rest}` — `...rest` (carrying the caller's `__css`) is spread *last*, so the caller's value wins outright and **replaces** Chakra's own `position:fixed / inset-equivalent / 100vw / 100vh` defaults entirely (plain object-literal semantics, not a merge).
+- `zimmModal.css.ts`'s recipe has real, distinct content (`backgroundColor: var(--zimm-color-bg-07)`, `padding: var(--zimm-scale-3xl)`, no default `maxWidth`), and `theme/index.ts`/`theme/components/index.ts` confirm `theme.components.Modal` is **never set by Zimmermann** — only the separately-named `ZimmModal` key is registered. Since Chakra's own `<ModalContent>` internally resolves styles from `theme.components.Modal` (not `ZimmModal`), the net effect is that the dialog panel would fall back to whatever generic `Modal` theme SFCC's base theme/Chakra ships, not Zimmermann's own panel styling or the caller's `maxWidth` — and the overlay would lose its full-viewport fixed positioning.
+
+This directly contradicts the plan doc's own claim ("the refactored ZimmModal/ZimmSubscribeModal — fully correct... proving the CSS-var/theme pipeline itself works fine") — that conclusion came from an early screenshot glance, not the later dedicated DOM-inspection script that specifically root-caused this exact mechanism for `zimmDrawer`. Neither `ZimmSubscribeModal`'s own story nor `footer/index.stories.tsx`'s `SubscribeModalOpen` story assert on background colour or maxWidth pixel values (I read both), so this could pass every existing automated check while still rendering wrong. **I could not render this in an actual browser** — no browser/screenshot tool was available, and I deliberately avoided writing a throwaway test/script per the "no code" instruction. The object-spread mechanism itself is unambiguous JS semantics applied to the real shipped library code, which is why I'm calling it CONFIRMED rather than PLAUSIBLE, but the ultimate on-screen appearance remains unverified by me directly.
+
+**🟡 Should-fix — PLAUSIBLE (reasoned from React key-reconciliation semantics, not observed) — ONE-OFF.**
+`overrides/app/pages/product-detail/index.tsx`:
+```
+<ZimmPdpDrawer key={activePdpTabId ?? 'closed'} isOpen={isPdpDrawerOpen} onClose={closePdpDrawer} ... />
+```
+`use-modal-state.ts`'s `onClose` does one combined `setState(prev => ({isOpen:false, data: resetDataOnClose ? null : prev.data}))` (`resetDataOnClose` defaults `true`). So on every close, `isOpen` *and* the key-driving `data` flip together in the same commit — the `key` changes from e.g. `'details-and-care'` to `'closed'` at the exact moment `isOpen` becomes `false`. React treats a changed key as "unmount old instance, mount a fresh one" rather than "re-render this instance with new props," so the old `ZimmPdpDrawer` (and whatever `AnimatePresence`/`Slide` exit machinery Chakra's Drawer uses internally) is torn down immediately instead of being given the `isOpen:false` prop transition it needs to play its slide-out animation. Functionally the drawer still closes; the plausible visible defect is losing the close animation every time. Contrast with `zimmDrawer/index.stories.tsx`'s own `CloseButtonClosesTheDrawer` story, which doesn't use this key pattern and explicitly waits for the animated removal (`waitForElementToBeRemoved`) — that story would not catch this, since it never exercises the parent's key-remount wiring.
+
+**Confirmed correct, no defect:**
+- `ZimmPdpDrawer`'s `initialTabId` fallback (`overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.tsx:41-42`, `tabs.find(...) ?? tabs[0]?.id ?? ''`) is genuinely implemented, and the `InvalidInitialTabIdFallsBackToFirst` story (`index.stories.tsx:146-159`) genuinely asserts `aria-selected='true'`/`tabindex='0'` on the fallback tab — matches the CodeRabbit-round-2 claim exactly.
+- `useZimmModal`/`ZimmModal`'s public shape (`isOpen, mounted, onClose, maxWidth, labelledBy, describedBy, children`) is unchanged (diffed directly). `ZimmSubscribeModal`'s own `index.tsx` has **zero diff** in this PR — only its `.stories.tsx` changed — confirming "zero code changes" literally.
+- `use-modal-state.ts` is a sound, correctly-typed copy-first override — functional updaters correctly read `prev.data`/`prev.isOpen` where needed, no stale-closure issues.
+- `product-view/index.tsx`'s `footerLinks?: React.ReactNode` (default `null`, appended to the object-shaped props type) is genuinely additive — cannot break an existing caller that omits it.
+
+## Angle 2 — Conventions, tier ownership, process
+
+**Testing.md/testing.mdc Portal exception — technically accurate, CONFIRMED.** `.storybook/preview.tsx` configures only `ChakraProvider`/`IntlProvider` decorators, no custom portal container. Chakra's `Drawer` literally wraps `Modal` and reuses `ModalOverlay` (confirmed above), both default-porting to `document.body`. `zimmDrawer/index.stories.tsx`'s `Large` story genuinely uses `within(document.body)` with an inline citation of the new rule — self-consistent. This is a Tier-1 governance edit (`.claude/rules/testing.md` + `.cursor/rules/testing.mdc` both listed in `frozenFiles.md`'s Governance section) and I found no evidence of separate squad-lead/integration-lead sign-off for it in the plan doc — it reads as landing alongside the feature work. I have no PR-approval-list access to rule this out definitively.
+
+**🟡 Should-fix — CONFIRMED — the CodeRabbit-decline citation doesn't check out, and it's compounded by a live CODEOWNERS/squadA.md contradiction.**
+- Grepped the full plan doc for "lead architect" / "squad-notification" / "checkpoints deliberately": the **only** hit is inside the "Second round of CodeRabbit findings" section (the reply itself), never inside the actual numbered "Decisions made" section (lines 77-104, 4 items, none about Tim/squad-notification). So "this initiative's own Decisions made section already records that..." is not supported by the section it names — the claim is asserted for the first time in the very reply that cites it.
+- Independently: `CODEOWNERS:162` routes `overrides/app/pages/product-detail/` to `@ZimmermannAU/pwa-squad-b`, **not** Squad A — directly contradicting `.claude/rules/squadA.md`, which is self-labeled "Draft squad split — scope can still change" yet lists `product-detail/` as its own territory. This PR's own fix for CodeRabbit's registry-drift finding treated `squadA.md` as authoritative and flipped `.claude/registry/pages.md` to say `ProductDetail | ... | A` (confirmed still reads "A" in the head worktree) — meaning the regenerated registry now actively disagrees with the real, enforced CODEOWNERS routing. Per AGENTS.md's own stated philosophy ("the real enforcement is server-side... CODEOWNERS routes every path"), GitHub will request Squad B regardless of any of this — so the decline's reasoning doesn't actually determine what review gets requested either way. Worth Marcel reconciling squadA.md vs. CODEOWNERS directly; flagging, not resolving.
+- The declined "InformationAccordion private import" CodeRabbit finding is correctly declined — confirmed no override of `information-accordion` exists anywhere in `overrides/`, so the base-path import is the required pattern, not the already-overridden-component anti-pattern.
+
+**General conventions pass:** clean. Named exports match folders, props types match component names, no introduced commented-out code, no unexplained magic numbers (`pdpFooterLinks.tsx`'s `1.75rem` is commented and matches an existing `zimmProductMeta.css.ts` precedent, not a new ad hoc value).
+
+## Angle 3 — Accessibility, ARIA fidelity, failure modes, React logic
+
+**ZimmTabs vs. WAI-ARIA APG Tabs pattern — CONFIRMED matches** (checked against my own knowledge of the spec; no live web-fetch tool was available to re-fetch it, so this is not an independent live-spec check). `overrides/app/components/ui-kits/molecules/zimmTabs/index.tsx`: automatic activation (arrow keys call `onTabChange` directly), roving `tabIndex={isActive?0:-1}`, Home/End jump-and-select, `role='tablist'`+required `ariaLabel`, each tab has `id`/`aria-controls`, panel (in `ZimmPdpDrawer`) has matching `aria-labelledby`+`tabIndex={0}`. `index.test.tsx` genuinely exercises all of this (ArrowRight/Left wrap both directions, Home/End, focus-follows-selection, aria-label, id/aria-controls pairing) — matches the plan doc's narrative on direct read, not just on trust.
+
+**🟡 Should-fix — CONFIRMED — ONE-OFF.** `ZimmTabs`'s `handleKeyDown` (Home/End/Arrow branches, `index.tsx:102-119`) has no guard for `tabs.length === 0` — `tabs[0].id`, `tabs[tabs.length-1].id`, and the modulo-index lookup would all throw on an empty array. Currently unreachable because the only consumer (`ZimmPdpDrawer`) conditionally omits rendering `ZimmTabs` when `tabs.length===0`, but the component is explicitly documented as "standalone... usable anywhere," and its own "renders without throwing when given zero tabs" test (`index.test.tsx:117-130`) only exercises the render path — no keyboard interaction is simulated against an empty array, so this gap is genuinely untested as well as unguarded.
+
+**Failure-mode hygiene:** `DetailsAndCareContent`/`PdpFooterLinks` handle missing product data defensively (`isBlankRichText` guards, `staticInfo?.name ?? ''` fallback, pre-existing `ZimmProductStyleCode` null-handling reused as-is). `ZimmPdpDrawer` correctly renders the shell with zero tabs (AC11) and correctly drops the `role='tabpanel'`/`aria-labelledby` claim when there's no matching active tab, with a comment explaining why.
+
+**React logic correctness:** covered under Angle 1 (Finding B — the `key`/`isOpen` same-commit issue) and the `initialTabId` fixture (confirmed correctly implemented/tested). `ZimmTabs` itself has no `useState(derivedFromProp)` — fully controlled by its parent — so `ZimmPdpDrawer`'s `activeTabId` was the one relevant re-render fixture for this PR, and I traced it end-to-end.
+
+## Angle 4 — E2E "skipping" verification
+
+**Confirmed, refined.** `.github/workflows/qa.yml` currently implements **exactly one** E2E area (`e2e_homepage`) — I grepped the whole 666-line file for any other `e2e_<area>:` allow-list block and found none, and `Compute E2E scope` hardcodes `SCOPE="homepage"` as its only non-`full`/non-`skip` branch. `pdp` (and `checkout`/`search`/`account`/`plp`/`integrations`) are named in `testing.md`'s tag list but have **no** corresponding allow-list group in the actual workflow yet. This matches `testing.md`'s own explicit caveat verbatim ("`e2e_homepage`, and so on as new areas get specs" / "Forgetting either step... just means that spec's PRs get `e2e_scope: skip`... same as any other unclaimed path") — so the skip is the documented, intended behaviour, **not** a hidden CI problem. The precise mechanism is narrower than the task's framing suggested, though: it's not that this PR's diff "spans multiple areas' boundaries" so much as that `pdp` has no area registered at all yet, so anything touching `product-detail/` always resolves to skip regardless of what else is in the diff.
+
+## Marcel's specific ground-truth items
+
+- **Figma "Label" 5th row:** grepped the full plan doc (all 754 lines, read start to finish) for "Label" as a named term — zero occurrences anywhere. The doc's account of the later (2026-08-31) walkthrough of node `40000307:14062` explicitly says "no ... hidden 6th item visible on **this particular pull**" — a hedge that shows some awareness a *different*, earlier pull (`pdp/drawer/header`'s "Menu," a structurally different node) did show a hidden 6th nav-item (believed EU Environmental Qualities) — but at no point does either pull's account name or describe a row called "Label." If your screenshot is accurate, this genuinely looks like something the prior investigation missed rather than a scoped, acknowledged omission. I have no callable Figma tool and no Jira/PR-comment access beyond what's summarized in the task prompt, so I could not independently reproduce or refute the screenshot itself — this stays fully open, as instructed.
+- **`theme/components/index.ts` merge conflict:** confirmed purely mechanical. Current `develop` tip adds `ZimmSearchInput`/`ZimmHeaderLeftBar`/`ZimmHeaderRightBar`/`ZimmMegaMenuContent`/`ZimmColourSwatch`/`ZimmColourSwatchGroup`/`ZimmDrawerMenu` and converts `Header`/`ListMenu` to explicit-path imports; PR #67 adds `ZimmDrawer`/`ZimmPdpDrawer`/`ZimmTabs` on top of the older relative-path `Header`/`ListMenu` imports. Both sides only ever *add* new entries — resolution is a straight union, with the one real thing to carry forward being develop's `Header`/`ListMenu` import-path refactor. No hidden logic clash.
+
+## Standing angles — brief
+
+- **Tokens:** trusting Marcel's `audit:tokens` run per instruction. Manual semantic-intent spot check on new recipes: `zimmTabs.css.ts`'s `color: var(--zimm-color-text-secondary/default)` on `color:` — correct; `zimmDrawer.css.ts`/`zimmModal.css.ts`'s `background: var(--zimm-color-opacity-50)` on an overlay `background:` isn't literally namespaced `background.*`, but it's an unmodified, pre-existing pattern already used by `ZimmModal`'s own recipe before this PR — not a new mismatch introduced here.
+- **Imports:** no base-path import of an already-overridden component found (checked `InformationAccordion`, `Island`, `ZimmButton`, `ZimmIcon` — none are shadowed elsewhere). No `../../../..` chains beyond 3 levels in the new files.
+- **Structure/DRY:** stories present for every new exported component; `ZimmTabs`/`use-modal-state` have real logic and their own test files; `PdpFooterLinks`/`DetailsAndCareContent` are pure presentational partials matching the container/presentational rule (product data as props, `formatMessage`/`useIntl` only at the page level). No cross-file literal duplication found in this step's new output beyond the already-flagged/commented `1.75rem` precedent match.
+- **Visual checkpoint brief** (built from the plan doc's own recorded Figma measurements — I could not independently re-screenshot any row myself, no Figma/browser tool available):
+
+| What to check | Figma node | Expected value | How to verify |
+|---|---|---|---|
+| Large drawer width | `40002218:42893` | 50% viewport (`WIDTH_LARGE` in `zimmDrawer.css.ts`) | DevTools computed width at ≥1440px |
+| Small drawer width | `40002218:42900` | 25% (named token, not measured 27.9% — deliberate, documented) | DevTools computed width |
+| Mobile bottom gap (AC9) | `40002218:42903` | `var(--zimm-scale-5xl)` (80px) vs. measured ~78px, flagged approximate | DevTools computed `bottom` on `.content` |
+| Header inset, Large | `40002218:42893` | 64px/48px (`PADDING_LARGE` in `zimmTabs.css.ts`) at ≥`breakpoints.md` | DevTools computed padding |
+| Header inset, Small/Mobile | `40002218:42900`/`42903` | 32px/40px (`PADDING_COMPACT`) | DevTools computed padding |
+| ZimmModal panel background | none — no Modal-specific node cited in plan doc | `var(--zimm-color-bg-07)` per `zimmModal.css.ts` | DevTools computed `background-color` — **this is exactly the row that would expose the 🔴 finding above if it's real** |
+| ZimmModal panel max-width | none cited | caller-supplied `maxWidth` (e.g. `ZimmSubscribeModal`'s own value) | DevTools computed `max-width` — same exposure point |
+| Details & Care section rhythm | `40001889:38504` | 64px between sections (`var(--zimm-scale-4xl)`), 8px heading-to-body (`var(--zimm-scale-xs)`, per code comment, though the JSX itself uses `spacing="var(--zimm-scale-xs)"`) | DevTools computed gap |
+| "Find in Boutique" → trigger-row gap | `40000307:14062` | 28px (`1.75rem`, matches Figma y=402→430) | DevTools computed gap |
+| 5th "Label" trigger row (open question) | `40000307:14062` | unresolved — see above | Re-screenshot the node; not yet in code either way |
+
+## What I tried to falsify
+
+- Re-derived the Chakra 2.7.0 `__css`-collision mechanism from the actual installed `node_modules` source rather than trusting the plan doc's prose about "silently dropping `__css`" — it held up for `DrawerContent`/`ModalContent` (literal shared code path) and revealed a second, opposite-direction collision on `ModalOverlay` the doc's prose doesn't distinguish. Found the fix was never carried over to `zimmModal/index.tsx`.
+- Diffed `ZimmSubscribeModal`'s actual `index.tsx` (not the stat line) to check "zero code changes" — held.
+- Read the actual `initialTabId` implementation and story assertions rather than trusting the plan doc's account — held.
+- Grepped the plan doc's real "Decisions made" section for the CodeRabbit-decline's citation — did not hold up.
+- Cross-referenced CODEOWNERS against `squadA.md` and the regenerated registry rather than accepting either as ground truth — found a live three-way contradiction, made worse (not better) by this PR's own fix.
+- Read `qa.yml`'s actual scope-computation script line-by-line rather than accepting "spans multiple areas" at face value — refined it to "only one area exists at all."
+- Read `ZimmTabs`' DOM output and test file directly against the APG pattern rather than trusting the plan doc's narrative — held, with one real untested edge case surfaced.
+- Grepped the plan doc's full text for "Label" — confirmed absence, corroborating (not proving) Marcel's "genuinely missed" read.
+

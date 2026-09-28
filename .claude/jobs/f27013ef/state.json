@@ -1,0 +1,56 @@
+{
+  "state": "done",
+  "detail": "PR #85 fixes pushed, demo synced, build loop improved",
+  "tempo": "idle",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": []
+  },
+  "tokens": 2752433,
+  "output": {
+    "result": "PR #85 (hover a11y, gestures, indicators, overflow) + PR #90 demo + 9 build improvements logged"
+  },
+  "children": [
+    {
+      "id": "85",
+      "href": "https://github.com/ZimmermannAU/zimmermann-pwa/pull/85",
+      "kind": "pr"
+    },
+    {
+      "id": "90",
+      "href": "https://github.com/ZimmermannAU/zimmermann-pwa/pull/90",
+      "kind": "pr"
+    }
+  ],
+  "linkScanOffset": 8593959,
+  "linkScanPath": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/f27013ef-785b-4c0c-b11e-78200eb25438.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--effort",
+    "max",
+    "--permission-mode",
+    "auto",
+    "--model",
+    "claude-sonnet-5"
+  ],
+  "bgIsolation": "none",
+  "providerEnv": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "interactiveLineage": true,
+  "intent": "flagging 2 things i've encountered while testing: a) the fix we did to get the hover states working to spec affected how it works via keyboard nav and screenreader/voiceover and b) the multiple images",
+  "name": "ZIMM - Product Cards",
+  "nameSource": "user",
+  "sessionId": "f27013ef-785b-4c0c-b11e-78200eb25438",
+  "resumeSessionId": "f27013ef-785b-4c0c-b11e-78200eb25438",
+  "daemonShort": "f27013ef",
+  "cliVersion": "2.1.260",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "createdAt": "2026-09-05T06:22:59.812Z",
+  "updatedAt": "2026-09-05T14:32:59.977Z",
+  "firstTerminalAt": "2026-09-05T08:03:02.137Z",
+  "lastTerminalAt": "2026-09-05T14:18:34.485Z",
+  "backend": "daemon"
+}

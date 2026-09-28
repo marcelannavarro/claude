@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Draft recommendation with rationale",
+  "description": "Recommendation determined: Option A (single app), since Option B is invalidated on platform-architecture grounds regardless of cost/limits. Rationale + trade-offs ready to write into §4. Formal write-up happens in task #6.",
+  "activeForm": "Drafting recommendation",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

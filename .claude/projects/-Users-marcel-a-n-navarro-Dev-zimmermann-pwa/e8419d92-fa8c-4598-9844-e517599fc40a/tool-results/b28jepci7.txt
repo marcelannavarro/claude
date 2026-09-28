@@ -1,0 +1,876 @@
+     1	/*
+     2	 * Copyright (c) 2022, Salesforce, Inc.
+     3	 * All rights reserved.
+     4	 * SPDX-License-Identifier: BSD-3-Clause
+     5	 * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+     6	 */
+     7	
+     8	import React, {Fragment, useCallback, useEffect, useState} from 'react'
+     9	import PropTypes from 'prop-types'
+    10	import {Helmet} from 'react-helmet'
+    11	import {FormattedMessage, useIntl} from 'react-intl'
+    12	import {getUpdateBundleChildArray} from '@salesforce/retail-react-app/app/utils/product-utils'
+    13	
+    14	// Components
+    15	import {Box, Button, Stack, Heading} from '@salesforce/retail-react-app/app/components/shared/ui'
+    16	import {
+    17	    useProduct,
+    18	    useProducts,
+    19	    useCategory,
+    20	    useShopperCustomersMutation,
+    21	    useShopperBasketsV2Mutation as useShopperBasketsMutation,
+    22	    useCustomerId,
+    23	    useShopperBasketsV2MutationHelper as useShopperBasketsMutationHelper
+    24	} from '@salesforce/commerce-sdk-react'
+    25	
+    26	// Hooks
+    27	import {useCurrentBasket} from '@salesforce/retail-react-app/app/hooks/use-current-basket'
+    28	import {useVariant} from '@salesforce/retail-react-app/app/hooks'
+    29	import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation'
+    30	import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein'
+    31	import useDataCloud from '@salesforce/retail-react-app/app/hooks/use-datacloud'
+    32	import useActiveData from '@salesforce/retail-react-app/app/hooks/use-active-data'
+    33	import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
+    34	import usePickupShipment from '@salesforce/retail-react-app/app/hooks/use-pickup-shipment'
+    35	import {useSelectedStore} from '@salesforce/retail-react-app/app/hooks/use-selected-store'
+    36	import {useMultiship} from '@salesforce/retail-react-app/app/hooks/use-multiship'
+    37	import {STORE_LOCATOR_IS_ENABLED} from '@salesforce/retail-react-app/app/constants'
+    38	import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+    39	// Project Components
+    40	import RecommendedProducts from '@salesforce/retail-react-app/app/components/recommended-products'
+    41	import ProductView from '@salesforce/retail-react-app/app/components/product-view'
+    42	import InformationAccordion from '@salesforce/retail-react-app/app/pages/product-detail/partials/information-accordion'
+    43	import Island from '@salesforce/retail-react-app/app/components/island'
+    44	
+    45	import {HTTPNotFound, HTTPError} from '@salesforce/pwa-kit-react-sdk/ssr/universal/errors'
+    46	import logger from '@salesforce/retail-react-app/app/utils/logger-instance'
+    47	
+    48	// constant
+    49	import {
+    50	    API_ERROR_MESSAGE,
+    51	    EINSTEIN_RECOMMENDERS,
+    52	    MAX_CACHE_AGE,
+    53	    TOAST_ACTION_VIEW_WISHLIST,
+    54	    TOAST_MESSAGE_ADDED_TO_WISHLIST,
+    55	    TOAST_MESSAGE_ALREADY_IN_WISHLIST,
+    56	    STALE_WHILE_REVALIDATE
+    57	} from '@salesforce/retail-react-app/app/constants'
+    58	import {rebuildPathWithParams} from '@salesforce/retail-react-app/app/utils/url'
+    59	import {useHistory, useLocation, useParams} from 'react-router-dom'
+    60	import {useToast} from '@salesforce/retail-react-app/app/hooks/use-toast'
+    61	import {useWishList} from '@salesforce/retail-react-app/app/hooks/use-wish-list'
+    62	import {useStoreLocatorModal} from '@salesforce/retail-react-app/app/hooks/use-store-locator'
+    63	import {isPickupMethod} from '@salesforce/retail-react-app/app/utils/shipment-utils'
+    64	import {useProductInventory} from '@salesforce/retail-react-app/app/hooks/use-product-inventory'
+    65	
+    66	const ProductDetail = () => {
+    67	    const {formatMessage} = useIntl()
+    68	    const history = useHistory()
+    69	    const location = useLocation()
+    70	    const einstein = useEinstein()
+    71	    const dataCloud = useDataCloud()
+    72	    const activeData = useActiveData()
+    73	    const toast = useToast()
+    74	    const navigate = useNavigation()
+    75	    const customerId = useCustomerId()
+    76	    const {onOpen: onOpenStoreLocator} = useStoreLocatorModal()
+    77	    const multishipEnabled = getConfig()?.app?.multishipEnabled ?? true
+    78	    const storeLocatorEnabled = getConfig()?.app?.storeLocatorEnabled ?? STORE_LOCATOR_IS_ENABLED
+    79	
+    80	    /****************************** Basket *********************************/
+    81	    const {data: basket, isLoading: isBasketLoading} = useCurrentBasket()
+    82	    const {addItemToNewOrExistingBasket} = useShopperBasketsMutationHelper()
+    83	    const updateItemsInBasketMutation = useShopperBasketsMutation('updateItemsInBasket')
+    84	    const {res} = useServerContext()
+    85	    if (res) {
+    86	        res.set(
+    87	            'Cache-Control',
+    88	            `s-maxage=${MAX_CACHE_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`
+    89	        )
+    90	    }
+    91	
+    92	    /*************************** Pick up in Store ********************/
+    93	    const {selectedStore} = useSelectedStore()
+    94	    const selectedInventoryId = selectedStore?.inventoryId || null
+    95	
+    96	    const {addInventoryIdsToPickupItems, updateDefaultShipmentIfNeeded, hasPickupItems} =
+    97	        usePickupShipment(basket)
+    98	
+    99	    /*************************** Multiship ********************/
+   100	    const {getShipmentIdForItems} = useMultiship(basket)
+   101	
+   102	    /*************************** Product Detail and Category ********************/
+   103	    const {productId} = useParams()
+   104	    const urlParams = new URLSearchParams(location.search)
+   105	    const {
+   106	        data: productResponse,
+   107	        isLoading: isProductLoading,
+   108	        isError: isProductError,
+   109	        error: productError
+   110	    } = useProduct(
+   111	        {
+   112	            parameters: {
+   113	                id: urlParams.get('pid') || productId,
+   114	                perPricebook: true,
+   115	                expand: [
+   116	                    'availability',
+   117	                    'promotions',
+   118	                    'options',
+   119	                    'images',
+   120	                    'prices',
+   121	                    'variations',
+   122	                    'set_products',
+   123	                    'bundled_products',
+   124	                    'page_meta_tags'
+   125	                ],
+   126	                allImages: true,
+   127	                ...(selectedInventoryId ? {inventoryIds: selectedInventoryId} : {})
+   128	            }
+   129	        },
+   130	        {
+   131	            // When shoppers select a different variant (and the app fetches the new data),
+   132	            // the old data is still rendered (and not the skeletons).
+   133	            keepPreviousData: true
+   134	        }
+   135	    )
+   136	
+   137	    // Note: Since category needs id from product detail, it can't be server side rendered atm
+   138	    // until we can do dependent query on server
+   139	    const {
+   140	        data: category,
+   141	        isError: isCategoryError,
+   142	        error: categoryError
+   143	    } = useCategory({
+   144	        parameters: {
+   145	            id: productResponse?.primaryCategoryId,
+   146	            levels: 1
+   147	        }
+   148	    })
+   149	
+   150	    /****************************** Sets and Bundles *********************************/
+   151	    const [childProductSelection, setChildProductSelection] = useState({})
+   152	    const [childProductOrderability, setChildProductOrderability] = useState({})
+   153	    const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(1)
+   154	    const childProductRefs = React.useRef({})
+   155	    const isProductASet = productResponse?.type.set
+   156	    const isProductABundle = productResponse?.type.bundle
+   157	
+   158	    const childVariantIds =
+   159	        isProductABundle || isProductASet
+   160	            ? Object.keys(childProductSelection)?.map(
+   161	                  (key) =>
+   162	                      childProductSelection[key].variant?.productId ||
+   163	                      childProductSelection[key].product?.id
+   164	              )
+   165	            : []
+   166	
+   167	    const {data: variantProductData} = useProducts(
+   168	        {
+   169	            parameters: {
+   170	                ids: childVariantIds.join(','),
+   171	                allImages: false,
+   172	                ...(selectedInventoryId ? {inventoryIds: selectedInventoryId} : {}),
+   173	                expand: ['availability', 'variations'],
+   174	                select: '(data.(id,inventory,inventories,master))'
+   175	            }
+   176	        },
+   177	        {
+   178	            enabled: childVariantIds.length > 0,
+   179	            keepPreviousData: true
+   180	        }
+   181	    )
+   182	
+   183	    const product = useProductInventory(
+   184	        productResponse,
+   185	        variantProductData,
+   186	        selectedInventoryId,
+   187	        isProductASet,
+   188	        isProductABundle
+   189	    )
+   190	
+   191	    /**************** Error Handling ****************/
+   192	
+   193	    if (isProductError) {
+   194	        const errorStatus = productError?.response?.status
+   195	        switch (errorStatus) {
+   196	            case 404:
+   197	                throw new HTTPNotFound('Product Not Found.')
+   198	            default:
+   199	                throw new HTTPError(errorStatus, `HTTP Error ${errorStatus} occurred.`)
+   200	        }
+   201	    }
+   202	    if (isCategoryError) {
+   203	        const errorStatus = categoryError?.response?.status
+   204	        switch (errorStatus) {
+   205	            case 404:
+   206	                throw new HTTPNotFound('Category Not Found.')
+   207	            default:
+   208	                throw new HTTPError(errorStatus, `HTTP Error ${errorStatus} occurred.`)
+   209	        }
+   210	    }
+   211	
+   212	    const [primaryCategory, setPrimaryCategory] = useState(category)
+   213	    const variant = useVariant(product)
+   214	    // This page uses the `primaryCategoryId` to retrieve the category data. This attribute
+   215	    // is only available on `master` products. Since a variation will be loaded once all the
+   216	    // attributes are selected (to get the correct inventory values), the category information
+   217	    // is overridden. This will allow us to keep the initial category around until a different
+   218	    // master product is loaded.
+   219	    useEffect(() => {
+   220	        if (category) {
+   221	            setPrimaryCategory(category)
+   222	        }
+   223	    }, [category])
+   224	
+   225	    /**************** Product Variant ****************/
+   226	    useEffect(() => {
+   227	        if (!variant) {
+   228	            return
+   229	        }
+   230	        // update the variation attributes parameter on
+   231	        // the url accordingly as the variant changes
+   232	        const updatedUrl = rebuildPathWithParams(`${location.pathname}${location.search}`, {
+   233	            pid: variant?.productId
+   234	        })
+   235	        history.replace(updatedUrl)
+   236	    }, [variant])
+   237	
+   238	    /**************** Wishlist ****************/
+   239	    const {data: wishlist, isLoading: isWishlistLoading} = useWishList()
+   240	    const createCustomerProductListItem = useShopperCustomersMutation(
+   241	        'createCustomerProductListItem'
+   242	    )
+   243	
+   244	    const handleAddToWishlist = (product, variant, quantity) => {
+   245	        const isItemInWishlist = wishlist?.customerProductListItems?.find(
+   246	            (i) => i.productId === variant?.productId || i.productId === product?.id
+   247	        )
+   248	
+   249	        if (!isItemInWishlist) {
+   250	            createCustomerProductListItem.mutate(
+   251	                {
+   252	                    parameters: {
+   253	                        listId: wishlist.id,
+   254	                        customerId
+   255	                    },
+   256	                    body: {
+   257	                        // NOTE: API does not respect quantity, it always adds 1
+   258	                        quantity,
+   259	                        productId: variant?.productId || product?.id,
+   260	                        public: false,
+   261	                        priority: 1,
+   262	                        type: 'product'
+   263	                    }
+   264	                },
+   265	                {
+   266	                    onSuccess: () => {
+   267	                        toast({
+   268	                            title: formatMessage(TOAST_MESSAGE_ADDED_TO_WISHLIST, {quantity: 1}),
+   269	                            status: 'success',
+   270	                            action: (
+   271	                                // it would be better if we could use <Button as={Link}>
+   272	                                // but unfortunately the Link component is not compatible
+   273	                                // with Chakra Toast, since the ToastManager is rendered via portal
+   274	                                // and the toast doesn't have access to intl provider, which is a
+   275	                                // requirement of the Link component.
+   276	                                <Button
+   277	                                    variant="link"
+   278	                                    onClick={() => navigate('/account/wishlist')}
+   279	                                >
+   280	                                    {formatMessage(TOAST_ACTION_VIEW_WISHLIST)}
+   281	                                </Button>
+   282	                            )
+   283	                        })
+   284	                    },
+   285	                    onError: () => {
+   286	                        showError()
+   287	                    }
+   288	                }
+   289	            )
+   290	        } else {
+   291	            toast({
+   292	                title: formatMessage(TOAST_MESSAGE_ALREADY_IN_WISHLIST),
+   293	                status: 'info',
+   294	                action: (
+   295	                    <Button variant="link" onClick={() => navigate('/account/wishlist')}>
+   296	                        {formatMessage(TOAST_ACTION_VIEW_WISHLIST)}
+   297	                    </Button>
+   298	                )
+   299	            })
+   300	        }
+   301	    }
+   302	
+   303	    /**************** Add To Cart ****************/
+   304	    const showToast = useToast()
+   305	    const showError = (errorMessage) => {
+   306	        const errorText =
+   307	            typeof errorMessage === 'string' ? errorMessage : formatMessage(API_ERROR_MESSAGE)
+   308	
+   309	        showToast({
+   310	            title: errorText,
+   311	            status: 'error'
+   312	        })
+   313	    }
+   314	
+   315	    const [pickupInStoreMap, setPickupInStoreMap] = useState({})
+   316	
+   317	    const handlePickupInStoreChange = (productId, checked) => {
+   318	        setPickupInStoreMap((prev) => ({
+   319	            ...prev,
+   320	            [productId]: checked
+   321	        }))
+   322	    }
+   323	
+   324	    const handleAddToCart = async (productSelectionValues = []) => {
+   325	        try {
+   326	            let productItems = productSelectionValues.map((item) => {
+   327	                const {variant, quantity} = item
+   328	                // Use variant if present, otherwise use the main product
+   329	                const prod = variant || item.product || product
+   330	                return {
+   331	                    productId: prod?.productId || prod?.id, // productId for variant, id for product
+   332	                    price: prod?.price,
+   333	                    quantity
+   334	                }
+   335	            })
+   336	            // Add inventory IDs for pickup items using the hook helper
+   337	            productItems = addInventoryIdsToPickupItems(
+   338	                productItems,
+   339	                pickupInStoreMap,
+   340	                selectedStore
+   341	            )
+   342	            // Defensive check: This block ensures that if, for any reason, pickup is selected for a product but no store (inventoryId) is set,
+   343	            // we show an error. With the current UI logic, this should never be reached, but it guards against unexpected state.
+   344	            if (
+   345	                productItems.some(
+   346	                    (item) =>
+   347	                        item.inventoryId === undefined &&
+   348	                        pickupInStoreMap[item.productId || item.id]
+   349	                )
+   350	            ) {
+   351	                showError(
+   352	                    formatMessage({
+   353	                        id: 'product_view.error.no_store_selected_for_pickup',
+   354	                        defaultMessage: 'No valid store or inventory found for pickup'
+   355	                    })
+   356	                )
+   357	                return
+   358	            }
+   359	
+   360	            // Check if any products have pickup selected
+   361	            const hasAnyPickupSelected = hasPickupItems(
+   362	                productSelectionValues,
+   363	                pickupInStoreMap,
+   364	                product
+   365	            )
+   366	
+   367	            const currentShippingMethodIsPickup = isPickupMethod(
+   368	                basket?.shipments?.[0]?.shippingMethod
+   369	            )
+   370	            // Only perform the check if the basket exists and has at least one item
+   371	            if (!multishipEnabled && basket && basket.productItems?.length > 0) {
+   372	                if (hasAnyPickupSelected && !currentShippingMethodIsPickup) {
+   373	                    throw new Error(
+   374	                        formatMessage({
+   375	                            id: 'product_view.error.select_ship_to_address',
+   376	                            defaultMessage:
+   377	                                "Select 'Ship to Address' to match the delivery method for the items in your cart."
+   378	                        })
+   379	                    )
+   380	                }
+   381	                if (!hasAnyPickupSelected && currentShippingMethodIsPickup) {
+   382	                    throw new Error(
+   383	                        formatMessage({
+   384	                            id: 'product_view.error.select_pickup_in_store',
+   385	                            defaultMessage:
+   386	                                "Select 'Pick Up in Store' to match the delivery method for the items in your cart."
+   387	                        })
+   388	                    )
+   389	                }
+   390	            }
+   391	
+   392	            // Fetch and assign a suitable shipment for product items
+   393	            const targetShipmentId = await getShipmentIdForItems(
+   394	                hasAnyPickupSelected,
+   395	                selectedStore
+   396	            )
+   397	
+   398	            if (targetShipmentId) {
+   399	                productItems = productItems.map((item) => ({
+   400	                    ...item,
+   401	                    shipmentId: targetShipmentId
+   402	                }))
+   403	            }
+   404	
+   405	            const basketResponse = await addItemToNewOrExistingBasket(productItems)
+   406	
+   407	            // Configure shipping method for default shipment based on pickup selection
+   408	            await updateDefaultShipmentIfNeeded(
+   409	                basketResponse,
+   410	                targetShipmentId,
+   411	                hasAnyPickupSelected,
+   412	                selectedStore
+   413	            )
+   414	
+   415	            const productItemsForEinstein = productSelectionValues.map(
+   416	                ({product, variant, quantity}) => ({
+   417	                    product,
+   418	                    productId: variant?.productId || product?.id,
+   419	                    price: variant?.price || product?.price,
+   420	                    quantity
+   421	                })
+   422	            )
+   423	            einstein.sendAddToCart(productItemsForEinstein)
+   424	
+   425	            return productSelectionValues
+   426	        } catch (error) {
+   427	            showError(error.message)
+   428	        }
+   429	    }
+   430	
+   431	    /**************** Product Set/Bundles Handlers ****************/
+   432	    const handleChildProductValidation = useCallback(() => {
+   433	        // Run validation for all child products. This will ensure the error
+   434	        // messages are shown.
+   435	        Object.values(childProductRefs.current).forEach(({validateOrderability}) => {
+   436	            validateOrderability({scrollErrorIntoView: false})
+   437	        })
+   438	
+   439	        // Using ot state for which child products are selected, scroll to the first
+   440	        // one that isn't selected and requires a variant selection.
+   441	        const selectedProductIds = Object.keys(childProductSelection)
+   442	        const firstUnselectedProduct = product?.childProducts?.find(({product: childProduct}) => {
+   443	            // Skip validation for standard products (no variations)
+   444	            if (childProduct.type?.item) {
+   445	                return false
+   446	            }
+   447	            return !selectedProductIds.includes(childProduct.id)
+   448	        })?.product
+   449	
+   450	        if (firstUnselectedProduct) {
+   451	            // Get the reference to the product view and scroll to it.
+   452	            const {ref} = childProductRefs.current[firstUnselectedProduct.id]
+   453	
+   454	            if (ref.scrollIntoView) {
+   455	                ref.scrollIntoView({
+   456	                    behavior: 'smooth',
+   457	                    block: 'end'
+   458	                })
+   459	            }
+   460	
+   461	            return false
+   462	        }
+   463	
+   464	        return true
+   465	    }, [product, childProductSelection])
+   466	
+   467	    /**************** Product Set Handlers ****************/
+   468	    // 1. Gather the selected child products from state.
+   469	    // 2. Call handleAddToCart with the selected products.
+   470	    // 3. The add-to-cart modal will be opened in handleAddToCart.
+   471	    const handleProductSetAddToCart = () => {
+   472	        // Get all the selected products, and pass them to the addToCart handler which
+   473	        // accepts an array.
+   474	        const productSelectionValues = Object.values(childProductSelection)
+   475	        return handleAddToCart(productSelectionValues)
+   476	    }
+   477	
+   478	    /**************** Product Bundle Handlers ****************/
+   479	    // Top level bundle does not have variants
+   480	    const handleProductBundleAddToCart = async ([{quantity: selectedQuantity}]) => {
+   481	        try {
+   482	            const childProductSelections = Object.values(childProductSelection)
+   483	            // Check if any products have pickup selected (including main product and bundle items)
+   484	            const bundleSelectionValues = [
+   485	                {product, variant: null, selectedQuantity},
+   486	                ...childProductSelections
+   487	            ]
+   488	            const hasAnyPickupSelected = hasPickupItems(
+   489	                bundleSelectionValues,
+   490	                pickupInStoreMap,
+   491	                product
+   492	            )
+   493	
+   494	            // Check for delivery method conflicts before adding to cart
+   495	            if (!multishipEnabled && basket && basket.productItems?.length > 0) {
+   496	                const currentShippingMethod = basket?.shipments?.[0]?.shippingMethod
+   497	                const currentShippingMethodIsPickup = isPickupMethod(currentShippingMethod)
+   498	
+   499	                // If there's no shipping method, treat it as non-pickup (ship to address)
+   500	                if (
+   501	                    hasAnyPickupSelected &&
+   502	                    (!currentShippingMethod || !currentShippingMethodIsPickup)
+   503	                ) {
+   504	                    throw new Error(
+   505	                        formatMessage({
+   506	                            id: 'product_view.error.select_ship_to_address',
+   507	                            defaultMessage:
+   508	                                "Select 'Ship to Address' to match the delivery method for the items in your cart."
+   509	                        })
+   510	                    )
+   511	                } else if (
+   512	                    !hasAnyPickupSelected &&
+   513	                    currentShippingMethod &&
+   514	                    currentShippingMethodIsPickup
+   515	                ) {
+   516	                    throw new Error(
+   517	                        formatMessage({
+   518	                            id: 'product_view.error.select_pickup_in_store',
+   519	                            defaultMessage:
+   520	                                "Select 'Pick Up in Store' to match the delivery method for the items in your cart."
+   521	                        })
+   522	                    )
+   523	                }
+   524	            }
+   525	
+   526	            let productItems = [
+   527	                {
+   528	                    productId: product.id,
+   529	                    price: product.price,
+   530	                    quantity: selectedQuantity,
+   531	                    // The add item endpoint in the shopper baskets API does not respect variant selections
+   532	                    // for bundle children, so we have to make a follow up call to update the basket
+   533	                    // with the chosen variant selections
+   534	                    bundledProductItems: childProductSelections.map((child) => {
+   535	                        return {
+   536	                            productId: child.variant?.productId || child.product?.id,
+   537	                            quantity: child.quantity
+   538	                        }
+   539	                    })
+   540	                }
+   541	            ]
+   542	
+   543	            // Add inventory IDs for pickup items using the hook helper
+   544	            productItems = addInventoryIdsToPickupItems(
+   545	                productItems,
+   546	                pickupInStoreMap,
+   547	                selectedStore
+   548	            )
+   549	
+   550	            // Fetch and assign a suitable shipment for product items
+   551	            const targetShipmentId = await getShipmentIdForItems(
+   552	                hasAnyPickupSelected,
+   553	                selectedStore
+   554	            )
+   555	
+   556	            if (targetShipmentId) {
+   557	                productItems = productItems.map((item) => ({
+   558	                    ...item,
+   559	                    shipmentId: targetShipmentId
+   560	                }))
+   561	            }
+   562	
+   563	            const res = await addItemToNewOrExistingBasket(productItems)
+   564	
+   565	            const bundleChildMasterIds = childProductSelections.map((child) => {
+   566	                return child.product.id
+   567	            })
+   568	
+   569	            // since the returned data includes all products in basket
+   570	            // here we compare list of productIds in bundleProductItems of each productItem to filter out the
+   571	            // current bundle that was last added into cart
+   572	            const currentBundle = res.productItems.find((productItem) => {
+   573	                if (!productItem.bundledProductItems?.length) return
+   574	                const bundleChildIds = productItem.bundledProductItems?.map((item) => {
+   575	                    // seek out the bundle child that still uses masterId as product id
+   576	                    return item.productId
+   577	                })
+   578	                return bundleChildIds.every((id) => bundleChildMasterIds.includes(id))
+   579	            })
+   580	
+   581	            const itemsToBeUpdated = getUpdateBundleChildArray(
+   582	                currentBundle,
+   583	                childProductSelections
+   584	            )
+   585	
+   586	            if (itemsToBeUpdated.length) {
+   587	                // make a follow up call to update child variant selection for product bundle
+   588	                // since add item endpoint doesn't currently consider product bundle child variants
+   589	                await updateItemsInBasketMutation.mutateAsync({
+   590	                    method: 'PATCH',
+   591	                    parameters: {
+   592	                        basketId: res.basketId
+   593	                    },
+   594	                    body: itemsToBeUpdated
+   595	                })
+   596	            }
+   597	
+   598	            // Configure shipping method based on pickup selection
+   599	            await updateDefaultShipmentIfNeeded(
+   600	                res,
+   601	                targetShipmentId,
+   602	                hasAnyPickupSelected,
+   603	                selectedStore
+   604	            )
+   605	
+   606	            einstein.sendAddToCart(productItems)
+   607	
+   608	            return childProductSelections
+   609	        } catch (error) {
+   610	            showError(error)
+   611	        }
+   612	    }
+   613	
+   614	    /**************** Einstein ****************/
+   615	    useEffect(() => {
+   616	        if (product && product.type.set) {
+   617	            einstein.sendViewProduct(product)
+   618	            dataCloud.sendViewProduct(product)
+   619	            const childrenProducts = product.setProducts
+   620	            childrenProducts.map((child) => {
+   621	                try {
+   622	                    einstein.sendViewProduct(child)
+   623	                } catch (err) {
+   624	                    logger.error('Einstein sendViewProduct error', {
+   625	                        namespace: 'ProductDetail.useEffect',
+   626	                        additionalProperties: {error: err, child}
+   627	                    })
+   628	                }
+   629	                activeData.sendViewProduct(category, child, 'detail')
+   630	                dataCloud.sendViewProduct(child)
+   631	            })
+   632	        } else if (product) {
+   633	            try {
+   634	                einstein.sendViewProduct(product)
+   635	            } catch (err) {
+   636	                logger.error('Einstein sendViewProduct error', {
+   637	                    namespace: 'ProductDetail.useEffect',
+   638	                    additionalProperties: {error: err, product}
+   639	                })
+   640	            }
+   641	            activeData.sendViewProduct(category, product, 'detail')
+   642	            dataCloud.sendViewProduct(product)
+   643	        }
+   644	    }, [product])
+   645	
+   646	    return (
+   647	        <Box
+   648	            className="sf-product-detail-page"
+   649	            layerStyle="page"
+   650	            data-testid="product-details-page"
+   651	        >
+   652	            <Heading as="h1" srOnly>
+   653	                <FormattedMessage
+   654	                    defaultMessage="Product Details"
+   655	                    id="product_detail.title.product_details"
+   656	                />
+   657	            </Heading>
+   658	            <Helmet>
+   659	                <title>{product?.pageTitle}</title>
+   660	                {product?.pageMetaTags?.length > 0 &&
+   661	                    product.pageMetaTags.map(({id, value}) => (
+   662	                        <meta name={id} content={value} key={id} />
+   663	                    ))}
+   664	                {/* Fallback for description if not included in pageMetaTags */}
+   665	                {!product?.pageMetaTags?.some((tag) => tag.id === 'description') &&
+   666	                    product?.pageDescription && (
+   667	                        <meta name="description" content={product.pageDescription} />
+   668	                    )}
+   669	            </Helmet>
+   670	
+   671	            <Stack spacing={16}>
+   672	                {isProductASet || isProductABundle ? (
+   673	                    <Fragment>
+   674	                        <Island hydrateOn={'visible'}>
+   675	                            <ProductView
+   676	                                product={product}
+   677	                                category={primaryCategory?.parentCategoryTree || []}
+   678	                                addToCart={
+   679	                                    isProductASet
+   680	                                        ? handleProductSetAddToCart
+   681	                                        : handleProductBundleAddToCart
+   682	                                }
+   683	                                addToWishlist={handleAddToWishlist}
+   684	                                isProductLoading={isProductLoading}
+   685	                                isBasketLoading={isBasketLoading}
+   686	                                isWishlistLoading={isWishlistLoading}
+   687	                                validateOrderability={handleChildProductValidation}
+   688	                                childProductOrderability={childProductOrderability}
+   689	                                setSelectedBundleQuantity={setSelectedBundleQuantity}
+   690	                                selectedBundleParentQuantity={selectedBundleQuantity}
+   691	                                pickupInStore={!!pickupInStoreMap[product?.id]}
+   692	                                setPickupInStore={(checked) =>
+   693	                                    product && handlePickupInStoreChange(product.id, checked)
+   694	                                }
+   695	                                onOpenStoreLocator={onOpenStoreLocator}
+   696	                                showDeliveryOptions={storeLocatorEnabled}
+   697	                            />
+   698	                        </Island>
+   699	
+   700	                        <hr />
+   701	
+   702	                        {
+   703	                            // Render the child products
+   704	                            product?.childProducts?.map(
+   705	                                ({product: childProduct, quantity: childQuantity}) => (
+   706	                                    <Box key={childProduct.id} data-testid="child-product">
+   707	                                        <ProductView
+   708	                                            // Do not use an arrow function as we are manipulating the functions scope.
+   709	                                            ref={function (ref) {
+   710	                                                // Assign the "set" scope of the ref, this is how we access the internal
+   711	                                                // validation.
+   712	                                                childProductRefs.current[childProduct.id] = {
+   713	                                                    ref,
+   714	                                                    validateOrderability: this.validateOrderability
+   715	                                                }
+   716	                                            }}
+   717	                                            product={childProduct}
+   718	                                            isProductPartOfSet={isProductASet}
+   719	                                            isProductPartOfBundle={isProductABundle}
+   720	                                            childOfBundleQuantity={childQuantity}
+   721	                                            selectedBundleParentQuantity={selectedBundleQuantity}
+   722	                                            addToCart={
+   723	                                                isProductASet
+   724	                                                    ? (productSelectionValues) =>
+   725	                                                          handleAddToCart(productSelectionValues)
+   726	                                                    : null
+   727	                                            }
+   728	                                            addToWishlist={
+   729	                                                isProductASet ? handleAddToWishlist : null
+   730	                                            }
+   731	                                            onVariantSelected={(product, variant, quantity) => {
+   732	                                                if (quantity) {
+   733	                                                    setChildProductSelection((previousState) => ({
+   734	                                                        ...previousState,
+   735	                                                        [product.id]: {
+   736	                                                            product,
+   737	                                                            variant,
+   738	                                                            quantity: isProductABundle
+   739	                                                                ? childQuantity
+   740	                                                                : quantity
+   741	                                                        }
+   742	                                                    }))
+   743	                                                } else {
+   744	                                                    const selections = {
+   745	                                                        ...childProductSelection
+   746	                                                    }
+   747	                                                    delete selections[product.id]
+   748	                                                    setChildProductSelection(selections)
+   749	                                                }
+   750	                                            }}
+   751	                                            isProductLoading={isProductLoading}
+   752	                                            isBasketLoading={isBasketLoading}
+   753	                                            isWishlistLoading={isWishlistLoading}
+   754	                                            setChildProductOrderability={
+   755	                                                setChildProductOrderability
+   756	                                            }
+   757	                                            pickupInStore={
+   758	                                                !!pickupInStoreMap[
+   759	                                                    childProductSelection[childProduct?.id]?.variant
+   760	                                                        ?.productId
+   761	                                                ]
+   762	                                            }
+   763	                                            setPickupInStore={(checked) =>
+   764	                                                childProduct &&
+   765	                                                handlePickupInStoreChange(
+   766	                                                    childProductSelection[childProduct?.id]?.variant
+   767	                                                        ?.productId,
+   768	                                                    checked
+   769	                                                )
+   770	                                            }
+   771	                                            onOpenStoreLocator={onOpenStoreLocator}
+   772	                                            showDeliveryOptions={
+   773	                                                storeLocatorEnabled && !isProductABundle
+   774	                                            }
+   775	                                        />
+   776	                                        <InformationAccordion product={childProduct} />
+   777	
+   778	                                        <Box display={['none', 'none', 'none', 'block']}>
+   779	                                            <hr />
+   780	                                        </Box>
+   781	                                    </Box>
+   782	                                )
+   783	                            )
+   784	                        }
+   785	                    </Fragment>
+   786	                ) : (
+   787	                    <Fragment>
+   788	                        <Island hydrateOn={'visible'}>
+   789	                            <ProductView
+   790	                                product={product}
+   791	                                category={primaryCategory?.parentCategoryTree || []}
+   792	                                addToCart={handleAddToCart}
+   793	                                addToWishlist={handleAddToWishlist}
+   794	                                isProductLoading={isProductLoading}
+   795	                                isBasketLoading={isBasketLoading}
+   796	                                isWishlistLoading={isWishlistLoading}
+   797	                                childProductOrderability={childProductOrderability}
+   798	                                setChildProductOrderability={setChildProductOrderability}
+   799	                                setSelectedBundleQuantity={setSelectedBundleQuantity}
+   800	                                selectedBundleParentQuantity={selectedBundleQuantity}
+   801	                                pickupInStore={!!pickupInStoreMap[product?.id]}
+   802	                                setPickupInStore={(checked) =>
+   803	                                    product && handlePickupInStoreChange(product.id, checked)
+   804	                                }
+   805	                                onOpenStoreLocator={onOpenStoreLocator}
+   806	                                showDeliveryOptions={storeLocatorEnabled}
+   807	                            />
+   808	                            <InformationAccordion product={product} />
+   809	                        </Island>
+   810	                    </Fragment>
+   811	                )}
+   812	
+   813	                {/* Product Recommendations */}
+   814	                <Stack spacing={16}>
+   815	                    {!isProductASet && (
+   816	                        <Island hydrateOn={'visible'}>
+   817	                            <RecommendedProducts
+   818	                                title={
+   819	                                    <FormattedMessage
+   820	                                        defaultMessage="Complete the Set"
+   821	                                        id="product_detail.recommended_products.title.complete_set"
+   822	                                    />
+   823	                                }
+   824	                                recommender={EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET}
+   825	                                products={[product]}
+   826	                                mx={{base: -4, md: -8, lg: 0}}
+   827	                                shouldFetch={() => product?.id}
+   828	                            />
+   829	                        </Island>
+   830	                    )}
+   831	                    <Island hydrateOn={'visible'}>
+   832	                        <RecommendedProducts
+   833	                            title={
+   834	                                <FormattedMessage
+   835	                                    defaultMessage="You might also like"
+   836	                                    id="product_detail.recommended_products.title.might_also_like"
+   837	                                />
+   838	                            }
+   839	                            recommender={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
+   840	                            products={[product]}
+   841	                            mx={{base: -4, md: -8, lg: 0}}
+   842	                            shouldFetch={() => product?.id}
+   843	                        />
+   844	                    </Island>
+   845	
+   846	                    <Island hydrateOn={'visible'}>
+   847	                        <RecommendedProducts
+   848	                            // The Recently Viewed recommender doesn't use `products`, so instead we
+   849	                            // provide a key to update the recommendations on navigation.
+   850	                            key={location.key}
+   851	                            title={
+   852	                                <FormattedMessage
+   853	                                    defaultMessage="Recently Viewed"
+   854	                                    id="product_detail.recommended_products.title.recently_viewed"
+   855	                                />
+   856	                            }
+   857	                            recommender={EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED}
+   858	                            mx={{base: -4, md: -8, lg: 0}}
+   859	                        />
+   860	                    </Island>
+   861	                </Stack>
+   862	            </Stack>
+   863	        </Box>
+   864	    )
+   865	}
+   866	
+   867	ProductDetail.getTemplateName = () => 'product-detail'
+   868	
+   869	ProductDetail.propTypes = {
+   870	    /**
+   871	     * The current react router match object. (Provided internally)
+   872	     */
+   873	    match: PropTypes.object
+   874	}
+   875	
+   876	export default ProductDetail

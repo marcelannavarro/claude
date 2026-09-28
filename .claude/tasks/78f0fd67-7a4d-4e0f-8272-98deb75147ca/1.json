@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Confirm as-is baseline (codebase + Confluence + JIRA)",
+  "description": "Establish current-state MRT topology facts: single app/6 tiers, proxy config, undici pool wiring, deploy pipeline, integration doc inventory. Done via full research pass 2026-08-10 — see memory project_sfcc237_mrt_topology_spike.md.",
+  "activeForm": "Confirming as-is baseline",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

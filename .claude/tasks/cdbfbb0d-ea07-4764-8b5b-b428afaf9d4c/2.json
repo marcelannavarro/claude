@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Resolve locale count for TSD §4",
+  "description": "Reconcile 8 SFCC sites vs 9 Contentful locales vs the erroneous \"11\" in 02-contentful.md §7, against config/sites overlay+generated. Produce the canonical locale/storefront table for TSD §4 and flag the 02-contentful.md fix.",
+  "activeForm": "Resolving locale count for TSD §4",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

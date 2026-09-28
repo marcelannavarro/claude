@@ -1,0 +1,9 @@
+{
+  "id": "6",
+  "subject": "Round 1: self-check vs DoD rubric + improve to v2",
+  "description": "Check v1 against rubric A-H. Known gaps: B (Sprint 1 vs 2 not explicit), C (rendering logic thin), G (no at-a-glance summary), H (verify shoppable-image product-resolution claim). Apply improvements to v2.",
+  "activeForm": "Running round 1 check + improve",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

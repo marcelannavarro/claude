@@ -1,0 +1,1591 @@
+### [1] 2026-09-08T02:37
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. **Primary Request and Intent:**
+
+   This conversation continues the SFCC-83 (Recently Viewed rail: PDP/Cart/PLP) + SFCC-84 (Recently Viewed Full History page) build on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. Marcel's requests, in order:
+
+   1. "first, let's get the plan updated accordingly; you have the JIRA card details and ACs, providing the design nodes here again for reference as well: [Figma URLs]" — reconcile `~/Dev/zimmerMANN-skills/.runs/SFCC-83+84/plan.md` against real Jira ACs and the supplied Figma nodes.
+   2. "how are was/now and multi-image gaps? they should be both covered by the PLP product card?" — verify a specific claim before accepting it.
+   3. "before we even write any code, let's feasibility test the plan - run tests and checks to confirm that our plan is actually feasible and will work as we've planned" — explicit feasibility-testing request before implementation.
+   4. "so, status?" — status check.
+   5. "24 cap it is - before we implement, how would this plan go? how many and what are the phases?" — confirms the 24-item display/storage cap decision; asks for a phase roadmap.
+   6. **The pivotal build instruction**: "run the full build, for any decisions needed, decide what's best by looking into what the codebase already does, then af
+
+### [2] 2026-09-08T02:40
+does it return any products under recently viewed?
+
+### [3] 2026-09-08T02:45
+ELI5: "This doesn't change the bottom line — it's still unreachable from our live app (DNT gate) and there's no deployed engine behind any real Zimmermann site — but it closes out any doubt that the feature itself works as advertised. The blockers are entirely about reachability and deployment, not about whether "recently viewed" as an Einstein capability is real."
+
+### [4] 2026-09-08T02:46
+so it works but it won't work for the current published SFCC BM products that we have?
+
+### [5] 2026-09-08T02:48
+end of side-quest, back to work; what do we have built so far?
+
+### [6] 2026-09-08T03:22
+let's take a step back, our branch is based on what commit? the latest in remote develop?
+
+### [7] 2026-09-08T03:24
+let's make sure we're based on the latest from remote develop
+
+### [8] 2026-09-08T03:33
+let's work on the stories in storybook, starting with: recently viewed rail -> for the default (and actually the rest of the stories) they must be responsive, on desktop supports max of 5, 3 for tablet, and 2 for mobile while also serving the limits (5 shown on desktop, 3 only on tab, 2 only on mobile)
+
+### [9] 2026-09-08T06:06
+it's good now, it wasn't earlier
+
+### [10] 2026-09-08T06:14
+now off to the recentyl viewed grid, we want this responsive as well, 4 cols on desktop, 3 cols on tablet, and 2 cols on mobile
+
+### [11] 2026-09-08T06:27
+the hover jump/grow is not about the size chip group, that's an accepted behavior for the product cards themselves, it is actually the product card growing on mobile, while there is no mobile hover, it's just not something that should happen anyway: [Image #49]
+
+### [12] 2026-09-08T06:27
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/49.png]
+
+### [13] 2026-09-08T06:36
+why wishlist grid stories? is that in our coverage?
+
+### [14] 2026-09-08T06:49
+now my concern is how we built the local recently viewed tracking; but before that i want to understand how EINSTEIN works, say we have it configured, how would the code be and how would it work it terms of tracking the recently viewed products?
+
+### [15] 2026-09-08T06:53
+now my concern is how we built the local recently viewed tracking; but before that i want to understand how EINSTEIN works, say we have it configured, how would the code be and how would it work it terms of tracking the recently viewed products? ELI5
+
+### [16] 2026-09-08T07:34
+now walk me through how our local tracking approach works for now, ELI5 - the goal behind this is too gauge how big of a change is required to move from local tracking to EINSTEIN once it's available
+
+### [17] 2026-09-08T08:24
+this is good stuff, with the storybook and wiring locked in, let's focus on the live application and how the rail and full history are right now -> style and function, hold off while i test
+
+### [18] 2026-09-08T08:26
+first off: this product's image doesn't appear in rail, let's investigate and fix: http://localhost:3000/product/4673TS251
+
+### [19] 2026-09-08T08:36
+how will the fallback work/behave?
+
+### [20] 2026-09-08T08:36
+[Request interrupted by user]
+
+### [21] 2026-09-08T08:36
+how will the fallback work/behave? ELI5
+
+### [22] 2026-09-08T08:37
+go ahead and implement it
+
+### [23] 2026-09-08T08:56
+what files were affected by the fix we did for the primary image fallback?
+
+### [24] 2026-09-08T08:57
+next up: on the full history page, the size selector chips and add to bag doesn't seem to work? investigate and report back before fixing
+
+### [25] 2026-09-08T09:06
+look into the product cards implemented on the PLP, how do they work vs. the fix proposed for the missing functionality on the recently viewed full history product cards
+
+### [26] 2026-09-08T11:47
+given that PLP gap, where else is the product card implementing only a cosmetic feature
+
+### [27] 2026-09-08T12:28
+ELI5
+
+### [28] 2026-09-08T12:30
+this is good, but my question is where else is something shown but only serves a cosmetic purpose than the actualy intended purpose of it
+
+### [29] 2026-09-08T12:30
+this is good, but my main question is where else is something shown but only serves a cosmetic purpose than the actualy intended purpose of it? because these are not just cosmetic pieces - these actually need to be working
+
+### [30] 2026-09-08T12:41
+before we implement the showBag/showSizeChips fix - what result do we expect out of it
+
+### [31] 2026-09-08T12:46
+we don't want the "separate later step" why can't we fix the cosmetic-only product card pieces and get them actually working already?
+
+### [32] 2026-09-08T13:37
+let's take a step back, this is getting overwhelming; first off, let's focus on the product card - we currently have the product card wired up for the PLP, and as far as i know, that's the only consumption there is to it for now, correct?
+
+### [33] 2026-09-08T13:37
+let's take a step back, this is getting overwhelming; first off, let's focus on the product card - we currently have the product card wired up for the PLP, and as far as i know, that's the only live consumption there is to it for now, correct? (aside from the work we're doing for recently view rail and full history view)
+
+### [34] 2026-09-08T13:45
+with that said, let's look at the current PLP consumption of product card; from what i believe the following are the expected behavior of PLP product card: show badge if the product has a badge, on hover with multiple images then show arrows to navigate through the images (desktop), show price including was/now if applicable to the product, on hover hide price and show size chips, if out of stock disable the add to bag icon and show notify me instead of size chips, on add to bag without size then add to bag the default size, on add to bag with size then add to bag the size
+
+### [35] 2026-09-08T13:50
+let's fix those gaps, plan the fix/build then report back
+
+### [36] 2026-09-08T13:51
+anything i've missed?
+
+### [37] 2026-09-08T13:54
+let's address the 3 gaps, plan the fix/build and report back to me
+
+### [38] 2026-09-08T14:00
+for notify me, we just have to show the button, inert as notify me is yet to be worked on
+
+### [39] 2026-09-08T14:00
+for notify me, we just have to show the button in place of the size chips (and add to bag is then disabled as well correct?), inert as notify me is yet to be worked on
+
+### [40] 2026-09-08T14:05
+no handler for notify me - what does that mean? ELI5
+
+### [41] 2026-09-08T14:05
+yep, no handler for now, it will get its own user story
+
+### [42] 2026-09-08T14:05
+fix the 3 gaps, test, then i'll test on my end, once all good we commit
+
+### [43] 2026-09-08T14:06
+Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNBuild
+
+The executor. Takes an approved plan and builds it, one step at a time, with every step tested,
+scope-checked, scored and seen by Marcel before it becomes a commit.
+
+**Intended model: Sonnet 5 at maximum effort.** A skill cannot pin the session model — the loop
+agents are pinned to Sonnet in their own frontmatter regardless.
+
+**Scale to the work.** A two-point story does not get the full loop. The plan states the scale it
+chose and why; honour it. Over-scaled machinery is a defect, not thoroughness. Nothing too crazy,
+no overthinking.
+
+---
+
+## Two modes
+
+**`build`** — `fix the 3 gaps, test, then i'll test on my end, once all good we commit` is a Jira key. Reads `~/Dev/zimmerMANN-skills/.runs/<TICKET>/plan.md`
+and executes it. This is the default.
+
+**`rework`** — invoked as `rework <TICKET>` after a PR is open and CodeRabbit or a reviewer has
+requested changes. Skips planning entirely; see the last section.
+
+If no plan exists for the ticket, stop and say so. **Do not plan here** — that is
+`zimmerMANNPreBuild`'s job, and building from an unplanned story is how an afternoon gets burned
+on the wrong thing.
+
+---
+
+## Before the first step
+
+1. Confirm the branch. **Not `develop`, not `main`** — a `PreToolUse` hook blocks every Write and
+   Edit there. If the branch is wrong, stop.
+2. Confirm the working tree is clean, or that everything dirty is expected and belongs to this
+   story. Registry ch
+
+### [44] 2026-09-08T14:07
+implement it, go ahead
+
+### [45] 2026-09-08T14:32
+how about the size chip disabled when the size is out? do we have that covered as well
+
+### [46] 2026-09-08T14:35
+i don't think so because for this product: http://localhost:3000/product/4673TS251 size 1 is unavailable but it's not disabled in the size chip selector
+
+### [47] 2026-09-08T14:40
+[Request interrupted by user]
+
+### [48] 2026-09-08T14:40
+i don't think so because for this product: http://localhost:3000/product/4673TS251 size 1 is unavailable but it's not disabled in the size chip selector in PLP
+
+### [49] 2026-09-08T14:47
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. **Primary Request and Intent:**
+
+   This conversation is a continuation of SFCC-83/84 (Recently Viewed rail/full-history page) work on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`, which expanded into fixing real defects on the shared `ZimmProductCard` component and PLP's own "quick test integration." In chronological order, Marcel's requests were:
+
+   1. Continue the Einstein API sidequest: "how do we use that key? what APIs are available for it?" → "does it return any products under recently viewed?" → two ELI5 requests (how Einstein would work with recently-viewed tracking; how the current local tracking approach works) explicitly "to gauge how big of a change is required to move from local tracking to EINSTEIN once it's available."
+   2. "this is good stuff, with the storybook and wiring locked in, let's focus on the live application and how the rail and full history are right now -> style and function, hold off while i test" then "first off: this product's image doesn't appear in rail, let's investigate and fix: http://localhost:3000/product/4673TS251"
+   3. "go ahead and implement it" (approving the `primaryImageFallbacks` cascading-onError fix).
+   4. "what files were affected by the fix we did for the primary image fallback?"
+   5. "next up: on the full hist
+
+### [50] 2026-09-08T14:48
+go ahead and implement it, verify against 4673TS251
+
+### [51] 2026-09-08T15:12
+/compact
+
+### [52] 2026-09-08T15:14
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This conversation window continues SFCC-83/84 (Recently Viewed rail/full-history page) work on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`, specifically the size-chip-disabled-state investigation that was in progress at the start of this window (a defect Marcel had reported: "i don't think so because for this product: http://localhost:3000/product/4673TS251 size 1 is unavailable but it's not disabled in the size chip selector in PLP").
+
+   In this window, Marcel's explicit request was: **"go ahead and implement it, verify against 4673TS251"** — approving the fix I had proposed (adding `'availability'` and `'represented_products'` to the PLP search call's `expand` array) and explicitly asking for live verification against the real product `4673TS251` (the same product used throughout this session's investigations).
+
+   The final message in this window is a strict system-level instruction to produce a text-only conversation summary (the compaction request itself), not a new user task.
+
+2. Key Technical Concepts:
+   - **SFCC Shopper Search (`ShopperSearch.productSearch`) `expand` parameter behavior**: passing an explicit `expand` array **replaces** the endpoint's own default list rather than merging with it. The SDK's own doc comment st
+
+### [53] 2026-09-08T15:15
+hey claude, let's take a step back shall we? do not do anything until i ask, work with me on this one
+
+### [54] 2026-09-08T15:16
+first up, let's recognize that we've gone off course and we're currently all over the place, i want to change that and for us to get back on course, what do you think?
+
+### [55] 2026-09-08T15:18
+first off, are we sitting on top of the latest remote develop branch as our foundation/base?
+
+### [56] 2026-09-08T15:19
+for each of the 9 commits that we have on our branch, what are they? what do they do? ELI5BITFLOTP
+
+### [57] 2026-09-08T15:24
+with that said, let's look back into the plan, tell me, what's our status in terms of the original plan and how and on what have we drifted from the plan? ELI5BITFLOTP
+
+### [58] 2026-09-08T15:28
+since the last commit that's aligned to the plan, what are the changes that we've made/done - including the changes we have sitting uncommitted
+
+### [59] 2026-09-08T15:34
+alright, let's first focus on 83, the rail; for this one, we already have the product card variant for it correct? image that's linked to the pdp while also being navigable - this is the variant across all viewports, correct?
+
+### [60] 2026-09-08T15:38
+we also already have the rest of the things we need for the full rail right? the heading
+
+### [61] 2026-09-08T15:38
+[Request interrupted by user]
+
+### [62] 2026-09-08T15:41
+we also already have the rest of the things we need for the full rail right? the heading "RECENTLY VIEWED" and the "SEE FULL HISTORY" and the layout itself of how the rail will sit in PLP, PDP, and CART?
+
+### [63] 2026-09-08T15:48
+now full history, what do we have for this scope of work?
+
+### [64] 2026-09-08T15:51
+for the product cards in full history, these are basically the PLP cards, correct? any difference?
+
+### [65] 2026-09-08T15:54
+so basically, the same but there are discrepancies with behavior correct?
+
+### [66] 2026-09-08T15:59
+and we've identified them correct? size chips, add to bag, etc. - can you remind me of what we've identified as cosmetic-only/inert/not working as expected and if we've addressed them already or not and if so, how
+
+### [67] 2026-09-08T16:00
+and we've identified them correct? size chips, add to bag, etc. - can you remind me of what we've identified as cosmetic-only/inert/not working as expected and if we've addressed them already or not and if so, how - ELI5BITFLOTP
+
+### [68] 2026-09-08T16:03
+and we've identified them correct? size chips, add to bag, etc. - can you remind me of what we've identified as cosmetic-only/inert/not working as expected and if we've addressed them already or not and if so, how? and on which surface did we make the change? PLP? recently viewed rail? full history? all cards? other surface/s?  - ELI5BITFLOTP
+
+### [69] 2026-09-08T16:07
+with this said, let's forget about the recently viewed full history product cards that pull from PLP for now - and let's focus on the PLP product cards that we've shipped already, shall we?
+
+### [70] 2026-09-08T16:09
+what are the identified gaps for the PLP product card and how have we fixed them?
+
+### [71] 2026-09-08T16:12
+i just saw that PLP product card's supposed to change from primary image to the model image on hover on desktop, i think that's a missed spec as well no?
+
+### [72] 2026-09-08T16:19
+tell me something: when a product is out of stock, what happens on hover? what shows? product name + what?
+
+### [73] 2026-09-08T16:22
+how is the PLP product card configured now? does it implement this behavior: "product name + price + a disabled bag icon are already showing before you even hover — hovering only adds "Notify me."" ?
+
+### [74] 2026-09-08T16:25
+so the only thing missing from PLP product card is the functionality of swap the image on hover?
+
+### [75] 2026-09-08T16:35
+for the first item, this approach was actually implemented in the product cards demo i did, the branch is here locally so look into that and confirm the approach; for the second item, i'm curious on this one because the PLP product card - while not having the broken image fallback, actually is able to render the primary image for 4673TS251 but recently viewed isn't
+
+### [76] 2026-09-08T16:43
+ELI5BITFLOTP
+
+### [77] 2026-09-08T16:46
+question for item #1, how would colour be considered if there's no color selector in the product card, especially for products that have multiple colors - does sfcc ship a variant of a product that's set/marked/tagged as the default?
+
+### [78] 2026-09-08T16:54
+question for item #1: for products with multiple colors/variants how is it decided which one gets shown in the product card - this is related to you mentioning narrowing down which colour the shopper picked because in our product cards, no color select is available as opposed to the ootb product card which as the color selector
+
+### [79] 2026-09-08T16:59
+given the findings that the representing colour/variant for a product is decided server-side - how should selectGalleryImages work/handle it then?
+
+### [80] 2026-09-08T17:03
+once we get this done and resolved, what would this mean for the on hover image swap?
+
+### [81] 2026-09-08T17:09
+go and check a few real products first but the AC is clear to me, on hover make the hover image swap while also activating gallery mode
+
+### [82] 2026-09-08T17:23
+what's our finding? ELI5
+
+### [83] 2026-09-08T17:33
+good, hold that thought, let's move to 2. Why PLP shows the picture fine but Recently Viewed doesn't, same product. They're not looking at the same photo at all. PLP grabs the one "official" picture SFCC itself hands back for search results — for this product, that happens to be photo #9, and #9 works fine. Recently Viewed instead reaches straight into the full photo album and grabs photo #1 — and #1, for this exact product, is the broken one. So PLP isn't doing anything smarter — it's just looking somewhere else entirely, by coincidence. Which means PLP still has zero backup plan if its own "official" picture is ever the broken one on some other product — this one just got lucky. -> for this one, what is this "official" picture? what i think we could do is acknowledge what gets shipped as official while also implemeneting the image fallback
+
+### [84] 2026-09-08T17:36
+give me a rundown on the findings we made and things we'll do for the PLP product card
+
+### [85] 2026-09-08T17:39
+yes, turn this into a build plan
+
+### [86] 2026-09-08T17:48
+what are the aspects we've discussed and investigated that led us to this plan?
+
+### [87] 2026-09-08T17:50
+what are the aspects we've discussed and investigated that led us to this plan? - ELI5BITFLOTP
+
+### [88] 2026-09-08T17:55
+the plan that we have executes our findings and decisions into implementations for the PLP product card, correct?
+
+### [89] 2026-09-08T17:56
+go ahead and implement it /zimmerMANNBuild
+
+### [90] 2026-09-08T17:56
+(Re-invocation of /zimmerMANNBuild — the skill instructions were previously loaded; the arguments or dynamic output below are new.)
+
+### [91] 2026-09-08T17:56
+Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNBuild
+
+The executor. Takes an approved plan and builds it, one step at a time, with every step tested,
+scope-checked, scored and seen by Marcel before it becomes a commit.
+
+**Intended model: Sonnet 5 at maximum effort.** A skill cannot pin the session model — the loop
+agents are pinned to Sonnet in their own frontmatter regardless.
+
+**Scale to the work.** A two-point story does not get the full loop. The plan states the scale it
+chose and why; honour it. Over-scaled machinery is a defect, not thoroughness. Nothing too crazy,
+no overthinking.
+
+---
+
+## Two modes
+
+**`build`** — `` is a Jira key. Reads `~/Dev/zimmerMANN-skills/.runs/<TICKET>/plan.md`
+and executes it. This is the default.
+
+**`rework`** — invoked as `rework <TICKET>` after a PR is open and CodeRabbit or a reviewer has
+requested changes. Skips planning entirely; see the last section.
+
+If no plan exists for the ticket, stop and say so. **Do not plan here** — that is
+`zimmerMANNPreBuild`'s job, and building from an unplanned story is how an afternoon gets burned
+on the wrong thing.
+
+---
+
+## Before the first step
+
+1. Confirm the branch. **Not `develop`, not `main`** — a `PreToolUse` hook blocks every Write and
+   Edit there. If the branch is wrong, stop.
+2. Confirm the working tree is clean, or that everything dirty is expected and belongs to this
+   story. Registry churn under `.claude/registry/*.md` is automatic and expected.
+3. Read th
+
+### [92] 2026-09-08T18:31
+go ahead and implement it
+
+### [93] 2026-09-08T18:39
+[Request interrupted by user]
+
+### [94] 2026-09-08T18:40
+from this plan, what's our expected results/output/behavior?
+
+### [95] 2026-09-08T18:46
+[Request interrupted by user]
+
+### [96] 2026-09-08T18:46
+[Request interrupted by user]
+
+### [97] 2026-09-08T18:46
+from this plan, what's our expected results/output/behavior?
+
+### [98] 2026-09-08T18:47
+implement it
+
+### [99] 2026-09-08T19:02
+[Request interrupted by user]
+
+### [100] 2026-09-08T19:04
+implement it
+
+### [101] 2026-09-08T19:06
+what would be the behavior when a user hovers on a product with on image hover swap image and then proceeds to use the arrows to navigate through the gallery?
+
+### [102] 2026-09-08T19:06
+[Request interrupted by user]
+
+### [103] 2026-09-08T19:09
+before we do any implementatons, we have 22 files changes sitting uncommitted on the source tree, how do we settle these?
+
+### [104] 2026-09-08T19:13
+before we do any implementatons, we have 22 files changes sitting uncommitted on the source tree, how do we settle these? look at the current 22 files and their changes/diffs
+
+### [105] 2026-09-08T19:16
+before we do commit the changes, i see comments referencing the build plan which is solely and locally to me alone, this will cause drift, no mentions and referencing of our build plan in the comments pelsae
+
+### [106] 2026-09-08T19:16
+[Request interrupted by user]
+
+### [107] 2026-09-08T19:16
+before we do commit the changes, i see comments referencing the build plan which is solely and locally to me alone, this will cause drift, no mentions and referencing of our build plan in the comments please
+
+### [108] 2026-09-08T19:23
+the current implementation is isolated for recently viewed rail and full history right? and our plan covers the entirety of product cards so once we implement that then the current fallback implementation for recently viewed rail and full history becomes redundant and unnecessary?
+
+### [109] 2026-09-08T19:25
+lose it, we'll pivot the fallback handling as something that can be reused across product card consumptions, that's the architecture we want to go for, or am i wrong?
+
+### [110] 2026-09-08T19:28
+drop the fallback code, rebuild will be folded into the PLP work we're about to do
+
+### [111] 2026-09-08T19:30
+yes, finish the build plan comment cleanup
+
+### [112] 2026-09-08T19:34
+items #1 and #5, leave them out, the belong with the work we're about to do for PLP, the rest go for commit
+
+### [113] 2026-09-08T19:38
+for the commits we've done so far on this branch, all commit messages are free from co-authoreds, correct?
+
+### [114] 2026-09-08T19:39
+good good, now let's revisit the PLP plan we have, what are we building again for that?
+
+### [115] 2026-09-08T19:41
+yes, wire up Rail and Full History too
+
+### [116] 2026-09-08T19:42
+run me through the full plan for PLP - ELI5BITFLOTP
+
+### [117] 2026-09-08T19:45
+for the plan, remove anything not PLP, we're scoping this work to PLP first since recentlt viewed product cards are taken from PLP so once we fix PLP, recently viewed product cards for full history should then just follow, correcT?
+
+### [118] 2026-09-08T19:45
+for the plan, remove anything not PLP, we're scoping this work to PLP first since recentlt viewed product cards are taken from PLP so once we fix PLP, recently viewed product cards for full history should then just follow, correct?
+
+### [119] 2026-09-08T19:48
+i know that it's not a literal copy PLP into the recently viewed full history product cards, but it sets the premise and basis, am i right?
+
+### [120] 2026-09-08T19:48
+i know that it's not a literal copy PLP into the recently viewed full history product cards, but it sets the premise and basis, or am i wrong / what am i missing here
+
+### [121] 2026-09-08T19:48
+i know that it's not a literal copy PLP into the recently viewed full history product cards, but it sets the premise and basis, or am i wrong / what am i missing here?
+
+### [122] 2026-09-08T19:49
+yes, fix it in the plan
+
+### [123] 2026-09-08T19:50
+walk me through in detail what we have lined up for PLP - ELI5BITFLOTP
+
+### [124] 2026-09-08T19:56
+i have a question for step 2: the hover-swap and gallery running together phase; a) when the user hovers and the primary image is swapped with the model image, when the user then navigates via gallery controls, where are they led to? b) what happens when the user hovers on a non-primary image -> the user is on a different image via gallery controls, what happens when they hover? c) what happens in a product that only has 2 images and the user hovers and then navigates via gallery controls (in line with question a) - basically the premise of my questions revolve around the behaviors when swap image on hover and gallery are both utilized
+
+### [125] 2026-09-08T19:57
+[Request interrupted by user]
+
+### [126] 2026-09-08T19:59
+i have a question for step 2: the hover-swap and gallery running together phase; a) when the user hovers and the primary image is swapped with the model image, when the user then navigates via gallery controls, where are they led to? b) what happens when the user hovers on a non-primary image -> the user is on a different image via gallery controls, what happens when they hover? c) what happens in a product that only has 2 images and the user hovers and then navigates via gallery controls (in line with question a) - basically the premise of my questions revolve around the behaviors when swap image on hover and gallery are both utilized -> imagine a product with 5 images, the user hovers and the image switches from primary (image 1) to model image (image 2) then they use the gallery controls to navigate the gallery, are they then directed to image 2 again which is where they're currently at given the on hover image swap?
+
+### [127] 2026-09-09T01:06
+option a for now - to be refined another time
+
+### [128] 2026-09-09T01:10
+go build
+
+### [129] 2026-09-09T01:22
+what do we expect as the outcome/results of the implementation/build that we just did?
+
+### [130] 2026-09-09T01:30
+4673TS251 -> this product's first image is so weird claude, before we did anything there was something appearing as the primary image both on the ootb/default and zimm implemented product cards, it's also in the pdp as the main image but when we tried to implement recently viewed it stop showing and now that we've implemented our planned actions for PLP product card it's not showing anymore
+
+### [131] 2026-09-09T01:38
+go for both, once extended fallback is done then i'll decide if we keep it or lose it since this mainly points as a BM problem
+
+### [132] 2026-09-09T01:50
+if the fallback is active then why is the product's plp product card still showing up as brokne
+
+### [133] 2026-09-09T01:50
+[Request interrupted by user]
+
+### [134] 2026-09-09T01:50
+if the fallback is active then why is the product's plp product card still showing up as broken?
+
+### [135] 2026-09-09T02:07
+no self-heal is happening, can you recheck/test and verify visually as well?
+
+### [136] 2026-09-09T02:13
+this is good for now, i've raised the issue with BM already for the broken medium package, when that gets fixed, what should happen?
+
+### [137] 2026-09-09T02:15
+sounds good, with implementation done, what are the things i should review/test myself?
+
+### [138] 2026-09-09T02:21
+medium for 4673TS251 has been fixed, can we confirm?
+
+### [139] 2026-09-09T02:34
+with the fix in BM in, that means that the fallback will not be active for the product right? if so, then why does the 4673TS251 product show the model image as the primary and the product image on hover? that seems wrong (the other way around)?
+
+### [140] 2026-09-09T02:37
+check a couple more products first
+
+### [141] 2026-09-09T02:41
+go ahead and build it
+
+### [142] 2026-09-09T02:45
+check and audit the changes and the diff, test, and then commit
+
+### [143] 2026-09-09T02:45
+check and audit the changes and the diff, test, and then report back before committing
+
+### [144] 2026-09-09T02:50
+fix the stale comment, leave the other two
+
+### [145] 2026-09-09T02:51
+go for commit
+
+### [146] 2026-09-09T02:53
+what are the changes in the commit we just did? ELI5BITFLOTP
+
+### [147] 2026-09-09T02:56
+let's now get back to the recently viewed rail, from the changes we did for PLP product card, what are the needed changes for the recent viewed rail and recently viewed rail product cards?
+
+### [148] 2026-09-09T02:58
+ELI5BITFLOTP
+
+### [149] 2026-09-09T03:00
+let's discuss this further: "Figure out the right colour — but there's only one way to do it here, not two like PLP had. PLP could ask the store directly "which colour did you pick for this?" The Rail can't — that information just isn't available for this kind of card. So it can only guess: pick whichever colour is actually in stock, or the first one listed if none are." -> why are we resorting to just guessing? what can't it do what PLP does - asking SFCC BM
+
+### [150] 2026-09-09T03:05
+so what's the outcome for recently viewed rail and its product card? it shows the representative variant and its image right? isn't that what we expect it to do anyway?
+
+### [151] 2026-09-09T03:11
+let's take a step back, i need to understand how the recently viewed rail is implemented, ELI5BITFLOTP
+
+### [152] 2026-09-09T03:15
+in these steps: "Step 4 — Turning those IDs into real product info.
+Having a list of IDs isn't enough to show pictures and names — a separate step takes that list and asks the actual store for the real, live data for each one (same real inventory/price/photo data as anywhere else on the site — nothing here is fake or mocked).
+
+Step 5 — Turning that real product data into what a card needs.
+Another small piece of code takes that raw product data and picks out just the handful of things this specific card shows: a name, a photo, a link to the product page. This is the piece we've been discussing fixing (the colour-picking logic)." how is the product/variant/image chosen as the product/variant/image that will be shown in the recently viewed rail product card?
+
+### [153] 2026-09-09T03:18
+in these steps: "Step 4 — Turning those IDs into real product info. Having a list of IDs isn't enough to show pictures and names — a separate step takes that list and asks the actual store for the real, live data for each one (same real inventory/price/photo data as anywhere else on the site — nothing here is fake or mocked). Step 5 — Turning that real product data into what a card needs.
+Another small piece of code takes that raw product data and picks out just the handful of things this specific card shows: a name, a photo, a link to the product page. This is the piece we've been discussing fixing (the colour-picking logic)." how is the product/variant/image chosen as the product/variant/image that will be shown in the recently viewed rail product card? and i'm asking because from how it works now, it matches what the PLP product card does - what the PLP product card shows as the primary image is also what the recently viewed rail product card shows so perfectly aligned
+
+### [154] 2026-09-09T03:28
+ELI5BITFLOTP
+
+### [155] 2026-09-09T03:45
+i tested it on product ZWNEWPRD02 which has many variants, plp and recently viewed rail product card agree, that settles it no?
+
+### [156] 2026-09-09T03:49
+yes, go hunt for a real one
+
+### [157] 2026-09-09T03:55
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This conversation continues SFCC-83/84 (Recently Viewed rail/full-history page) work on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. It opened with Marcel explicitly stepping back from active development to say "let's take a step back shall we? do not do anything until i ask, work with me on this one" — starting a long diagnostic/planning phase before any further building. Marcel's explicit requests, in order, were:
+   - Recognize and diagnose how the session had drifted off-process (from the zimmerMANNBuild skill's own structured loop).
+   - Confirm the branch was current with `origin/develop` (verified: fully caught up).
+   - Explain all commits on the branch since it diverged from develop, in "ELI5BITFLOTP" style (a running, repeatedly-used request meaning "explain simply but respecting my seniority as frontend lead").
+   - Read the actual build plan (`~/Dev/zimmerMANN-skills/.runs/SFCC-83+84/plan.md`) and assess drift between plan and reality.
+   - Get a full accounting of every change since the last plan-aligned commit, including uncommitted work.
+   - Narrow focus repeatedly: first to the SFCC-83 rail, then explicitly to "PLP product cards that we've shipped already" (Full History and Rail explicitly set aside: "let's forget ab
+
+### [158] 2026-09-09T03:59
+before the 2 fixes, how does the recently viewed rail and its product card current work? any bloatware/over-engineering/overthinking that needs to be refactored/reduced?
+
+### [159] 2026-09-09T04:34
+before we build the 2 fixes - will the 2 fixes also resolve the image issue with the recently viewed rail product card? i've observed that the 4673TS251 product image is still broken, we've fixed this issue in the PLP product cards
+
+### [160] 2026-09-09T04:45
+go build
+
+### [161] 2026-09-09T04:51
+i just tested it, image shows correctly now, go for commit
+
+### [162] 2026-09-09T04:52
+up next, the recently viewed full history page, particularly its product cards - let's prepare for that
+
+### [163] 2026-09-09T04:58
+full parity with PLP because that's the prescribed approach, correct?
+
+### [164] 2026-09-09T05:16
+let's build for the recently viewed full history, let's work on badges separately since this will concern both PLP and recently viewed full history product card
+
+### [165] 2026-09-09T05:48
+good good, problem is that the scenarios we need to cover aren't that easily testable due to the products we currently have available, can we temporarily modify the products by tweaking their attribs so we can test all cases and confirm that we have complete coverage for the product cards?
+
+### [166] 2026-09-09T06:04
+looks covered, i've discarded the changes now
+
+### [167] 2026-09-09T06:06
+go for commit
+
+### [168] 2026-09-09T06:07
+now, it's time to work the badges - what do we know about those so far?
+
+### [169] 2026-09-09T06:09
+yes, go find one
+
+### [170] 2026-09-09T06:14
+product badges is available for this product: 4673TS251
+
+### [171] 2026-09-09T06:16
+product badges go beyond recently viewed, it goes for PLP too right? can we build for both?
+
+### [172] 2026-09-09T06:22
+i see it in recently viewed full history product card, but on PLP it doesn't show
+
+### [173] 2026-09-09T06:26
+does PLP product card and recently viewed full history have both the same call? hit.c_productBadges?.[0]?.productBadge
+
+### [174] 2026-09-09T06:29
+they why does recently viewed full history product card get it and PLP does not? it doesn't make sense
+
+### [175] 2026-09-09T06:31
+ELI5BITFLOTP
+
+### [176] 2026-09-09T06:32
+what needs to be done so that PLP will reflect?
+
+### [177] 2026-09-09T06:34
+dumb question: why does PLP not read live? why search-index copy?
+
+### [178] 2026-09-09T06:36
+leave it then, now that we have the bits and pieces sorted, it's time to look at it as the whole build, but before we do that, let's rebase to the latest in develop
+
+### [179] 2026-09-09T06:56
+correction, we're not going to "review" yet, the rail and full history's layout/design/styles are off, so we'll review figma and the implementation and fix as needed, first up, can you confirm figma mcp access?
+
+### [180] 2026-09-09T07:03
+first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART; let's ensure the rail is up to design spec, the header, the link, the rail product cards, and the full layout itself, here are the nodes: PDP:
+
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13502&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8012-80041&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-15944&m=dev
+
+DESKTOP: 
+
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13508&m=devhttps://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-12355&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-12360&m=dev
+
+TABLET:
+
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8028-85559&m=dev
+
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-4191&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-4201&m=dev
+
+MOBILE:
+
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8272-28947&m=devhttps://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-10432&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9599-10441&m=dev
+
+### [181] 2026-09-09T07:07
+what's the problem with the unresolved/failed nodes?
+
+### [182] 2026-09-09T07:17
+the 9599s are actually just the specific nodes for the title-and-link and group which contains the rail product cards, you have those already?
+
+### [183] 2026-09-09T07:24
+keep going with the rest of the audit
+
+### [184] 2026-09-09T07:26
+fix both gaps, then continue to page-level integration
+
+### [185] 2026-09-09T08:10
+chase the 72px inset root cause fully
+
+### [186] 2026-09-09T08:24
+yes, check nav and footer first
+
+### [187] 2026-09-09T08:26
+go ahead and fix both
+
+### [188] 2026-09-09T08:39
+why are the designs not 1:1? see: [Image #4] vs. [Image #5] DESKTOP, [Image #6] vs. [Image #7] TABLET, and [Image #8] vs. [Image #9] MOBILE - here are the nodes again: @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13508&m=dev, @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8028-85559&m=dev, and @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8272-28947&m=dev vs. the outputs: <div class="css-s9ulxe"><div data-testid="recently-viewed-rail" class="css-splqwx"><div class="css-lsrbn"><span class="css-fb5h4y">Recently Viewed</span><a class="css-1ru9ym2" href="/recently-viewed">See Full History</a></div><div data-testid="recently-viewed-rail-group" class="css-zpvwj9"><div class="css-o91ccd"><div data-testid="product-card" data-product-id="25519318M" class="css-cid90i"><a class="css-k1ouux" href="/product/25519318M"><span class="css-idkz9h">3/4 Sleeve V-Neck Top</span><div data-card-slot="media" class="css-1jke4yk"><div data-testid="card-media-scroll" class="css-1pq8vwu"><div class="css-1a2l2n8"><img src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BKZK_002/on/demandware.static/-/Sites-zimmermann-catalog/default/dw5713e12d/images/medium/PG.10221714.JJI15XX.PZ.jpg" alt="" loading="lazy" decoding="async" class="css-12qah06"></div></div></div></a></div></div><div class="css-o91ccd"><div data-testid="product-card" data-product-id="ZWNEWPRD04" class="css-cid90i"><a clas
+
+### [189] 2026-09-09T08:39
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/4.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/5.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/6.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/7.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/8.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/9.png]
+
+### [190] 2026-09-09T08:41
+[Request interrupted by user]
+
+### [191] 2026-09-09T08:56
+why are the designs not 1:1? see: [Image #16] vs. [Image #17] DESKTOP, [Image #18] vs. [Image #19] TABLET, and [Image #20] vs. [Image #21] MOBILE - here are the nodes again: @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13508&m=dev, @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8028-85559&m=dev, and @https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8272-28947&m=dev vs. the outputs: <div class="css-s9ulxe"><div data-testid="recently-viewed-rail" class="css-splqwx"><div class="css-lsrbn"><span class="css-fb5h4y">Recently Viewed</span><a class="css-1ru9ym2" href="/recently-viewed">See Full History</a></div><div data-testid="recently-viewed-rail-group" class="css-zpvwj9"><div class="css-o91ccd"><div data-testid="product-card" data-product-id="25519318M" class="css-cid90i"><a class="css-k1ouux" href="/product/25519318M"><span class="css-idkz9h">3/4 Sleeve V-Neck Top</span><div data-card-slot="media" class="css-1jke4yk"><div data-testid="card-media-scroll" class="css-1pq8vwu"><div class="css-1a2l2n8"><img src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BKZK_002/on/demandware.static/-/Sites-zimmermann-catalog/default/dw5713e12d/images/medium/PG.10221714.JJI15XX.PZ.jpg" alt="" loading="lazy" decoding="async" class="css-12qah06"></div></div></div></a></div></div><div class="css-o91ccd"><div data-testid="product-card" data-product-id="ZWNEWPRD04" class="css-cid90i"><
+
+### [192] 2026-09-09T08:56
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/16.jpeg] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/17.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/18.jpeg] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/19.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/20.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/21.png]
+
+### [193] 2026-09-09T16:08
+first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART; let's ensure the rail is up to design spec, the header, the link, the rail product cards, and the full layout itself, here are the nodes:
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-…https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-…
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-…
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-…
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-…
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-…
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40006583-…
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=4
+
+### [194] 2026-09-09T16:09
+[Request interrupted by user]
+
+### [195] 2026-09-09T16:19
+first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART; let's ensure the rail is up to design spec, the header, the link, the rail product cards, and the full layout itself, here are the nodes:
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38474&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38471&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=devhttps://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20073&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-
+
+### [196] 2026-09-09T16:19
+first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART; let's ensure the rail is up to design spec, the header, the link, the rail product cards, and the full layout itself, here are the nodes:
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38474&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38471&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=devhttps://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20073&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-
+
+### [197] 2026-09-09T16:21
+first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART; let's ensure the rail is up to design spec, the header, the link, the rail product cards, and the full layout itself, here are the nodes:
+
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38474&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000587-38471&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000307-12444&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25030&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13363&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20073&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node
+
+### [198] 2026-09-09T17:06
+fix the two confirmed header issues first
+
+### [199] 2026-09-09T17:12
+go for commit
+
+### [200] 2026-09-09T17:32
+just update the commit message
+
+### [201] 2026-09-09T17:34
+next up: RECENTLY VIEWED FULL HISTORY on Desktop, Tablet, and Mobile; let's ensure the full history page is up to design spec, the header, the items count, the full history product cards, and the full layout itself, here are the nodes: 
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9551-78221&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-137688&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-138459&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9551-78221&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-137688&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-138459&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9551-110758&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9743-1428&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9743-1429&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9743-1430&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9743-1429&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9743-1430&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9551-78222&m=dev
+https://www.fig
+
+### [202] 2026-09-09T17:40
+go build
+
+### [203] 2026-09-09T17:42
+go for commit
+
+### [204] 2026-09-09T17:48
+question before we continue our design audit, what i've noticed is that the nodes to specific components is what mostly renders as unavailable and so my ask is if i provide you a page node, are you able to fully extract everything in that page? all the atoms, molecules, and their complete styles?
+
+### [205] 2026-09-09T17:51
+let's run it back then, run an in-depth and exhaustive design audit for the RECENTLY VIEWED RAIL and FULL HISTORY given these Figma nodes: PDP:
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13502&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=8012-80041&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-15944&m=dev
+
+PLP: 
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=2081-51376&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=3041-21385&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=3041-22824&m=dev
+
+AS IT TURNS OUT, NO RECENTLY VIEWED ON CART
+
+### [206] 2026-09-09T17:56
+[Your previous response had no visible output. Please continue and produce a user-visible response.]
+
+### [207] 2026-09-09T17:57
+go build
+
+### [208] 2026-09-09T18:24
+commit it
+
+### [209] 2026-09-09T18:25
+let's work on an audit of the outputs of the build we did so far and the designs, ready to work with me?
+
+### [210] 2026-09-09T18:28
+before we get into the rail and full history, let's start with the pieces that make them up, starting with the rail's comps; the rail is comprised of the header, link, and recently viewed rain product card, correct?
+
+### [211] 2026-09-09T18:29
+is the header + link an atom? molecule? organism? component?
+
+### [212] 2026-09-09T18:30
+from figma, it appears that the header/title and link is actually a component, check it: https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9750-5669&m=dev
+
+### [213] 2026-09-09T18:31
+try here: https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=7998-13508&m=dev in recently viewed, there's a title-and-link comp
+
+### [214] 2026-09-09T18:35
+full history's is different, it's title and text, not link; with this said, what's our course of action given this discovery? what do our guidelines/ways of working have to say about this
+
+### [215] 2026-09-09T18:37
+full history's is different, it's title and text, not link; with this said, what's our course of action given this discovery? what do our guidelines/ways of working for atoms, molecules, and organisms have to say about this?
+
+### [216] 2026-09-09T18:42
+that's settled, moving on; from my observation of the design, the recently viewed rail section - particularly the cards sit flush to the edge of the page, no padding/margin against the page while the build/output we have has, let's look into this: [Image #31] vs. [Image #32]
+
+### [217] 2026-09-09T18:42
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/31.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/32.png]
+
+### [218] 2026-09-09T18:45
+ELI5BITFLOTP
+
+### [219] 2026-09-09T18:46
+fix it up, then once fixed, let me know where to look
+
+### [220] 2026-09-09T19:01
+in the design, here are the styles of the recently viewed section: full section: display: flex;
+width: 402px;
+max-width: 767px;
+flex-direction: column;
+align-items: flex-start;, title-and-link: display: flex;
+padding: var(--alias-space-500, 20px) var(--alias-space-800, 32px) var(--alias-space-300, 12px) var(--alias-space-800, 32px);
+align-items: center;
+align-self: stretch;, title-and-link content: display: flex;
+align-items: center;
+gap: var(--alias-space-800, 32px);
+flex: 1 0 0;, content section title: display: flex;
+height: 16px;
+flex-direction: column;
+justify-content: center;
+flex: 1 0 0; + color: var(--alias-color-text-default, #191919);
+leading-trim: both;
+text-edge: cap;
+
+/* Default/h3-strong */
+font-family: var(--brand-font-family-heading, "Futura Round");
+font-size: var(--brand-font-size-400, 16px);
+font-style: normal;
+font-weight: 500;
+line-height: var(--line-height-heading-3-medium, 18px); /* 112.5% */
+letter-spacing: var(--brand-font-letterSpacing-negative-100, -0.12px);
+text-transform: uppercase;, content-link: display: flex;
+height: 24px;
+padding: var(--alias-space-100, 4px) 0;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;, link: color: var(--alias-color-link-default, #191919);
+leading-trim: both;
+text-edge: cap;
+
+/* Default/Link-lg */
+font-family: var(--brand-font-family-body, "Futura Round");
+font-size: var(--brand-font-size-350, 14px);
+font-style: normal;
+font-weight: 500;
+line-height: var(--line-height-caption, 18px); /* 128.571%
+
+### [221] 2026-09-09T19:01
+[Request interrupted by user]
+
+### [222] 2026-09-09T19:02
+in the design, here are the styles of the recently viewed section: full section: display: flex;
+width: 402px;
+max-width: 767px;
+flex-direction: column;
+align-items: flex-start;, title-and-link: display: flex;
+padding: var(--alias-space-500, 20px) var(--alias-space-800, 32px) var(--alias-space-300, 12px) var(--alias-space-800, 32px);
+align-items: center;
+align-self: stretch;, title-and-link content: display: flex;
+align-items: center;
+gap: var(--alias-space-800, 32px);
+flex: 1 0 0;, content section title: display: flex;
+height: 16px;
+flex-direction: column;
+justify-content: center;
+flex: 1 0 0; + color: var(--alias-color-text-default, #191919);
+leading-trim: both;
+text-edge: cap;
+
+/* Default/h3-strong */
+font-family: var(--brand-font-family-heading, "Futura Round");
+font-size: var(--brand-font-size-400, 16px);
+font-style: normal;
+font-weight: 500;
+line-height: var(--line-height-heading-3-medium, 18px); /* 112.5% */
+letter-spacing: var(--brand-font-letterSpacing-negative-100, -0.12px);
+text-transform: uppercase;, content-link: display: flex;
+height: 24px;
+padding: var(--alias-space-100, 4px) 0;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;, link: color: var(--alias-color-link-default, #191919);
+leading-trim: both;
+text-edge: cap;
+
+/* Default/Link-lg */
+font-family: var(--brand-font-family-body, "Futura Round");
+font-size: var(--brand-font-size-350, 14px);
+font-style: normal;
+font-weight: 500;
+line-height: var(--line-height-caption, 18px); /* 128.571%
+
+### [223] 2026-09-09T19:10
+make the fix to the cards
+
+### [224] 2026-09-09T19:16
+that's why the cards still aren't flush, the containers are unaddressed, let's fix those as well
+
+### [225] 2026-09-09T19:19
+go for 2
+
+### [226] 2026-09-09T19:28
+why does it seem like the rail still isn't flush? [Image #43] -> <div class="css-1qkll8v"><div data-testid="recently-viewed-rail" class="css-opyfv5"><div class="css-13k0q9l"><span class="css-fb5h4y">Recently Viewed</span><a class="css-1ru9ym2" href="/recently-viewed">See Full History</a></div><div data-testid="recently-viewed-rail-group" class="css-rl9jg5"><div class="css-1hv4aq0"><div data-testid="product-card" data-product-id="4673TS251" class="css-cid90i"><a class="css-k1ouux" href="/product/4673TS251"><span class="css-idkz9h">Illuminate Fitted Blouse</span><div data-card-slot="media" class="css-1jke4yk"><div data-testid="card-media-scroll" class="css-1pq8vwu"><div class="css-1a2l2n8"><img src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BKZK_002/on/demandware.static/-/Sites-zimmermann-catalog/default/dw7a625cc0/images/1.4673ts251.gvscp.guava-seascape.jpg.webp" alt="" loading="lazy" decoding="async" class="css-12qah06"></div></div></div></a></div></div><div class="css-1hv4aq0"><div data-testid="product-card" data-product-id="ZWNEWPRD01" class="css-cid90i"><a class="css-k1ouux" href="/product/ZWNEWPRD01"><span class="css-idkz9h">New Product One</span><div data-card-slot="media" class="css-1jke4yk"><div data-testid="card-media-scroll" class="css-1pq8vwu"><div class="css-1a2l2n8"><img src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BKZK_002/on/demandware.static/-/Sites-zimmermann-catalog/default/dw92647cc2/images/medium/ZWNEWPRD01.RED.PZ.jpg
+
+### [227] 2026-09-09T19:28
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/43.png]
+
+### [228] 2026-09-09T19:35
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+   This conversation continues SFCC-83/84 (Recently Viewed rail/full-history page) work on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. In order, Marcel's explicit requests were:
+   - Confirm a badge is available on product `4673TS251`; build badge wiring for both PLP (already correct) and Full History (needed the fix).
+   - Explain precisely why Full History shows the badge but PLP doesn't (search-index vs. live-data architecture), in repeated "ELI5BITFLOTP" style, culminating in "what needs to be done so that PLP will reflect?" and "dumb question: why does PLP not read live? why search-index copy?"
+   - "let's rebase to the latest in develop" before continuing.
+   - "let's work on an audit of the outputs of the build we did so far and the designs, ready to work with me?" — then explicit correction: "correction, we're not going to 'review' yet, the rail and full history's layout/design/styles are off, so we'll review figma and the implementation and fix as needed, first up, can you confirm figma mcp access?"
+   - Two large Figma-node-driven audits: "first up: RECENTLY VIEWED RAIL on PLP, PDP, and CART... here are the nodes: [~60 URLs]" and later "next up: RECENTLY VIEWED FULL HISTORY on Desktop, Tablet, and Mobile... here are the nodes:
+
+### [229] 2026-09-09T19:42
+go
+
+### [230] 2026-09-09T19:48
+still not flush, run visual check and code check via browser to identify why we cannot get the recently viewed rail right
+
+### [231] 2026-09-09T19:49
+[Request interrupted by user]
+
+### [232] 2026-09-09T19:50
+make the fix
+
+### [233] 2026-09-09T19:53
+not quiet fixed, see the screenshot: [Image #46]
+
+### [234] 2026-09-09T19:53
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/46.png]
+
+### [235] 2026-09-09T19:58
+[Request interrupted by user]
+
+### [236] 2026-09-09T20:00
+still not quite flush: [Image #49] - check the entire rail structure and styles, investigate the problem
+
+### [237] 2026-09-09T20:00
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/49.png]
+
+### [238] 2026-09-09T20:06
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This conversation is a continuation of the SFCC-83/84 (Recently Viewed rail/full-history page) build on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. Marcel's explicit requests, in chronological order:
+
+   - Confirmed Figma MCP access is working before starting design-fidelity work ("can you confirm figma mcp access?").
+   - Corrected the scope of an upcoming "whole build" review: "before we get into the rail and full history's layout/design/styles are off, let's review figma and the implementation and fix as needed."
+   - Gave a large batch of Figma node URLs (60 unique nodes, two files) asking for an "in-depth and exhaustive" audit of the **Recently Viewed Rail** — "header, the link, the rail product cards, and the full layout itself" — on PLP, PDP, and Cart.
+   - After the audit, said "fix the two confirmed header issues first" (padding + vertical alignment), then "go for commit" (leading to a mis-scoped commit `e4e048b` that accidentally bundled unrelated staged badge-wiring changes — flagged transparently by me — then "just update the commit message" to fix via `git commit --amend`, producing `0809687`).
+   - Gave a second, larger batch of ~80 Figma node URLs for the **Recently Viewed Full History** page (header, item count, prod
+
+### [239] 2026-09-09T20:13
+let's try it
+
+### [240] 2026-09-09T20:24
+question, with the current code, what would a mobile with only 1, a tablet with less than 3, and a desktop with less than 5 product cards look like in the rail?
+
+### [241] 2026-09-09T20:27
+i don't think that's the intended behavior no? each card is to consume it's space relative to the slots per viewport?
+
+### [242] 2026-09-09T20:28
+[Request interrupted by user]
+
+### [243] 2026-09-09T20:30
+i don't think that's the intended behavior no? imagine having a single recently viewed item and in the rail on desktop that card consumes the entire width, does my question make sense?
+
+### [244] 2026-09-09T20:35
+is there a max-width set to desktop that caps up to where the rail is flush?
+
+### [245] 2026-09-09T20:45
+ELI5BITFEDLOTP
+
+### [246] 2026-09-09T20:46
+remove the flush cap on desktop
+
+### [247] 2026-09-09T20:52
+[Request interrupted by user for tool use]
+
+### [248] 2026-09-09T20:54
+the header + link, are we up to spec with figma? nodes: https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13364&m=dev
+
+### [249] 2026-09-09T20:54
+for the railthe header + link, are we up to spec with figma? nodes: https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13364&m=dev
+
+### [250] 2026-09-09T20:54
+[Request interrupted by user]
+
+### [251] 2026-09-09T20:54
+for the rail's header + link, are we up to spec with figma? nodes: https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-20306&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000538-25031&m=dev
+https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000730-13364&m=dev
+
+### [252] 2026-09-09T20:58
+ELI5BITFEDLOTP
+
+### [253] 2026-09-09T21:01
+make the fixes, design spec is SOT
+
+### [254] 2026-09-09T21:06
+let's effing go, we should be good for commit yeah?
+
+### [255] 2026-09-09T21:11
+i think we're good on the rail, now, let's go to the full history page, here are the nodes to refer to: https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9551-78221&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-137688&m=dev
+https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=9560-138459&m=dev
+
+### [256] 2026-09-09T21:15
+fix the item count style first, load more defer
+
+### [257] 2026-09-09T21:19
+full-history is also flush right?
+
+### [258] 2026-09-09T21:20
+[Request interrupted by user]
+
+### [259] 2026-09-09T21:21
+full history - header, item count, and product cards also sit flush just like the rail right?
+
+### [260] 2026-09-09T21:23
+full history - header, item count, and product cards are also meant to sit flush just like the rail right? currently it's not?
+
+### [261] 2026-09-09T21:27
+yes, make the fix
+
+### [262] 2026-09-09T21:30
+recently-viewed product cards - specifically, grid wise, are we up to the figma design spec?
+
+### [263] 2026-09-09T21:33
+how does the flush-cap compare between the rail and full-history page/
+
+### [264] 2026-09-09T21:33
+how does the flush-cap compare between the rail and full-history page?
+
+### [265] 2026-09-09T21:36
+[Request interrupted by user for tool use]
+
+### [266] 2026-09-09T21:37
+for the RV rail, up to what width does the flush rail apply? how about for full-history?
+
+### [267] 2026-09-09T21:40
+what's the best approach here?
+
+### [268] 2026-09-10T01:06
+makes sense, let's leave it then, what's left to do/check?
+
+### [269] 2026-09-10T01:07
+[Request interrupted by user]
+
+### [270] 2026-09-10T01:07
+makes sense, let's leave it then, what's else to do/check?
+
+### [271] 2026-09-10T04:47
+one thing missing from the full history is space to the footer, check figma as to what we can do for this
+
+### [272] 2026-09-10T05:15
+go for 2
+
+### [273] 2026-09-10T05:22
+now i want to look into the sizing of the recently viewed rail product cards and full history product cards to ensure that they're up to design specs across all viewports, run the check again figma
+
+### [274] 2026-09-10T05:22
+now i want to look into the sizing of the recently viewed rail product cards and full history product cards to ensure that they're up to design specs across all viewports, run the check against figma
+
+### [275] 2026-09-10T05:26
+and the cards are responsive yes? they adjust according to the viewporT?
+
+### [276] 2026-09-10T05:26
+and the cards are responsive yes? they adjust according to the viewport?
+
+### [277] 2026-09-10T05:31
+let's look into the recently viewed full history, it seems to go beyong the viewport width and cause extending the width: [Image #50], [Image #51], [Image #52]
+
+### [278] 2026-09-10T05:31
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/50.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/51.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/52.png]
+
+### [279] 2026-09-10T05:35
+what was the issue?
+
+### [280] 2026-09-10T05:35
+what was the issue/bug? ELI5BITFEDLOTP
+
+### [281] 2026-09-10T05:37
+the changes you made did remove the overflow, but it also removed the product cards flush in the full history
+
+### [282] 2026-09-10T05:39
+i'm checking below 1440px, the flush product cards in full history are not in effect even on mobile and tablet
+
+### [283] 2026-09-10T05:41
+i'm checking below 1440px, the flush product cards in full history are not in effect even on mobile and tablet: [Image #53], [Image #54], [Image #55]
+
+### [284] 2026-09-10T05:41
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/53.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/54.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/55.png]
+
+### [285] 2026-09-10T05:47
+from what i see, the recently viewed full history page's content is subject to the 40px on desktop, and 32px on tablet and mobile padding when they should be flush
+
+### [286] 2026-09-10T05:50
+hard refreshed, it's flush now, why'd that happen
+
+### [287] 2026-09-10T05:55
+now i want us to take a look at the PLP product cards vs. the recently viewed history product cards, particularly the behavior and inner elements/components of each, run an audit and let me know the findings
+
+### [288] 2026-09-10T05:55
+now i want us to take a look at the PLP product cards vs. the recently viewed history product cards, particularly the behavior and inner elements/components of each, run an audit and let me know the findings
+
+### [289] 2026-09-10T05:58
+#2 seems like a geniune gap? why the difference?
+
+### [290] 2026-09-10T06:01
+leave it as-is, let's commit everything from this session
+
+### [291] 2026-09-10T06:15
+the layout, behavior, and styling of the bits and pieces within the product cards - both for PLP and recently viewed, are they 1:1 / 100% matched?
+
+### [292] 2026-09-10T06:16
+the layout, behavior, and styling of the bits and pieces within the product cards - both for PLP and recently viewed, are they 1:1 / 100% matched? -> the product name, the add to bag, the price (normal / wasnow), the size chips, the notify me, etc.
+
+### [293] 2026-09-10T06:21
+PLP: [Image #58] vs. [Image #57] - the size chips appear differently no?
+
+### [294] 2026-09-10T06:21
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/57.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/58.png]
+
+### [295] 2026-09-10T06:24
+so the current implementation has the chips dynamic/responsive and not just static?
+
+### [296] 2026-09-10T06:35
+recently viewed rail and full history page, are we complete with implementation? check the code, output, and figma designs
+
+### [297] 2026-09-10T06:43
+let's do the following: Cart scope: you confirmed the Rail shouldn't render on Cart at all ("no recently viewed on cart"). Still renders there in code. Explicitly deferred, never picked back up., Tablet column-count doc comment still claims "no corroborating Figma node" when one now exists — cosmetic, harmless, just never actually fixed.
+
+### [298] 2026-09-10T07:07
+commit the changes we have in the source tree
+
+### [299] 2026-09-10T07:09
+/compact
+
+### [300] 2026-09-10T07:13
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This is a continuation of the SFCC-83/84 (Recently Viewed rail/full-history page) build on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. Marcel's explicit requests, in chronological order across this window:
+
+   - Continue investigating a "still not flush" DevTools report (`div.css-1qkll8v`, 408×362) — implicitly continuing from the prior summary's handoff.
+   - "let's try it" (authorizing the `PAGE_CONTENT_BLEED_MX` 3-tier fix I proposed).
+   - Asked what a Rail with fewer cards than the visible cap would look like at each breakpoint (informational).
+   - "i don't think that's the intended behavior no? ... does my question make sense?" (pushing back on the stretch-to-fill behavior for under-populated rows) — then selected "Left-aligned (Recommended)" via `AskUserQuestion`.
+   - Asked whether there's a max-width cap on Desktop (informational — answered: 1560px via `container.xxxl`).
+   - "ELI5BITFEDLOTP" (×3 total across the whole window, each time requesting a plain-language explanation of a just-discussed technical finding).
+   - Gave 3 Figma node URLs for the Rail's header+link, asking "are we up to spec with figma?"
+   - "make the fixes, design spec is SOT" (authorizing the header alignItems/gap fix).
+   - "let's effing go, we sho
+
+### [301] 2026-09-10T07:13
+hey claude, let's take a step back, work with me on this one, ready?
+
+### [302] 2026-09-10T07:14
+as we go, let's approach this conversation in ELI5BITFEDLOTP
+
+### [303] 2026-09-10T07:16
+tell me about what we're doing here, what are we building?
+
+### [304] 2026-09-10T07:30
+before we move further, let's make sure out base is the latest in the remote develop branch + i see changes in the source tree so let's get those handled/sorted out
+
+### [305] 2026-09-10T07:48
+first up, let's look at the diff that we have to the latest remote develop branch, tell me about the commits and what they do
+
+### [306] 2026-09-10T08:01
+next up, let's audit our work (the full code diff) against the user stories, ACs, requirements, and designs: USER STORIES (83 and 84 - ACs, Comments, Requirements...):
+
+83: "Recently Viewed UI Component (Shared)
+
+
+
+
+Key details
+Templates ➤
+
+
+Story
+Description
+
+As a Shopper, 
+I want to see a list of products I've recently browsed,
+so that I can easily return to items I was considering without having to search for them again.
+
+Reference image (Figma is leading):
+
+image-20260703-004122.png
+Recently Viewed is a shared PWA component that renders a horizontal rail of product tiles based on the customer's browsing history. It is built once and reused across multiple page contexts. Confirmed surfaces are PLP, PDP, and Cart. Additional surfaces are pending the designs.
+
+Browsing history storage:
+
+For guest shoppers: history is stored temporarily. It persists for the duration of that session only.
+
+For authenticated shoppers: history persisted cross-session — stored against the customer account so it survives browser close and is available on login from any device.
+
+Rollout Scope
+
+AU
+ME
+EU - Domestic
+EU - International
+HK
+UK
+US - Domestic
+US - International
+Acceptance Criteria
+
+
+Given a shopper has viewed at least one product during their session, when they reach a page that contains the Recently Viewed component, then a horizontal rail of recently viewed product tiles is displayed, labelled "Recently Viewed."
+
+Given a shopper has viewed multiple products, then tiles are ordered most-r
+
+### [307] 2026-09-10T08:15
+let's go deeper into the flagged items, ELI5BITFEDLOTP
+
+### [308] 2026-09-10T08:22
+for this "I didn't re-pull fresh Figma screenshots for this pass — I relied on the extensive, already-cited Figma verification baked into the code's own comments (both from earlier this session and from the prior SFCC-236 audit), which line up consistently enough that I'm confident in the above without re-doing that work." re-run an in-depth audit of our code vs. the figma design nodes and actual visual outputs (local host and storybook are running) also against the figma design nodes - this is to ensure that we're 100% / 1:1 aligned with the design specs
+
+### [309] 2026-09-10T08:41
+yes, fix it
+
+### [310] 2026-09-10T08:49
+question: this fix broke the product cards on PLP, any clue why? [Image #61]
+
+### [311] 2026-09-10T08:49
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/61.png]
+
+### [312] 2026-09-10T08:53
+follow-up: perhaps because the PLP product cards are not in their actual designed layout yet? therefore the cards are not in the form (height, width, layout, spacing) that they're supposed to have/be in to support the product card's design which in this case involves the size chip group?
+
+### [313] 2026-09-10T08:56
+ELI5BITFEDLOTP
+
+### [314] 2026-09-10T10:38
+restarted, the chips are the same, going beyong the product card, perhaps due to the cards still in the ootb/default PLP and not zimm's: [Image #62]
+
+### [315] 2026-09-10T10:38
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/62.png]
+
+### [316] 2026-09-10T10:46
+tried all 3, all 3 resulted to the same output as the screenshot i shared with you
+
+### [317] 2026-09-10T11:13
+leaving it because like i've said it's waiting for the zimm implementation of the PLP grid, now you understand my point?
+
+### [318] 2026-09-10T11:20
+flagging: on the full history page, on a certain desktop viewport width, on hover of 2nd row product card causes the entire column's product card image/media to grow in size: [Image #63]
+
+### [319] 2026-09-10T11:20
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/63.png]
+
+### [320] 2026-09-10T11:20
+[Request interrupted by user]
+
+### [321] 2026-09-10T11:20
+z
+
+### [322] 2026-09-10T11:21
+flagging: on the full history page, on a certain desktop viewport width, on hover of 2nd row product card causes the entire column's product card image/media to grow in size: [Image #65]
+
+### [323] 2026-09-10T11:21
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/65.png]
+
+### [324] 2026-09-10T11:22
+[Request interrupted by user]
+
+### [325] 2026-09-10T11:24
+flagging: on the full history page, on a certain desktop viewport width, on hover of 2nd row product card causes the entire column's product card image/media to grow in size: [Image #67], [Image #68]
+
+### [326] 2026-09-10T11:24
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/67.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/68.png]
+
+### [327] 2026-09-10T11:29
+flagging: on the full history page, on a certain desktop viewport width, on hover of product cards causes the entire column's product card image/media to grow in size: [Image #67], [Image #68] - i did testing in large desktop (no bug), small desktop (bug present), large tablet (no bug), small tablet (bug present), large mobile (no bug), smaller mobile (bug present) - look into the on hover behavior
+
+### [328] 2026-09-10T11:29
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/67.jpeg] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/68.jpeg]
+
+### [329] 2026-09-10T11:35
+my issue is not with the size selector that shows on hover, it's that the media in the product card grows, i'm fine in giving your fix a try but i don't think this is merely just the size selector causing the product cards' medias growing in size on hover as the images swap to the model image
+
+### [330] 2026-09-10T12:17
+woah, that did fix it, how was that the cause of the issue?
+
+### [331] 2026-09-10T12:38
+i'm doing some testing and i seemed to have found a bug, before i tell you what i found, can you tell me what the trigger for the SEE FULL HISTORY link in the rail is?
+
+### [332] 2026-09-10T12:41
+i had viewed 4 items and i was testing the behavior across viewports; as intended mobile was showing only 2 with the link active, tablet was showing 3 with the link active, and desktop was showing 4 with an empty slow and no link, but when i get to the width of around 1200px the 4th  disappears while still being in the 5 slot rail and then the link shows, here's what it looks like: [Image #69] - let's investigate
+
+### [333] 2026-09-10T12:41
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/69.png]
+
+### [334] 2026-09-10T12:44
+make them both key off 1024px
+
+### [335] 2026-09-10T13:25
+why so many files changes?
+
+### [336] 2026-09-10T13:26
+why so many files changed?
+
+### [337] 2026-09-10T13:27
+go for commit - just take note that there are other changes in the source tree so check the diff before committing
+
+### [338] 2026-09-10T13:35
+now it's time to look into something, given the recently viewed rail and full history view that we've built, i want to look into the top and bottom spacing of the rail and full history view, does it have any? i'm asking because i'm seeing varying top and bottom behaviors especially for the recently viewed rail, report back with findings
+
+### [339] 2026-09-10T14:02
+here are my observations; PLP -> DESKTOP: rail has space below the PLP's page controls and a big space below the rail separating it from the footer, TABLET: same as desktop, MOBILE: same as desktop; PDP -> DESKTOP: rail has space below the gallery and no space to the footer, TABLET: same as desktop, MOBILE: same as desktop; - what makes the difference between PLP and PDP? which is right? ELI5BITFEDLOTP
+
+### [340] 2026-09-10T14:04
+[Request interrupted by user]
+
+### [341] 2026-09-10T14:08
+here are my observations; PLP -> DESKTOP: rail has space below the PLP's page controls and a big space below the rail separating it from the footer, TABLET: same as desktop, MOBILE: same as desktop; PDP -> DESKTOP: rail has space below the gallery and no space to the footer, TABLET: same as desktop, MOBILE: a lot of space between the rail and the style code and no space to the footer; - what makes the difference between PLP and PDP? which is right? ELI5BITFEDLOTP, here are some screenshots to show you what i'm referring to: PLP -> [Image #70] and PDP -> [Image #71]
+
+### [342] 2026-09-10T14:08
+[Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/70.png] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/4f143a27-bda5-4ed2-89a8-612349f0631d/71.png]
+
+### [343] 2026-09-10T14:15
+go investigate on my observations, report back with findings
+
+### [344] 2026-09-10T14:21
+it looks like our work here is done, let's wrap it up /zimmerMANNPostBuild
+
+### [345] 2026-09-10T14:21
+Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNPostBuild
+
+Marcel's own senior dev. Nothing built here — this skill judges what was built, writes what goes
+public, and holds the conversation with CodeRabbit and the reviewer.
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**Input:** `` — a Jira key. Reads three files under
+`~/Dev/zimmerMANN-skills/.runs/<TICKET>/`:
+
+- **`handoff.md`** — Build's record: steps, commits, Scorer verdicts, rework rounds, gate numbers,
+  UNIFORM findings, what went unverified
+- **`plan.md`** — what was meant to be built
+- **`findings.md`** — the gate table, with its 🟡 CLARIFY assumptions
+
+If `handoff.md` is missing, Build either did not finish or ran before this was written. Say so and
+reconstruct what you can from the branch's commits — but flag the audit as partial, because the
+Scorer verdicts and UNIFORM findings are not recoverable from git.
+
+**Scale to the work.** A two-point story does not get a five-agent sweep. Honour the scale the
+plan chose. Nothing too crazy, no overthinking.
+
+---
+
+## Phase 1 — audit against both artefacts
+
+Two documents, two different questions. Neither is covered by the loop that just ran.
+
+### `findings.md` — did the gate hold?
+
+Walk every row. For each:
+
+- **🔴 BLOCKED** — was it resolved before Build started, and by what?
+- **🟡 CLARIFY** — this is the one that matters. Each of these carried a **stated assumption** into
+  the plan. **Did that assumption actually hold once the code e
+
+### [346] 2026-09-10T15:01
+with the postbuild findings, what are our to-dos? list them down ELI5BITFEDLOTP
+
+### [347] 2026-09-10T15:09
+before we implement any of these "Real bugs, not style nits — these came with working proposed fixes already:
+1. The image-sorting logic picks the wrong photo in some cases (numbered filenames mixed with non-numbered ones) — this exists in three different files because the same logic got copy-pasted instead of shared, so it needs fixing in all three: productListCardMapper.ts, recentlyViewedCard.ts, recentlyViewedFullHistoryCard.ts.
+2. A product with no price shows a literal "$0.00" instead of just not showing a price — productListCardMapper.ts.
+3. After an image fails to load once, switching to a different colour can show the wrong photo as the "first" one — zimmProductCardMedia/index.tsx.
+4. The Full History page has no real heading anywhere on it, not even the page title. Every other page has one — easy copy-paste fix from an existing page.
+
+Quality/consistency fixes — same "typed the same thing twice" mistake we already fixed once this session, just in other spots:
+5. Merge those three duplicated image-mapper files into one shared thing instead of three copies that can (and did) drift apart.
+6. The Full History page's own URL is typed out by hand in routes.tsx instead of using the constant that exists specifically so this never happens.
+7. The number "24" (max tracked items) is typed independently in two places for what's really one fact.
+8. Give the Rail's own settings file (zimmRecentlyViewedRail.css.ts) an actual test. Right now it's the single most-patched file in the 
+
+### [348] 2026-09-10T15:20
+let's settle item 5 first, tell me about what we should do for this flagged item
+
+### [349] 2026-09-10T15:29
+let's test this claim first
+
+### [350] 2026-09-10T15:30
+let's test and v&v this claim first before we send it as part of the fixes
+
+### [351] 2026-09-10T15:30
+let's test and v&v this claim first before we send it as part of the fixes we'll implement, report back with test and v&v results
+
+### [352] 2026-09-10T15:37
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This is a continuation of the SFCC-83/84 (Recently Viewed rail/full-history page) build on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. Marcel's explicit requests, in chronological order across this entire window:
+
+   - "let's take a step back, work with me on this one, ready?" (opening, no specific task yet)
+   - "as we go, let's approach this conversation in ELI5BITFEDLOTP" — **explicit standing instruction**: apply plain-language, jargon-light explanation style for the REST of this conversation by default, not just per-request. Saved to memory as `feedback_eli5_running_mode.md`.
+   - "tell me about what we're doing here, what are we building?" (informational)
+   - "before we move further, let's make sure out base is the latest in the remote develop branch + i see changes in the source tree so let's get those handled/sorted out" (authorized merging origin/develop and resolving any conflicts/discrepancies)
+   - "let's look into the diff that we have to the latest remote develop branch, tell me about the commits and what they do" (informational)
+   - Provided full SFCC-83 and SFCC-84 Jira text plus Figma design node URLs, stating: "-> our goal is to make sure that the code we're shipping is fully aligned to the user stories, ACs, req
+
+### [353] 2026-09-10T15:40
+[Request interrupted by user]
+
+### [354] 2026-09-10T15:40
+332143769
+
+### [355] 2026-09-10T15:41
+let's test and v&v this claim first before we send it as part of the fixes we'll implement, report back with test and v&v results
+
+### [356] 2026-09-10T15:47
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+   This is a continuation of the SFCC-83/84 (Recently Viewed rail/Full History page) build on branch `feature/SFCC-83-84_recently-viewed` in `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa`. Marcel's explicit requests, in chronological order across this window:
+   - "let's take a step back, work with me on this one, ready?" then "as we go, let's approach this conversation in ELI5BITFEDLOTP" (a standing instruction for the rest of the conversation, not one-off).
+   - "tell me about what we're doing here, what are we building?"
+   - "let's make sure out base is the latest in the remote develop branch + i see changes in the source tree so let's get those handled/sorted out."
+   - "now it's time to look into something... i want to look into the top and bottom spacing of the rail and full history view" (this was addressed earlier in the still-summarized portion, but the follow-up debugging chain continued into: reporting PDP/PLP spacing differences with screenshots, asking "what makes the difference between PLP and PDP? which is right?", then "go investigate on my observations, report back with findings").
+   - "let's go the diff that we have to the latest remote develop branch, tell me about the commits and what they do."
+   - "now, let's audit our work (the full code diff) against the user s
+
+### [357] 2026-09-10T15:51
+so what's the ask for item #5? what are we to do?
+
+### [358] 2026-09-10T15:51
+so what's the ask for item #5? what are we to do? ELI5BITFEDLOTP
+
+### [359] 2026-09-10T15:55
+bundle it with the rest as one batch, before we deploy to build, give me a run down of the changes/fixes that we'll be implementing to resolve the findings of postbuilt, ELI5BITFEDLOTP
+
+### [360] 2026-09-10T15:57
+all of these have been tested and V&V-d right?
+
+### [361] 2026-09-10T16:04
+let's send it then, go build
+
+### [362] 2026-09-10T16:40
+nitpick fix for the recently viewed full history page, it's not "X Items" but "X items"
+
+### [363] 2026-09-10T16:45
+next, it's accessibility check time, while i know you cannot run screenreaders like voiceover, you have access to the code itself and would know how the keyboard nav and/or screenreaders like voiceover would traverse over - and so, run accessibility check across the code diff
+
+### [364] 2026-09-10T16:55
+defer the issues, are we ready for PR?
+
+### [365] 2026-09-10T16:55
+defer the issues, are we ready for PR? well, only draft PR for this one
+
+### [366] 2026-09-10T16:55
+declining the issues, are we ready for PR? well, only draft PR for this one
+
+### [367] 2026-09-10T17:06
+ignoring those findings, CodeRabbit in the PR should catch those anyway and so let's take this into DRAFT PR -> for this build and PR, we're covering these 2 user stories: SFCC-83 and SFCC-84, here are the details of each user story: 83 ->  "[Pasted text #73 +234 lines]", 84 -> "[Pasted text #74 +186 lines]" - here are some thoughts of mine as well: this PR covers 2  user stories packaged into one, this is currently limited to only a DRAFT PR because EINSTEIN availability blocks it, currently  the PR implement the feature via browser session tracking (locally) to showcase the behavior but remains dependent on the  availability of EINSTEIN, this PR covers the Recently Viewed Rail wired into PLP and PDP - no cart because while it's in the  user story, it's not part of the cart in the designs and Recently Viewed Full History page, this PR also contains Product Card  refinements that were identified during the build, this PR also leaves out the Load More button which is out of scope in the  full history user story and the design was just recently updated post-development/build, eistein config is a to-do once eistein  is up and running and will also bring in the load more functionality together with it, full history page's empty state is also  provisional and will need design team alignment
+
+### [368] 2026-09-10T17:16
+[Request interrupted by user for tool use]
+
+### [369] 2026-09-10T17:16
+remove this: "**A pre-open accessibility pass and a fresh CodeRabbit run surfaced five more items** (a
+  screen-reader double-announcement on the hover-swap image pair, one undersized touch target, a
+  contrast risk on the product badge, a variant-vs-master product-ID nuance in pre-existing PDP
+  code, and a self-referencing image-fallback list in two files) — all real, all evidence-checked,
+  none fixed in this round. Deliberately left for CodeRabbit's own PR-time pass to re-surface and
+  get addressed through the normal review-reply loop."
+
+### [370] 2026-09-10T17:17
+push it, open the draft PR
+
+### [371] 2026-09-10T17:19
+local is superior to remote, handle it as needed
+
+### [372] 2026-09-10T17:22
+now that the PR is drafter, i need 3 more things, i need to post a comment to SFCC-83 and SFCC-84 regarding the status of the build, i also need to update Tim, my senior regarding the status of this matter
+
+
+
+provide me the text for these 3 asks
+
+### [373] 2026-09-10T17:22
+now that the PR is drafted, i need 3 more things, i need to post a comment to SFCC-83 and SFCC-84 regarding the status of the build, i also need to update Tim, my senior regarding the status of this matter
+
+provide me the text for these 3 asks
+
+### [374] 2026-09-10T17:29
+there are 6 items in the source tree, what are these?
+
+### [375] 2026-09-10T17:30
+Draft PR had CI/CD failures, look into these: Storybook interaction & a11y tests failed 3 minutes ago in 4m 36s
+
+### [376] 2026-09-10T17:43
+Check `gh pr checks 107` on the zimmermann-pwa repo — report which checks passed/failed, and if Storybook interaction & a11y tests failed again, investigate the fresh failure the same way (pull the job log, verify root cause, fix, re-verify locally before pushing again).
+
+### [377] 2026-09-10T17:47
+Check `gh pr checks 107` on the zimmermann-pwa repo again — report which checks passed/failed, and if Storybook interaction & a11y tests failed again, investigate the fresh failure the same way (pull the job log, verify root cause, fix, re-verify locally before pushing again).
+

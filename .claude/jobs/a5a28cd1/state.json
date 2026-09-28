@@ -1,0 +1,46 @@
+{
+  "state": "done",
+  "detail": "CodeRabbit release branch limitation documented",
+  "tempo": "idle",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": [],
+    "drainableMonitors": 0
+  },
+  "tokens": 240661,
+  "output": {
+    "result": "CodeRabbit skips release/** PRs; local `cr review` is the only bot coverage option"
+  },
+  "children": null,
+  "linkScanOffset": 1065706,
+  "linkScanPath": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/a5a28cd1-65fd-4027-ab9f-e0ca692ed4f5.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--reply-on-resume",
+    "--effort",
+    "max",
+    "--model",
+    "claude-sonnet-5",
+    "--permission-mode",
+    "auto"
+  ],
+  "intent": "(backgrounded)",
+  "name": "ZIMM - PR #75 Review",
+  "nameSource": "user",
+  "sessionId": "a5a28cd1-65fd-4027-ab9f-e0ca692ed4f5",
+  "resumeSessionId": "a5a28cd1-65fd-4027-ab9f-e0ca692ed4f5",
+  "daemonShort": "a5a28cd1",
+  "cliVersion": "2.1.252",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "bgIsolation": "none",
+  "providerEnv": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "interactiveLineage": true,
+  "backend": "daemon",
+  "createdAt": "2026-09-01T04:45:50.851Z",
+  "updatedAt": "2026-09-01T04:58:20.817Z",
+  "firstTerminalAt": "2026-09-01T04:51:31.055Z"
+}

@@ -1,0 +1,425 @@
+Updating 6b3863f..fbf9e84
+Fast-forward
+ .antigravity.md                                    |   13 +-
+ .claude/git-hooks/guard-bash.sh                    |    8 +-
+ .claude/git-hooks/guard-write.sh                   |    6 +-
+ .claude/git-hooks/on-write.sh                      |    8 +-
+ .claude/settings.json                              |   15 +-
+ .claude/skills/_shared/authoring.md                |   43 +-
+ .claude/skills/_shared/portability.md              |   17 +-
+ .claude/skills/deploy-catalog/SKILL.md             |    2 +-
+ .claude/skills/deploy-catalog/templates/index.html |  763 +++++
+ .claude/skills/extract/SKILL.md                    |   24 +-
+ .claude/skills/extract/library.md                  |   20 +-
+ .claude/skills/handover/SKILL.md                   |    2 +-
+ .claude/skills/handover/bmad-export.md             |    8 +-
+ .claude/skills/handover/index-generator.md         |    4 +-
+ .claude/skills/initiate-design-project/SKILL.md    |   16 +-
+ .../initiate-design-project/templates/vercel.json  |    6 +-
+ .claude/skills/map-ia/SKILL.md                     |  179 ++
+ .claude/skills/map-ia/templates/ia-data.js         |   13 +
+ .claude/skills/map-ia/templates/ia.md              |   11 +
+ .claude/skills/map-ia/templates/index.html         |  510 ++++
+ .claude/skills/setup-ai/SKILL.md                   |    4 +-
+ .claude/skills/setup-local/SKILL.md                |    2 +-
+ .claude/skills/setup/SKILL.md                      |   14 +-
+ .claude/skills/stitch-pages/SKILL.md               |  147 +
+ .claude/skills/stitch-pages/templates/stub.html    |   70 +
+ .claude/skills/update-context/SKILL.md             |    6 +
+ 01-context/decisions.md                            |   10 +-
+ 01-context/project-context.md                      |   45 +-
+ 01-context/ref-external/links.md                   |   14 +
+ 01-context/summaries/loewe-apc-en-home.md          |  155 +
+ 01-context/summaries/zimmermann-com.md             |   55 +
+ 02-design/catalog/index.html                       |  608 ++--
+ 02-design/ia/ia-data.js                            |  146 +
+ 02-design/ia/ia.md                                 |   93 +
+ 02-design/ia/index.html                            |  411 +++
+ .../assets/Font Futura OTF/FuturaRound-Bold.otf    |  Bin 0 -> 50228 bytes
+ .../Font Futura OTF/FuturaRound-BoldOblique.otf    |  Bin 0 -> 54472 bytes
+ .../assets/Font Futura OTF/FuturaRound-Demi.otf    |  Bin 0 -> 50300 bytes
+ .../Font Futura OTF/FuturaRound-DemiOblique.otf    |  Bin 0 -> 54508 bytes
+ .../assets/Font Futura OTF/FuturaRound-Light.otf   |  Bin 0 -> 47436 bytes
+ .../Font Futura OTF/FuturaRound-LightOblique.otf   |  Bin 0 -> 49716 bytes
+ .../assets/Font Futura OTF/FuturaRound-Medium.otf  |  Bin 0 -> 47436 bytes
+ .../Font Futura OTF/FuturaRound-MediumOblique.otf  |  Bin 0 -> 54788 bytes
+ .../assets/Font Futura OTF/FuturaRound-Oblique.otf |  Bin 0 -> 62232 bytes
+ .../assets/Font Futura OTF/FuturaRound-Regular.otf |  Bin 0 -> 48876 bytes
+ .../Font Futura OTF/FuturaRoundCond-Bold.otf       |  Bin 0 -> 47016 bytes
+ .../Font Futura OTF/FuturaRoundCond-ExtraBold.otf  |  Bin 0 -> 47636 bytes
+ .../Font Futura OTF/FuturaRoundCond-Light.otf      |  Bin 0 -> 44716 bytes
+ .../Font Futura OTF/FuturaRoundCond-Medium.otf     |  Bin 0 -> 44680 bytes
+ ...e Font Software End User License Agreement.html | 3156 ++++++++++++++++++++
+ .../Font Futura WOFF2/FuturaRound-Bold.woff2       |  Bin 0 -> 31504 bytes
+ .../FuturaRound-BoldOblique.woff2                  |  Bin 0 -> 34964 bytes
+ .../Font Futura WOFF2/FuturaRound-Demi.woff2       |  Bin 0 -> 31384 bytes
+ .../FuturaRound-DemiOblique.woff2                  |  Bin 0 -> 34192 bytes
+ .../Font Futura WOFF2/FuturaRound-Light.woff2      |  Bin 0 -> 30088 bytes
+ .../FuturaRound-LightOblique.woff2                 |  Bin 0 -> 31304 bytes
+ .../Font Futura WOFF2/FuturaRound-Medium.woff2     |  Bin 0 -> 29784 bytes
+ .../FuturaRound-MediumOblique.woff2                |  Bin 0 -> 34124 bytes
+ .../Font Futura WOFF2/FuturaRound-Oblique.woff2    |  Bin 0 -> 33760 bytes
+ .../Font Futura WOFF2/FuturaRound-Regular.woff2    |  Bin 0 -> 30364 bytes
+ .../Font Futura WOFF2/FuturaRoundCond-Bold.woff2   |  Bin 0 -> 29832 bytes
+ .../FuturaRoundCond-ExtraBold.woff2                |  Bin 0 -> 29808 bytes
+ .../Font Futura WOFF2/FuturaRoundCond-Light.woff2  |  Bin 0 -> 27944 bytes
+ .../Font Futura WOFF2/FuturaRoundCond-Medium.woff2 |  Bin 0 -> 28192 bytes
+ ...e Font Software End User License Agreement.html | 3156 ++++++++++++++++++++
+ 02-design/library/common.css                       |  242 +-
+ 02-design/library/contract/zimm-contract.js        |  307 +-
+ .../library/elements/add-to-wishlist/demo.html     |    6 +-
+ .../add-to-wishlist/zimm-add-to-wishlist.js        |    2 +-
+ .../banner/assets/2026-07-14-screenshot.png        |  Bin 0 -> 28222 bytes
+ 02-design/library/elements/banner/demo.html        |   43 +
+ 02-design/library/elements/banner/zimm-banner.js   |   93 +
+ 02-design/library/elements/button/demo.html        |   90 +-
+ 02-design/library/elements/button/zimm-button.js   |  113 +-
+ .../elements/card-baseline/assets/image-a.jpg      |  Bin 0 -> 225851 bytes
+ .../elements/card-baseline/assets/image-b.jpg      |  Bin 0 -> 1029513 bytes
+ .../elements/card-baseline/assets/image-c.jpg      |  Bin 0 -> 547020 bytes
+ .../elements/card-baseline/assets/image.jpg        |  Bin 0 -> 186291 bytes
+ 02-design/library/elements/card-baseline/demo.html |   55 +
+ .../elements/card-baseline/zimm-card-baseline.js   |  170 ++
+ .../assets/2026-07-15-screenshot.png               |  Bin 0 -> 1678832 bytes
+ .../card-editorial/assets/demo-editorial.jpg       |  Bin 0 -> 1701643 bytes
+ .../library/elements/card-editorial/demo.html      |   40 +
+ .../elements/card-editorial/zimm-card-editorial.js |  137 +
+ .../library/elements/cat-links-aside/demo.html     |   31 +
+ .../cat-links-aside/zimm-cat-links-aside.js        |   98 +
+ 02-design/library/elements/disclaimer/demo.html    |   33 +
+ .../library/elements/disclaimer/zimm-disclaimer.js |  111 +
+ 02-design/library/elements/flag/assets/flag-au.svg |   38 +
+ 02-design/library/elements/flag/assets/flag-br.svg |   87 +
+ 02-design/library/elements/flag/assets/flag-ca.svg |   54 +
+ 02-design/library/elements/flag/assets/flag-ch.svg |   75 +
+ 02-design/library/elements/flag/assets/flag-cl.svg |   63 +
+ 02-design/library/elements/flag/assets/flag-eu.svg |   45 +
+ 02-design/library/elements/flag/assets/flag-nz.svg |  104 +
+ 02-design/library/elements/flag/assets/flag-uk.svg |   55 +
+ 02-design/library/elements/flag/assets/flag-us.svg |   23 +
+ 02-design/library/elements/flag/demo.html          |   36 +
+ 02-design/library/elements/flag/zimm-flag.js       |   54 +
+ 02-design/library/elements/footer/demo.html        |    1 +
+ 02-design/library/elements/footer/zimm-footer.js   |  205 +-
+ .../library/elements/icon/assets/arrow-down.svg    |    4 +-
+ .../library/elements/icon/assets/arrow-link.svg    |    4 +-
+ .../library/elements/icon/assets/arrow-up.svg      |    4 +-
+ 02-design/library/elements/icon/assets/bag.svg     |    8 +-
+ .../library/elements/icon/assets/calendar.svg      |   12 +-
+ .../elements/icon/assets/carousel-selected.svg     |    4 +-
+ .../library/elements/icon/assets/carousel.svg      |    4 +-
+ 02-design/library/elements/icon/assets/chat.svg    |    4 +-
+ 02-design/library/elements/icon/assets/check.svg   |    4 +-
+ .../library/elements/icon/assets/chevron-down.svg  |    4 +-
+ .../library/elements/icon/assets/chevron-left.svg  |    4 +-
+ .../library/elements/icon/assets/chevron-right.svg |    4 +-
+ .../library/elements/icon/assets/chevron-up.svg    |    4 +-
+ 02-design/library/elements/icon/assets/close.svg   |    4 +-
+ 02-design/library/elements/icon/assets/delete.svg  |    4 +-
+ 02-design/library/elements/icon/assets/edit.svg    |    4 +-
+ 02-design/library/elements/icon/assets/email.svg   |    4 +
+ .../library/elements/icon/assets/external-link.svg |    4 +-
+ 02-design/library/elements/icon/assets/info.svg    |    8 +-
+ .../library/elements/icon/assets/location.svg      |   21 +-
+ 02-design/library/elements/icon/assets/menu.svg    |    4 +-
+ 02-design/library/elements/icon/assets/minus.svg   |    4 +-
+ 02-design/library/elements/icon/assets/mute.svg    |   12 +-
+ .../library/elements/icon/assets/password.svg      |    4 +-
+ 02-design/library/elements/icon/assets/pause.svg   |    4 +-
+ 02-design/library/elements/icon/assets/phone.svg   |    4 +
+ 02-design/library/elements/icon/assets/play.svg    |    4 +-
+ 02-design/library/elements/icon/assets/plus.svg    |    4 +-
+ 02-design/library/elements/icon/assets/profile.svg |    8 +-
+ 02-design/library/elements/icon/assets/search.svg  |    4 +-
+ 02-design/library/elements/icon/assets/share-2.svg |   14 +-
+ 02-design/library/elements/icon/assets/share.svg   |   16 +-
+ .../library/elements/icon/assets/whatsapp.svg      |    4 +
+ .../elements/icon/assets/wishlist-selected.svg     |    4 +-
+ .../library/elements/icon/assets/wishlist.svg      |    4 +-
+ 02-design/library/elements/icon/demo.html          |  111 +-
+ 02-design/library/elements/icon/zimm-icon.js       |    5 +-
+ 02-design/library/elements/input-action/demo.html  |   40 +
+ .../elements/input-action/zimm-input-action.js     |   53 +
+ 02-design/library/elements/link/demo.html          |   18 +
+ .../logo-masthead/assets/2026-07-14-screenshot.png |  Bin 0 -> 41842 bytes
+ 02-design/library/elements/logo-masthead/demo.html |   29 +
+ .../elements/logo-masthead/zimm-logo-masthead.js   |   46 +
+ .../elements/logo/assets/2026-07-08-screenshot.png |  Bin 13712 -> 0 bytes
+ .../library/elements/logo/assets/logo-dark.svg     |   12 +
+ .../library/elements/logo/assets/logo-default.png  |  Bin 16409 -> 0 bytes
+ .../library/elements/logo/assets/logo-inverse.png  |  Bin 6442 -> 0 bytes
+ .../library/elements/logo/assets/logo-light.svg    |   12 +
+ 02-design/library/elements/logo/assets/logo.svg    |   14 -
+ 02-design/library/elements/logo/demo.html          |   29 +-
+ 02-design/library/elements/logo/zimm-logo.js       |   36 +-
+ 02-design/library/elements/mega-menu/demo.html     |  151 +
+ .../library/elements/mega-menu/zimm-mega-menu.js   |  227 ++
+ 02-design/library/elements/nav-item/demo.html      |   20 +-
+ .../library/elements/nav-item/zimm-nav-item.js     |    5 +-
+ 02-design/library/elements/navigation/demo.html    |    2 +
+ .../library/elements/navigation/zimm-navigation.js |  567 +++-
+ .../product-card/assets/2026-07-08-screenshot.png  |  Bin 255047 -> 0 bytes
+ 02-design/library/elements/product-card/demo.html  |   62 -
+ .../elements/product-card/zimm-product-card.js     |  144 -
+ .../product-showcase-blocks/assets/hero.png        |  Bin 0 -> 3671405 bytes
+ .../elements/product-showcase-blocks/demo.html     |  162 +
+ .../zimm-product-showcase-blocks.js                |  204 ++
+ .../library/elements/search-overlay/demo.html      |   33 +
+ .../elements/search-overlay/zimm-search-overlay.js |  214 ++
+ 02-design/library/elements/search/demo.html        |   50 +
+ 02-design/library/elements/search/zimm-search.js   |  149 +
+ 02-design/library/elements/select/demo.html        |   73 +
+ 02-design/library/elements/select/zimm-select.js   |  168 ++
+ .../text-input/assets/2026-07-16-screenshot.png    |  Bin 0 -> 52490 bytes
+ 02-design/library/elements/text-input/demo.html    |  131 +
+ .../library/elements/text-input/zimm-text-input.js |  309 ++
+ 02-design/library/tokens.md                        |  108 +-
+ 02-design/prototypes/INDEX.md                      |    1 +
+ .../editorial/editorial-01-campaign.jpg            |  Bin 0 -> 1206309 bytes
+ .../editorial/editorial-02-campaign.jpg            |  Bin 0 -> 690808 bytes
+ .../editorial/editorial-03-campaign.jpg            |  Bin 0 -> 775521 bytes
+ .../editorial/editorial-04-campaign.jpg            |  Bin 0 -> 1080335 bytes
+ .../editorial/editorial-05-rosetiedye.jpg          |  Bin 0 -> 1029513 bytes
+ .../editorial/editorial-06-splice.jpg              |  Bin 0 -> 547020 bytes
+ .../editorial/editorial-07-ivory-seafoam.jpg       |  Bin 0 -> 225851 bytes
+ .../editorial/editorial-08-harbourblue.jpg         |  Bin 0 -> 404197 bytes
+ .../editorial/editorial-09-blue-paisley.jpg        |  Bin 0 -> 50032 bytes
+ .../editorial/editorial-10-pink-paisley.jpg        |  Bin 0 -> 53415 bytes
+ .../product/product-01-denim-tapestry.jpg          |  Bin 0 -> 100369 bytes
+ .../image downloads/product/product-02-spliced.jpg |  Bin 0 -> 98418 bytes
+ .../product/product-03-railway-blue.jpg            |  Bin 0 -> 46250 bytes
+ .../image downloads/product/product-04-gold.jpg    |  Bin 0 -> 40831 bytes
+ .../image downloads/product/product-05-tan.jpg     |  Bin 0 -> 53385 bytes
+ .../product/product-06-spliced-2.jpg               |  Bin 0 -> 66774 bytes
+ .../image downloads/product/product-07-ivory.jpg   |  Bin 0 -> 21987 bytes
+ .../image downloads/product/product-08-gold-2.jpg  |  Bin 0 -> 43377 bytes
+ .../product/product-09-summer-stripe.jpg           |  Bin 0 -> 47569 bytes
+ .../product/product-10-blue-tie-dye.jpg            |  Bin 0 -> 66457 bytes
+ .../product/product-11-blue-multi-floral.jpg       |  Bin 0 -> 57890 bytes
+ .../image downloads/product/product-12-ivory-2.jpg |  Bin 0 -> 20959 bytes
+ .../product/product-13-multi-stripe.jpg            |  Bin 0 -> 60173 bytes
+ .../product/product-14-pink-watercolour.jpg        |  Bin 0 -> 82222 bytes
+ .../image downloads/product/product-15-khaki.jpg   |  Bin 0 -> 43727 bytes
+ .../product/product-16-lilac-watercolour.jpg       |  Bin 0 -> 58484 bytes
+ .../product/product-17-seafoam-top.jpg             |  Bin 0 -> 50171 bytes
+ .../product/product-18-ivory-top.jpg               |  Bin 0 -> 25866 bytes
+ .../product/product-19-ivory-top-2.jpg             |  Bin 0 -> 16223 bytes
+ .../product/product-20-harbour-blue-pants.jpg      |  Bin 0 -> 40151 bytes
+ .../templates/main-large-screen/assets/styles.css  |   91 -
+ .../templates/main-large-screen/index.html         |   50 -
+ .../templates/main-large-screen/intent.md          |   31 -
+ .../assets/logo-masthead.svg                       |    0
+ .../prototypes/templates/main/assets/scripts.js    |   61 +
+ .../prototypes/templates/main/assets/styles.css    |  130 +
+ 02-design/prototypes/templates/main/index.html     |  145 +
+ 02-design/prototypes/templates/main/intent.md      |   31 +
+ 02-design/shared/viewer.css                        |  242 ++
+ 02-design/specs/components/add-to-wishlist.md      |   82 +
+ .../specs/components/assets/2026-07-14-link.png    |  Bin 0 -> 10286 bytes
+ 02-design/specs/components/banner.md               |  103 +
+ 02-design/specs/components/button.md               |  118 +
+ 02-design/specs/components/card-editorial.md       |  114 +
+ 02-design/specs/components/disclaimer.md           |  110 +
+ 02-design/specs/components/flag.md                 |   87 +
+ 02-design/specs/components/footer.md               |   24 +-
+ 02-design/specs/components/icon.md                 |   93 +
+ 02-design/specs/components/link.md                 |  107 +
+ 02-design/specs/components/logo-masthead.md        |   84 +
+ 02-design/specs/components/logo.md                 |   78 +
+ 02-design/specs/components/mega-menu.md            |  141 +
+ 02-design/specs/components/nav-item.md             |   86 +
+ 02-design/specs/components/navigation.md           |   23 +-
+ .../specs/components/product-showcase-blocks.md    |   82 +
+ 02-design/specs/components/text-input.md           |  144 +
+ .../specs/templates/template-main-large-screen.md  |   67 +-
+ 02-design/viewer/index.html                        |  132 +-
+ 02-design/viewer/viewer.config.js                  |    9 +
+ 03-requirements/epics/.gitkeep                     |    0
+ 03-requirements/features/.gitkeep                  |    0
+ 03-requirements/stories/.gitkeep                   |    0
+ 04-feedback/.gitkeep                               |    0
+ 05-handover/index.md                               |  117 +-
+ 06-tools/markitdown-mcp/Dockerfile                 |   28 -
+ 06-tools/markitdown-mcp/MARKITDOWN_SETUP.md        |   66 -
+ 06-tools/markitdown-mcp/README.md                  |  142 -
+ 06-tools/markitdown-mcp/pyproject.toml             |   69 -
+ .../markitdown-mcp/src/markitdown_mcp/__about__.py |    4 -
+ .../markitdown-mcp/src/markitdown_mcp/__init__.py  |    9 -
+ .../markitdown-mcp/src/markitdown_mcp/__main__.py  |  140 -
+ .../markitdown-mcp/src/markitdown_mcp/py.typed     |    0
+ 06-tools/markitdown-mcp/tests/__init__.py          |    3 -
+ AGENTS.md                                          |   13 +-
+ CLAUDE.md                                          |   17 +-
+ project.config.js                                  |    8 +-
+ setup.html                                         |   73 +-
+ vercel.json                                        |   12 +-
+ 253 files changed, 16888 insertions(+), 1841 deletions(-)
+ create mode 100644 .claude/skills/deploy-catalog/templates/index.html
+ create mode 100644 .claude/skills/map-ia/SKILL.md
+ create mode 100644 .claude/skills/map-ia/templates/ia-data.js
+ create mode 100644 .claude/skills/map-ia/templates/ia.md
+ create mode 100644 .claude/skills/map-ia/templates/index.html
+ create mode 100644 .claude/skills/stitch-pages/SKILL.md
+ create mode 100644 .claude/skills/stitch-pages/templates/stub.html
+ create mode 100644 01-context/summaries/loewe-apc-en-home.md
+ create mode 100644 01-context/summaries/zimmermann-com.md
+ create mode 100644 02-design/ia/ia-data.js
+ create mode 100644 02-design/ia/ia.md
+ create mode 100644 02-design/ia/index.html
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Bold.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-BoldOblique.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Demi.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-DemiOblique.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Light.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-LightOblique.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Medium.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-MediumOblique.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Oblique.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRound-Regular.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRoundCond-Bold.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRoundCond-ExtraBold.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRoundCond-Light.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/FuturaRoundCond-Medium.otf
+ create mode 100644 02-design/library/assets/Font Futura OTF/Licenses/2275/Monotype Font Software End User License Agreement.html
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Bold.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-BoldOblique.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Demi.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-DemiOblique.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Light.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-LightOblique.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Medium.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-MediumOblique.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Oblique.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRound-Regular.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRoundCond-Bold.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRoundCond-ExtraBold.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRoundCond-Light.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/FuturaRoundCond-Medium.woff2
+ create mode 100644 02-design/library/assets/Font Futura WOFF2/Licenses/2275/Monotype Font Software End User License Agreement.html
+ create mode 100644 02-design/library/elements/banner/assets/2026-07-14-screenshot.png
+ create mode 100644 02-design/library/elements/banner/demo.html
+ create mode 100644 02-design/library/elements/banner/zimm-banner.js
+ create mode 100644 02-design/library/elements/card-baseline/assets/image-a.jpg
+ create mode 100644 02-design/library/elements/card-baseline/assets/image-b.jpg
+ create mode 100644 02-design/library/elements/card-baseline/assets/image-c.jpg
+ create mode 100644 02-design/library/elements/card-baseline/assets/image.jpg
+ create mode 100644 02-design/library/elements/card-baseline/demo.html
+ create mode 100644 02-design/library/elements/card-baseline/zimm-card-baseline.js
+ create mode 100644 02-design/library/elements/card-editorial/assets/2026-07-15-screenshot.png
+ create mode 100644 02-design/library/elements/card-editorial/assets/demo-editorial.jpg
+ create mode 100644 02-design/library/elements/card-editorial/demo.html
+ create mode 100644 02-design/library/elements/card-editorial/zimm-card-editorial.js
+ create mode 100644 02-design/library/elements/cat-links-aside/demo.html
+ create mode 100644 02-design/library/elements/cat-links-aside/zimm-cat-links-aside.js
+ create mode 100644 02-design/library/elements/disclaimer/demo.html
+ create mode 100644 02-design/library/elements/disclaimer/zimm-disclaimer.js
+ create mode 100644 02-design/library/elements/flag/assets/flag-au.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-br.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-ca.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-ch.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-cl.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-eu.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-nz.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-uk.svg
+ create mode 100644 02-design/library/elements/flag/assets/flag-us.svg
+ create mode 100644 02-design/library/elements/flag/demo.html
+ create mode 100644 02-design/library/elements/flag/zimm-flag.js
+ create mode 100644 02-design/library/elements/icon/assets/email.svg
+ create mode 100644 02-design/library/elements/icon/assets/phone.svg
+ create mode 100644 02-design/library/elements/icon/assets/whatsapp.svg
+ create mode 100644 02-design/library/elements/input-action/demo.html
+ create mode 100644 02-design/library/elements/input-action/zimm-input-action.js
+ create mode 100644 02-design/library/elements/link/demo.html
+ create mode 100644 02-design/library/elements/logo-masthead/assets/2026-07-14-screenshot.png
+ create mode 100644 02-design/library/elements/logo-masthead/demo.html
+ create mode 100644 02-design/library/elements/logo-masthead/zimm-logo-masthead.js
+ delete mode 100644 02-design/library/elements/logo/assets/2026-07-08-screenshot.png
+ create mode 100644 02-design/library/elements/logo/assets/logo-dark.svg
+ delete mode 100644 02-design/library/elements/logo/assets/logo-default.png
+ delete mode 100644 02-design/library/elements/logo/assets/logo-inverse.png
+ create mode 100644 02-design/library/elements/logo/assets/logo-light.svg
+ delete mode 100644 02-design/library/elements/logo/assets/logo.svg
+ create mode 100644 02-design/library/elements/mega-menu/demo.html
+ create mode 100644 02-design/library/elements/mega-menu/zimm-mega-menu.js
+ delete mode 100644 02-design/library/elements/product-card/assets/2026-07-08-screenshot.png
+ delete mode 100644 02-design/library/elements/product-card/demo.html
+ delete mode 100644 02-design/library/elements/product-card/zimm-product-card.js
+ create mode 100644 02-design/library/elements/product-showcase-blocks/assets/hero.png
+ create mode 100644 02-design/library/elements/product-showcase-blocks/demo.html
+ create mode 100644 02-design/library/elements/product-showcase-blocks/zimm-product-showcase-blocks.js
+ create mode 100644 02-design/library/elements/search-overlay/demo.html
+ create mode 100644 02-design/library/elements/search-overlay/zimm-search-overlay.js
+ create mode 100644 02-design/library/elements/search/demo.html
+ create mode 100644 02-design/library/elements/search/zimm-search.js
+ create mode 100644 02-design/library/elements/select/demo.html
+ create mode 100644 02-design/library/elements/select/zimm-select.js
+ create mode 100644 02-design/library/elements/text-input/assets/2026-07-16-screenshot.png
+ create mode 100644 02-design/library/elements/text-input/demo.html
+ create mode 100644 02-design/library/elements/text-input/zimm-text-input.js
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-01-campaign.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-02-campaign.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-03-campaign.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-04-campaign.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-05-rosetiedye.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-06-splice.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-07-ivory-seafoam.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-08-harbourblue.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-09-blue-paisley.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/editorial/editorial-10-pink-paisley.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-01-denim-tapestry.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-02-spliced.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-03-railway-blue.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-04-gold.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-05-tan.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-06-spliced-2.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-07-ivory.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-08-gold-2.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-09-summer-stripe.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-10-blue-tie-dye.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-11-blue-multi-floral.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-12-ivory-2.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-13-multi-stripe.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-14-pink-watercolour.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-15-khaki.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-16-lilac-watercolour.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-17-seafoam-top.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-18-ivory-top.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-19-ivory-top-2.jpg
+ create mode 100644 02-design/prototypes/assets/image downloads/product/product-20-harbour-blue-pants.jpg
+ delete mode 100644 02-design/prototypes/templates/main-large-screen/assets/styles.css
+ delete mode 100644 02-design/prototypes/templates/main-large-screen/index.html
+ delete mode 100644 02-design/prototypes/templates/main-large-screen/intent.md
+ rename 02-design/prototypes/templates/{main-large-screen => main}/assets/logo-masthead.svg (100%)
+ create mode 100644 02-design/prototypes/templates/main/assets/scripts.js
+ create mode 100644 02-design/prototypes/templates/main/assets/styles.css
+ create mode 100644 02-design/prototypes/templates/main/index.html
+ create mode 100644 02-design/prototypes/templates/main/intent.md
+ create mode 100644 02-design/shared/viewer.css
+ create mode 100644 02-design/specs/components/add-to-wishlist.md
+ create mode 100644 02-design/specs/components/assets/2026-07-14-link.png
+ create mode 100644 02-design/specs/components/banner.md
+ create mode 100644 02-design/specs/components/button.md
+ create mode 100644 02-design/specs/components/card-editorial.md
+ create mode 100644 02-design/specs/components/disclaimer.md
+ create mode 100644 02-design/specs/components/flag.md
+ create mode 100644 02-design/specs/components/icon.md
+ create mode 100644 02-design/specs/components/link.md
+ create mode 100644 02-design/specs/components/logo-masthead.md
+ create mode 100644 02-design/specs/components/logo.md
+ create mode 100644 02-design/specs/components/mega-menu.md
+ create mode 100644 02-design/specs/components/nav-item.md
+ create mode 100644 02-design/specs/components/product-showcase-blocks.md
+ create mode 100644 02-design/specs/components/text-input.md
+ delete mode 100644 03-requirements/epics/.gitkeep
+ delete mode 100644 03-requirements/features/.gitkeep
+ delete mode 100644 03-requirements/stories/.gitkeep
+ delete mode 100644 04-feedback/.gitkeep
+ delete mode 100644 06-tools/markitdown-mcp/Dockerfile
+ delete mode 100644 06-tools/markitdown-mcp/MARKITDOWN_SETUP.md
+ delete mode 100644 06-tools/markitdown-mcp/README.md
+ delete mode 100644 06-tools/markitdown-mcp/pyproject.toml
+ delete mode 100644 06-tools/markitdown-mcp/src/markitdown_mcp/__about__.py
+ delete mode 100644 06-tools/markitdown-mcp/src/markitdown_mcp/__init__.py
+ delete mode 100644 06-tools/markitdown-mcp/src/markitdown_mcp/__main__.py
+ delete mode 100644 06-tools/markitdown-mcp/src/markitdown_mcp/py.typed
+ delete mode 100644 06-tools/markitdown-mcp/tests/__init__.py

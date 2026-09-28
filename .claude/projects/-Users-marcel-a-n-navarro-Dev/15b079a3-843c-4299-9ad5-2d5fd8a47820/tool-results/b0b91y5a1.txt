@@ -1,0 +1,582 @@
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start/SKILL.md ############
+     1	---
+     2	name: session-start
+     3	description: Run the mandatory session start ritual — reads tracking docs, runs branch + health checks, states current position. Use at the start of every coding session.
+     4	---
+     5	
+     6	Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+     7	
+     8	## Steps (in order — do not skip any)
+     9	
+    10	1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+    11	
+    12	2. **Read tracking docs** — read these in parallel:
+    13	   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+    14	   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+    15	   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+    16	   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+    17	   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+    18	
+    19	3. **Health checks** — run when the helper exists:
+    20	   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+    21	
+    22	4. **State current position** — in plain language, say exactly:
+    23	   - Current branch
+    24	   - Current sprint / phase (from `projectState.md`)
+    25	   - The last completed task and the next task
+    26	   - Any blockers or outstanding issues
+    27	
+    28	   Format: "Resuming from: [last completed task]. Next: [next task]. [Any blockers or health issues]."
+    29	
+    30	5. **Confirm readiness** — ask if the user wants to proceed with the stated next task or redirect to something else.
+    31	
+    32	Do not write any code until this ritual is complete and the user has confirmed direction.
+    33	
+    34	---
+    35	
+    36	## Living Memory — what belongs where
+    37	
+    38	`.docs/memory/` is the project's persistent memory. Keep it current — update the relevant file whenever a session produces new information that belongs there.
+    39	
+    40	**`.claude/session-notes.md` is different: a lightweight, Claude-writable, gitignored, per-developer staging area** (same pattern as `userProfile.md` below, but for tasks rather than profile info) for short-lived carryover items (e.g. "still need to do X next session") that haven't been promoted to `.docs/memory/` yet. It's **not** shared via git — each developer's notes stay local, so they never conflict or overwrite a teammate's. Unlike the files below, Claude may write to it directly. Use it for quick pending-item tracking; move anything durable and team-relevant into the right `.docs/memory/` file once it's confirmed, and clear the note.
+    41	
+    42	| File | What belongs there | When to update |
+    43	|---|---|---|
+    44	| `architecture.md` | Stack decisions, overrides pattern, key paths, structural choices | A new integration is added, a structural decision is made, or a key path changes |
+    45	| `projectState.md` | Phase, integration statuses (mock/live/not started), what's done and pending, unresolved dependencies | Any integration goes live, a phase changes, a feature is completed, or a dependency is resolved |
+    46	| `feedback.md` | What worked, what failed, patterns to avoid or repeat | After discovering a gotcha, a failed approach, or a validated pattern |
+    47	| `references.md` | Service URLs, API keys, credentials, logins, dashboards | A new credential or service URL is introduced (system roles live in `architecture.md`) |
+    48	| `userProfile.md` | User's role, expertise, working style, preferences | User shares a preference or working-style detail that should persist |
+    49	
+    50	**Rules:**
+    51	- Never leave a file with only its placeholder comment — populate it the moment you learn something that belongs there.
+    52	- **No duplication.** Every fact has exactly one home. Before writing something, check whether it already lives in another doc — if it does, reference that doc instead of copying. Applies across all `.md` files: `AGENTS.md`, memory files, and PRDs.
+    53	- **Conciseness.** Keep all `.md` instructions concise.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/audit-tier/SKILL.md ############
+     1	---
+     2	name: audit-tier
+     3	description: Identify the protection tier, owner, and import blast radius of a file or directory under overrides/. Use before editing anything you're unsure about.
+     4	---
+     5	
+     6	Identify the protection tier and owner of a file or directory in this codebase.
+     7	
+     8	The path to audit is: $ARGUMENTS
+     9	
+    10	## What to output
+    11	
+    12	**1. Tier**
+    13	- Tier 1 (Frozen) — must not be modified without explicit owner approval
+    14	- Tier 2 (Protected) — feature branch only, requires second-developer PR review
+    15	- Tier 3 (Squad-owned) — only the owning squad should be prompting Claude here
+    16	- Tier 4 (Feature-local) — freely editable on a feature branch
+    17	
+    18	Check against:
+    19	- [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md) for Tier 1
+    20	- [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md) for Tier 2
+    21	- `.claude/rules/squadA.md` and `.claude/rules/squadB.md` for Tier 3 *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+    22	
+    23	**2. Owner**
+    24	Design System / Integration / SI Partner / Squad A / Squad B / Both Squads
+    25	
+    26	**3. Can Claude Code modify it?**
+    27	- Tier 1: No. Developer must name the file explicitly in the prompt AND confirm owner approval.
+    28	- Tier 2: Yes on a feature branch — second-developer PR review required before merging.
+    29	- Tier 3: Yes — but only the owning squad should be running Claude in this area.
+    30	- Tier 4: Yes, freely.
+    31	
+    32	**4. Import blast radius**
+    33	Run this to check how many non-test, non-story files import it (from `overrides/app/` — the customisation surface):
+    34	```bash
+    35	grep -rl "$(basename "$ARGUMENTS" | sed 's/\.[tj]sx\?$//')" overrides/app --include="*.ts" --include="*.tsx" \
+    36	  | grep -v '\.test\.' | grep -v '\.stories\.' | wc -l
+    37	```
+    38	If more than 5, flag it as **high blast radius** — a change here breaks many consumers.
+    39	
+    40	**5. Next step**
+    41	Specific action for the developer — e.g.:
+    42	- "Message #design-system before asking Claude to touch this"
+    43	- "This is Tier 3 Squad A — if you're Squad B, message the Squad A Lead first"
+    44	- "This is Tier 4 — safe to include in your prompt with an explicit file path"
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/new-component/SKILL.md ############
+     1	---
+     2	name: new-component
+     3	description: Scaffold a new Zimmermann component under overrides/app/components/ — TypeScript, Chakra-first, with a paired Storybook story. Use whenever a new custom component is needed.
+     4	---
+     5	
+     6	Scaffold a new Zimmermann custom component.
+     7	
+     8	The component name is: $ARGUMENTS
+     9	
+    10	## Conventions
+    11	
+    12	Follow [.claude/rules/conventions.md](../../rules/conventions.md) (naming, folder layout,
+    13	cross-cutting rules), [components.md](../../rules/components.md) (props types, JSDoc policy,
+    14	composition, Storybook categorisation), and [css.md](../../rules/css.md) (Chakra token usage)
+    15	— together the single source of truth for scaffolding. Higher-level project rules live in
+    16	[AGENTS.md](../../../AGENTS.md). Do not restate rules here — read those files before
+    17	scaffolding.
+    18	
+    19	Key implications for scaffolding:
+    20	- Component lives in its own folder: `componentName/index.tsx` (Zimmermann-authored) or
+    21	  `component-name/index.tsx` (override of a base SF component).
+    22	- Props type named `<ComponentName>Props`, declared at the top of `index.tsx` by default.
+    23	- Storybook story is mandatory; Vitest only when the component owns non-trivial logic.
+    24	
+    25	## Steps
+    26	
+    27	1. Read one nearby existing custom component under [overrides/app/components/](../../../overrides/app/components/) to match code style, import order, and Chakra usage. If no Zimmermann-authored component exists yet, read a base template component from `node_modules/@salesforce/retail-react-app/app/components/` and convert the style to TypeScript + Chakra props.
+    28	
+    29	2. Create `overrides/app/components/<componentName>/index.tsx`:
+    30	   - Functional React component, named export (`export function <ComponentName>`) plus default export.
+    31	   - `type <ComponentName>Props = { ... }` at the top of the file.
+    32	   - JSDoc above the component if it will be consumed by ≥2 callers (shared/Tier 2).
+    33	   - Chakra primitives for layout (`Box`, `Flex`, `Text`, etc.) using theme tokens — no hardcoded hex, pixel spacing, or raw font sizes.
+    34	   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation. Exception: Context-backed, app-wide static-content hooks (`useIntl`, `useUiCopy`) may be called directly — they read from a Provider mounted once at the app root and degrade gracefully with none present, so they don't create the reuse problem this rule exists to prevent. See components.md's exception note for the full reasoning.
+    35	
+    36	3. Create `overrides/app/components/<componentName>/index.stories.tsx` — but first decide
+    37	   if a story is needed at all. Per [components.md](../../rules/components.md) →
+    38	   **Storybook**, purely internal sub-components that only render inside one parent
+    39	   don't need their own story; cover their variants via the parent. If a story *is* needed:
+    40	   - Storybook 8.6 CSF3 default export.
+    41	   - Pick the right category prefix from components.md — `Foundation/`, `Elements/`,
+    42	     `Layout/`, `Commerce/`, `Forms/`, `Pages/`, or `Contentful/`. Ask the developer if it's
+    43	     not obvious which one fits (with your recommendation).
+    44	   - `title: '<Category>/<ComponentName>'` (e.g. `'Commerce/ProductTile'`,
+    45	     `'Layout/Header'`).
+    46	   - At least one named export `Default`. Add named exports for meaningful states only —
+    47	     not every prop combination.
+    48	   - Add a `play` function only if the component has interactive behaviour worth asserting.
+    49	
+    50	4. If the component owns non-trivial logic (branching, prop→JSX mapping decisions, event wiring), create `index.test.ts`/`index.test.tsx` (Vitest) in the same folder — even if that logic's effects are also covered by a hook's own test or a parent's assembly-level Storybook `play`. Resolve any duplication by mocking the hook/child whose internals are proven elsewhere and testing only this component's own contract, not by skipping the file. See testing.md's note under "What to test (and what to skip)". Skip only when the component has no branching/decision logic at all (pure prop interpolation).
+    51	
+    52	5. Optional: if the props type exceeds ~30 lines or will be consumed by sibling files, move it to `types.ts` in the same folder. Otherwise leave it inline.
+    53	
+    54	6. Run `npx tsc --noEmit` and confirm zero new errors.
+    55	
+    56	## Constraints
+    57	
+    58	- Do not modify any existing files (no auto-wiring into routes, parents, or the theme registry).
+    59	- Do not add npm packages — see [AGENTS.md](../../../AGENTS.md) Hard Rule 7.
+    60	- Do not import from `node_modules/@salesforce/retail-react-app/` source directly — re-export from `@salesforce/retail-react-app/...` paths.
+    61	- For new icons, use `@salesforce/retail-react-app/app/components/icons`; if a needed icon is missing, ask the developer.
+    62	
+    63	## Output
+    64	
+    65	Tell the developer:
+    66	- The paths of every file created.
+    67	- The import to copy: `import <ComponentName> from '.../components/<componentName>'` (no filename — resolves via `index.tsx`).
+    68	- A one-sentence note on where it likely wires in, or ask if unsure.
+    69	- A reminder that `npx tsc --noEmit` was run and passed.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/generate-changelog/SKILL.md ############
+     1	---
+     2	name: generate-changelog
+     3	description: Generate a release changelog from conventional commits and upstream baseline notes. Produces audience-specific outputs for the dev team, QA, product, and GitHub Release. Use before cutting a release branch or when preparing release notes.
+     4	---
+     5	
+     6	Generate a structured release changelog. Ask clarifying questions one at a time,
+     7	then research in parallel, then produce the output. Do not write code.
+     8	
+     9	---
+    10	
+    11	## Phase 1 — Establish the release range
+    12	
+    13	Ask these questions one at a time if not already provided:
+    14	
+    15	1. What is the release version? (e.g. `v1.2.0`)
+    16	2. What is the base ref to compare from? (default: run `git describe --tags --abbrev=0` to find the last tag. If no tags exist yet, use the first commit.)
+    17	3. Is there anything specific that should be highlighted or excluded from the changelog?
+    18	
+    19	---
+    20	
+    21	## Phase 2 — Parallel research
+    22	
+    23	Spawn three agents simultaneously. Each is self-contained.
+    24	
+    25	**Agent A — Git log analysis**
+    26	Run: `git log [BASE_REF]..HEAD --pretty=format:"%h %s" --no-merges`
+    27	Parse each commit by conventional type:
+    28	- `feat` → Features
+    29	- `fix` → Bug fixes
+    30	- `perf` → Performance
+    31	- `refactor` → Refactors (include in technical changelog only)
+    32	- `test` → Test coverage (include in technical changelog only)
+    33	- `docs` → Documentation (include in technical changelog only)
+    34	- `build` / `ci` → Infrastructure (include in technical changelog only)
+    35	- `chore` → Maintenance (omit from product/QA changelogs unless `chore(deps)`)
+    36	- `upstream-sync` → Upstream sync (separate section)
+    37	- `style` → Omit from all changelogs
+    38	
+    39	For each `feat` and `fix`, extract the scope (if present) and description.
+    40	Group commits under their type. Return the full categorised list.
+    41	
+    42	**Agent B — Upstream baseline scan**
+    43	Read [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md).
+    44	Identify whether the `@salesforce/retail-react-app` version changed between BASE_REF and HEAD.
+    45	Use `git log [BASE_REF]..HEAD -- .docs/memory/upstreamBaseline.md package.json` to find any bump.
+    46	Return: the version bump (if any) and a one-sentence summary.
+    47	
+    48	**Agent C — New components / hooks scan**
+    49	If `.claude/registry/` exists, run:
+    50	`git diff [BASE_REF]..HEAD -- .claude/registry/`
+    51	and parse for new entries in `components.md`, `hooks.md`, `utils.md`, `pages.md`.
+    52	Otherwise, fall back to:
+    53	`git log [BASE_REF]..HEAD --diff-filter=A --name-only -- 'overrides/app/components/**' 'overrides/app/hooks/**' 'overrides/app/pages/**' 'overrides/app/utils/**'`
+    54	Return: lists of new components, hooks, utils, and pages added in this release.
+    55	
+    56	Wait for all three agents before proceeding.
+    57	
+    58	---
+    59	
+    60	## Phase 3 — Sprint context
+    61	
+    62	Read `.docs/memory/sprintScope.md` and [.docs/memory/projectState.md](../../../.docs/memory/projectState.md). Identify which sprint(s) were completed or progressed
+    63	in this release cycle. State it in one sentence for the product changelog.
+    64	
+    65	---
+    66	
+    67	## Phase 4 — Generate the changelog
+    68	
+    69	Produce the following four sections. Write them into a single file at:
+    70	`docs/releases/[TODAY]-[VERSION].md` (create the directory if it doesn't exist).
+    71	
+    72	---
+    73	
+    74	```markdown
+    75	# Release [VERSION] — [TODAY]
+    76	
+    77	---
+    78	
+    79	## 🛠 Technical Changelog (Dev Team)
+    80	
+    81	### New components & hooks
+    82	[From Agent C — list each new component and hook with its path under overrides/app/]
+    83	
+    84	### Features
+    85	[From Agent A feat commits — scope: description]
+    86	
+    87	### Bug fixes
+    88	[From Agent A fix commits — scope: description]
+    89	
+    90	### Performance
+    91	[From Agent A perf commits]
+    92	
+    93	### Upstream sync
+    94	[From Agent B — `@salesforce/retail-react-app` version bump (if any), what was reviewed]
+    95	
+    96	### Refactors & test coverage
+    97	[From Agent A refactor and test commits]
+    98	
+    99	### Dependencies & infrastructure
+   100	[From Agent A build, ci, chore(deps) commits]
+   101	
+   102	---
+   103	
+   104	## 🧪 QA Changelog (Test Team)
+   105	
+   106	### What changed that needs testing
+   107	[For each feat and fix commit, one bullet: what changed and which user journey to test.
+   108	Reference the relevant P0 test if one covers it. Flag any area where a P0 test does NOT exist.]
+   109	
+   110	### High-risk areas this release
+   111	[Any changes to: checkout flow, auth, pricing, cart, product display, navigation, consent (Didomi), international (Global-e).
+   112	State what specifically changed and the blast radius.]
+   113	
+   114	### Regression watch
+   115	[Any changes to shared components (Tier 2) or shared hooks. List the component and
+   116	all known consumers that should be spot-checked.]
+   117	
+   118	---
+   119	
+   120	## 📣 Product Changelog (Business / Stakeholders)
+   121	
+   122	### Sprint progress
+   123	[From Phase 3 — one sentence on sprint completion]
+   124	
+   125	### What's new
+   126	[feat commits only, in plain English, no technical detail. Group by user-facing feature area.]
+   127	
+   128	### What's fixed
+   129	[fix commits only, in plain English. Focus on customer-facing fixes only.]
+   130	
+   131	### What's coming next
+   132	[One sentence on the next sprint focus from .docs/memory/sprintScope.md]
+   133	
+   134	---
+   135	
+   136	## 🚀 GitHub Release Summary
+   137	
+   138	**[VERSION]** — [TODAY]
+   139	
+   140	[2–3 sentence summary suitable for the GitHub Release page. Highlights the biggest
+   141	feature additions and most significant fixes. Suitable for external visibility.]
+   142	
+   143	**Full changelog:** `docs/releases/[TODAY]-[VERSION].md`
+   144	**Release notes reviewed by:** [FILL IN]
+   145	```
+   146	
+   147	---
+   148	
+   149	## Phase 5 — Offer GitHub Release draft
+   150	
+   151	After writing the file, ask:
+   152	> "Would you like me to create a GitHub Release draft using this summary?
+   153	> Run: `gh release create [VERSION] --draft --title '[VERSION]' --notes '[SUMMARY]'`"
+   154	
+   155	Do not run the command — provide it for the developer to execute.
+   156	
+   157	---
+   158	
+   159	## Notes
+   160	
+   161	- If commits mix conventional and non-conventional format (transition period), flag
+   162	  the non-conventional commits separately as "Uncategorised" and note they couldn't
+   163	  be automatically classified.
+   164	- If the base ref does not exist (first release), use `--all` for the git log.
+   165	- Always omit commit hashes from the product and QA sections — they are technical noise.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/contentful-register-component/SKILL.md ############
+     1	---
+     2	name: contentful-register-component
+     3	description: Register a Zimmermann React component with Contentful Studio Experiences. Use when a developer asks to register, add, or expose a React component to Contentful, or when they need to create a Contentful component definition for an existing component.
+     4	allowed-tools: Read, Edit, Bash
+     5	---
+     6	
+     7	# Contentful Component Registration
+     8	
+     9	Studio Experiences definitions are now **generated from code** — you never write a
+    10	`defineComponents` entry by hand. The source of truth is the component's `Props` type,
+    11	annotated with `@cf` JSDoc tags.
+    12	
+    13	## Steps
+    14	
+    15	### 1. Move the component into `experiences/`
+    16	
+    17	The codegen only processes files under
+    18	`overrides/app/components/contentful/experiences/`. If the component isn't there yet,
+    19	move it (or create it) in that folder.
+    20	
+    21	### 2. Add `/** @cf-register */` to the component
+    22	
+    23	Place it immediately before the component's `const` declaration:
+    24	
+    25	```tsx
+    26	/** @cf-register */
+    27	const MyComponent = ({ ... }: MyComponentProps) => { ... };
+    28	
+    29	export default MyComponent;
+    30	```
+    31	
+    32	### 3. Annotate every prop in the `Props` type
+    33	
+    34	Props without a `@cf` tag are silently skipped — omitting the tag is how you exclude a prop from the Contentful definition.
+    35	
+    36	```tsx
+    37	type MyComponentProps = {
+    38	  /** @cf Headline */
+    39	  headline: string;
+    40	
+    41	  /** @cf Body Copy, longText */
+    42	  body?: string;
+    43	
+    44	  /** @cf Hero Image, media */
+    45	  heroImage?: string;
+    46	
+    47	  /** @cf Layout, select */
+    48	  layout?: 'left' | 'right';
+    49	
+    50	  internalId?: string;
+    51	};
+    52	```
+    53	
+    54	**Tag syntax:**
+    55	
+    56	| Tag | Meaning |
+    57	|-----|---------|
+    58	| `/** @cf Display Name */` | Infer control from the TS type (see table below) |
+    59	| `/** @cf Display Name, control */` | Override the inferred control |
+    60	
+    61	Props without any `@cf` tag are silently skipped — no tag needed to exclude a prop.
+    62	
+    63	**Type → control inference table:**
+    64	
+    65	| TypeScript type | Inferred control | Contentful variable type |
+    66	|----------------|-----------------|--------------------------|
+    67	| `string` | `shortText` | Text |
+    68	| `boolean` | `toggle` | Boolean |
+    69	| `number` | `number` | Number |
+    70	| string literal union (`'a' \| 'b'`) | `select` | Text |
+    71	
+    72	**Valid explicit controls:** `shortText`, `longText`, `select`, `toggle`, `number`, `media`
+    73	
+    74	**Auto-skipped:** props starting with `on` (event handlers), `children` (emits
+    75	`children: true` on the component registration instead), and any prop with no `@cf` tag.
+    76	
+    77	### 4. Run the generator
+    78	
+    79	```bash
+    80	npm run generate:contentful
+    81	```
+    82	
+    83	This rewrites `overrides/app/components/contentful/experiences/definitions.ts`
+    84	automatically. Verify the output looks correct, then commit both the annotated
+    85	component and the updated `definitions.ts`.
+    86	
+    87	### 5. Verify
+    88	
+    89	```bash
+    90	npx tsc --noEmit
+    91	npm run generate:contentful:check
+    92	```
+    93	
+    94	`--check` exits zero if `definitions.ts` is in sync with the source files.
+    95	
+    96	---
+    97	
+    98	## Notes
+    99	
+   100	- **Never edit `definitions.ts` by hand** — it is autogenerated and will be overwritten
+   101	  on the next run.
+   102	- The pre-commit hook auto-runs the generator whenever an `experiences/*.tsx` file is
+   103	  staged, so `definitions.ts` stays in sync automatically.
+   104	- `children: ReactNode` → use `children: true` convention; the generator handles this
+   105	  automatically when it sees a `children` prop.
+   106	- `thumbnailUrl` is left blank until a real Contentful account exists.
+   107	- Component `id` is auto-derived as kebab-case of the filename
+   108	  (`myComponent.tsx` → `my-component`).
+   109	- Component `name` is auto-derived as Title Case of the id words
+   110	  (`my-component` → `My Component`).
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/scope-check/SKILL.md ############
+     1	---
+     2	name: scope-check
+     3	description: Review a proposed Claude Code prompt for scope safety before it runs. Classifies every likely-touched file by tier and verdicts the prompt SAFE / RISKY / BLOCKED, rewriting it when needed.
+     4	---
+     5	
+     6	Review a proposed Claude Code prompt for scope safety before it runs.
+     7	
+     8	The prompt to check is: $ARGUMENTS
+     9	
+    10	## What to do
+    11	
+    12	1. **Identify every file the prompt would likely touch** — both files named explicitly and files Claude would naturally reach through refactoring upward, shared imports, or "while I'm in here" changes.
+    13	
+    14	2. **Classify each file by tier**:
+    15	   - Tier 1 (Frozen) — see [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md)
+    16	   - Tier 2 (Protected) — see [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md)
+    17	   - Tier 3 (Squad-owned) — see `.claude/rules/squadA.md` and `.claude/rules/squadB.md` *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+    18	   - Tier 4 (Feature-local, safe)
+    19	
+    20	3. **Assess the risk**:
+    21	   - Is the prompt open-ended in a way that lets Claude drift into shared code?
+    22	   - Could Claude refactor upward into hooks or utilities not mentioned?
+    23	   - Does it cross squad boundaries (Squad A territory + Squad B territory in the same prompt)?
+    24	   - Does it name specific files, or just a feature area?
+    25	
+    26	4. **Verdict**: output one of:
+    27	   - ✅ SAFE — clearly scoped, no Tier 1 or 2 risk
+    28	   - ⚠️ RISKY — likely to drift, needs a rewrite before running
+    29	   - 🚫 BLOCKED — requires Tier 1 modification, stop and get owner approval first
+    30	
+    31	5. **If RISKY or BLOCKED**, rewrite the prompt so it is safely scoped:
+    32	   - Name exact file paths under `overrides/app/...`
+    33	   - End with "Do not modify any other files"
+    34	   - Split cross-squad work into two separate prompts
+    35	
+    36	## Output format
+    37	
+    38	Use a compact table for the file/tier list. One short paragraph for the verdict. If rewriting, show the improved prompt in a code block.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/upstream-sync-review/SKILL.md ############
+     1	---
+     2	name: upstream-sync-review
+     3	description: Review the release notes / changelog for a new @salesforce/retail-react-app version before bumping. Lightweight policy — see .docs/upstreamPolicy.md.
+     4	---
+     5	
+     6	This is a **slim overrides project** on `@salesforce/retail-react-app` — not a framework fork.
+     7	The policy is **"read the changelog, bump opportunistically"** — see [.docs/upstreamPolicy.md](../../../.docs/upstreamPolicy.md).
+     8	
+     9	This skill helps you review a candidate version bump before doing it.
+    10	
+    11	---
+    12	
+    13	## Input
+    14	
+    15	Ask the developer:
+    16	> "What candidate `@salesforce/retail-react-app` version are we considering? Paste a link to the GitHub release notes or the version number."
+    17	
+    18	If they give just a version (e.g. `10.1.0`), generate the release notes URL:
+    19	`https://github.com/SalesforceCommerceCloud/pwa-kit/releases/tag/v<X.Y.Z>`
+    20	
+    21	---
+    22	
+    23	## Step 1 — Capture current state
+    24	
+    25	Read [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md). Note:
+    26	- Current version
+    27	- Reviewed-up-to version
+    28	- Any deferred items
+    29	
+    30	---
+    31	
+    32	## Step 2 — Read the release notes
+    33	
+    34	Fetch the GitHub release notes for the candidate version (and any intermediate versions
+    35	between current and candidate). Summarise:
+    36	- Security fixes
+    37	- SCAPI / SDK breaking changes
+    38	- New configuration options
+    39	- Bug fixes that affect surfaces we override
+    40	
+    41	The bump policy says: bump opportunistically only when a release contains **security** or
+    42	**SDK** changes that affect us. Otherwise stay put.
+    43	
+    44	---
+    45	
+    46	## Step 3 — Map changes to our override surface
+    47	
+    48	For each notable change in the release notes, check whether we override the affected file
+    49	under `overrides/app/`. If yes, the upgrade may need a re-port of the override.
+    50	
+    51	Quick check:
+    52	```bash
+    53	ls overrides/app/<area-from-release-notes>/ 2>/dev/null
+    54	```
+    55	
+    56	For each override that may be affected, flag it as **Review** — the override must be
+    57	diffed against the new base file in `node_modules/@salesforce/retail-react-app/` after the bump.
+    58	
+    59	---
+    60	
+    61	## Step 4 — Output a short recommendation
+    62	
+    63	Produce a brief recommendation in this shape:
+    64	
+    65	```markdown
+    66	## Upstream review: @salesforce/retail-react-app v<X.Y.Z>
+    67	
+    68	**Current:** vA.B.C (per upstreamBaseline.md)
+    69	**Candidate:** vX.Y.Z
+    70	**Reviewed:** [today's date]
+    71	
+    72	### Notable changes
+    73	- [bullet per relevant item from release notes]
+    74	
+    75	### Overrides that may need re-porting
+    76	| Override path | Reason |
+    77	|---|---|
+    78	| overrides/app/... | [release-note item] |
+    79	
+    80	### Recommendation
+    81	[BUMP / DEFER / WAIT FOR NEXT RELEASE] — with one-sentence reason.
+    82	
+    83	### If bumping
+    84	- [ ] Update `package.json` and `package-lock.json` via `npm install @salesforce/retail-react-app@<X.Y.Z>`
+    85	- [ ] Re-diff each flagged override against the new base file
+    86	- [ ] Run `npx tsc --noEmit`, `npm run lint`, `npm run build`
+    87	- [ ] Update `.docs/memory/upstreamBaseline.md` (Current + Reviewed up to)
+    88	```
+    89	
+    90	---
+    91	
+    92	## Notes
+    93	
+    94	- This skill does **not** modify any files — it produces a recommendation only.
+    95	- For Tier 1 files affected by the upgrade (`config/*`, `overrides/app/ssr.js`, `worker/main.js`), flag explicitly and require Integration lead approval before bumping.
+    96	- Do not run `npm install` yourself — the developer must approve and run it (see [AGENTS.md](../../../AGENTS.md) Hard Rule 7).

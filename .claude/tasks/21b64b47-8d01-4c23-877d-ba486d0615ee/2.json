@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Build @arche/pack-python and @arche/pack-go",
+  "description": "Two non-Node packs proving the base is truly tech-agnostic (no package.json/npm). Generalized CiSpec.runtime to string + multi-runtime setup in github/gitlab providers. Wire into CLI + tsconfig; extend pack-swap audit to node/next/python/go base-equality.",
+  "activeForm": "Building pack-python + pack-go",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

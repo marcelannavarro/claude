@@ -1,0 +1,485 @@
+# SFCC-89 — PDP Static Product Information: Figma design specification
+
+**Source file:** `QQ427wHWEUjsjP7H8v48Rs` (Zimmermann_Final-Approved-Designs) — composed page states.
+**Target node given:** `3087:15747`.
+**Extracted:** 2026-08-22. Read-only; no repo file and no Figma node was modified.
+
+---
+
+## 0. Method and tool caveats (read this before trusting any number)
+
+Two of the four requested tools were **unusable in this session**:
+
+| Tool | Result |
+|---|---|
+| `get_metadata` (with nodeId) | Works, but the target subtree serialises to >315 KB and the MCP SSE transport truncates it. **Deterministic failure**, retried twice. |
+| `get_screenshot` | Works. Used throughout. |
+| `get_variable_defs` | **Fails**: `"You currently have nothing selected."` It resolves against the Figma **desktop app's current selection**, not the `nodeId` argument. |
+| `get_design_context` | **Fails**: same "nothing selected" error, same reason. |
+
+Because `get_variable_defs` and `get_design_context` were unavailable, all variable, typography and
+layout data below was obtained instead via **read-only Plugin API traversal** (`use_figma` with
+scripts that only read and `return`). This is a *better* source than `get_design_context` for this
+purpose — it returns resolved variable names, collections, modes and per-mode values rather than
+pre-rendered Tailwind — but it is a substitution worth stating.
+
+**If you want `get_design_context` / `get_variable_defs` output**, the user must select the node in
+the Figma desktop app first; nothing in this environment can do that.
+
+Two further transport quirks, recorded so the next person doesn't rediscover them:
+- The SSE channel truncates responses at a **variable** cap (~19 KB–315 KB observed). All traversal
+  was paginated.
+- **A non-ASCII character in some layer names breaks the SSE JSON encoding outright** (frames named
+  `PDP - Denim Applique<U+?>Mini Dress`). Every script below sanitises names to ASCII. A script that
+  returns raw `node.name` for that range fails 100% of the time.
+
+### Measurement rules applied
+
+- **TEXT nodes report a cap-height box, not a CSS line box.** Every TEXT height below is labelled
+  and must **not** be turned into a CSS `height` or used to file a mismatch.
+- **A FRAME that hugs a TEXT child inherits that cap-height artifact.** This bites here: the
+  accordion row frames report `218x9`. That 9 px is the text cap-height, not a row height. For those,
+  use the **row pitch** (gap + measured offsets), which is artifact-free.
+- FRAMEs/INSTANCEs with fixed or content-independent sizing (column widths, button, icons, gallery)
+  report real boxes and **are** directly CSS-comparable.
+
+---
+
+## 1. What this screen is, and the node tree
+
+**`3087:15747` is not a screen — it is a `PAGE`** named `└– 🟢  PDP`, containing **67 top-level
+children** and spanning 108649 × 41878 px of canvas. The green marker in the page name appears to be
+this file's "approved" convention (unverified — a naming convention, not metadata).
+
+The 67 children are the whole PDP design surface: base layouts, three product variants
+(INDRA PLUNGE HALTER MAXI DRESS, ALCHEMY RUFFLE MINI DRESS, Denim Applique Mini Dress), interaction
+states, plus `SECTION`s named `archive`, `archived - not needed`, `Archive`,
+`Out of stock / coming soon`, `Size selection (drop down interaction)`, `Mobile sticky add to bag`
+and `Shop the look mockups`.
+
+### The canonical path to the static product information
+
+```
+PAGE      3087:15747   "└– 🟢  PDP"                                    (67 children)
+└ FRAME   3093:67151   "PDP 01"                        1440 x 7476     VERTICAL       ← desktop base
+  └ FRAME 3093:67152   "Frame 2147224922"              1440 x 7476     VERTICAL gap 0
+    ├ INSTANCE 3616:41007  "Navigation"                1440 x 120
+    ├ INSTANCE 3616:41008  "Logo masthead"             1440 x 114
+    ├ FRAME    3093:67155  "Frame 2147224921"          1440 x 6187     VERTICAL gap 0
+    │ └ FRAME  5083:70356  "PDP Cards"                 1441 x 1170     HORIZONTAL gap 179, padRight 142
+    │   ├ INSTANCE 5083:70357 "PDP Hero image Desktop"  900 x 1170     ← image gallery
+    │   └ FRAME    5083:70358 "Frame 2147224717"        218 x 671      ← ★ STATIC PRODUCT INFO (desktop)
+    ├ INSTANCE 3093:67169  "PLP Bar desktop"           1440 x 53
+    ├ INSTANCE 3093:67170  "Recently Viewed"           1440 x 396
+    └ INSTANCE 3649:57311  "Footer"                    1440 x 606
+```
+
+```
+PAGE      3087:15747
+└ FRAME   3093:67195   "PDP 01 Mob"                     402 x 5167                     ← mobile base
+  └ FRAME 3093:67196   "Main Container"                 402 x 4329     VERTICAL gap 0
+    └ FRAME 5083:70441 "PDP Cards Mobile"               402 x 1296     (no auto-layout)
+      ├ GROUP 5083:70500 "Carousel"                     403 x 524      ← image gallery + dot indicator
+      └ FRAME 5083:70442 "Frame 2147224717"             342 x 716  @ x=30, y=580
+                                                                        ← ★ STATIC PRODUCT INFO (mobile)
+```
+
+### The product-information subtree (desktop `5083:70358`, node types annotated)
+
+```
+FRAME 5083:70358   218 x 671   VERTICAL gap 28                    [CSS-comparable width]
+└ FRAME 5083:70359   218 x 671   VERTICAL gap 28                  ← redundant wrapper, flatten
+  ├ FRAME 5083:70360  218 x 301  VERTICAL gap 44
+  │ └ FRAME 5083:70361 218 x 301 VERTICAL gap 44                  ← redundant wrapper, flatten
+  │   ├ FRAME 5083:70362  218 x 169  VERTICAL gap 22              [height hugs TEXT — see §0]
+  │   │ ├ FRAME 5083:70427 "Product name and Wishlist" 218 x 35  HORIZONTAL gap 43
+  │   │ │ ├ FRAME    5083:70428 "wrapper"  180 x 35  HORIZONTAL, padTop 6
+  │   │ │ │ └ TEXT   5083:70429 "INDRA PLUNGE HALTER MAXI DRESS"  180 x 29  [CAP-HEIGHT]
+  │   │ │ └ INSTANCE 5083:70430 "Add to wishlist"  24 x 24, pad 4 → icon 16 x 16
+  │   │ ├ TEXT 5083:70366 "$1,100"                    218 x 9    [CAP-HEIGHT]
+  │   │ └ TEXT 5083:70367 description                 178 x 81   [CAP-HEIGHT, 5 lines]
+  │   └ FRAME 5083:70368  216 x 88  VERTICAL gap 8                ← colour swatches
+  │     ├ GROUP 5083:70369 → FRAME 5083:70370  216 x 8  HORIZONTAL gap 15
+  │     │   ├ TEXT 5083:70371 "Color: Raspberry"      154 x 8    [CAP-HEIGHT]
+  │     │   └ TEXT 5083:70372 "Size Guide"             53 x 8    [CAP-HEIGHT] (underlined)
+  │     └ FRAME 5083:70379  110 x 72  HORIZONTAL gap 0
+  │         ├ INSTANCE 5083:70380  55 x 72   ← swatch 1 (selected: 1px underline)
+  │         └ INSTANCE 5083:70381  55 x 72   ← swatch 2
+  ├ FRAME 5083:70383 "Frame 2147224911"  217 x 21                 ← size selector (collapsed)
+  │ ├ GROUP 5083:70384  133 x 17
+  │ │ ├ TEXT  5083:70385 "Size"        120 x 16  [CAP-HEIGHT]
+  │ │ ├ FRAME 5083:70386 chevron         9 x 9   fill #ffffff
+  │ │ └ LINE  5083:70388                133 x 0  stroke #191919 w1  ← underline rule
+  │ └ GROUP 5083:70389 → TEXT 5083:70390 "Find your size"  67 x 15  [CAP-HEIGHT]
+  ├ FRAME 5083:70391  218 x 90  VERTICAL gap 16                   ← CTA block
+  │ ├ INSTANCE 5083:70392 "Button Large"  218 x 50   [CSS-comparable]
+  │ │ └ FRAME  "Button Container"  218 x 50  HORIZONTAL pad 5/24/5/24
+  │ │     └ TEXT "ADD TO BAG"  78 x 9  [CAP-HEIGHT]
+  │ └ FRAME 5083:70393  218 x 24  HORIZONTAL gap 8
+  │     └ GROUP → TEXT 5083:70395 "FIND IN BOUTIQUE"  113 x 9  [CAP-HEIGHT]
+  ├ FRAME 5083:70396 → 5083:70397 → 5083:70398   218 x 85  VERTICAL gap 16   ← accordion list
+  │   ├ FRAME 5083:70399  218 x 9  HORIZONTAL gap 16  → TEXT "Details & Care"     + INSTANCE icon 9x9
+  │   ├ FRAME 5083:70402  218 x 9  HORIZONTAL gap 16  → TEXT "Size Guide"         + INSTANCE icon 9x9
+  │   ├ FRAME 5083:70405  218 x 9  HORIZONTAL gap 16  → TEXT "Shipping & Returns" + INSTANCE icon 9x9
+  │   └ FRAME 5083:70408  218 x 9  HORIZONTAL gap 16  → TEXT "Assistance"         + INSTANCE icon 9x9
+  ├ TEXT 5083:70411 "Model is 5'10" Tall/177cm …"  191 x 26  [CAP-HEIGHT, 2 lines]
+  └ TEXT 5083:70412 "Style Code: 7300JS261"        191 x 8   [CAP-HEIGHT]
+```
+
+**Content/naming defect to flag:** nodes `5083:70400` (desktop) and `5083:70487` (mobile) are
+**named** `Size & Fit` but their **characters** are `Details & Care`. The rendered copy is
+`Details & Care`. Do not name the code component from the layer name here.
+
+**Three redundant wrapper frames** (`70358→70359`, `70360→70361`, `70396→70397→70398`) carry
+identical geometry and gap. Flatten them in code — they are Figma housekeeping, not layout intent.
+
+---
+
+## 2. Layout spec
+
+All rows below are **measured**, with node type and CSS-comparability stated. Nothing is inferred
+unless the row says so.
+
+### Desktop (within the 1440 frame)
+
+| What | Node | Type | Value | CSS-comparable? |
+|---|---|---|---|---|
+| Gallery + info row | `5083:70356` | FRAME | `1441 x 1170`, HORIZONTAL, gap **179**, padRight **142** | Yes |
+| Image gallery | `5083:70357` | INSTANCE | `900 x 1170` | Yes |
+| **Info column width** | `5083:70358` | FRAME | **218** wide | Yes |
+| Info column height | `5083:70358` | FRAME | 671 (hugs content) | No — content-derived |
+| Info column stack gap | `5083:70358` | FRAME | VERTICAL gap **28** | Yes |
+| Title-group ↔ swatch-group gap | `5083:70360/61` | FRAME | **44** | Yes |
+| Within title block | `5083:70362` | FRAME | gap **22** | Yes |
+| Product name ↔ wishlist | `5083:70427` | FRAME | HORIZONTAL gap **43** | Partly — see note |
+| Swatch block | `5083:70368` | FRAME | `216 x 88`, VERTICAL gap **8** | Yes |
+| Colour label ↔ "Size Guide" | `5083:70370` | FRAME | HORIZONTAL gap **15** | Yes |
+| Swatch thumbnail | `5083:70380/81` | INSTANCE | `55 x 72` each, gap 0 | Yes |
+| Size selector row | `5083:70383` | FRAME | `217 x 21` | Yes (width); height hugs TEXT |
+| Size underline rule | `5083:70388` | LINE | width **133**, stroke 1px | Yes |
+| CTA block | `5083:70391` | FRAME | `218 x 90`, VERTICAL gap **16** | Yes |
+| **ADD TO BAG button** | `5083:70392` | INSTANCE | `218 x 50`, pad **5/24/5/24**, radius **0** | Yes |
+| Accordion list | `5083:70398` | FRAME | VERTICAL gap **16** | Yes |
+| Accordion row pitch | rows at y 0/25/51/76 | FRAME | **~25.5 px pitch** (gap 16 + 9 cap-height) | Use pitch, not the 9 |
+| Accordion label ↔ icon | `5083:70399` etc | FRAME | HORIZONTAL gap **16** | Yes |
+| Accordion icon | `5083:70401` etc | INSTANCE | `9 x 9` | Yes |
+| Wishlist icon | `5083:70430` | INSTANCE | `24 x 24`, pad 4 → glyph `16 x 16` | Yes |
+
+> **Note on the 43 px name↔wishlist gap:** the row is a fixed-width 218 auto-layout containing a
+> 180 px wrapper and a 24 px icon (180 + 43 + 24 = 247 ≠ 218, because the name wrapper hugs wrapped
+> text). Treat this as **space-between**, not a literal 43 px gap. Inference, flagged as such.
+
+### Mobile (within the 402 frame)
+
+| What | Node | Type | Value | CSS-comparable? |
+|---|---|---|---|---|
+| **Info block** | `5083:70442` | FRAME | `342 x 716` at **x = 30** | Yes |
+| Side gutter | derived | — | **30 px** each side (402 − 342 − 30) | Yes |
+| Stack gap / bottom pad | `5083:70442` | FRAME | VERTICAL gap **28**, padBottom **80** | Yes |
+| Title group gap | `5083:70443/44` | FRAME | **44** | Yes |
+| Within title block | `5083:70445` | FRAME | **22** | Yes |
+| Name ↔ wishlist | `5083:70446` | FRAME | gap **43** (same space-between caveat) | Partly |
+| Wishlist icon | `5083:70448` | FRAME | **20 x 20** (no padding wrapper) | Yes |
+| Swatch block | `5083:70452` | FRAME | `216 x 88`, gap **8** | Yes |
+| Size selector row | `5083:70467` | FRAME | `342 x 21`; rule width **258**; chevron **13 x 13** | Yes |
+| CTA block | `5083:70478` | FRAME | `342 x 90`, gap **16** | Yes |
+| **ADD TO BAG button** | `5083:70479` | INSTANCE | `342 x 50`, pad **5/24/5/24** | Yes |
+| Accordion list | `5083:70485` | FRAME | gap **16**, icons `9 x 9` | Yes |
+
+**Layout gaps are identical across mobile and desktop** (28 / 44 / 22 / 16 / 8 / 15 / 2). Only the
+column width changes (218 → 342) plus three icon sizes. That is a measured fact and simplifies the
+implementation considerably.
+
+**Mobile-only element:** `5083:70475` — a "Find your size" link with a `iconixto/linear/hanger`
+icon (`13 x 13`), text style `Default/Links Small`. It has **no desktop equivalent**; desktop's
+"Find your size" (`5083:70390`) is plain `Default/Caption` with no icon and no underline.
+
+**The swatch block is `216` wide on both breakpoints** — it does not stretch to the 342 mobile
+column. Verify with the designer whether that is intentional or a Figma oversight.
+
+---
+
+## 3. Typography spec
+
+Font is **Futura Round** (Medium 500 / Regular 400) throughout — matches the repo's self-hosted
+faces. Every TEXT height in §1 is cap-height and excluded here.
+
+### Desktop
+
+| Element | Node | Figma text style | Weight | Size / LH / LS | Case / decoration | Repo `textStyle` |
+|---|---|---|---|---|---|---|
+| Product name | `5083:70429` | `Default/h3-strong` | Medium | 16 / 18 / **−0.12px** | UPPER | **`heading3`** ✅ exact |
+| Price | `5083:70366` | `Default/Price` | Medium | 14 / 18 / 0 | — | **`price`** ✅ exact |
+| Description | `5083:70367` | `Default/Body 2` | Regular | 14 / 18 / 0 | — | **`body2`** ✅ exact |
+| Colour label | `5083:70371` | `Default/Caption` | Medium | 12 / 18 / 0 | — | **`caption`** ✅ exact |
+| "Size Guide" inline | `5083:70372` | `Default/Caption` | Medium | 12 / 18 / 0 | underline | **`caption`** ✅ (colour ✗ — §4) |
+| "Size" label | `5083:70385` | `Default/Caption` | Medium | 12 / 18 / 0 | — | **`caption`** ✅ exact |
+| "Find your size" | `5083:70390` | `Default/Caption` | Medium | 12 / 18 / 0 | — | **`caption`** ✅ (colour ✗ — §4) |
+| FIND IN BOUTIQUE | `5083:70395` | `Default/Links` | Medium | 14 / 16 / **−1% (−0.14px)** | UPPER + underline | **`linkLg`** ✅ exact |
+| Accordion labels ×4 | `70400/03/06/09` | `Default/Body 2 Medium` | Medium | 14 / 18 / **−1% (−0.14px)** | — | `body2Strong` ⚠️ **LS mismatch** |
+| Model note | `5083:70411` | `Default/Caption` | Medium | 12 / 18 / 0 | — | **`caption`** ✅ exact |
+| Style code | `5083:70412` | `Default/Caption` | Medium | 12 / 18 / 0 | — | **`caption`** ✅ exact |
+| ADD TO BAG | button text | (`default/button` 14 + `line-height/product names` 16) | Medium | 14 / 16 | UPPER | **`button`** ✅ exact |
+
+### Mobile deltas (everything else is identical to desktop)
+
+| Element | Node | Figma text style | Size / LH / LS | Repo `textStyle` |
+|---|---|---|---|---|
+| Product name | `5083:70447` | **`Default/Heading 3`** | 16 / 18 / **−1% (−0.16px)** | ⚠️ different style + LS from desktop |
+| "Find your size" (mobile-only) | `5083:70476` | `Default/Links Small` | 12 / 14 / −1% (−0.12px), Title case, underline | **`linkSm`** ✅ exact |
+
+**⚠️ Two genuine typography defects found:**
+
+1. **`body2Strong` letter-spacing is wrong in the repo.** Figma's `Default/Body 2 Medium` is
+   **−1% of 14px = −0.14px**. The repo's `body2Strong` uses `letterSpacings.xs` = **−0.12px**. The
+   correct existing token is `letterSpacings['2xs']` (`-0.00875rem` = −0.14px), which `linkLg`
+   already uses. This is a **varying** residual (other styles match exactly), so per the project's
+   own rule it is a real defect, not a measurement artifact.
+2. **Product name uses a different style on mobile than desktop** — `Default/Heading 3` (−1% =
+   −0.16px) vs `Default/h3-strong` (−0.12px absolute). Same family/size/line-height/case. This is a
+   **designer decision to confirm**, not something to silently pick a winner for. The repo has only
+   `heading3` (−0.12px), which matches desktop.
+
+### ⚠️ The Desktop/Mobile variable modes are a trap — do not implement them
+
+The design-system `Typography` collection is **mode-switched**, and several sizes differ:
+
+| Variable | Desktop | Mobile |
+|---|---|---|
+| `default/body-2` | 14 | **12** |
+| `default/body-2 medium` | 14 | **12** |
+| `default/caption` | 12 | 12 |
+| `default/button` | 14 | 14 |
+| `line-height/heading-3-medium` | 18 | 18 |
+| `line-height/body-2 medium` | 18 | 18 |
+| `line-height/caption` | 16 | 16 |
+| `line-height/product names` | 16 | 16 |
+
+**But the 402 mobile frame does not switch to the Mobile mode.** Both `3093:67151` (1440) and
+`3093:67195` (402) resolve the Typography collection to the *same* mode id (`1226:10`), and no node
+in either subtree sets an explicit mode. **Measured consequence: every rendered font size is
+identical on both breakpoints (16 / 14 / 12).**
+
+So: implement a **single** type scale. Do **not** add a responsive `fontSize` step for body-2 on the
+strength of the mode existing. Whether mobile body text *should* be 12px is an unresolved
+**designer question** — the tokens say one thing and the composed screens say another.
+
+---
+
+## 4. Colour spec
+
+Every colour variable bound in this node reports **`remote: true`** — they resolve from the
+**subscribed design-system library**, not this file. (This file *also* contains local collections
+named `Typography`/`Spacing`/`Colour`/`Grid`; which is canonical is worth confirming, but the
+bindings in use are the remote ones. Per the brief, the DS file is `wPiWmZZOVKnrENUWk2XWWm`.)
+
+| Figma variable | Collection | Value | Repo token | Verdict |
+|---|---|---|---|---|
+| `text/default` | Colour | `#191919` | `colors.text.default` (`grey[900]`) | ✅ exact |
+| `alias/color/text/default` | Alias | ALIAS → `#191919` | `colors.text.default` | ✅ exact (see note) |
+| `text/secondary` | Colour | `#666666` | `colors.text.secondary` (`grey[600]`) | ✅ exact |
+| `text/inverse` | Colour | `#ffffff` | `colors.text.inverse` (`grey.white`) | ✅ exact |
+| `button/default` | Colour | `#191919` | `colors.action.primary.bgDefault` (`grey[900]`) | ✅ exact |
+
+**Unbound raw colours in the design (no variable attached):**
+
+| Raw value | Where | Repo token with the same value | Verdict |
+|---|---|---|---|
+| `#f6f4f1` | swatch background rects `5083:70374`, `5083:70377` | `ivory[200]` / `colors.background['02']` | ✅ value matches — but **unbound in Figma** |
+| `#ffffff` | size-selector chevron backing `5083:70386` | `grey.white` / `colors.background['07']` | ✅ value matches — unbound |
+| **`#000000`** | "Size Guide" `5083:70372`, "Find your size" `5083:70390` / `5083:70474` | **none** | ❌ **NO MATCH — see below** |
+
+**⚠️ `#000000` is almost certainly a design defect.** Every other text node in the column is
+`text/default` `#191919`. Two labels use pure black with no variable bound. The repo has no
+`#000000` text token (`grey.black: 'black'` exists as a primitive but no semantic alias maps to it,
+and `text.default` is `#191919`). **Do not invent a token and do not silently substitute
+`text.default`** — ask the UI designer whether these should be `text/default`.
+
+**Note on the two text-default variables:** `alias/color/text/default` (Alias collection) and
+`text/default` (Colour collection) both resolve to `#191919` and are used on sibling nodes within
+the same column. That is a design-system inconsistency, not a repo problem — both map to the single
+repo token `colors.text.default`.
+
+Borders/strokes: size-selector rule `5083:70388` is `1px` `text/default` `#191919` → repo
+`borderWidths.default` (`1px`) + `colors.text.default`. ✅ Button container carries a `1px`
+`button/default` stroke identical to its fill (visually invisible; likely there so the Secondary
+variant can swap it).
+
+---
+
+## 5. Spacing spec
+
+The design-system `Spacing` collection is **identical to the repo's `spacing.ts` scale**:
+
+```
+section/3xs=2  2xs=4  xs=8  s=12  m=16  l=20  xl=24  2xl=32  3xl=40  4xl=64  5xl=80  6xl=128  7xl=160
+```
+Repo: `3xs 2 · 2xs 4 · xs 8 · s 12 · m 16 · l 20 · xl 24 · 2xl 32 · 3xl 40 · 4xl 64 · 5xl 80 · 6xl 128 · 7xl 160` — **1:1 exact match.**
+(The DS also has `gap-1=24`, `gap-2=16`, with no repo counterpart — but nothing in this node binds them.)
+
+| Measured value | Where | Repo token | Verdict |
+|---|---|---|---|
+| **2** | accordion wrapper gap `5083:70396/97` | `spacing['3xs']` | ✅ |
+| **4** | wishlist icon padding (bound to `alias/space/100`) | `spacing['2xs']` | ✅ |
+| **8** | swatch block gap; FIND IN BOUTIQUE row gap | `spacing.xs` | ✅ |
+| **16** | CTA gap, accordion list gap, accordion label↔icon gap | `spacing.m` | ✅ |
+| **24** | button padding-X | `spacing.xl` | ✅ |
+| **30** | mobile side gutter | `grid.containerPadding.base` (`'30px'`) — DS `grid-margin` Mobile | ✅ |
+| **80** | mobile info block padding-bottom | `spacing['5xl']` | ✅ |
+| **5** | button padding-Y | ❌ none — but equals `BTN_PADDING_Y` in `button.ts` | ⚠️ known provisional |
+| **6** | name wrapper padding-top `5083:70428` | ❌ none (4 / 8 bracket it) | **GAP** |
+| **15** | colour label ↔ "Size Guide" | ❌ none (12 / 16 bracket it) | **GAP** |
+| **22** | within title block | ❌ none (20 / 24 bracket it) | **GAP** |
+| **28** | info column stack gap | ❌ none (24 / 32 bracket it) | **GAP** |
+| **43** | name ↔ wishlist | ❌ none — treat as space-between | **GAP / inference** |
+| **44** | title group ↔ swatch group | ❌ none (40 / 64 bracket it) | **GAP** |
+| **142** | desktop right padding | ❌ none | **GAP** |
+| **179** | gallery ↔ info column gap | ❌ none | **GAP** |
+
+**Only one spacing value in the entire column is bound to a variable** (`alias/space/100` = 4px on
+the wishlist icon padding). Every other gap and pad is a **raw literal typed into the layer**. Six of
+them (6, 15, 22, 28, 43, 44) are **off the design system's own scale** — so these are not "the repo
+is missing a token", they are values that don't exist in the DS either. That is a **designer
+decision**, not something to round to the nearest token silently.
+
+### Sizes
+
+| Measured | Where | Repo token | Verdict |
+|---|---|---|---|
+| Button height **50** | both breakpoints | `BTN_HEIGHT_LG` = `'50px'` | ✅ **design corroborates `button.ts`** |
+| Button padding **24 / 5** | both breakpoints | `px: var(--zimm-scale-xl)` (24), `BTN_PADDING_Y` (5) | ✅ exact |
+| — | — | `actionSizes.height.lg` = `'52px'`, `paddingX.lg` = `'32px'` | ❌ **contradicted by the design** |
+| Wishlist glyph **16** (desktop) | `5083:70430` | `iconSizes.md` (`16px`) | ✅ |
+| Wishlist icon **20** (mobile) | `5083:70448` | `iconSizes.lg` (`20px`) | ✅ but ⚠️ differs from desktop |
+| Accordion chevron **9** | ×4 both breakpoints | ❌ none (`iconSizes.sm` = 12) | **GAP** |
+| Size chevron **9** desktop / **13** mobile | `70386` / `70470` | ❌ none | **GAP + inconsistency** |
+| Swatch thumb **55 x 72**, backing **56 x 72** | `70380/81`, `70374/77` | ❌ none | **GAP** |
+| Info column **218** desktop / **342** mobile | `70358` / `70442` | ❌ none (342 is derived from the 30px gutter) | see §6 |
+| Gallery **900 x 1170** desktop | `70357` | ❌ none | **GAP** |
+
+**This resolves a standing open item in the repo.** `overrideStyling.md` records that
+`BTN_HEIGHT_LG` (50px) and `BTN_PADDING_Y` (5px) are provisional prototype values pending
+UI-designer sign-off, and that they disagree with `actionSizes` (52px / 32px). **This design measures
+50 / 5 / 24 on a CSS-comparable INSTANCE at both breakpoints** — i.e. the values already in
+`button.ts` are the ones the approved design uses, and `actionSizes` is the outlier. Worth taking
+back to the designer to close the item; it is not licence to edit `sizes.ts` (Tier 1).
+
+---
+
+## 6. Responsive variants found
+
+**Measured — frame widths present on this PDP page:**
+
+| Width | Count | Examples |
+|---|---|---|
+| **1440** | ~15 frames | `PDP 01`, `PDP - INDRA … Desktop - Size`, `PDP - Details and care`, `Carousel 4–7` |
+| **402** | ~12 frames | `PDP 01 Mob`, `ALCHEMY … Mobile`, `PDP - Details and Care Mob` |
+| 1920 x 1080 | 1 | frame named `-` — presentation backdrop, not a storefront breakpoint |
+| 1176, 753, 101, 218… | several | annotation chips, `PDP animation`, label pills — not screens |
+
+> **There is no 1023-width frame anywhere on this page.** The brief anticipated 402 / 1023 / 1440;
+> only **402 and 1440** exist for the PDP. Tablet is undesigned here.
+
+### ⚠️ FRAME WIDTH IS NOT A BREAKPOINT
+
+The repo's actual breakpoints (`overrides/app/theme/foundation/gridSystem.ts`, registered in
+`theme/index.ts`):
+
+```
+base 0em · sm 30em (NOT used) · md 48em = 768px · lg 62em (NOT used) · xl 80em = 1280px · 2xl 96em (NOT used)
+```
+
+There is **no 860 or 1024 breakpoint token in the theme** (grepped: zero hits for `860`). If the
+brief's "768 / 860 / 1024" came from somewhere else, it is not the Chakra breakpoint scale.
+
+Mapping **402 → `base`** and **1440 → `xl`** is a **decision to be confirmed, not a measured fact.**
+
+**The real gap: the 768–1280 range (`md`) is undesigned for this column.** The design jumps from a
+342 px full-bleed mobile block to a fixed 218 px desktop column beside a 900 px gallery. Nothing
+specifies what happens in between. Note that the DS `Grid` collection *does* define a Tablet mode
+(`grid-columns` 8, `grid-margin` 24, matching the repo's `md` values) — so tablet is tokenised but
+not drawn. **This needs a designer answer before implementation.**
+
+### Bonus finding (outside PDP scope, flagged not actioned)
+
+The DS `Grid` collection defines `grid-gutter` = **Desktop 1 / Tablet 24 / Mobile 30**. The repo's
+`gridSystem.ts` hardcodes a single `columnGap: '1px'` for all breakpoints and its comment asserts
+"1px gutter" at every tier. If `grid-gutter` means column gap, the repo is correct only at desktop.
+`gridSystem.ts` is **Tier 1** — do not touch; raise with the UI designer. Columns (10/8/4) and
+margins (0/24/30) match the repo exactly.
+
+---
+
+## 7. TOKEN GAPS — need a UI-designer decision (do not invent values)
+
+Ordered by how likely they are to block implementation.
+
+**A. Off-scale spacing values (6 of them).** `6`, `15`, `22`, `28`, `43`, `44` px are not in the
+repo's scale *nor* in the design system's own `Spacing` collection. `28` (the main column rhythm) and
+`44` (the largest structural gap) are the important ones. Ask: round to `xl`/`2xl` (24/32) and
+`3xl` (40), or add new tokens?
+
+**B. Undesigned tablet (768–1280).** No 1023-ish frame exists. Column behaviour between 342-full-bleed
+and 218-fixed is unspecified. Blocking for a responsive implementation.
+
+**C. `#000000` on two labels.** "Size Guide" and "Find your size" use unbound pure black while
+everything else uses `text/default` `#191919`. No repo token matches. Almost certainly a design slip.
+
+**D. Product name style differs by breakpoint.** `Default/h3-strong` (−0.12px) desktop vs
+`Default/Heading 3` (−0.16px) mobile. Pick one.
+
+**E. `body2Strong` letter-spacing is −0.12px in the repo but −0.14px in Figma.** Unlike the others
+this has an unambiguous fix — `letterSpacings['2xs']` already exists and is exactly −0.14px. Still a
+Tier 1 file (`typography.ts`), so it needs the designer/owner, but it is a defect not a gap.
+
+**F. Icon sizes with no token.** Accordion chevron `9 x 9` (×4, both breakpoints) and the size
+chevron (`9` desktop / `13` mobile). `iconSizes` only has 20/16/12. The 9/13 split between
+breakpoints looks unintentional.
+
+**G. Wishlist icon differs by breakpoint** — 16px glyph desktop (in a 24px 4-padded tappable box)
+vs bare 20px mobile. Both map to existing tokens, but the mobile one has **no padding**, giving a
+20 x 20 hit target — **below the WCAG 2.2 AA 24 x 24 minimum target size (2.5.8)**. Flag to design.
+
+**H. Unbound brand colours.** `#f6f4f1` and `#ffffff` match repo tokens by value but carry no Figma
+variable, so they will drift. Cosmetic in the DS, no repo action.
+
+**I. Component dimensions with no token** — gallery `900 x 1170`, swatch `55 x 72` / `56 x 72`,
+desktop info column `218`, gallery↔column gap `179`, right pad `142`. Expected for a composed page;
+listed for completeness.
+
+**J. The swatch block stays 216 px wide on a 342 px mobile column.** Confirm intentional.
+
+---
+
+## 8. Cross-reference summary
+
+**Matches the repo exactly (no action):** `heading3`, `price`, `body2`, `caption`, `linkLg`,
+`linkSm`, `button` text styles · `text.default`, `text.secondary`, `text.inverse`,
+`action.primary.bgDefault` colours · spacing `2/4/8/16/24/80` · mobile `30px` gutter ·
+`borderWidths.default` · the whole DS spacing scale · grid columns and margins.
+
+**Corroborates a repo open item:** button `50 / 5 / 24` confirms `button.ts`'s provisional constants
+and contradicts `actionSizes` (52 / 32).
+
+**Genuine defects found:** `body2Strong` letter-spacing (−0.12 vs −0.14px); `#000000` on two labels;
+product-name style differs by breakpoint; mobile wishlist target 20 x 20 < WCAG 2.2 AA 24 x 24;
+`grid-gutter` tablet/mobile values absent from `gridSystem.ts`; layer named `Size & Fit` renders
+`Details & Care`.
+
+**Uniform vs varying residuals:** no uniform offset was observed anywhere — matching values matched
+*exactly* (0 px residual). Every discrepancy listed is therefore a **varying** residual and, per the
+project's own rule, a real defect rather than a measurement artifact.
+
+---
+
+## 9. Files referenced
+
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/foundation/typography.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/foundation/colour.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/foundation/spacing.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/foundation/sizes.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/foundation/gridSystem.ts`
+- `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/components/button.ts`
+
+Screenshots saved alongside this file: `pdp-desktop.png` (node `5083:70356`, 1440x1170),
+`pdp-mobile.png` (node `5083:70441`, 402x1297), `top.png` (whole page, orientation only).

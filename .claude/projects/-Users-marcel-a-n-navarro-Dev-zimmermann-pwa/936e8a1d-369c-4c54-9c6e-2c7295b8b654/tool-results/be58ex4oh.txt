@@ -1,0 +1,1434 @@
+[37973080 L4 02:23:51 TEXT] ...cope, does one
+uncorroborated source actually settle this, and has a stated number been measured or only assumed.
+
+**A claim about how a bug resolves needs the same reproduction as the bug itself.** Verification
+effort naturally goes toward proving the failure happens, not toward proving what you claim happens
+next — "self-heals on the next hover," "clears on reload," "only affects this one instance." These
+read as a supporting detail inside a bigger writeup, not as their own finding, so they skip the
+CONFIRMED/PLAUSIBLE discipline above by default. If you didn't reproduce the recovery, mark it
+PLAUSIBLE and say so, exactly like any...
+
+[37973080 L26 02:24:12 RES] ...- Added configurable image quality, responsive image widths and improved media-load fallbacks.\n  - Added square and circular swatch styles, optional label punctuation and button styling options.\n  - Improved product detail page layout, headings and recommendation separation.\n\n- **Bug Fixes**\n  - Gallery media now recovers after loading failures or media changes.\n  - Improved full-width product content rendering across screen sizes.\n\n- **Tests**\n  - Expanded coverage for gallery layouts, interactions, accessibility and failure recovery.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->","changedFiles":3...
+
+[2091e78f L4 06:40:18 TEXT] ...cope, does one
+uncorroborated source actually settle this, and has a stated number been measured or only assumed.
+
+**A claim about how a bug resolves needs the same reproduction as the bug itself.** Verification
+effort naturally goes toward proving the failure happens, not toward proving what you claim happens
+next — "self-heals on the next hover," "clears on reload," "only affects this one instance." These
+read as a supporting detail inside a bigger writeup, not as their own finding, so they skip the
+CONFIRMED/PLAUSIBLE discipline above by default. If you didn't reproduce the recovery, mark it
+PLAUSIBLE and say so, exactly like any...
+
+[2091e78f L27 06:40:38 RES] ...- Added configurable image quality, responsive image widths and improved media-load fallbacks.\n  - Added square and circular swatch styles, optional label punctuation and button styling options.\n  - Improved product detail page layout, headings and recommendation separation.\n\n- **Bug Fixes**\n  - Gallery media now recovers after loading failures or media changes.\n  - Improved full-width product content rendering across screen sizes.\n\n- **Tests**\n  - Expanded coverage for gallery layouts, interactions, accessibility and failure recovery.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->","commits":[{"aut...
+
+[2091e78f L209 06:49:27 TEXT] ...One test failure surfaced on head (`ArrowRight/ArrowLeft` thumbnail-nav test in `zimmGalleryOverlay`, timed out at 5s) that CI's own run apparently didn't hit — worth checking if it's flaky or a real bug before I call it a finding. Let me re-run it and look at the code....
+
+[2091e78f L219 06:51:03 TEXT] ...I have solid ground truth now: gates are clean (tsc/lint/audit:tokens show zero new violations, one flaky test confirmed as environment noise not a real bug), the AC-list vs description contradiction is resolved in the author's favor, and there's a real unresolved merge conflict plus a Jira scope-duplication question to flag. Time to fan out the audit using the skill's own build-chain agents....
+
+[2091e78f L577 07:04:41 RES] ...sms/zimmProductGallery/index.tsx","user":"coderabbitai[bot]"}
+3	{"body":"Confirmed — MediaTile is index-keyed and reused across renders, so a plain boolean stayed true past a variation swap. Fixed in 57ea498: tracks the failed `src`/`posterSrc` instead of a boolean, so a new valid source at the same position correctly recovers. Added a regression test covering exactly this rerender case.","id":3930123595,"in_reply_to":3930019804,"line":null,"original_line":95,"path":"overrides/app/components/ui-kits/organisms/zimmProductGallery/index.tsx","user":"TimLavelleACC"}
+4	{"body":"Confirmed — a stale out-of-bounds selectedIndex made every s...
+
+[2091e78f L700 07:42:59 TEXT] ...yOverlay`'s close button (inset shadow ring) visibly inconsistent for conceptually identical controls. | In-scope, minor/nitpick |
+| 11 | `zimmGalleryOverlay/index.tsx:215` vs `zimmColourSwatchGroup/index.tsx:87` | `offeredColourCount` re-implements the swatch group's own offered-colour filter character-for-character. Harmless today, driftable. This is CodeRabbit's own still-open nitpick — confirmed real, correctly low-severity. | Nitpick |
+| 12 | `product-view/index.tsx:820,828` | `mapImageGroupsToGalleryMedia` called twice per render with fresh array identity each time, defeating `ZimmProductGallery`'s own `useMemo`s on every unre...
+
+[0b6b5219/e6e5 L73 06:27:02 TEXT] ...: none`. Only landing there triggers the reveal; the user has already tabbed past the (until that instant nonexistent) arrows/size-chip radio and must reverse direction to reach them. This is a real, mechanically-verified change in behavior — not present before `72ee2a9` — though it's not a hard trap (the controls are recoverable by tabbing the other way), so I rank it below Theory 1 in severity/certainty.
+
+**Theory 3 (lower confidence, worth flagging but almost certainly pre-existing, not introduced by these two commits): the scroll container's own arrow-key handler may not receive raw key events from VoiceOver at all.**
+
+`zimmProd...
+
+[0b6b5219/06e4 L8 16:52:48 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[0b6b5219/2110 L7 19:30:31 RES] ...nd proxy config are NOT derived from the bundle push — confirmed
+96	      # live this session: two successful `pwa-kit-dev push` calls left
+97	      # ssr_proxy_configs null on a freshly created target, and region defaults to
+98	      # us-east-2 unless set explicitly. Both must be set here, explicitly, and
+99	      # self-healed on every run in case a target was ever created out-of-band
+100	      # (e.g. by hand through the MRT console) with the wrong values.
+101	      - name: Ensure MRT target exists with correct region/proxy config
+102	        id: ensure
+103	        env:
+104	          SLUG: ${{ steps.slug.outputs.slug }}
+105	    ...
+
+[0b6b5219/296a L43 05:46:53 RES] ...-05, base `develop`, head `548b9d7`)
+
+Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+
+**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+trusting commit messag...
+
+[0b6b5219/296a L49 05:47:07 RES] ...`develop`, head `548b9d7`)
+4	
+5	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+6	
+7	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+8	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+9	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+10	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+11	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+12	trusting co...
+
+[0b6b5219/296a L54 05:47:08 RES] ...ins by default under AGENTS.md doc-integrity |
+162	| 16 | Jira SFCC-236 comment 13891 (17 Aug) | Jasmijn's AC revision promised Core AC #1 would read *"the primary product image **is and product name are** always displayed"*. The live `customfield_10231` still says image only. The colour-coded green/red edit is also unrecoverable from the API, so which lines were additions vs removals cannot be read back. | 🟡 CLARIFY | Confirm product name belongs in the Core AC |
+163	| 17 | Jira SFCC-236 comment 13880 (14 Aug, Dani Rivett) | *"We do not want the badge displayed on the Homepage or on the Recently Viewed product carousel"* and *"we d...
+
+[113175e9/17b6 L1 08:49:58 STR] ...wsTarget` recomputes to a value equal to the already-current (uncommitted) `value`, `setValue` becomes a no-op, no CSS transition fires, `onTransitionEnd` never fires, and the phase machine sticks at `'collapsing'` with `activeItemId` still set, leaving the header's "Close" control shown with no menu visible until the next hover. Trace this precisely through `useMegaMenuMotion.ts` and `list-menu-popover.tsx`'s actual reducer/effect code and say whether the race is real, whether any existing guard prevents it, and whether the 14 tests in `useMegaMenuMotion.test.ts` exercise this specific interleaving (they operate on the reducer in i...
+
+[113175e9/1b33 L154 08:48:08 TEXT] ...-185) instead of search/icons.
+- Real trigger: opening a mega-menu item and closing it (Escape, or `ListMenuTrigger`'s own `onKeyDown` Escape handler at `list-menu-trigger.tsx:72`) within a couple of frames — plausible via a fast Enter-then-Escape keyboard sequence, not just an implausible mouse micro-movement.
+- It's self-healing on the *next* hover — the reducer's `HOVER` handler explicitly treats a stuck `'collapsing'` phase as a fresh open (`useMegaMenuMotion.ts:43`) — but in the interim the header shows a stale "Close" control with no visible menu. None of `useMegaMenuMotion.test.ts`'s 14 reducer-only tests exercise this becaus...
+
+[1674331e/1040 L97 06:46:57 TEXT] ...param. Once a variant has fully resolved once (colour+size both chosen, which sets `pid` via the pre-existing `useEffect` at line ~437), `requestedProductId` prioritizes `pid` over the master ID, and `useProduct`'s query key doesn't change on a colour-only URL edit — so no new fetch fires automatically. Whether the UI recovers depends on whether `product.variants[]` (already-fetched, client-side) is complete enough for `useVariant` (`node_modules/.../use-variant.js`, pure client-side filter, no fetch) to re-resolve a new SKU and let the pre-existing pid-sync effect self-correct — that depends on live SFCC API response shape, which I...
+
+[2091e78f/a030 L1 06:52:04 STR] ...PR's own history — do not re-report these as new, but you MAY spot-check that the fix is actually correct/complete if you have reason to doubt it:
+- MediaTile's image-error state now tracks the failed *source* (not a boolean), so a variation swap that replaces a failed image with a new valid one at the same list index recovers instead of staying stuck on the fallback.
+- selectedIndex is clamped (render-time + effect) when a variation swap shrinks the media array, so it can't go out of bounds.
+- COLOUR_VARIATION_ATTRIBUTE_ID/SFCC_COLOUR_ATTRIBUTE_ID deduped to one shared constant, exported from product-view and imported into product-...
+
+[2091e78f/f7b9 L31 07:30:12 RES] ...ndler), but
+133	    // a synchronous assertion straight after `user.keyboard()` intermittently still sees the
+134	    // pre-move element. ZimmProductGallery's own identical dot-bar test needs no such wait
+135	    // because that component isn't rendered inside a focus trap.
+136	    // 1000ms default timeout confirmed flaky under full-suite load (reliable in isolation) —
+137	    // FocusLock's rAF reconciliation can take longer under worker contention. 3000ms gives it
+138	    // real headroom without masking a genuine regression (a true failure still fails, just later).
+139	    const options = { timeout: 8000 };...
+
+[2091e78f/e2b7 L68 07:07:28 RES] ...- Added configurable image quality, responsive image widths and improved media-load fallbacks.\n  - Added square and circular swatch styles, optional label punctuation and button styling options.\n  - Improved product detail page layout, headings and recommendation separation.\n\n- **Bug Fixes**\n  - Gallery media now recovers after loading failures or media changes.\n  - Improved full-width product content rendering across screen sizes.\n\n- **Tests**\n  - Expanded coverage for gallery layouts, interactions, accessibility and failure recovery.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->","comments":[{"id...
+
+[2091e78f/e2b7 L82 07:09:17 RES] ...immProductGallery/ZimmGalleryOverlay, with per-tile-type widths matching Figma; fixes an
+      AspectRatio/DynamicImage <picture> sizing regression found on the real PDP
+    - AC25: add keyboard access (tabIndex, role, aria-label) to the overlay's scrollable image body,
+      caught by the Storybook a11y runner; fix a flaky CloseDismisses interaction test
+    
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_019WDwtz149pQCKRF8nkoYmD
+
+diff --git a/overrides/app/components/ui-kits/atoms/zimmMediaTile/index.tsx b/overrides/app/components/ui-kits/atoms/zimmMediaTile/index.tsx...
+
+[2091e78f/d88b L36 06:53:51 RES] ...ndler), but
+133	    // a synchronous assertion straight after `user.keyboard()` intermittently still sees the
+134	    // pre-move element. ZimmProductGallery's own identical dot-bar test needs no such wait
+135	    // because that component isn't rendered inside a focus trap.
+136	    // 1000ms default timeout confirmed flaky under full-suite load (reliable in isolation) —
+137	    // FocusLock's rAF reconciliation can take longer under worker contention. 3000ms gives it
+138	    // real headroom without masking a genuine regression (a true failure still fails, just later).
+139	    const options = { timeout: 8000 };
+140	    thumb1.focus...
+
+[2091e78f/d88b L145 06:59:24 RES] ...immProductGallery/ZimmGalleryOverlay, with per-tile-type widths matching Figma; fixes an
+      AspectRatio/DynamicImage <picture> sizing regression found on the real PDP
+    - AC25: add keyboard access (tabIndex, role, aria-label) to the overlay's scrollable image body,
+      caught by the Storybook a11y runner; fix a flaky CloseDismisses interaction test
+    
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_019WDwtz149pQCKRF8nkoYmD
+
+ .claude/registry/components.md                     | 16 ++---
+ .claude/registry/utils.md                          |  3 +-
+ .../ui-kits/atom...
+
+[2091e78f/d88b L176 07:02:59 RES] ...- Added configurable image quality, responsive image widths and improved media-load fallbacks.\n  - Added square and circular swatch styles, optional label punctuation and button styling options.\n  - Improved product detail page layout, headings and recommendation separation.\n\n- **Bug Fixes**\n  - Gallery media now recovers after loading failures or media changes.\n  - Improved full-width product content rendering across screen sizes.\n\n- **Tests**\n  - Expanded coverage for gallery layouts, interactions, accessibility and failure recovery.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->","title":"feat(pd...
+
+[2091e78f/80e1 L22 07:05:19 RES] ...ndler), but
+133	    // a synchronous assertion straight after `user.keyboard()` intermittently still sees the
+134	    // pre-move element. ZimmProductGallery's own identical dot-bar test needs no such wait
+135	    // because that component isn't rendered inside a focus trap.
+136	    // 1000ms default timeout confirmed flaky under full-suite load (reliable in isolation) —
+137	    // FocusLock's rAF reconciliation can take longer under worker contention. 3000ms gives it
+138	    // real headroom without masking a genuine regression (a true failure still fails, just later).
+139	    const options = { timeout: 8000 };
+140	    thumb1.focus...
+
+[2091e78f/12af L1 07:03:07 STR] ...:tokens yourself):
+- tsc clean both sides. lint: zero new PR-introduced errors. audit:tokens: zero new unacknowledged violations.
+- vitest: base 695/695, head 768/768. One flaky timeout in zimmGalleryOverlay's arrow-key focus test under full-suite parallel load, reproduced clean 3/3 in isolation — treat as environment flake, NOT a finding, UNLESS you find a concrete reason in the component's own focus-management code that it should behave differently (if so, that IS worth reporting).
+
+YOUR ANGLE: Correctness & regression. Two other reviewers are covering: contract fidelity (imageSize gating, colour-swatch variant regression — NOT yo...
+
+[2091e78f/12af L76 07:06:01 RES] ...ndler), but
+133	    // a synchronous assertion straight after `user.keyboard()` intermittently still sees the
+134	    // pre-move element. ZimmProductGallery's own identical dot-bar test needs no such wait
+135	    // because that component isn't rendered inside a focus trap.
+136	    // 1000ms default timeout confirmed flaky under full-suite load (reliable in isolation) —
+137	    // FocusLock's rAF reconciliation can take longer under worker contention. 3000ms gives it
+138	    // real headroom without masking a genuine regression (a true failure still fails, just later).
+139	    const options = { timeout: 8000 };
+140	    thumb1.focus...
+
+[23dd3ea5/79a7 L217 13:24:54 TEXT] ...Let me verify this extraction gap is real (not self-healing) by running the actual extraction script and inspecting the diff, then reverting via git (these are tracked, git-managed files)....
+
+[37973080/8a57 L91 02:51:01 RES] ...ndler), but
+133	    // a synchronous assertion straight after `user.keyboard()` intermittently still sees the
+134	    // pre-move element. ZimmProductGallery's own identical dot-bar test needs no such wait
+135	    // because that component isn't rendered inside a focus trap.
+136	    // 1000ms default timeout confirmed flaky under full-suite load (reliable in isolation) —
+137	    // FocusLock's rAF reconciliation can take longer under worker contention. 3000ms gives it
+138	    // real headroom without masking a genuine regression (a true failure still fails, just later).
+139	    const options = { timeout: 8000 };
+140	    thumb1.focus...
+
+[37973080/36c3 L92 02:47:41 RES] ...- Added configurable image quality, responsive image widths and improved media-load fallbacks.\n  - Added square and circular swatch styles, optional label punctuation and button styling options.\n  - Improved product detail page layout, headings and recommendation separation.\n\n- **Bug Fixes**\n  - Gallery media now recovers after loading failures or media changes.\n  - Improved full-width product content rendering across screen sizes.\n\n- **Tests**\n  - Expanded coverage for gallery layouts, interactions, accessibility and failure recovery.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->","commits":[{"aut...
+
+[37973080/a63f L70 02:49:23 RES] ...diaTile/
+  ZimmProductGallery/ZimmGalleryOverlay, with per-tile-type widths matching Figma; fixes an
+  AspectRatio/DynamicImage <picture> sizing regression found on the real PDP
+- AC25: add keyboard access (tabIndex, role, aria-label) to the overlay's scrollable image body,
+  caught by the Storybook a11y runner; fix a flaky CloseDismisses interaction test
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_019WDwtz149pQCKRF8nkoYmD
+
+=== full commit message for b10a54a ===
+fix(gallery): address CodeRabbit PR #81 findings
+
+- Dedupe COLOUR_VARIATION_ATTRIBUTE_ID/SFCC_COLOUR_ATTRIBUTE_I...
+
+[4447dd18/ab56 L8 06:31:28 RES] ....ai -->
+
+> [!WARNING]
+> There were issues while running some tools. Please review the errors and either fix the tool's configuration or disable the tool if it's a critical failure.
+> 
+> <details>
+> <summary>🔧 ESLint</summary>
+> 
+> > If the error stems from missing dependencies, add them to the package.json file. For unrecoverable errors (e.g., due to private dependencies), disable the tool in the CodeRabbit configuration.
+> 
+> <details>
+> <summary>e2e/fixtures/products.js</summary>
+> 
+> ESLint skipped: missing config or dependency (missing-dependency). The ESLint configuration references a package that is not available in the sandbo...
+
+[4447dd18/5a73 L24 13:59:17 RES] ...	
+373	Then: `##[error]The operation was canceled.` and
+374	`##[warning]No files were found with the provided path: playwright-report/. No artifacts will be uploaded.`
+375	— so there isn't even an HTML report to inspect.
+376	
+377	`run_attempt: 1` behaved identically (cancelled at 15m16s), so this is reproducible, not a flake.
+378	
+379	### 5c. Root cause — the PDP is broken server-side (the real blocker)
+380	
+381	The `dev-server.log` artifact from both attempts is decisive. **Every** SSR request to
+382	`/product/*` throws:
+383	
+384	```
+385	pwa-kit-runtime.httprequest INFO (…) GET /product/8637DS241-3
+386	pwa-kit-runtime.catchAndLog ER...
+
+[4447dd18/c296 L23 14:00:34 RES] ...never ran at all** |
+
+Then: `##[error]The operation was canceled.` and
+`##[warning]No files were found with the provided path: playwright-report/. No artifacts will be uploaded.`
+— so there isn't even an HTML report to inspect.
+
+`run_attempt: 1` behaved identically (cancelled at 15m16s), so this is reproducible, not a flake.
+
+### 5c. Root cause — the PDP is broken server-side (the real blocker)
+
+The `dev-server.log` artifact from both attempts is decisive. **Every** SSR request to
+`/product/*` throws:
+
+```
+pwa-kit-runtime.httprequest INFO (…) GET /product/8637DS241-3
+pwa-kit-runtime.catchAndLog ERROR [object Promise]:
+{"stack":"Refe...
+
+[4447dd18/1472 L17 13:59:27 RES] ...	
+373	Then: `##[error]The operation was canceled.` and
+374	`##[warning]No files were found with the provided path: playwright-report/. No artifacts will be uploaded.`
+375	— so there isn't even an HTML report to inspect.
+376	
+377	`run_attempt: 1` behaved identically (cancelled at 15m16s), so this is reproducible, not a flake.
+378	
+379	### 5c. Root cause — the PDP is broken server-side (the real blocker)
+380	
+381	The `dev-server.log` artifact from both attempts is decisive. **Every** SSR request to
+382	`/product/*` throws:
+383	
+384	```
+385	pwa-kit-runtime.httprequest INFO (…) GET /product/8637DS241-3
+386	pwa-kit-runtime.catchAndLog ER...
+
+[4f143a27/cf57 L89 14:27:06 RES] ... itself changes (e.g. a colour-variant swap) naturally starts back at index 0 rather than
++  // carrying over a stale failure count from a completely different image set.
++  //
++  // **Known, accepted consequence, same shape as the hover-swap/gallery duplicate already
++  // documented on `hoverImage`:** if `images[0]` recovers to `images[1]`, `images[1]` still also
++  // renders as its own separate slide 1 — a duplicate, not de-duplicated here. Simple and
++  // consistent with the rest of this file's own current tradeoffs; revisit if kept long-term.
++  const primaryCandidates = gallery ?? [primaryImage, ...(primaryImageFallbacks ?? ...
+
+[4f143a27/fe07 L37 14:30:49 RES] ...ges (e.g. a colour-variant swap) naturally starts back at index 0 rather than
+181	  // carrying over a stale failure count from a completely different image set.
+182	  //
+183	  // **Known, accepted consequence, same shape as the hover-swap/gallery duplicate already
+184	  // documented on `hoverImage`:** if `images[0]` recovers to `images[1]`, `images[1]` still also
+185	  // renders as its own separate slide 1 — a duplicate, not de-duplicated here. Simple and
+186	  // consistent with the rest of this file's own current tradeoffs; revisit if kept long-term.
+187	  const primaryCandidates = gallery ?? [primaryImage, ...(primaryImageFall...
+
+[4f143a27/fe07 L92 14:34:00 RES] ...wrap(
+157	      <ZimmProductCardMedia
+158	        primaryImage={PRIMARY}
+159	        primaryImageFallbacks={[FALLBACK_1]}
+160	        images={GALLERY}
+161	        swapOnHover={false}
+162	        showControls
+163	      />,
+164	    );
+165	    fireEvent.error(screen.getByRole('img', { name: GALLERY[0].alt }));
+166	    // Recovers to GALLERY[1], not FALLBACK_1 — and GALLERY[1] now appears twice (the recovered
+167	    // slide 0, and its own still-independent slide 1), same accepted duplicate shape as the
+168	    // hover-swap/gallery interaction documented on `hoverImage`.
+169	    expect(screen.queryByRole('img', { name: GALLERY[0].alt ...
+
+[4f143a27/c960 L22 16:47:15 RES] ...` exists.** This feature was never run through the structured zimmerMANNBuild
+5	loop — every commit was made through direct conversational collaboration between Claude and
+6	Marcel across many sessions. Scorer verdicts, rework-round counts, and step-level UNIFORM
+7	findings that a real handoff.md would carry are **not recoverable from git** and are not claimed
+8	below. The commit-history reconstruction in this file is built from `git log` alone.
+9	
+10	## Audit — findings.md (the pre-build gate)
+11	
+12	The gate ran across five separate passes (2026-09-04 → 09-06) before Marcel's adjudication
+13	cleared it. Below: every item that surv...
+
+[5695414e/290b L139 06:40:17 TEXT] ...idated report.
+
+---
+
+# Confluence coverage for SFCC-236 / SFCC-83 / SFCC-84
+
+**Caveat on dates:** the Confluence API returned empty `created`/`updated` fields for every page in this space. I report **version numbers** and **dates stated in the page body** instead. Where I say "no last-updated date", that means none is recoverable.
+
+---
+
+## 1. TSDs — the headline is an absence
+
+**There is no TSD for product card, product tile, shared components, recently viewed, or browsing history. None. Not under the TSD parent, not anywhere in the space.**
+
+The TSD parent **392888324** has 15 children; I enumerated all of them. Three further TSDs ...
+
+[5c24b3ae/4bdf L35 06:06:14 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    44	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+    45	  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+    46	  // step 1 or it is unrecoverable at step 2.
+    47	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    48	  const [modalOpen, setModalOpen] = useState(false);
+    49	
+    50	  const handleEmailSubmit = (email: string) => {
+    51	    pendingSignupRef.current.email = email;
+    52	    if (enable...
+
+[5c24b3ae/5c2b L30 05:46:57 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+  // step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleEmailSubmit = (email: string) => {
+    pendingSignupRef.current.email = email;
+    if (enableNameCapture) {
+      setModalOpen(true);
+ ...
+
+[5dca8dfc/7164 L20 17:12:19 RES] ....ai -->
+
+> [!WARNING]
+> There were issues while running some tools. Please review the errors and either fix the tool's configuration or disable the tool if it's a critical failure.
+> 
+> <details>
+> <summary>🔧 ESLint</summary>
+> 
+> > If the error stems from missing dependencies, add them to the package.json file. For unrecoverable errors (e.g., due to private dependencies), disable the tool in the CodeRabbit configuration.
+> 
+> <details>
+> <summary>overrides/app/theme/components/header.ts</summary>
+> 
+> ESLint skipped: missing config or dependency (missing-dependency). The ESLint configuration references a package that is not availab...
+
+[5e37053f/1c15 L25 05:00:57 RES] ...Release.sh` — do not tag manually.
+516	
+517	## What you should never do
+518	
+519	- Push directly to `main`, `develop`, or `release/**`
+520	- Merge a `hotfix/*` branch to `develop` before it has merged to `main`
+521	- Create a release branch from anything other than `develop`
+522	- Increase Playwright `retries` to make flaky tests pass — fix the test
+523	- Bypass a branch protection rule even as an admin — it leaves no audit trail
+524	```
+525	
+526	---
+527	
+528	## Summary of all files to create or modify
+529	
+530	| File | Action |
+531	|---|---|
+532	| `.github/workflows/digital-sit.yml` | Add `deploy-sit` job |
+533	| `package.json` | A...
+
+[652997c6/3044 L17 12:11:56 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+  // The footer input unmounts once submitState leaves 'idle', so the email must be
+  // captured here at step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+
+  const handleEmailSubmit = (email: string) => {
+    pendingSignupRef.current.email = e...
+
+[652997c6/3044 L74 12:15:21 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+   195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+   196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+   197	  // captured here at step 1 or it is unrecoverable at step 2.
+   198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+   199	  const [modalOpen, setModalOpen] = useState(false);
+   200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+   201	
+   202	  const handleEmailSubmit = (email: string) => {
+   ...
+
+[652997c6/96a7 L27 08:59:41 RES] ...[submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+197	  // captured here at step 1 or it is unrecoverable at step 2.
+198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+199	  const [modalOpen, setModalOpen] = useState(false);
+200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+201	
+202	  const handleEmailSubmit = (email: string) => {
+203	    pendingSig...
+
+[652997c6/a2e4 L27 06:33:00 RES] ...[submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+234	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+235	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+236	  // captured here at step 1 or it is unrecoverable at step 2.
+237	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+238	  const [modalOpen, setModalOpen] = useState(false);
+239	  const styles = useMultiStyleConfig('ZimmFooter', {});
+240	
+241	  const handleEmailSubmit = (email: string) => {
+242	    pendingSignupRef...
+
+[652997c6/1311 L39 02:56:03 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    44	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+    45	  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+    46	  // step 1 or it is unrecoverable at step 2.
+    47	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    48	  const [modalOpen, setModalOpen] = useState(false);
+    49	
+    50	  const handleEmailSubmit = (email: string) => {
+    51	    pendingSignupRef.current.email = email;
+    52	    if (enable...
+
+[652997c6/efe0 L1 12:50:48 STR] ...e `contentful-import` tool's documented behaviour and this repo's model:
+   - Overwrite vs duplicate on re-run
+   - Whether importing entries that reference content types absent in the target fails cleanly or partially
+   - Whether a partial failure leaves the environment in a half-populated state, and whether that is recoverable
+   - Asset handling — are there assets in this content model? Check `scripts/contentful/content-types/*.js` for `Link`/`Asset` fields
+   - Collision between imported `region` entries and ones created by `seedRegions.mjs`'s deterministic `region-<siteId>` ids
+
+4. **Verification — how would we know it worked?...
+
+[652997c6/efe0 L202 13:01:09 TEXT] ...fault)* | Creates/updates the 5 content types in TARGET. Refuses if any validation finding is unresolved. | `installTemplate.mjs:156-164` |
+| `--delete-deleted-fields` | Deletes fields present in TARGET but absent from the template → **destroys that field's data across every entry of that type in that environment.** Unrecoverable. | `:36, :177`; policy `.claude/rules/protectedFiles.md:121-123` |
+| `--takeover a,b` | Adopts pre-existing *unmanaged* content types into template governance — thereafter the template's shape wins. | `:37-40, :169-172` |
+| `--force` | Bypasses the unresolved-findings gate entirely, including conflicts. | `...
+
+[652997c6/d9f8 L85 03:03:09 RES] ...ects could still
+40:    name: Deploy Preview
+42:    environment: dev
+43:    # 12 min target-wait deadline + headroom for npm install/build/push — a
+86:      # live this session: two successful `pwa-kit-dev push` calls left
+87:      # ssr_proxy_configs null on a freshly created target, and region defaults to
+89:      # self-healed on every run in case a target was ever created out-of-band
+91:      - name: Ensure MRT target exists with correct region/proxy config
+109:          def get_target():
+110:              req = urllib.request.Request(base + f'target/{SLUG}/', headers=headers)
+118:                          print(f'Transient HTTP...
+
+[652997c6/d9f8 L141 03:06:58 RES] ...tributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+'use strict';
+
+const all = require('./all.js');
+
+module.exports = {
+  assertions: {
+    ...all.assertions,
+    // Flaky audits (warn)
+    'bootup-time': ['warn', {}],
+    'cumulative-layout-shift': ['warn', {}],
+    'first-contentful-paint': ['warn', {}],
+    'first-meaningful-paint': ['warn', {}],
+    'largest-contentful-paint': ['warn', {}],
+    'mainthread-work-breakdown': ['warn', {}],
+    'max-potential-fid': ['warn', {}],
+  ...
+
+[652997c6/580c L84 02:13:14 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    44	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+    45	  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+    46	  // step 1 or it is unrecoverable at step 2.
+    47	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    48	  const [modalOpen, setModalOpen] = useState(false);
+    49	
+    50	  const handleEmailSubmit = (email: string) => {
+    51	    pendingSignupRef.current.email = email;
+    52	    if (enable...
+
+[652997c6/4a67 L87 03:31:25 TEXT] ...s/drawer-menu/`, `components/list-menu/`, `components/sf-payments-express/`, `components/sf-payments-express-buttons/`, `components/multiship/`, `components/bonus-product-view-modal/`, `hooks/use-checkout-auto-select.ts`, `hooks/use-multiship.ts`, `hooks/use-pickup-shipment.ts`, `hooks/use-sf-payments.ts` |
+
+18 is not recoverable by any reading: the YAML frontmatter `paths:` block (lines 3-21) has **19** entries; deduping the two `partials/` sub-paths from the territory block gives **19**. The "4 exist" half is correct. **Use "21 listed, 4 exist".**
+
+squadB.md's territory block (lines 23-31) lists **9** paths, **0** exist. **TRUE, e...
+
+[652997c6/ef14 L171 04:41:12 TEXT] ...A footer story failed on the final run but passed on the first — and I never touched that chunk. Investigating whether it's a flake....
+
+[652997c6/ef14 L183 04:41:39 TEXT] ...The footer failure is a **pre-existing flake in a file I never touched** (`expected 490 to be 491` — a 1px height delta in an anti-layout-shift assertion). Same static build passed it earlier, so it's nondeterministic. Quantifying it....
+
+[652997c6/ef14 L205 04:45:12 TEXT] ...ssion's `storybook dev` on 6006 (PID 21958, untouched). All mutations were applied to my own built chunks and md5-restored to pristine; repo working tree is byte-identical to session start.
+
+## One unrelated pre-existing issue found
+
+`overrides/app/components/footer/index.stories.tsx` → `SubscribePlaceholder` is **not flaky, it's webfont-timing-sensitive**. Its no-layout-shift assertion (`index.stories.tsx:260`) fails `expected 490 to be 491` — **5/5 with HTTP caching off, 0/3 with caching on**. Cold-fetching Futura Round per navigation shifts the footer 1 px; the story's 1-dp rounding only absorbs sub-pixel jitter, not a whole pixe...
+
+[652997c6/cb36 L58 02:57:58 RES] ...sues
+.github/workflows/weekly-agents.yml:246:            --label "contentful-drift" \
+.github/workflows/deploy-preview.yml:133:              # this repo doesn't use today drifting silently would otherwise
+.github/workflows/deploy-preview.yml:162:                  print(f'Target {SLUG} has drifted region/proxy config — self-healing.')
+scripts/hooks/README.md:5:- **`pre-commit`** — regenerates `.claude/registry/`, warns on Contentful definition drift, blocks direct edits to derived AI-config files (`.cursor/rules/`, `.vscode/instructions/`, `.github/copilot-instructions.md`) when their `.claude/` source is not also staged, warns when ...
+
+[652997c6/e8b1 L25 06:33:34 RES] ...[submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+234	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+235	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+236	  // captured here at step 1 or it is unrecoverable at step 2.
+237	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+238	  const [modalOpen, setModalOpen] = useState(false);
+239	  const styles = useMultiStyleConfig('ZimmFooter', {});
+240	
+241	  const handleEmailSubmit = (email: string) => {
+242	    pendingSignupRef...
+
+[652997c6/ed4c L144 09:51:34 TEXT] ...l-float transition, then filling works reliably. This may relate to the in-flight uncommitted work that was on `useZimmTextInputState.ts`/`zimmTextInput/index.tsx` at session start (since committed by another agent). Not investigated — flagging only, as it could make any future Playwright/`play` coverage of this field flaky.
+
+---
+
+## Summary
+
+| Claim | Verdict |
+|---|---|
+| **S1** vacuous `collect()` guards | **CONFIRMED** — all 3 pass on empty input |
+| **S3** `walk()` misses responsive forms | **CONFIRMED**; proposed one-line fix **insufficient** (array only) — working fix supplied, 18/18, 0 false positives |
+| **S4** untracked `f...
+
+[652997c6/1885 L21 09:00:01 RES] ...[submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+197	  // captured here at step 1 or it is unrecoverable at step 2.
+198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+199	  const [modalOpen, setModalOpen] = useState(false);
+200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+201	
+202	  const handleEmailSubmit = (email: string) => {
+203	    pendingSig...
+
+[652997c6/1d6d L57 02:10:46 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    11	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+    12	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+    13	  // captured here at step 1 or it is unrecoverable at step 2.
+    14	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    15	  const [modalOpen, setModalOpen] = useState(false);
+    16	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+    17	
+    18	  const handleEmailSubmit = (email: string) => {
+   ...
+
+[652997c6/1d6d L62 02:10:52 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    44	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+    45	  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+    46	  // step 1 or it is unrecoverable at step 2.
+    47	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    48	  const [modalOpen, setModalOpen] = useState(false);
+    49	
+    50	  const handleEmailSubmit = (email: string) => {
+    51	    pendingSignupRef.current.email = email;
+    52	    if (enable...
+
+[652997c6/6aa7 L40 09:00:20 RES] ...[submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+197	  // captured here at step 1 or it is unrecoverable at step 2.
+198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+199	  const [modalOpen, setModalOpen] = useState(false);
+200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+201	
+202	  const handleEmailSubmit = (email: string) => {
+203	    pendingSig...
+
+[652997c6/f153 L67 08:06:25 TEXT] ...s` read (`:74`) adds **five new uncaught abort points positioned before §4 and §5**. A transient failure on one environment (429 exhaustion, concurrent deletion) now aborts before API keys and the `production` alias are touched. Partial state left behind: locales created in some environments, no API keys, alias unset. Recoverable by re-run (idempotent), not corrupting.
+
+### 2. Can the back-fill hit a non-existent environment? — **UNSAFE**
+
+Traced all five branches of `:135-165`:
+
+| branch | line | pushes to `provisionable`? | env real? |
+|---|---|---|---|
+| already exists by id | `:139` | yes | ✅ yes |
+| orphaned name | `:144-149` |...
+
+[652997c6/c92a L147 12:20:52 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+  // The footer input unmounts once submitState leaves 'idle', so the email must be
+  // captured here at step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+
+  const handleEmailSubmit = (email: string) => {
+    pendingSignupRef.current.email = e...
+
+[652997c6/c584 L37 02:57:15 RES] ...` reassignment has ordering constraints Contentful enforces. Not something to ship unattended. A cheap interim would be having `getExistingLocaleCodes` return full records and **warn on drift** without writing — surfaces the problem at zero risk.
+
+**One correction on which field matters.** You picked `optional`, which only affects whether required-localized fields can publish. `fallbackCode` and `default` are the consequential ones — a locale existing without its fallback returns empty fields instead of English content, which is shopper-visible.
+
+That second point turned into a defect in my own first draft, caught in review: extract...
+
+[652997c6/c584 L58 03:02:16 TEXT] ...gement#2555), and `default` reassignment has ordering constraints Contentful enforces. **Not something to ship unattended.** A cheap interim would be having `getExistingLocaleCodes` return full records and **warn on drift** without writing."*
+
+Plus a correction to CodeRabbit's diagnosis: *"You picked `optional`, which only affects whether required-localized fields can publish. **`fallbackCode` and `default` are the consequential ones** — a locale existing without its fallback returns empty fields instead of English content, which is shopper-visible."*
+
+And a self-caught defect: *"extracting the function would have POSTed `default: t...
+
+[652997c6/7e23 L23 03:08:43 TEXT] ...**Earns its length:** 86–124 (38 lines, the mechanism plus a three-file trace — the best value-per-line in the document); 315–329; 455–469 (the matrix is the highest-density artifact here, and the closing paragraph at 469 is the sharpest observation in Part 1); 508–518; 531–545; 676–687.
+
+**Cut or compress, ~120 lines recoverable:**
+
+- **167–183 (17 lines)** — five content types as field lists he can read off the type files faster than off this page. Compress to a 5-row table, keeping only the two genuine insights: `region` as a referenceable entity so nothing carries a hardcoded site list (171), and the `showContactChannels` flag-n...
+
+[652997c6/3e06 L50 06:36:02 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+  // The footer input unmounts once submitState leaves 'idle', so the email must be
+  // captured here at step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const styles = useMultiStyleConfig('ZimmFooter', {});
+
+  const handleEmailSubmit = (email: string) => {
+    pendingSignupRef.current.email = email;
+...
+
+[652997c6/3801 L25 12:30:12 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+  // The footer input unmounts once submitState leaves 'idle', so the email must be
+  // captured here at step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+
+  const handleEmailSubmit = (email: string) => {
+    pendingSignupRef.current.email = e...
+
+[652997c6/653d L18 12:13:07 RES] ...se.
+  const [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+  // The footer input unmounts once submitState leaves 'idle', so the email must be
+  // captured here at step 1 or it is unrecoverable at step 2.
+  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+  const [modalOpen, setModalOpen] = useState(false);
+  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});...
+
+[652997c6/62ef L81 02:15:23 TEXT] ...o preview support at all**. So uiCopy is invisible to the Preview / Live Preview flow that `ContentfulLivePreviewProvider` (`_app-config:157`) sets up — an editor previewing a draft copy change will not see it. Worth confirming with Tim whether that's intended or just not reached yet.
+
+**A registry drift that will not self-heal.** `.claude/registry/components.md:82` reports `UiCopyProvider` as `4 — Feature-local`, contradicting protectedFiles.md's Tier 2. The registry is auto-generated, so this looks like harmless staleness — but its tier column comes from a **hardcoded** mirror list at `scripts/generateRegistry.mjs:140-166` (`TIER2...
+
+[652997c6/cf04 L82 03:07:30 RES] ...ate, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+    22	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+    23	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+    24	  // captured here at step 1 or it is unrecoverable at step 2.
+    25	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+    26	  const [modalOpen, setModalOpen] = useState(false);
+    27	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});...
+
+[652997c6/f0c0 L102 06:07:33 TEXT] ...h a wrong `fallbackCode`, wrong `optional`, or CDA-disabled is never corrected, and the summary reports it under `skipped` — indistinguishable from success. "Idempotent — safe to re-run" (`:6`) is convergent-on-*existence*, not convergent-on-*state*.
+
+**But CodeRabbit picked the least consequential field.** `optional` only affects whether required-localized fields must be filled to publish. Two drift cases matter far more, and neither is mentioned:
+
+- **`fallbackCode`** — every non-default locale is meant to fall back to `en` (`:41-49`). A locale existing without it returns empty fields instead of English content. That is shopper-vi...
+
+[6b7e40cd/46c1 L21 05:06:09 RES] ...Release.sh` — do not tag manually.
+516	
+517	## What you should never do
+518	
+519	- Push directly to `main`, `develop`, or `release/**`
+520	- Merge a `hotfix/*` branch to `develop` before it has merged to `main`
+521	- Create a release branch from anything other than `develop`
+522	- Increase Playwright `retries` to make flaky tests pass — fix the test
+523	- Bypass a branch protection rule even as an admin — it leaves no audit trail
+524	```
+525	
+526	---
+527	
+528	## Summary of all files to create or modify
+529	
+530	| File | Action |
+531	|---|---|
+532	| `.github/workflows/digital-sit.yml` | Add `deploy-sit` job |
+533	| `package.json` | A...
+
+[723a905e/57cd L45 18:32:03 RES] ...itState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+195	   195	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted.
+196	   196	  // The footer input unmounts once submitState leaves 'idle', so the email must be
+197	   197	  // captured here at step 1 or it is unrecoverable at step 2.
+198	   198	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+199	   199	  const [modalOpen, setModalOpen] = useState(false);
+200	   200	  const styles = useMultiStyleConfig(ZIMM_FOOTER_RECIPE, {});
+201	   201	
+202	   202	  const handleEmailSubmit = (ema...
+
+[723a905e/21c3 L102 16:25:57 TEXT] ...-action.jsx:11`), bonus-product flow — via `product-view-modal` / `bonus-product-view-modal`. An optional default-preserving prop contains that by construction and matches `overrideStyling.md:133-146`'s bridge pattern. Fallback if the 1054-line fork can't be scoped this sprint: port the page only, skip `ProductView` — recovers six of seven losses. **This is a scope decision for the Lead**, not mine to take.
+
+### Two findings worth escalating beyond the question
+- **`.claude/rules/overrideStyling.md:95-103` is factually wrong.** `pwa-kit-dev/configs/webpack/overrides-plugin.js:128-146` returns false when the issuer is inside `overrid...
+
+[78864535/29af L8 07:07:21 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[78864535/130c L11 07:07:02 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[7b4dada7/da9b L27 12:04:16 RES] ...y. Confirmed `isFocusable: value ? selected : index === 0` (line 113) is applied over `Children.toArray(children)` (all children, unwindowed), and that base's `selected`/`isFocusable` are derived fresh from the `value` prop on every render — its own mount-only `useEffect(..., [])` on `selectedIndex` is cosmetic there (only affects arrow-key bookkeeping), never gates what's rendered. This is why the override's structurally-identical formula, applied to a `.slice()`'d window, is a precondition break rather than a faithful port — confirmed by reading the base source myself, not by relying on Tester's characterization of it.
+
+## Per-axi...
+
+[7b4dada7/da9b L29 12:04:28 RES] ...us WCAG 2.2 AA keyboard-operability violation (AGENTS.md's Accessibility section), independent of any UX opinion about the missing highlight.
+
+I then verified the defect is isolated precisely to `pageStart`'s initial value, not a deeper logic bug: manually clicking "next" once (landing on the correct page) immediately recovers correct behaviour —
+```
+PROBE2 after-next names: ["Colour Five","Colour Six"]
+PROBE2 after-next checked: ["Colour Six"]
+PROBE2 after-next tabbable: ["Colour Six"]
+```
+— confirming `isSelected`/`isFocusable` are computed correctly once the right window is shown; the bug is `useState(0)` never being initialized ...
+
+[7b4dada7/da9b L36 12:04:56 RES] ... hypothesis: built and ran a real render (not reasoning) with 6 populated colours / selection on the 2nd page — reproduced exactly the predicted failure (0 checked, 0 tabbable, wrong page shown).
+- Whether the underlying per-item logic was also broken (not just the initial page) — falsified: paging to the correct page recovers perfectly correct state.
+- Whether the AC-5 filter test was vacuous — neutered the real filter in the real file, watched 2 real tests fail with real diffs, restored, confirmed byte-identical restoration and 8/8 passing again.
+- Whether the ZimmIcon mock was decorative — removed it from the real test file, watc...
+
+[7b4dada7/da9b L42 12:05:06 RES] ...**`findings.md`** — the gate table, with its 🟡 CLARIFY assumptions
+18	
+19	If `handoff.md` is missing, Build either did not finish or ran before this was written. Say so and
+20	reconstruct what you can from the branch's commits — but flag the audit as partial, because the
+21	Scorer verdicts and UNIFORM findings are not recoverable from git.
+22	
+23	**Scale to the work.** A two-point story does not get a five-agent sweep. Honour the scale the
+24	plan chose. Nothing too crazy, no overthinking.
+25	
+26	---
+27	
+28	## Phase 1 — audit against both artefacts
+29	
+30	Two documents, two different questions. Neither is covered by the loop that ju...
+
+[7b4dada7/da9b L60 12:06:11 RES] ...71:scoring is structurally blind to that — a pattern applied consistently but wrongly passes every
+15:  UNIFORM findings, what went unverified
+21:Scorer verdicts and UNIFORM findings are not recoverable from git.
+58:Per-step scoring is **structurally blind** to a pattern applied consistently but wrongly: it
+87:carries **UNIFORM** or **ONE-OFF** — at this scope, UNIFORM is what you are hunting.
+149:## UNIFORM findings
+150:<the ones a per-step review structurally cannot catch>
+178:3. The sweep result — **UNI...
+
+[7b4dada7/d5fe L71 04:34:41 TEXT] ...This is a definitive, reproduced confirmation of the hypothesis — the exact worst-case outcome predicted. Let me clean up this probe file immediately, then run a follow-up probe to see if paging manually to the correct page recovers correct behavior (to characterize the defect precisely), plus the remaining pagination-mechanics and truncation checks....
+
+[7b4dada7/d5fe L77 04:34:49 TEXT] ...Confirmed clean — exactly the 4 original files. Now let me write a second, more comprehensive probe covering: whether manually paging to the correct page recovers correct selected/tabbable state (to characterize the defect precisely), pagination mechanics, selection persistence across paging, and truncation....
+
+[7b4dada7/d5fe L138 04:41:25 TEXT] ...us WCAG 2.2 AA keyboard-operability violation (AGENTS.md's Accessibility section), independent of any UX opinion about the missing highlight.
+
+I then verified the defect is isolated precisely to `pageStart`'s initial value, not a deeper logic bug: manually clicking "next" once (landing on the correct page) immediately recovers correct behaviour —
+```
+PROBE2 after-next names: ["Colour Five","Colour Six"]
+PROBE2 after-next checked: ["Colour Six"]
+PROBE2 after-next tabbable: ["Colour Six"]
+```
+— confirming `isSelected`/`isFocusable` are computed correctly once the right window is shown; the bug is `useState(0)` never being initialized ...
+
+[7b4dada7/3145 L1 04:42:35 STR] ... === 0)`) is a faithful port, but applying it over a `windowed` slice is a precondition break — windowing can exclude the selected item entirely, which never happens in base. Tester confirmed the bug is isolated to the initial `pageStart` value, not a deeper logic error: manually paging to the correct page immediately recovers correct behaviour (`checked: ["Colour Six"], tabbable: ["Colour Six"]`). This is an unambiguous WCAG 2.2 AA keyboard-operability violation (AGENTS.md Accessibility section) — a shopper with a genuine, valid colour selection would see a swatch group where nothing appears selected AND cannot Tab into the swatch ...
+
+[7b4dada7/3145 L42 04:49:08 TEXT] ...y. Confirmed `isFocusable: value ? selected : index === 0` (line 113) is applied over `Children.toArray(children)` (all children, unwindowed), and that base's `selected`/`isFocusable` are derived fresh from the `value` prop on every render — its own mount-only `useEffect(..., [])` on `selectedIndex` is cosmetic there (only affects arrow-key bookkeeping), never gates what's rendered. This is why the override's structurally-identical formula, applied to a `.slice()`'d window, is a precondition break rather than a faithful port — confirmed by reading the base source myself, not by relying on Tester's characterization of it.
+
+## Per-axi...
+
+[936e8a1d/571f L36 17:58:43 RES] ...-09T01:50
+if the fallback is active then why is the product's plp product card still showing up as brokne
+
+### [133] 2026-09-09T01:50
+[Request interrupted by user]
+
+### [134] 2026-09-09T01:50
+if the fallback is active then why is the product's plp product card still showing up as broken?
+
+### [135] 2026-09-09T02:07
+no self-heal is happening, can you recheck/test and verify visually as well?
+
+### [136] 2026-09-09T02:13
+this is good for now, i've raised the issue with BM already for the broken medium package, when that gets fixed, what should happen?
+
+### [137] 2026-09-09T02:15
+sounds good, with implementation done, what are the thing...
+
+[936e8a1d/571f L49 17:59:12 RES] ... be built
+- **`findings.md`** — the gate table, with its 🟡 CLARIFY assumptions
+
+If `handoff.md` is missing, Build either did not finish or ran before this was written. Say so and
+reconstruct what you can from the branch's commits — but flag the audit as partial, because the
+Scorer verdicts and UNIFORM findings are not recoverable from git.
+
+**Scale to the work.** A two-point story does not get a five-agent sweep. Honour the scale the
+plan chose. Nothing too crazy, no overthinking.
+
+---
+
+## Phase 1 — audit against both artefacts
+
+Two documents, two different questions. Neither is covered by the loop that just ran.
+
+### `findings.md` ...
+
+[936e8a1d/571f L59 17:59:32 RES] ... be built
+- **`findings.md`** — the gate table, with its 🟡 CLARIFY assumptions
+
+If `handoff.md` is missing, Build either did not finish or ran before this was written. Say so and
+reconstruct what you can from the branch's commits — but flag the audit as partial, because the
+Scorer verdicts and UNIFORM findings are not recoverable from git.
+
+**Scale to the work.** A two-point story does not get a five-agent sweep. Honour the scale the
+plan chose. Nothing too crazy, no overthinking.
+
+---
+
+## Phase 1 — audit against both artefacts
+
+Tw...
+
+--- L13993 [2026-09-10T14:21 user]
+...Base directory for this skill: /Users/marcel.a.n.navarro/.cl...
+
+[936e8a1d/571f L77 18:00:18 RES] ...tos.**
+Before: a card's swipeable gallery could show a mix of colours — e.g., the card representing the Black variant could have Tan photos mixed into its carousel. After: the gallery only ever shows that same product's Black photos, matching whatever SFCC already decided to represent.
+
+**2. A broken primary photo now recovers instead of showing broken.**
+Before: if the "official" photo 404s, the card just shows a broken image, permanently. After: it automatically falls back to the next real photo of the same colour — same recovery behaviour already proven on the Rail and Full History.
+
+**3. Hovering a card with 2+ photos now does t...
+
+[936e8a1d/571f L88 18:00:39 RES] ...off.md` exists.** This feature was never run through the structured zimmerMANNBuild
+loop — every commit was made through direct conversational collaboration between Claude and
+Marcel across many sessions. Scorer verdicts, rework-round counts, and step-level UNIFORM
+findings that a real handoff.md would carry are **not recoverable from git** and are not claimed
+below. The commit-history reconstruction in this file is built from `git log` alone.
+
+## Audit — findings.md (the pre-build gate)
+
+The gate ran across five separate passes (2026-09-04 → 09-06) before Marcel's adjudication
+cleared it. Below: every item that survived to a final ...
+
+[936e8a1d/f294 L59 18:00:08 RES] ...off.md` exists.** This feature was never run through the structured zimmerMANNBuild
+loop — every commit was made through direct conversational collaboration between Claude and
+Marcel across many sessions. Scorer verdicts, rework-round counts, and step-level UNIFORM
+findings that a real handoff.md would carry are **not recoverable from git** and are not claimed
+below. The commit-history reconstruction in this file is built from `git log` alone.
+
+## Audit — findings.md (the pre-build gate)
+
+The gate ran across five separate passes (2026-09-04 → 09-06) before Marcel's adjudication
+cleared it. Below: every item that survived to a final ...
+
+[936e8a1d/cbf8 L45 17:56:54 RES] ...does this tab issue get resolved then?'
+L713 [2026-09-01T15:56:59] 'go for 3'
+L718 [2026-09-01T16:03:45] "it's a bit unclear, ELI5"
+L723 [2026-09-01T16:09:03] "i recreated something totally different, i hovered across the nav-items and hit escape until i arrived at a blank mega menu, with close X, and this one doesn't self-heal so the mega menu stays blank even on attempts to hover other nav links and i was also able to reproduce this actual reported bug of no mega menu but close X showing and a nav link with underline (active/hovered?)"
+L760 [2026-09-01T16:13:38] "update the finding in the review notes and then let's talk about the...
+
+[936e8a1d/cbf8 L49 17:57:01 RES] ...does this tab issue get resolved then?'
+L713 [2026-09-01T15:56:59] 'go for 3'
+L718 [2026-09-01T16:03:45] "it's a bit unclear, ELI5"
+L723 [2026-09-01T16:09:03] "i recreated something totally different, i hovered across the nav-items and hit escape until i arrived at a blank mega menu, with close X, and this one doesn't self-heal so the mega menu stays blank even on attempts to hover other nav links and i was also able to reproduce this actual reported bug of no mega menu but close X showing and a nav link with underline (active/hovered?)"
+L760 [2026-09-01T16:13:38] "update the finding in the review notes and then let's talk about the...
+
+[936e8a1d/cbf8 L101 17:59:27 RES] ...": "Ask Tim to name the design-team confirmation", "description": "Non-blocking comment asking who specifically confirmed the gridSystem.ts padding values, for the paper trail."}]}]}
+
+=== L1442 [2026-09-02T02:28:10] tool_use:AskUserQuestion
+{"questions": [{"question": "Apply Proposal 1 to zimmerMANNReview.md (recovery/self-heal claims need the same reproduction discipline as the bug itself)?", "header": "Proposal 1", "multiSelect": false, "options": [{"label": "Apply it", "description": "Adds the paragraph after line 178, exact text as drafted above."}, {"label": "Don't apply", "description": "Log it as declined and move on."}, {"la...
+
+[936e8a1d/cbf8 L115 18:00:00 RES] ...earch, and Bag are all visible but none of them are reachable by Tab, only by mouse or Escape. This one's a real design decision on your end, not a one-line fix, happy to talk through it.
+
+**One bug worth walking through together:** the mega menu can end up permanently stuck showing "Close" with nothing underneath it, recoverable only by reloading the page. Left the full trace inline since it took a while to pin down and probably needs the same care to fix.
+
+**Two smaller but real items**, also inline: a nav landmark ended up nested inside another one, and the promo images in the mega menu and mobile drawer are shipping full resolut...
+
+[936e8a1d/cbf8 L136 18:00:49 RES] ...Target` recomputes to a value equal to the already-current (uncommitted) `value`, `setValue` becomes a no-op, no CSS transition fires, `onTransitionEnd` never fires, and the phase machine sticks at `'collapsing'` with `activeItemId` still set, leaving the header's \"Close\" control shown with no menu visible until the next hover. Trace this precisely through `useMegaMenuMotion.ts` and `list-menu-popover.tsx`'s actual reducer/effect code and say whether the race is real, whether any existing guard prevents it, and whether the 14 tests in `useMegaMenuMotion.test.ts` exercise this specific interleaving (they operate on the reducer in i...
+
+[936e8a1d/cbf8 L144 18:01:14 RES] ...d `<nav>`. The old header used a plain `<Box>` here.
+
+**5. Mega-menu can get stuck open with a phantom "Close" control and no visible panel.** CONFIRMED via full trace (not just plausible) — a fast hover-then-close within ~2 animation frames hits a real gap between the motion reducer and its rAF-deferred value commit. Self-heals on the next hover, but no test at any layer (reducer or DOM-timing) exercises this interleaving.
+
+**6. Mega-menu/drawer promo images ship full-resolution, unoptimized.** CONFIRMED. A complete, well-documented AVIF/WebP responsive-image builder (`contentfulImage.ts`) was built specifically for these images an...
+
+[936e8a1d/0a05 L25 17:57:00 RES] ...cope, does one
+uncorroborated source actually settle this, and has a stated number been measured or only assumed.
+
+**A claim about how a bug resolves needs the same reproduction as the bug itself.** Verification
+effort naturally goes toward proving the failure happens, not toward proving what you claim happens
+next — "self-heals on the next hover," "clears on reload," "only affects this one instance." These
+read as a supporting detail inside a bigger writeup, not as their own finding, so they skip the
+CONFIRMED/PLAUSIBLE discipline above by default. If you didn't reproduce the recovery, mark it
+PLAUSIBLE and say so, exactly like any...
+
+[936e8a1d/0a05 L51 17:58:02 RES] ... unacknowledged | 2 unacknowledged (same two) | ✅ zero new; new raw values in this PR are all properly acknowledged |
+| `npm run test` (vitest) | 695/695 (46 files) | 768/768 (52 files) | ✅ one full-suite run hit a 5s timeout on a keyboard-nav test; reproduced 3× in isolation, passed every time — confirmed environment flake, not a defect |
+| CI: Unit tests, Storybook a11y, Deploy Preview, tier/branch guards | — | all **SUCCESS** | ✅ |
+| CI: Playwright E2E (localhost), Cross-browser E2E (BrowserStack) | — | both **SKIPPED** | ⚠️ did not run — reported honestly, not counted as a pass |
+| **Mergeable** | — | **CONFLICTING / DIRTY** | 🔴...
+
+[936e8a1d/0a05 L55 17:58:09 RES] ...yOverlay`'s close button (inset shadow ring) visibly inconsistent for conceptually identical controls. | In-scope, minor/nitpick |
+| 11 | `zimmGalleryOverlay/index.tsx:215` vs `zimmColourSwatchGroup/index.tsx:87` | `offeredColourCount` re-implements the swatch group's own offered-colour filter character-for-character. Harmless today, driftable. This is CodeRabbit's own still-open nitpick — confirmed real, correctly low-severity. | Nitpick |
+| 12 | `product-view/index.tsx:820,828` | `mapImageGroupsToGalleryMedia` called twice per render with fresh array identity each time, defeating `ZimmProductGallery`'s own `useMemo`s on every unre...
+
+[936e8a1d/0a05 L83 17:59:40 RES] ...This correctly shows 34 files changed, +3281/-475 — matches the PR's real scope.
+
+GATE NUMBERS ALREADY MEASURED (do not re-run tsc/lint/vitest/audit:tokens yourself):
+- tsc clean both sides. lint: zero new PR-introduced errors. audit:tokens: zero new unacknowledged violations.
+- vitest: base 695/695, head 768/768. One flaky ti...
+
+[936e8a1d/0a05 L107 18:01:05 RES] ...=== 'self-heal'
+    37973080-8be5-46e1-9aab-e2abcb81ea17.jsonl
+    2091e78f-f4e2-4110-b0e5-a761fedf706a.jsonl
+=== 'self heal'
+=== 'recovers'
+    37973080-8be5-46e1-9aab-e2abcb81ea17.jsonl
+    2091e78f-f4e2-4110-b0e5-a761fedf706a.jsonl
+    37973080-8be5-46e1-9aab-e2abcb81ea17/subagents/agent-a1fdfdb4599c236c3.jsonl
+    2091e...
+
+[936e8a1d/5e47 L28 17:56:45 RES] ...dit:tokens` | 1 pre-existing violation (unrelated) | same, not re-run after the merge — flagging as unconfirmed rather than assuming |
+| CI: Unit tests (Vitest) | — | ✅ pass |
+| CI: Storybook interaction & a11y | — | ❌ **fails** — build succeeds, but the serve step times out waiting for the local server. Looks like CI flake, not a code regression (I couldn't establish a clean base rate to be certain) |
+| CI: Playwright/BrowserStack | — | skipped (change-scoped, expected) |
+| Git mergeable | CONFLICTING (at time of open) | MERGEABLE (resolved by merge commit) |
+| `reviewDecision` | — | **REVIEW_REQUIRED**, `mergeStateStatus: BLOCKED`...
+
+[936e8a1d/5e47 L36 17:57:15 RES] ...dit:tokens` | 1 pre-existing violation (unrelated) | same, not re-run after the merge — flagging as unconfirmed rather than assuming |
+| CI: Unit tests (Vitest) | — | ✅ pass |
+| CI: Storybook interaction & a11y | — | ❌ **fails** — build succeeds, but the serve step times out waiting for the local server. Looks like CI flake, not a code regression (I couldn't establish a clean base rate to be certain) |
+| CI: Playwright/BrowserStack | — | skipped (change-scoped, expected) |
+| Git mergeable | CONFLICTING (at time of open) | MERGEABLE (resolved by merge commit) |
+| `reviewDecision` | — | **REVIEW_REQUIRED**, `mergeStateStatus: BLOCKED`...
+
+[936e8a1d/5e47 L53 17:58:17 RES] ... two inline comments on `.claude/registry/components.md:13` and `overrides/app/components/_app/index.tsx:49`.
+
+Both flagged issues are quick fixes for Tim — regenerate the registry files, switch the `responsive` import to the relative path. Once those land, you're set to approve. The lower-priority items (Storybook CI flake, PR body's test-count typo) are still on record above if you want them later, but nothing further needed from me now unless you want the worktrees cleaned up.
+--- L467 [2026-09-04T05:01:13 user] remove: Happy to approve once these are in.
+--- L473 [2026-09-04T05:01:27 assistant] Done — the line's removed from the...
+
+[936e8a1d/5e47 L61 17:58:36 RES] ... the log); the server just never came up in time afterward. I checked this isn't specific to this PR — it failed today on two completely unrelated PRs too (`feature/SFCC-662-adyen-pwa-install`, `feature/sfcc-731-pdp-gallery`), intermixed with passes on those same branches at other times. It's a pre-existing, repo-wide flake in `qa.yml`, owned by Integration/SI Partner per `frozenFiles.md`, not something the PR author can fix.
+--- L385 [2026-09-04T09:46:17 user] create this into a claude code command that the developer of this PR can run on his machine so it gets fixed
+--- L408 [2026-09-04T09:48:21 assistant] Created [`.claude/skills...
+
+[936e8a1d/5e47 L65 17:58:47 RES] ...e prompt that the developer of this PR can run on his machine so it gets fixed
+--- L298 [2026-09-04T13:17:31 assistant] Here's a self-contained prompt for Jersey to run in his own Claude Code session on that branch. It's scoped to just the Deploy Preview fix and explicitly tells it not to touch the unrelated Storybook flake.
+
+```
+I'm on branch feature/SFCC-742_wishlist-loginpanel-content (PR #83). The "Deploy Preview"
+GitHub Actions check has been failing on every push since commit f8a8067a ("chore: added
+additional env var to the .env.sample for better MRT preview deployments").
+
+Root cause: that commit added th...
+
+[936e8a1d/5e47 L75 17:59:18 RES] ... key to the MRT preview target, and MRT rejects that name as reserved. This is a leftover from an abandoned approach — the real fix landed in the very next commit (`config/default.js`'s `IS_PREVIEW_TARGET`). **In-scope, easy fix: delete that block.**
+- **Storybook interaction & a11y tests** — pre-existing, cross-PR CI flake, reproduced failing today on two completely unrelated PRs (`feature/SFCC-662-adyen-pwa-install`, `feature/sfcc-731-pdp-gallery`). `http-server`/`wait-on` aren't pinned devDependencies, so every run does a cold registry install racing a fixed 60s timeout. **Not this PR's fault** — belongs to whoever owns `qa.yml`....
+
+[9ae445e0/0059 L78 08:58:57 RES] ...injected ref from ZimmWishlistAuthDrawer cloneElement — redundant
+  since handleTriggerClick already assigns triggerRef.current via event.currentTarget
+- fix: update HeartIcon/HeartSolidIcon import in product-tile to use the
+  overrides icons barrel instead of the base Salesforce path
+- fix: make seedLoginDrawerUiCopy recoverable — publish draft entries on re-run
+  instead of skipping them; raise an error when --target flag has no value
+- feat: add ProductTile Storybook stories covering swatch selection, wishlist
+  trigger, favourited state, and refreshing skeleton
+- chore: update errorFallback to render null intentionally with an e...
+
+[9ae445e0/dbd9 L104 08:41:30 RES] ...age version ---'\nrg -n -C 2 '\"contentful-management\"|contentful-management' package.json package-lock.json npm-shrinkwrap.json yarn.lock pnpm-lock.yaml 2\u003e/dev/null | head -80\n```\n\nRepository: ZimmermannAU/zimmermann-pwa\n\nLength of output: 10867\n\n---\n\n\n\n\u003c/details\u003e\n\n**Make interrupted runs recoverable.**\n\n`client.entry.getMany` returns draft entries, so a matching draft enters `existingKeys` and is skipped. If publishing a newly created entry fails, a later run leaves that draft unavailable through the Delivery API. Publish an unpublished matching entry before skipping it, or make the create-and-publis...
+
+[9ae445e0/dbd9 L205 08:56:31 TEXT] ...ro-item-page guard) is a correct offset-pagination implementation, and it correctly uses the real `contentful-management` plain-client shape (verified against `_shared.mjs`'s `createClient()`). The "publish a draft, skip a published, create+publish if absent" logic matches CodeRabbit's requested "make interrupted runs recoverable" fix, and running the script twice back-to-back is genuinely idempotent (2nd run: all 8 already published → all skipped). One minor accuracy gap: the file's own top comment says *"Skips any entry whose key already exists"* — not quite true; it only skips if **published**, and actively *publishes* (mutates) ...
+
+[9ae445e0/9bda L59 08:41:13 RES] ...m ZimmWishlistAuthDrawer cloneElement — redundant
+      since handleTriggerClick already assigns triggerRef.current via event.currentTarget
+    - fix: update HeartIcon/HeartSolidIcon import in product-tile to use the
+      overrides icons barrel instead of the base Salesforce path
+    - fix: make seedLoginDrawerUiCopy recoverable — publish draft entries on re-run
+      instead of skipping them; raise an error when --target flag has no value
+    - feat: add ProductTile Storybook stories covering swatch selection, wishlist
+      trigger, favourited state, and refreshing skeleton
+    - chore: update errorFallback to render null intenti...
+
+[a259cc54/b086 L25 09:15:37 RES] ...config.\\n\\nIf a check fails\\n----------------\\n\\n**Playwright failure** — read the HTML report linked from the Actions summary (or published to GitHub Pages for `develop` builds). Fix the failing journey before pushing again. Do not increase `retries` in the p0 project config — retries are set to 0 intentionally. Flaky tests must be fixed, not retried away.\\n\\n**Lighthouse regression** — run Lighthouse locally against the SIT URL and compare to the stored baseline. A score drop > 5 points vs. the LHCI server baseline blocks. Check for new render-blocking resources or image size regressions. Thresholds: Perf ≥ 80, A11y ≥ 90, B...
+
+[a491f07a/f44f L59 07:30:23 RES] ...st [submitState, setSubmitState] = useState<SubmitState>(initialSubscribed ? 'success' : 'idle');
+44	  // Ref, not state: nothing renders from it, so a re-render on capture would be wasted. The
+45	  // footer input unmounts once submitState leaves 'idle', so the email must be captured here at
+46	  // step 1 or it is unrecoverable at step 2.
+47	  const pendingSignupRef = useRef<PendingSignup>({ email: '', firstName: '', lastName: '' });
+48	  const [modalOpen, setModalOpen] = useState(false);
+49	
+50	  const handleEmailSubmit = (email: string) => {
+51	    pendingSignupRef.current.email = email;
+52	    if (enableNameCapture) {
+53	      ...
+
+[b928eb38/14ff L75 03:33:56 RES] ...100	    child.stdout.on('data', chunk => (stdout += chunk.toString()));
+101	    child.stderr.on('data', chunk => (stderr += chunk.toString()));
+102	
+103	    child.on('exit', code => {
+104	      cleanupFn();
+105	      if (code === 0) return resolve(stdout);
+106	
+107	      // On Windows killing Chrome is extraordinarily flaky.
+108	      // If it looks like we got an LHR and we only died because of killing Chrome, ignore it.
+109	      if (
+110	        code === 1 &&
+111	        os.platform() === 'win32' &&
+112	        LighthouseRunner.isOutputLhrLike(stdout.trim()) &&
+113	        stderr.includes('Generating results...') &&
+114	        s...
+
+[b928eb38/d537 L14 03:43:51 RES] ...100	    child.stdout.on('data', chunk => (stdout += chunk.toString()));
+101	    child.stderr.on('data', chunk => (stderr += chunk.toString()));
+102	
+103	    child.on('exit', code => {
+104	      cleanupFn();
+105	      if (code === 0) return resolve(stdout);
+106	
+107	      // On Windows killing Chrome is extraordinarily flaky.
+108	      // If it looks like we got an LHR and we only died because of killing Chrome, ignore it.
+109	      if (
+110	        code === 1 &&
+111	        os.platform() === 'win32' &&
+112	        LighthouseRunner.isOutputLhrLike(stdout.trim()) &&
+113	        stderr.includes('Generating results...') &&
+114	        s...
+
+[be821830/bc6d L8 04:55:20 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[be821830/5552 L6 04:08:34 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[be821830/3cb9 L6 04:08:13 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[be821830/604d L20 04:56:19 RES] ...1	# PostBuild — SFCC-236
+2	
+3	Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+4	
+5	**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+6	rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+7	from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+8	and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+9	manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+10	trusting comm...
+
+[be821830/ba2f L12 03:19:09 RES] ...ins by default under AGENTS.md doc-integrity |
+162	| 16 | Jira SFCC-236 comment 13891 (17 Aug) | Jasmijn's AC revision promised Core AC #1 would read *"the primary product image **is and product name are** always displayed"*. The live `customfield_10231` still says image only. The colour-coded green/red edit is also unrecoverable from the API, so which lines were additions vs removals cannot be read back. | 🟡 CLARIFY | Confirm product name belongs in the Core AC |
+163	| 17 | Jira SFCC-236 comment 13880 (14 Aug, Dani Rivett) | *"We do not want the badge displayed on the Homepage or on the Recently Viewed product carousel"* and *"we d...
+
+[c311faf8/b568 L13 00:44:17 RES] ...  # Region and proxy config are NOT derived from the bundle push — confirmed
+      # live this session: two successful `pwa-kit-dev push` calls left
+      # ssr_proxy_configs null on a freshly created target, and region defaults to
+      # us-east-2 unless set explicitly. Both must be set here, explicitly, and
+      # self-healed on every run in case a target was ever created out-of-band
+      # (e.g. by hand through the MRT console) with the wrong values.
+      - name: Ensure MRT target exists with correct region/proxy config
+        id: ensure
+        env:
+          SLUG: ${{ steps.slug.outputs.slug }}
+          PROXY_JSON: ${{ st...
+
+[c311faf8/b568 L31 00:47:14 TEXT] ... → `ERR_CONNECTION_REFUSED`. Documented as a real past failure (qa.yml lines 598–602). |
+| `E2E_EXTRA_HEADER_NAME` / `E2E_EXTRA_HEADER_VALUE` | Secret | Requests to the access-gated test tier are rejected before pages load |
+| `SPRINT_NUMBER` | Set from `steps.build-name.outputs.name` (run number) | Not a secret risk; only affects BrowserStack build display name |
+
+### e2e-browserstack-preview.yml (environment: `test`)
+
+| Name | Type | Effect if absent/empty |
+|---|---|---|
+| `JIRA_URL` / `JIRA_AUTOMATION_EMAIL` / `JIRA_AUTOMATION_API_TOKEN` | Secret | `computeBuildName.mjs` falls back to `unknown-{key}` and exits 0 — BrowserStack r...
+
+[c311faf8/80bf L147 01:07:57 RES] ...  # Region and proxy config are NOT derived from the bundle push — confirmed
+      # live this session: two successful `pwa-kit-dev push` calls left
+      # ssr_proxy_configs null on a freshly created target, and region defaults to
+      # us-east-2 unless set explicitly. Both must be set here, explicitly, and
+      # self-healed on every run in case a target was ever created out-of-band
+      # (e.g. by hand through the MRT console) with the wrong values.
+      - name: Ensure MRT target exists with correct region/proxy config
+        id: ensure
+        env:
+          SLUG: ${{ steps.slug.outputs.slug }}
+          PROXY_JSON: ${{ st...
+
+[c311faf8/50a7 L21 00:59:10 RES] ...are NOT derived from the bundle push — confirmed
+    96	      # live this session: two successful `pwa-kit-dev push` calls left
+    97	      # ssr_proxy_configs null on a freshly created target, and region defaults to
+    98	      # us-east-2 unless set explicitly. Both must be set here, explicitly, and
+    99	      # self-healed on every run in case a target was ever created out-of-band
+   100	      # (e.g. by hand through the MRT console) with the wrong values.
+   101	      - name: Ensure MRT target exists with correct region/proxy config
+   102	        id: ensure
+   103	        env:
+   104	          SLUG: ${{ steps.slug.outputs.s...
+
+[d0355b70/678e L15 04:59:48 RES] ...effect fired and read the ref before the real DOM node existed,
+685	  and never re-fired once it did (none of its deps changed on Portal's later commit). Fixed with
+686	  a `useState`-backed callback ref instead, which reacts to the actual node appearing.
+687	
+688	**The rest were animation-timing gaps, not test-runner flakes** — real behavioural changes from
+689	the earlier Chakra-Modal/Drawer rebuild (animated primitives replacing instant hand-rolled
+690	ones) that several existing `play` functions never accounted for:
+691	- `ZimmDrawer`'s `CloseButtonClosesTheDrawer` and Footer's `SubscribeSubmit`/Escape-dismiss all
+692	  asserted...
+
+[d0355b70/1202 L10 04:59:45 RES] ...effect fired and read the ref before the real DOM node existed,
+685	  and never re-fired once it did (none of its deps changed on Portal's later commit). Fixed with
+686	  a `useState`-backed callback ref instead, which reacts to the actual node appearing.
+687	
+688	**The rest were animation-timing gaps, not test-runner flakes** — real behavioural changes from
+689	the earlier Chakra-Modal/Drawer rebuild (animated primitives replacing instant hand-rolled
+690	ones) that several existing `play` functions never accounted for:
+691	- `ZimmDrawer`'s `CloseButtonClosesTheDrawer` and Footer's `SubscribeSubmit`/Escape-dismiss all
+692	  asserted...
+
+[d1754c7b/de53 L18 02:41:21 RES] ...config.\\n\\nIf a check fails\\n----------------\\n\\n**Playwright failure** — read the HTML report linked from the Actions summary (or published to GitHub Pages for `develop` builds). Fix the failing journey before pushing again. Do not increase `retries` in the p0 project config — retries are set to 0 intentionally. Flaky tests must be fixed, not retried away.\\n\\n**Lighthouse regression** — run Lighthouse locally against the SIT URL and compare to the stored baseline. A score drop > 5 points vs. the LHCI server baseline blocks. Check for new render-blocking resources or image size regressions. Thresholds: Perf ≥ 80, A11y ≥ 90, B...
+
+[d1754c7b/de53 L63 02:43:26 TEXT] ...tion; cannot merge without green `Digital SIT Gate`.
+- **Thresholds** (same as above): Playwright P0 100% pass; Lighthouse Perf ≥80/A11y ≥90/Best Practices ≥90 (>5pt drop blocks); bundle main.js<180kB/vendor.js<250kB/main.css<50kB; contract tests = any breach blocks.
+- Playwright `retries` intentionally set to **0** — flaky tests must be fixed, not retried away.
+- **Open dependency:** `test:contracts` currently exits 0 with a warning — not a real assertion yet (owner: Zimmermann integration team + Accenture delivery lead).
+- **Secrets:** `LHCI_SERVER_BASE_URL`, `LHCI_TOKEN`, `LHCI_TARGET_URL_SIT` (Lighthouse); `BROWSERSTACK_USERNAME...
+
+[dd51eabe/3b4e L175 19:16:50 TEXT] ...header now shows the colour-scoped minimum, Express Pay keeps the master-wide minimum. Before this PR both came from the same object. Gated by `useExpressCheckoutEnabled().pdp`, so it may be dormant — but it's a conscious decision to record, not an accident. (`quantity` being dropped from the scoped call is benign: it only affects `tieredPrice`, which `selectPdpProductInfo` never reads.)
+
+**5. `zimmProductPrice.css.ts:27-29` — Minor — the justification for the `baseStyle` stubs is factually false. CONFIRMED empirically.**
+"omitting them would break variant application: Chakra gates variant resolution through the declared parts list....
+
+[e8419d92/ab2a L83 17:55:59 TEXT] ...mmit. **CONFIRMED (fact) / PLAUSIBLE (attribution)**
+
+Local branch `sfcc-89-wip` → commit `3ae8dcd` *"chore: wip SFCC-89 static product info restore point"* contains the **fully wired** version (`renderHeader={renderStaticProductHeader}`, all three Zimm components, `selectPdpProductInfo`). BLOCKER 1 is therefore fully recoverable.
+
+Authored/committed `Marcel Angelo Navarro <marcel.a.n.navarro@accenture.com>`, `2026-08-26 00:29:14 +0800` — **before** the `.git/index` write (01:16) and the two file edits (01:37/01:41). Not pushed to any remote. Given the timestamp and authorship this most likely predates the audited change, so I am **...
+
+[e8419d92/8a37 L84 17:13:59 TEXT] ...Utilities**: *"**Pure functions** — no side effects unless clearly intentional and called out in a comment."* Every other non-obvious decision in this file is commented; this one is not.
+
+Correctness holds today — the function is fully synchronous with no `await`, so no two calls can interleave, and the reset-on-entry recovers from a prior throw. The breach is the missing comment, not a bug. Fix: either a one-line comment stating the reset is deliberate and why it is safe, or construct the regex per call from a `TAG_RE_SOURCE` string const, which removes the shared state entirely.
+
+---
+
+### 🟢 Nits
+
+6. **`/Users/marcel.a.n.navarro/De...
+
+[e8419d92/55fa L7 03:59:36 RES] ...ts session-start read.
+76	
+77	MEASURED by me after the fact: 51 lines, **0** price references, guard at `:43`, children at `:47/:48`,
+78	`useMultiStyleConfig` at `:30`, `data-testid="product-meta"` at `:46`, tsc 0, 363/363, `recipeParts`
+79	green. I have since replaced intent-to-add with a full `git add` so content is recoverable.
+80	**Satisfy yourself the file is genuinely correct — a from-memory restore is exactly the kind of thing
+81	that looks right and is subtly wrong.**
+82	
+83	## Tester NOTES not actioned (report-only) — rule on whether any belongs in COMMIT 3
+84	
+85	N5 `parts:` is inert at runtime; deleting it drops a `recipe...
+
+[e8419d92/c6b0 L1 14:40:45 STR] ...it diff` is your only uncommitted state. Before editing any file, back it up to `$CLAUDE_JOB_DIR/tmp/backup/<full-path-with-slashes-replaced-by-underscores>` — every component in this repo is named `index.tsx`, and a `basename`-keyed backup directory has already clobbered a file once in this project. HEAD versions are recoverable with `git show HEAD:<path>`.
+
+# Baseline gate numbers — MEASURED by the orchestrator, must be unchanged when you finish
+
+- G1 `npx tsc --noEmit` → **0 errors**
+- G2 `npx vitest run` → **370 passed / 25 files**. Note R3 adds three `expect()` calls *inside an existing test*, so the count must stay exactly 370...
+
+[e8419d92/3827 L171 03:56:53 TEXT] ... it verbatim from my session-start read and confirmed: 51 lines, guard at `:43`, children at `:47/:48` (the exact line numbers the brief cites), tsc 0, 363/363, and `recipeParts.test.ts` — which regex-parses that specific file — passes. Redone with unique backup paths. Worth flagging that intent-to-add files have **no recoverable git copy**; a stash or a real `git add` would make that safety net exist.
+
+**Two brief claims corrected by measurement:**
+- The unregistered-atom delta is *not* `rgb(24,24,24)`. Measured: the atoms fall back to `var(--chakra-colors-gray-900)` = Chakra's default **`#171923`** (rgb 23,25,35), because this the...
+
+[e8419d92/7b2f L131 14:34:23 TEXT] ...ten one.
+2. **Fix 5's pin list is 3 short** — `ZimmProductDescription`, `ZimmProductStyleCode`, `ZimmProductContent`. Fix 2 raised the cost of an unregistration for the first two specifically. Either add them now or record why not.
+3. **`recipeParts.test.ts:5-7` states a false mechanism** (`parts` gating `baseStyle`). Harmless today because all ten co-located recipes have matching key sets, but it is a proxy, and anyone extending that guard to `theme/components/` per its own docstring will build on it. Cheap to correct while the file is already open in this PR.
+
+Everything else — the six fixes as specified, the seven gates, and the ...
+
+[ef996bfd/8572 L73 02:48:28 RES] ...config.\\n\\nIf a check fails\\n----------------\\n\\n**Playwright failure** — read the HTML report linked from the Actions summary (or published to GitHub Pages for `develop` builds). Fix the failing journey before pushing again. Do not increase `retries` in the p0 project config — retries are set to 0 intentionally. Flaky tests must be fixed, not retried away.\\n\\n**Lighthouse regression** — run Lighthouse locally against the SIT URL and compare to the stored baseline. A score drop > 5 points vs. the LHCI server baseline blocks. Check for new render-blocking resources or image size regressions. Thresholds: Perf ≥ 80, A11y ≥ 90, B...
+
+[f27013ef/344b L3 11:48:21 TEXT] ...ev/zimmerMANN-skills/.runs/SFCC-236/plan.md`, `findings.md`, `postbuild.md` (the real PR #85 one — 66KB), and `postbuild-live-demo.md` (the demo-branch one I wrote this session). Note: no `handoff.md` exists for this build per `postbuild.md`'s own opening lines — Build's own Scorer verdicts/rework-round history is not recoverable from git and should not be claimed.
+
+**Read prior improver findings:** everything under `~/Dev/zimmerMANN-skills/.runs/_improver/` to establish what's already been observed before, so you can correctly mark recurrence vs. first-occurrence.
+
+**Job B — citation drift.** Read the current `zimmerMANNPreBuild`, ...
+
+[f27013ef/344b L19 11:51:34 RES] ...Mode":"plan","origin":{"kind":"human"},"promptSource":"typed","userType":"external","entrypoint":"cli","cwd":"/Users/marcel.a.n.navarro/Dev/zimmermann-pwa","sessionId":"0b6b5219-f79f-4f3b-a6c2-46afb1c1b554","version":"2.1.258","gitBranch":"feature/SFCC-236_product-card-shared-component","slug":"serialized-bubbling-snowflake"}
+5333:{"parentUuid":"6e34596d-1f1f-429e-8836-f5b53d7a270b","isSidechain":false,"message":{"model":"claude-sonnet-5","id":"msg_011CejoV3dwjEy2LWXsKMsBG","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01Qh4k3VU656de4PSiUHsEuT","name":"Agent","input":{"subagent_type":"Explore","descri...
+
+[f27013ef/344b L41 11:52:47 RES] ...d.*` value to swap to, so it's a real foundation gap (same bucket as the `zimmSizeChip` one you already deferred), not a fix I can just make.
+- 7 leftover hand-typed `data-card-slot` values in test-only spots (synthetic fixtures, assertion arguments) — three rounds missed these because nothing mechanical catches them; harmless today, same category as things already left alone.
+- Two of the three wishlist CRM items you deferred turn out to be backed by explicit Confirmed-status PRD text (`.docs/prd/account.md`), not just a maybe-stale note — doesn't change your call, just flagging the ground under it moved.
+
+I've already corrected `p...
+
+[f27013ef/e6e5 L73 06:27:02 TEXT] ...: none`. Only landing there triggers the reveal; the user has already tabbed past the (until that instant nonexistent) arrows/size-chip radio and must reverse direction to reach them. This is a real, mechanically-verified change in behavior — not present before `72ee2a9` — though it's not a hard trap (the controls are recoverable by tabbing the other way), so I rank it below Theory 1 in severity/certainty.
+
+**Theory 3 (lower confidence, worth flagging but almost certainly pre-existing, not introduced by these two commits): the scroll container's own arrow-key handler may not receive raw key events from VoiceOver at all.**
+
+`zimmProd...
+
+[f27013ef/82c7 L1 06:29:08 STR] ...try into the card from something AFTER it (e.g. the next card in a grid, once one exists) lands on the last unconditionally-visible tabbable element (the bag button) — the user has already tabbed past the (at that instant nonexistent) arrows/size-chip-radio/notify-me and must reverse direction to reach them. Real, but recoverable — not a hard trap.
+- No CSS media feature exists to detect "a screen reader is active" (deliberately, for privacy reasons) — so a pure-CSS "detect AT and do something different" approach is not available.
+- Existing test coverage would NOT catch a fix regressing this again: there are zero Storybook `play` f...
+
+[f3844a4c/5cc8 L19 05:18:03 RES] ...effect fired and read the ref before the real DOM node existed,
+685	  and never re-fired once it did (none of its deps changed on Portal's later commit). Fixed with
+686	  a `useState`-backed callback ref instead, which reacts to the actual node appearing.
+687	
+688	**The rest were animation-timing gaps, not test-runner flakes** — real behavioural changes from
+689	the earlier Chakra-Modal/Drawer rebuild (animated primitives replacing instant hand-rolled
+690	ones) that several existing `play` functions never accounted for:
+691	- `ZimmDrawer`'s `CloseButtonClosesTheDrawer` and Footer's `SubscribeSubmit`/Escape-dismiss all
+692	  asserted...
+
+[f3844a4c/b0c5 L27 05:21:44 TEXT] ...emplate code).
+
+Two other flagged connections from the task context were checked and ruled out, not assumed: (a) **badges** (pdp.md §3, PRD-005/006) — not mentioned anywhere in SFCC-201; that's a separate taxonomy (Campaign/Runway/Exclusive/etc.) with no overlap. (b) **SFCC-236 Product Card** — no connection; SFCC-201 only affects grid *sequence*, nothing rendered *on* a card.
+
+---
+
+**Questions to raise**
+
+1. **(BA/PM — scope hygiene)** Confirm SFCC-850 ("Copy Category Merchandising") stays scoped and sized separately from SFCC-201 — SFCC-850 is real custom dev (a BM extension), SFCC-201 is pure OOB config. Worth saying out loud so ...
+
+[f5f727b4/f6eb L8 05:32:23 RES] ...me of deletion). Backup at `scratchpad/cssVars.ts.DELETED-BACKUP`.
+165	
+166	### `overrides/app/hooks/useZimmTextInputState.test.ts` (19 → 10 tests) and `overrides/app/theme/components/zimmTextInput.test.ts` (NEW, 13 tests)
+167	
+168	## 4. Errors and Fixes
+169	
+170	1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+171	
+172	2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from ...
+
+[f5f727b4/f6eb L76 05:35:10 RES] ...ies the real viewBox server-side, `ignore-loader` doesn't client-side. Asset was overridden, fallback constant wasn't |
+| Fast typing drops leading characters in the subscribe field | 25ms/key yielded `example.com` from `test@example.com`; submit then correctly rejected it. Would make future Playwright/`play` coverage flaky |
+| Wrong PRD IDs in code comments | Contentful footer is **HPC-030** not 034 · Omneo is **HPC-036** not 035 · HPC-038 is region-specific links, not Cookie Settings |
+| WCAG mis-citation silently corrected | `200c044` cited **SC 2.5.5** (AAA, 44px) for a 24px fix; changed to 2.5.8 in `3220239` with no mention in ...
+
+[f5f727b4/f6eb L101 05:36:18 RES] ...0:Typing into the subscribe field at 25ms/key **drops leading characters** — `test@example.com` arrived as `example.com`, and submit then correctly rejected it as invalid. Focus, wait ~400ms for the label-float transition, then fill works reliably. That would make any future Playwright or `play` coverage of that field flaky, and it might be a real UX bug in the controlled-input path. Not investigated.
+24668:| Fast typing drops leading characters in the subscribe field | 25ms/key yielded `example.com` from `test@example.com`; submit then correctly rejected it. Would make future Playwright/`play` coverage flaky |
+25832:- Fast typing d...
+
+[f5f727b4/f6eb L103 05:36:21 RES] ...
+
+Typing into the subscribe field at 25ms/key **drops leading characters** — `test@example.com` arrived as `example.com`, and submit then correctly rejected it as invalid. Focus, wait ~400ms for the label-float transition, then fill works reliably. That would make any future Playwright or `play` coverage of that field flaky, and it might be a real UX bug in the controlled-input path. Not investigated.
+
+Validator 3 (styling and coverage — S5, S8, S9, S10) is still running. Once it lands I'll launch Stage 2 with the corrected fixes rather than the originally-claimed ones.
+
+=====
+
+[2026-08-21T09:56:52] Stage 1 complete. Validator 3 cor...
+
+[f5f727b4/dc83 L48 05:34:05 RES] ...## 4. Errors and Fixes
+
+1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+
+2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from './Butto...
+
+[f5f727b4/dc83 L68 05:34:54 RES] ...ies the real viewBox server-side, `ignore-loader` doesn't client-side. Asset was overridden, fallback constant wasn't |
+| Fast typing drops leading characters in the subscribe field | 25ms/key yielded `example.com` from `test@example.com`; submit then correctly rejected it. Would make future Playwright/`play` coverage flaky |
+| Wrong PRD IDs in code comments | Contentful footer is **HPC-030** not 034 · Omneo is **HPC-036** not 035 · HPC-038 is region-specific links, not Cookie Settings |
+| WCAG mis-citation silently corrected | `200c044` cited **SC 2.5.5** (AAA, 44px) for a 24px fix; changed to 2.5.8 in `3220239` with no mention in ...
+
+[f5f727b4/dc83 L99 05:36:12 RES] ...Recommended: commit → rebase → resolve → follow-up
+
+**Step 1 — commit the 40 staged files first.** Non-negotiable. Right now the only copy of a full day's work is the git index. Any operation that touches the working tree can lose it, and the index has no reflog. Committing gives it a SHA and makes everything after it recoverable.
+
+**Step 2 — `git pull --rebase`.** We'd have exactly one commit replaying onto their three. Linear history, one conflict pass, no merge commit noise on a feature branch.
+
+**Step 3 — resolve with a pre-decided policy** (below).
+
+**Step 4 — separate commit** for the transition constant and the locale-button ...
+
+[f5f727b4/bc0d L12 05:31:43 RES] ...lines, 0 importers at time of deletion). Backup at `scratchpad/cssVars.ts.DELETED-BACKUP`.
+
+### `overrides/app/hooks/useZimmTextInputState.test.ts` (19 → 10 tests) and `overrides/app/theme/components/zimmTextInput.test.ts` (NEW, 13 tests)
+
+## 4. Errors and Fixes
+
+1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+
+2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from './Butto...
+
+[f5f727b4/bc0d L52 05:33:20 RES] ...–1022 dead zone we've been chasing.
+
+## Widths worth setting
+
+```
+ 402   mobile frame          ✅ correct
+ 767   last mobile width     ✅ correct
+ 768   ← BREAKS HERE         ❌ 18px h-scroll, 7 labels wrap, cols 126/91/71
+ 860   tablet-wide token     ❌ still broken
+ 900   mid-band              ❌ cols 149/107/84
+1022   ✅ recovers
+1023   tablet frame          ✅ correct — but subscribe↔sitemap gap is 30px vs spec 100px
+1440   desktop frame         ✅ correct
+```
+
+**Use the browser's device-toolbar and type the width explicitly** rather than resizing the window — on a retina Mac a 2000px-wide window is ~1000 CSS px, which is exactly the mi...
+
+[f5f727b4/bc0d L55 05:33:29 RES] ...p earlier.
+
+## So: what would you like to do?
+
+**This isn't a spacing defect to fix** — adding gap would be compensating for the wrong thing, and the arithmetic would break again when the font changes.
+
+Three honest options:
+
+1. **Accept and declare.** Gap 30 vs 100 at tablet, entirely traceable to column width; ~28px recovers automatically when the font lands, ~42px needs a per-item constraint decision from Kiera.
+2. **Cap the site map's total width** rather than the columns — e.g. `links: maxWidth` sized so the gap holds. But then columns squeeze inside it, which is the bug we've been removing.
+3. **Take it to Kiera** as part of t...
+
+[f5f727b4/bc0d L82 05:34:48 RES] ...–1022 dead zone we've been chasing.
+
+## Widths worth setting
+
+```
+ 402   mobile frame          ✅ correct
+ 767   last mobile width     ✅ correct
+ 768   ← BREAKS HERE         ❌ 18px h-scroll, 7 labels wrap, cols 126/91/71
+ 860   tablet-wide token     ❌ still broken
+ 900   mid-band              ❌ cols 149/107/84
+1022   ✅ recovers
+1023   tablet frame          ✅ correct — but subscribe↔sitemap gap is 30px vs spec 100px
+1440   desktop frame         ✅ correct
+```
+
+**Use the browser's device-toolbar and type the width explicitly** rather than resizing the window — on a retina Mac a 2000px-wide window is ~1000 CSS px, which is exactly the mi...
+
+[f5f727b4/3490 L39 05:31:46 RES] ...importers at time of deletion). Backup at `scratchpad/cssVars.ts.DELETED-BACKUP`.
+166:### `overrides/app/hooks/useZimmTextInputState.test.ts` (19 → 10 tests) and `overrides/app/theme/components/zimmTextInput.test.ts` (NEW, 13 tests)
+168:## 4. Errors and Fixes
+170:1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+172:2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from './Bu...
+
+[f5f727b4/3490 L45 05:32:00 RES] ...lines, 0 importers at time of deletion). Backup at `scratchpad/cssVars.ts.DELETED-BACKUP`.
+
+### `overrides/app/hooks/useZimmTextInputState.test.ts` (19 → 10 tests) and `overrides/app/theme/components/zimmTextInput.test.ts` (NEW, 13 tests)
+
+## 4. Errors and Fixes
+
+1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+
+2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from './Butto...
+
+[ffc7f9f8/6a96 L133 05:27:49 RES] ...41:function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+64:  if (err instanceof errors.HTTPError) {
+238:    } catch (e) {
+240:      // (errors handled by the AppErrorBoundary are considered recoverable)
+257:    const status = error && error.status || res.statusCode;
+275:      res.status(status).send(html);
+367:  } catch (e) {
+368:    // This will catch errors thrown from the app and pass the error
+369:    // to the AppErrorBoundary component, and renders the error page....
+
+[ffc7f9f8/6a96 L138 05:27:54 RES] ... && logAndFormatError(appStateError),
+228	        routes,
+229	        req,
+230	        res,
+231	        location,
+232	        config,
+233	        appJSX,
+234	        customSitePreferences,
+235	        customGlobalPreferences,
+236	        mrtDataStoreEnabled
+237	      });
+238	    } catch (e) {
+239	      // This is an unrecoverable error.
+240	      // (errors handled by the AppErrorBoundary are considered recoverable)
+241	      // Here, we use Express's convention to invoke error middleware.
+242	      // Note, we don't have an error handling middleware yet! This is calling the
+243	      // default error handling middleware provided by...
+
+[ffc7f9f8/50e5 L124 05:27:03 TEXT] ...ates 'search / recommendation engine not confirmed'... Confirm which sheet is authoritative before relying on Einstein for cart/recommendation surfaces."* This means even the recommendation-engine platform choice (Einstein vs. Athos) is still open — relevant context for why the `viewed-recently-einstein` call might be flaky/secondary, though no doc mentions that specific endpoint by name.
+
+**Page meta tags / SEO hook**: No integration doc is named for this. The closest related material is in `.docs/prd/dataMigrationSeo.md` §3 (DMU-031/032/035): title tags are *"Configurable via BM meta tag rules"* and meta description/SEO fields *"w...
+

@@ -1,0 +1,53 @@
+{
+  "state": "done",
+  "detail": "PR #107 CI re-checked; Storybook, a11y, Vitest all green",
+  "tempo": "idle",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": [],
+    "drainableMonitors": 0
+  },
+  "tokens": 7185449,
+  "output": {
+    "result": "PR #107 clean: Storybook interaction & a11y tests pass, Vitest green, deploy preview OK"
+  },
+  "children": [
+    {
+      "id": "107",
+      "href": "https://github.com/ZimmermannAU/zimmermann-pwa/pull/107",
+      "kind": "pr"
+    }
+  ],
+  "linkScanOffset": 73628017,
+  "linkScanPath": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/4f143a27-bda5-4ed2-89a8-612349f0631d.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--reply-on-resume",
+    "--effort",
+    "max",
+    "--permission-mode",
+    "auto",
+    "--model",
+    "claude-sonnet-5"
+  ],
+  "intent": "now off to the recentyl viewed grid, we want this responsive as well, 4 cols on desktop, 3 cols on tablet, and 2 cols on mobile",
+  "name": "ZIMM - Recently Viewed 83 & 84",
+  "nameSource": "user",
+  "sessionId": "4f143a27-bda5-4ed2-89a8-612349f0631d",
+  "resumeSessionId": "4f143a27-bda5-4ed2-89a8-612349f0631d",
+  "daemonShort": "4f143a27",
+  "cliVersion": "2.1.263",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "bgIsolation": "none",
+  "providerEnv": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "interactiveLineage": true,
+  "backend": "daemon",
+  "createdAt": "2026-09-08T06:15:16.416Z",
+  "updatedAt": "2026-09-10T18:08:16.204Z",
+  "firstTerminalAt": "2026-09-08T06:30:02.817Z",
+  "lastTerminalAt": "2026-09-10T18:08:16.204Z"
+}

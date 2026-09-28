@@ -1,0 +1,79 @@
+{
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "/Users/marcel.a.n.navarro/.local/bin/mcp-atlassian",
+      "args": [],
+      "env": {
+        "JIRA_URL": "https://zimmermannworkboard.atlassian.net/",
+        "JIRA_USERNAME": "marcel.a.n.navarro@accenture.com",
+        "JIRA_API_TOKEN": "ATATT3xFfGF0okwdx3S46dlBtg3laKwHdQr8iC2f2aEusRVnWIxx_1zhxZACxpxo3e9V5vTbCMeWgFlJY_cy1fWkA0VnHVH43zP0d3l0HjLyp4umhpxiE9yPu1cyPt5exjVHE1cWxiA7Uuf_mQoeeJ03VnYZIEAwu1iTBwh6d4MFwdCpd2IrQ6c=BE54D279",
+        "CONFLUENCE_URL": "https://zimmermannworkboard.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "marcel.a.n.navarro@accenture.com",
+        "CONFLUENCE_API_TOKEN": "ATATT3xFfGF0okwdx3S46dlBtg3laKwHdQr8iC2f2aEusRVnWIxx_1zhxZACxpxo3e9V5vTbCMeWgFlJY_cy1fWkA0VnHVH43zP0d3l0HjLyp4umhpxiE9yPu1cyPt5exjVHE1cWxiA7Uuf_mQoeeJ03VnYZIEAwu1iTBwh6d4MFwdCpd2IrQ6c=BE54D279"
+      }
+    },
+    "zephyr": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-zephyr-scale"
+      ],
+      "env": {
+        "ZEPHYR_API_TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0Ijp7ImJhc2VVcmwiOiJodHRwczovL3ppbW1lcm1hbm53b3JrYm9hcmQuYXRsYXNzaWFuLm5ldCIsInVzZXIiOnsiYWNjb3VudElkIjoiNzEyMDIwOmM3MmUwYjYzLWQ5MzEtNDA3Ny1iNTRmLWM4ZmRkNDRhOWJmYiIsInRva2VuSWQiOiIyMGU5ZGE3Ny1kOTgzLTRkNTQtOTk1Mi1iNWRkMmJiNjIzN2EifSwiZW52aXJvbm1lbnRJZCI6IjJiYWFlYjY5LTE1YWMtNDk1NS04ZWI2LWUzNDZhYTE1NjdhYSJ9LCJpc3MiOiJjb20ua2Fub2FoLnRlc3QtbWFuYWdlciIsInN1YiI6IkZPUkdFLTllYWI1NTBkLWUyZjMtNGIwZS1hYmQxLWI1NjBhN2Q1Mjk3YSIsImV4cCI6MTgxODI2NDkyNCwiaWF0IjoxNzg2NzI4OTI0fQ.yYZzZz3VrrbyR0pkxFULaKu3dKKjjs3b2do9kT4-inQ",
+        "JIRA_PROJECT_KEY": "SFCC"
+      }
+    }
+  },
+  "coworkUserFilesPath": "/Users/marcel.a.n.navarro/Claude",
+  "preferences": {
+    "coworkBrowserToolsEnabled": false,
+    "coworkPreferredBrowser": "built_in",
+    "launchPreviewPersistedWorkspaces": [],
+    "launchPreviewSessionScopedSessions": [],
+    "coworkLegacyRootGrantsPruned": true,
+    "coworkScheduledTasksEnabled": false,
+    "orgWorkAcrossAppsDisabled": false,
+    "ccdScheduledTasksEnabled": false,
+    "earlyWindowShowLatched": true,
+    "storeReadCacheLatched": true,
+    "sidebarMode": "epitaxy",
+    "bypassPermissionsGateByAccount": {
+      "cb50a622-efac-45c7-ada5-dcb34c7771df": false
+    },
+    "dockBounceEnabled": true,
+    "coworkWebSearchEnabled": true,
+    "coworkModelAutoFallbackByAccount": {
+      "cb50a622-efac-45c7-ada5-dcb34c7771df": true
+    },
+    "keepAwakeEnabled": true,
+    "remoteToolsDeviceName": "amalcf42xxdn6",
+    "epitaxyPrefs": {
+      "starred-local-code-sessions": [],
+      "starred-cowork-spaces": [],
+      "starred-session-groups": [],
+      "dframe-local-slice": {
+        "pinnedOrder": [],
+        "homeProjectsPinnedOrder": []
+      },
+      "cc-landing-draft-permission-mode": "default",
+      "cc-landing-worktree-enabled": false,
+      "dframe-group-scopes": {},
+      "code-sessions-status-filter": "active",
+      "epitaxy-gh-install-dismissed": true,
+      "epitaxy-auto-mode-consented.cb50a622-efac-45c7-ada5-dcb34c7771df": true,
+      "epitaxy-transcript-links-in-preview": true,
+      "epitaxy-transcript-links-chooser-seen": true,
+      "epitaxy-auto-mode-denial-count.cb50a622-efac-45c7-ada5-dcb34c7771df": 3,
+      "epitaxy-split-suggestion": {
+        "state": {
+          "shownCount": 1,
+          "accepted": true,
+          "dismissCount": 0,
+          "lastDismissedAt": 0
+        },
+        "version": 0
+      },
+      "starred-local-routines": []
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Check VS Code extensions vs .vscode/extensions.json recommendations",
+  "description": "Repo recommends esbenp.prettier-vscode and dbaeumer.vscode-eslint. Diff against installed extensions (dotfiles installed 14 VS Code extensions of unknown identity).",
+  "activeForm": "Checking VS Code extensions",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

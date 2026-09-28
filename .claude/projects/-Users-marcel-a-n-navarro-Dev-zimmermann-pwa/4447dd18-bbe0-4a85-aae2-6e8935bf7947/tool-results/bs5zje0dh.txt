@@ -1,0 +1,558 @@
+# PR #57 — Review-state triage
+
+**PR:** #57 `feat(pdp): SFCC-89 — PDP UI static product information`
+**Author:** JhoanDelaCruz · **Head:** `d526ad1da291bc939c3a690f1beb0115dd9b0c50` (2026-08-21 04:31 +0800)
+**Base:** `develop` · **State:** OPEN · **reviewDecision:** CHANGES_REQUESTED
+**mergeable:** MERGEABLE · **mergeStateStatus:** BLOCKED
+**Triage date:** 2026-08-22 · read-only, nothing was modified or posted.
+
+---
+
+## TL;DR — the three things that actually matter
+
+1. **There are no human review findings at all.** All 8 reviews and all 22 inline threads are
+   `coderabbitai[bot]`. `CHANGES_REQUESTED` is entirely the bot's. Five team reviewers are
+   requested and none have responded.
+2. **The PDP is server-side broken on this branch.** Every SSR request to `/product/:productId`
+   throws `ReferenceError: Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization`.
+   This is why 0 of the PDP E2E scenarios pass. It is not a fixture or sandbox gap.
+3. **Two earlier "green" CI runs on this branch proved nothing** — the `since_last_remote_commit`
+   trap fired and skipped every test job. The current head did run its tests, and they are red.
+
+---
+
+## 1. PR body (verbatim)
+
+```markdown
+## Jira
+https://zimmermannworkboard.atlassian.net/browse/SFCC-89
+
+## Summary
+- Implements static product information panel on the PDP: product name (h1), formatted price, description, model/size-fit copy, and style code — all driven by live Commerce Cloud API via `useProduct`
+- Adds `ZimmPageToolbar` atom and `Breadcrumb` component wired to the live category API (`useCategory`), degrades gracefully to Home-only when the category call fails
+- Full Playwright E2E spec (9 scenarios); 4 run against the dev catalog today, 5 skipped pending sandbox product provisioning or infrastructure
+
+## Changed files
+| File | Tier | Owner | Reviewer required? |
+|------|------|-------|-------------------|
+| `overrides/app/pages/product-detail/index.tsx` | Tier 3 (Squad A) | Squad A | Yes — Squad A review |
+| `overrides/app/pages/product-detail/index.stories.tsx` | Tier 3 (Squad A) | Squad A | Yes — Squad A review |
+| `overrides/app/components/pdpProductInfo/index.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/components/pdpProductInfo/index.stories.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/components/breadcrumb/index.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/components/breadcrumb/index.stories.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/ui-kits/atoms/zimmPageToolbar.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/ui-kits/atoms/zimmPageToolbar.stories.tsx` | Tier 4 | Squad A | No |
+| `overrides/app/routes.tsx` | Tier 2 | Both Squads | Yes — second-dev review |
+| `overrides/app/types/vendor.d.ts` | Tier 4 | Squad A | No |
+| `e2e/features/pdp/SFCC-89_pdp-static-product-information.feature` | Tier 4 | Squad A | No |
+| `e2e/fixtures/products.js` | Tier 4 | Squad A | No |
+| `e2e/support/pages/ProductPage.js` | Tier 4 | Squad A | No |
+| `e2e/tests/zimm/pdp/SFCC-89_pdp-static-product-information.spec.js` | Tier 4 | Squad A | No |
+| `.env.sample` | Tier 4 | Any | No |
+
+## Required actions before merging
+- Tier 2 change in `routes.tsx` — a second developer must review this file specifically
+- Squad A review required for `pages/product-detail/`
+
+## Known limitations / follow-up tickets needed
+
+**c_sizeFit HTML rendering** — `c_sizeFit` is an SFCC custom attribute whose value is HTML (`<ul><li>…</li></ul>`). It currently renders as escaped text (raw tags visible to users). Proper fix requires `dangerouslySetInnerHTML + DOMPurify.sanitize()`, but DOMPurify is not in `package.json` and needs integration team approval (Hard Rule #7). A TODO comment is in the code at `product-detail/index.tsx`. Please raise a follow-up ticket and get integration team approval before the next sprint.
+
+**E2E tests skipped — sandbox product provisioning gap**
+
+Tests 1, 3, 5, and 9 require a product SKU set via `E2E_STANDARD_PRODUCT_SKU`. The dev sandbox does not yet have a suitable product provisioned. These tests are skipped with an explicit `test.skip()` message and will be re-enabled once the SKU is available.
+
+Tests 6, 7, and 8 require click-through navigation infrastructure or BrowserStack multi-browser setup not yet in place for this story.
+
+Until the skips are resolved, BrowserStack story-scoped execution (`npm run test:story -- SFCC-89`) will find fewer tests than the full feature spec. This is a known and accepted state for this PR — the active tests (2, 4) do run and pass against the dev catalog.
+
+## Test checklist
+- [x] `npx tsc --noEmit` passes
+- [x] `npm run lint` passes (pre-existing Contentful stories prettier errors unrelated to this branch)
+- [x] `npm run test` — run locally (Vitest)
+- [x] PDP golden path tested in local dev server (`npm start`): name, price, description, breadcrumb visible
+- [x] Error state: invalid product ID → error message rendered, no crash
+- [x] Keyboard navigation: Tab through breadcrumb links in correct DOM order
+- [x] No console errors on PDP load
+- [x] WCAG 2.2 AA: `<h1>` on product name, breadcrumb `aria-label`, `aria-current="page"` on terminal crumb
+- [x] `routes.tsx` Tier 2 — second-dev review requested
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+```
+
+(The body also carries a CodeRabbit auto-generated "Summary by CodeRabbit" release-notes block.)
+
+### What the body claims vs. what the branch actually contains
+
+The body is **materially stale** — it describes an earlier state of the branch. Reviewers reading
+it will be misled on four points:
+
+| Body claim | Reality at head `d526ad1` |
+|---|---|
+| "`c_sizeFit` … currently renders as escaped text. Proper fix requires `dangerouslySetInnerHTML + DOMPurify.sanitize()`, but DOMPurify is not in `package.json` and needs integration team approval (Hard Rule #7). A TODO comment is in the code." | Already done. `pdpProductInfo/index.tsx:2` imports `isomorphic-dompurify`; lines 43 and 54 use `dangerouslySetInnerHTML` with `DOMPurify.sanitize`. `isomorphic-dompurify@^3.19.0` **has been added to `package.json`** (commit `0068e1a`). The body still tells the reviewer the approval it required has not happened. |
+| Changed-files table lists 15 files, highest tier "Tier 2 (`routes.tsx`)" | 30 files changed. The table **omits every Tier 1 file**: `package.json`, `package-lock.json`. It also omits `overrides/app/theme/components/pdpProductInfo.ts` + `index.ts` (Tier 2), `scripts/generateRegistry.mjs`, 5 × `.claude/registry/*.md`, `overrides/app/types/commerce.ts`, `overrides/app/types/index.ts`, `overrides/app/utils/productData.ts`, `overrides/app/pages/product-detail/index.test.ts`. |
+| `overrides/app/ui-kits/atoms/zimmPageToolbar.tsx` | Actual path is `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx`. |
+| "`pages/product-detail/` … Tier 3 (Squad A) … Squad A review" | `CODEOWNERS:159` routes `overrides/app/pages/product-detail/` to **`@ZimmermannAU/pwa-squad-b`**. Branch protection has `require_code_owner_reviews: true`, so GitHub will demand a **Squad B** approval, not Squad A. (The PR also edits `scripts/generateRegistry.mjs` and `.claude/registry/pages.md` to reclassify product-detail as Squad A — CODEOWNERS, the actual enforcement surface, was not changed to match.) |
+| "9 scenarios; 4 run against the dev catalog today, 5 skipped"; "the active tests (2, 4) do run and pass against the dev catalog" | Spec has **10** `test()` blocks and **3** `test.skip()`. In the head-SHA CI run, **7 scenarios executed and all 7 failed** (retries exhausted on 6 of them), 2 skipped, 1 never reached before the job timed out. **Zero PDP scenarios passed.** |
+
+---
+
+## 2. HUMAN review findings
+
+**There are none.**
+
+- `gh api .../pulls/57/reviews --paginate` returns **8 reviews, every one authored by
+  `coderabbitai[bot]`** (`user.type: Bot`): 4 × `CHANGES_REQUESTED`, 4 × `DISMISSED`.
+- GraphQL `reviewThreads` returns **22 threads, every comment authored by `coderabbitai`**.
+- `latestReviews` = `[{coderabbitai, CHANGES_REQUESTED}]`. So the PR's `CHANGES_REQUESTED`
+  decision is **100% the bot's**.
+
+**Requested reviewers — all outstanding, none have responded:**
+
+- `@ZimmermannAU/PWA QA team`
+- `@ZimmermannAU/PWA Squad B`
+- `@ZimmermannAU/PWA Squad A`
+- `@ZimmermannAU/Tier-2 Approvers`
+- `@ZimmermannAU/Tier-1 Approvers`
+
+**Human issue-level conversation (the entire set):**
+
+- **@JhoanDelaCruz, 2026-08-18T21:29:27Z** — author's own note, not a review finding:
+  > BrowserStack job failing — RETAIL_APP_HOME_SIT secret not configured
+  >
+  > The Cross-browser E2E job is failing because RETAIL_APP_HOME_SIT isn't set as a GitHub Actions secret. BrowserStack needs a live URL to target; without it the SDK has nothing to connect to.
+  >
+  > Not caused by this PR — the Playwright (localhost) job passes. Integration team needs to add the secret pointing to the SIT environment URL.
+
+  **Status: first half confirmed, second half now false.** The BrowserStack diagnosis is correct
+  (job log line: `RETAIL_APP_HOME: ` empty → `error: Config file does not exist at any parent
+  directory of`). But "the Playwright (localhost) job passes" was written on 2026-08-18 and is
+  **not true of the current head** — see §5.
+
+- **@marcelannavarro, 2026-08-21T18:03:41Z** — `@coderabbitai full-review` (a bot trigger, not a
+  finding). This produced the 2026-08-21 review whose 8 findings are the current unresolved set.
+
+- **@github-actions, 2026-08-18T20:39:30Z** — automated Tier 2 Protected Files comment, flagging
+  `overrides/app/theme/components/pdpProductInfo.ts`, `overrides/app/routes.tsx`,
+  `overrides/app/theme/components/index.ts`, with an **unticked** checklist:
+  - [ ] A developer from the other squad has reviewed and approved
+  - [ ] The UI Designer has been notified (`overrides/app/theme/components/` is included — it is)
+  - [ ] Integration / SI Partner notified if `translations/` included (n/a)
+  - [ ] No prop signature or export changes without updating all consumers
+
+  **Note this comment does not mention the Tier 1 files** — that job is separate (see §5).
+
+- **@github-actions, 2026-08-18T20:51:44Z** — MRT preview env link
+  (`https://zimmermann-pr-f89-657f19ac.sfdc-8tgtt5-ecom1.exp-delivery.com`).
+
+> **Implication for takeover:** nobody has actually reviewed this code. Treat the CodeRabbit
+> output as a starting point, not as "the review that has already happened."
+
+---
+
+## 3. Bot findings
+
+CodeRabbit posted 22 inline threads across 4 review passes (2026-08-18 ×1, 2026-08-20 ×2,
+2026-08-21 ×1). **14 resolved, 8 unresolved.**
+
+Crucially: the **last review pass (2026-08-21T18:14) ran against `d526ad1`, which is the current
+head**. So *every* unresolved finding is against code that has not changed since. **None are moot
+due to subsequent edits.** All 8 have `isOutdated: false`.
+
+### 3a. Resolved threads (14) — one line each
+
+Resolved by `JhoanDelaCruz` unless noted. All `isOutdated: true` except where marked.
+
+1. `.claude/registry/hooks.md:18` — Fix the `useContentful` consumer-count logic.
+2. `.claude/registry/pages.md:20` — Correct the `ProductDetail` ownership record (Squad B → Squad A). *(See §4 note — the "fix" now conflicts with CODEOWNERS.)*
+3. `.env.sample:327` — Move the scope comment before `E2E_MODEL_COPY_PRODUCT_SKU`.
+4. `e2e/fixtures/products.js:66` — Key PDP SKU fixtures by `SITE_ID`.
+5. `e2e/tests/zimm/pdp/SFCC-89_….spec.js:13` — Run the missing-description scenario with the supplied live fixture.
+6. `e2e/tests/zimm/pdp/SFCC-89_….spec.js:65` — Use a provisioned product and assert a category breadcrumb link. *(`isOutdated: false`, but genuinely addressed — spec L53-67 now uses `pdpProductWithModelCopy()` and asserts `categoryLink`.)*
+7. `overrides/app/components/breadcrumb/index.tsx:4` — Use supported Salesforce package entrypoints.
+8. `overrides/app/components/pdpProductInfo/index.stories.tsx:35` — Assert heading/price through accessible selectors.
+9. `overrides/app/components/pdpProductInfo/index.tsx:67` — Render `c_sizeFit` as sanitised HTML. *(This is the finding that caused the `isomorphic-dompurify` Tier 1 dependency add.)*
+10. `overrides/app/pages/product-detail/index.stories.tsx:40` — Move `PageShell` props to a top-level type.
+11. `overrides/app/pages/product-detail/index.tsx:45` — Replace the duplicated fixed PDP column width with named layout configuration.
+12. `overrides/app/components/pdpProductInfo/index.tsx:27` — Remove the commented-out margin expression.
+13. `overrides/app/pages/product-detail/index.tsx:79` — Define a shared product response type.
+14. `.claude/registry/components.md:84` — Include the `variant` prop in the generated registry. *(resolved by `coderabbitai[bot]` itself)*
+
+Additionally, the 2026-08-18 review carried **3 nitpicks that were never posted as threads** (they
+live only in the review summary body) and are therefore untracked:
+
+- `e2e/tests/zimm/pdp/SFCC-89_….spec.js:6-8` — spec should be `.spec.ts` per the
+  `SFCC-NNN_short-description.<priority>.spec.ts` convention. *(Still true. The file header
+  documents the deviation: `playwright.config.js` `testMatch: '**/*.spec.js'` only matches `.js`.
+  `playwright.config.*` is Tier 1, so fixing this needs Integration approval.)*
+- `e2e/support/pages/ProductPage.js:46-52` — `getFirstBreadcrumbCategoryLink()` uses `nth(1)`,
+  a DOM-position selector, banned by `testing.md` selector priority. *(Still true — confirmed at
+  head, `ProductPage.js:50`.)*
+- `zimmPageToolbar.stories.tsx` — kebab-case filename. *(Moot: the file was moved to
+  `components/ui-kits/atoms/zimmPageToolbar/index.stories.tsx`, and the repo's own
+  `conventions.md` mandates camelCase for Zimmermann-authored files, so CodeRabbit was wrong here.)*
+
+Also from the CodeRabbit walkthrough, **not a thread**: a pre-merge check failure —
+*Docstring Coverage 66.67%, threshold 80%* (6 functions analysed).
+
+### 3b. Unresolved threads (8) — full text
+
+All from the 2026-08-21T18:14:38Z review, all against current head code, all `isOutdated: false`.
+
+---
+
+**U1 — `e2e/fixtures/products.js` L22-29** · 🎯 Functional Correctness · 🟠 Major · 🏗️ Heavy lift
+
+> **Remove the cross-site standard-product fallback.**
+>
+> For any non-AU `SITE_ID` without `E2E_STANDARD_PRODUCT_SKU`, `standardProduct()` uses
+> `ZIM-TEST-001` instead of a site-confirmed SKU. The suite can then validate the wrong product
+> or fail before it reaches the PDP assertions.
+>
+> Add configured SKUs for each supported site. If a site has no provisioned product, stop with a
+> clear configuration error instead of using a fixed fallback.
+>
+> _As per coding guidelines, E2E fixtures must be keyed by `SITE_ID` and exercise supported
+> storefront regions._
+
+---
+
+**U2 — `e2e/tests/zimm/pdp/SFCC-89_pdp-static-product-information.spec.js` L47-49** · 🎯 Functional Correctness · 🟡 Minor · ⚡ Quick win
+
+> **Make PDP E2E scenarios prove that they use valid product and category fixtures.**
+>
+> For the model-copy scenario, `goToProduct()` can return after showing the product API error, so
+> assert that the product name is visible and the error message is hidden before asserting that
+> model information is absent.
+>
+> For the category-path scenario, use a confirmed category-qualified PDP fixture and assert that
+> the expected category breadcrumb link is visible; `standardProduct()` alone does not guarantee
+> either condition.
+
+---
+
+**U3 — `overrides/app/pages/product-detail/index.tsx` L17-90** · 🎯 Functional Correctness · 🟡 Minor · ⚡ Quick win
+
+> **Set PDP document metadata with React Helmet.**
+>
+> When `product?.name` is available, set a product-specific document title. Use a stable fallback
+> during loading and error states. Add `react-helmet` as a direct runtime dependency before
+> importing it; it is not declared in `package.json`.
+>
+> _Source: Coding guidelines_
+
+---
+
+**U4 — `overrides/app/pages/product-detail/index.tsx` L35-40** · 🎯 Functional Correctness · 🟡 Minor · ⚡ Quick win
+
+> **Add the leaf category to the breadcrumb path.**
+>
+> `parentCategoryTree` contains ancestors only. Append `category` so the breadcrumb includes the
+> current product category before the product name.
+>
+> ```diff
+> -      : (category.parentCategoryTree ?? []).filter(
+> +      : [...(category.parentCategoryTree ?? []), category].filter(
+>            (p): p is BreadcrumbCategory => Boolean(p.id) && Boolean(p.name),
+>          );
+> ```
+
+---
+
+**U5 — `overrides/app/utils/productData.ts` L7-8** · 🎯 Functional Correctness · 🟡 Minor · ⚡ Quick win
+
+> **Accept list-item attributes when extracting model copy.**
+>
+> The expression only matches `<li>` with no attributes. It returns `undefined` for valid markup
+> such as `<li class="fit-copy">Model is …</li>`, so the PDP hides available model information.
+
+---
+
+**U6 — `package.json` L117-118** · 📐 Maintainability & Code Quality · 🟠 Major · ⚡ Quick win
+
+> **Obtain Integration / SI Partner approval before merging this dependency change.** If approved,
+> apply the change with `npm install` and keep `package-lock.json` in sync.
+>
+> _Source: Coding guidelines_
+
+---
+
+**U7 — `scripts/generateRegistry.mjs` L396-404** · 🎯 Functional Correctness · 🟡 Minor · ⚡ Quick win
+
+> **Broaden the accepted TypeScript prop-union syntax.**
+>
+> `parseBody` splits single-line members only on `;`, so comma-separated members are skipped.
+> `unionRe` also requires `};`, so valid aliases that end with `}` are skipped, including
+> `ZimmPageToolbarProps`. Support both separators and an optional terminating semicolon, or
+> document the restricted grammar.
+
+---
+
+**U8 — `scripts/generateRegistry.mjs` L495-502** · 🗄️ Data Integrity & Integration · 🟠 Major · ⚡ Quick win
+
+> **Version the consumer-count caches with the matcher.**
+>
+> `countConsumers` now uses a new matcher, but `cachedConsumers` still reuses entries when only the
+> source hash matches (Line 642). `baseScan` also reuses cached base counts while
+> `BASE_CACHE_SCHEMA` remains unchanged (Lines 88-93). A normal run without `--fresh` can therefore
+> retain counts produced by the old grep logic and silently ignore this change. Add a
+> consumer-count schema to override entries and bump `BASE_CACHE_SCHEMA`, then regenerate the
+> registries.
+
+---
+
+## 4. Assessment of each unresolved finding
+
+Verified by reading each file at `d526ad1`.
+
+| # | File:line | Verdict | Reasoning |
+|---|---|---|---|
+| **U1** | `e2e/fixtures/products.js:29` | **STILL VALID** | Confirmed at head: `sku: process.env.E2E_STANDARD_PRODUCT_SKU \|\| STANDARD_PRODUCT_SKU_BY_SITE[activeSiteKey()] \|\| 'ZIM-TEST-001'`, and `STANDARD_PRODUCT_SKU_BY_SITE` has only an `au` key. Every non-AU site silently falls back to a placeholder SKU. Note the author already applied this exact pattern correctly to the *other* three fixtures (`MODEL_COPY_SKU_BY_SITE`, `INVALID_SKU_BY_SITE`, `NO_DESCRIPTION_SKU_BY_SITE`, all with comments) when resolving thread #4 — `standardProduct()` was just missed. Cheap fix, and consistent with `testing.md`'s multi-region-fixtures-from-day-one rule. |
+| **U2** | spec `:47-49`, `:53-67` | **PARTIALLY MOOT / LOW PRIORITY** | The category-path half is already done — spec L58 uses `pdpProductWithModelCopy()` and L64-65 asserts the category link (that was thread #6, resolved). The model-copy half is still valid in principle: `goToProduct()` (`ProductPage.js:43`) resolves on `productName.or(productErrorMessage)`, so a test asserting `modelInfo` is *absent* passes trivially on an error page. Real but minor — and completely academic until the SSR failure below is fixed, since right now *every* PDP request is an error page. |
+| **U3** | `product-detail/index.tsx` | **VALID GAP, BUT DISPUTE THE PROPOSED FIX** | Confirmed: no `<Helmet>`, no `<Seo>`, no document title anywhere in the file. SEO matters here (AGENTS.md: "must be … SEO-friendly"). **But CodeRabbit's remedy conflicts with repo rules**: it asks to add `react-helmet` as a *new direct dependency*, which is Hard Rule #7 + Tier 1 `package.json` — the same problem as U6. `react-helmet` exists in `package-lock.json` only transitively under `@salesforce/*`. The repo-correct route is the `Seo` component (`CODEOWNERS:90`, listed Tier 2 in `protectedFiles.md`) — though note `overrides/app/components/seo/` **does not exist yet**; only the base SFCC one does. Recommend: scope PDP SEO/document-title as a follow-up ticket rather than bolting a new dependency onto this PR. |
+| **U4** | `product-detail/index.tsx:35-40` | **DISPUTED — already rejected once, do not re-apply** | This is a **CodeRabbit loop**. History: (a) the original code appended the leaf; (b) commit `47ad72b` removed it — *"parentCategoryTree already includes the leaf category, so appending it separately caused e.g. Home/New/New/Product"*; (c) CodeRabbit re-suggested it, the author applied it; (d) commit `0ec26f9` reverted it again — *"Revert breadcrumb leaf-append introduced by CodeRabbit finding 9 — parentCategoryTree already includes the leaf (confirmed in commit 47ad72b); appending category again caused Home/New/New/Product duplication"*; (e) CodeRabbit has now raised it a **third** time. Per AGENTS.md's "Responding to a CodeRabbit PR review" rule this needs an **in-thread reply citing commits `47ad72b`/`0ec26f9`**, not a code change — silence is what keeps it recurring. |
+| **U5** | `productData.ts:7` | **STILL VALID — genuine bug** | Confirmed verbatim at head: `html.match(/<li>\s*(Model is[^<]*?)\s*<\/li>/i)`. Any `<li>` carrying an attribute (class, style, data-*) fails to match and model copy is silently dropped. SFCC rich-text/CMS-authored HTML very commonly carries attributes. Low-risk, high-value fix; `overrides/app/pages/product-detail/index.test.ts` already covers `extractModelLine` (5 tests) so a regression test is cheap to add. Also note the test file lives next to the *page*, not next to `utils/productData.ts` — CodeRabbit flagged that separately as a nitpick (co-location) and it's worth folding in. |
+| **U6** | `package.json:117-118` | **STILL VALID — this is the hard governance blocker** | Confirmed: the diff adds `"isomorphic-dompurify": "^3.19.0"`. `package.json` (root) is **Tier 1** (`frozenFiles.md` → Runtime & Integration Config, owner Integration/SI Partner) and AGENTS.md **Hard Rule #7** forbids adding packages without integration-team approval. `CODEOWNERS:53` routes `package.json` to `@ZimmermannAU/tier-1-approvers`, and branch protection requires code-owner review — so this is enforced server-side, not just advisory. **The PR body still claims this approval has not been obtained.** There is no evidence anywhere in the PR that it has. Also unassessed: whether an already-installed dependency could satisfy the need (AGENTS.md > Performance > Dependencies requires that comparison before installing). |
+| **U7** | `generateRegistry.mjs:396-404` | **STILL VALID — self-consistent with U8** | Confirmed at head: `parseBody` normalises with `body.split(';')` only (L401) and `lineRe` is `/^\s{2,}(\w+)(\??):\s*([^\n;,]+)[;,]?\s*$/gm`. Comma-separated single-line members are not split. Low blast radius (dev tooling only, not shipped code) but it directly undermines the registry accuracy this PR is trying to improve. |
+| **U8** | `generateRegistry.mjs:495-502` | **STILL VALID — highest-value of the two registry findings** | Confirmed: `countConsumers` (L495-506) uses the new specifier-anchored regex, but `BASE_CACHE_SCHEMA` is still `2` (L86) and `cachedConsumers` (L638) keys off the source hash only. So a normal `generateRegistry` run reuses stale counts computed by the old matcher and the fix appears to work while doing nothing. This is a "silently wrong output" class of bug — exactly the thing `testing.md` says is worth guarding. Fix is mechanical: bump the schema constant and regenerate. |
+
+**Additional issue neither the bot nor the body caught — ownership contradiction.**
+Resolved thread #2 had the author reclassify `ProductDetail` to Squad A in `.claude/registry/pages.md`
+and in `scripts/generateRegistry.mjs`. But `CODEOWNERS:159` still says
+`overrides/app/pages/product-detail/  @ZimmermannAU/pwa-squad-b`. CODEOWNERS is the enforcement
+surface; the registry is documentation. Right now the PR's docs and the merge gate disagree about
+who owns the PDP. Either CODEOWNERS is wrong and needs a (Tier 1) change, or the registry change
+in this PR is wrong. This should be settled before merge, not after.
+
+---
+
+## 5. CI reality — what ran, what skipped, what failed
+
+### 5a. Head SHA `d526ad1` — the current picture
+
+10 check-runs, workflow run `32414547199` (QA), `run_attempt: 2`.
+
+| Check | `gh pr checks` says | **Actual API conclusion** | Did its test step really execute? |
+|---|---|---|---|
+| Unit tests (Vitest) | pass | `success` | **YES — real.** `Test Files 4 passed (4) / Tests 146 passed (146)`, including `overrides/app/pages/product-detail/index.test.ts (5 tests)`. |
+| Storybook interaction & a11y | pass | `success` | **YES — real.** `Test Suites: 9 passed, 9 total / Tests: 27 passed, 27 total`. Build log confirms the new `breadcrumb`, `pdpProductInfo`, `zimmPageToolbar` and `product-detail` story bundles were compiled and included. |
+| Playwright E2E (localhost) | **fail** | **`cancelled`** | **RAN AND WENT RED, then hit the 15-min job timeout.** See breakdown below. |
+| Cross-browser E2E (BrowserStack) | fail | `failure` | Ran, failed at 1m32s. `RETAIL_APP_HOME:` resolved **empty** → `error: Config file does not exist at any parent directory of`. Infra gap, not this PR (matches the author's comment). |
+| Deploy Preview | pass | `success` | Deployed. |
+| Detect relevant changes | pass | `success` | Computed `e2e=true`, `vitest=true`, `e2e_scope=full`, `jira_keys=SFCC-89`. |
+| 🔴 Branch Target Check | pass | `success` | — |
+| 🔴 Tier 1 — Frozen Files Check | pass | `success` | **Misleading — see 5c.** |
+| 🟡 Cross-Squad Boundary Check | pass | `success` | — |
+| 🟡 Tier 2 — Protected Files Warning | pass | `success` | Informational; posted the unticked checklist comment. |
+
+**Nothing was skipped on the current head.** The `since_last_remote_commit` trap did *not* fire
+here: the last push touched `overrides/app/components/**` and `overrides/app/theme/**`, which are
+inside both the `e2e:` (`overrides/**`) and `vitest:` (`overrides/**`) allow-lists in `qa.yml`.
+
+### 5b. The Playwright run — 0 of 7 PDP scenarios passed
+
+`Running 24 tests using 1 worker` (12 specs × chromium + mobile-chrome). Chromium results before
+the job was killed at the 15-minute ceiling:
+
+| # | Scenario (spec line) | Result |
+|---|---|---|
+| 1-2 | `SMOKE-homepage-load.spec.js` (pre-existing, not this PR) | ✅ passed |
+| 3-5 | `:16` Mandatory product fields are displayed on page load | ❌ **failed** + 2 retries (35.0s each) |
+| 6-8 | `:31` Model copy is displayed when the SFCC attribute is populated | ❌ **failed** + 2 retries |
+| 9-11 | `:42` Model copy is not shown when the SFCC attribute is not populated | ❌ **failed** + 2 retries |
+| 12-14 | `:53` Breadcrumb reflects the product category path | ❌ **failed** + 2 retries |
+| 15-17 | `:69` Clicking a breadcrumb node navigates to the category page | ❌ **failed** + 2 retries (1.1m each) |
+| 18 | `:88` Loading state is shown while product data is being fetched | ⊘ skipped (`test.skip` — network interception) |
+| 19-21 | `:99` Error message is shown when the product cannot be loaded | ❌ **failed** + 2 retries |
+| 22 | `:114` Breadcrumb degrades gracefully when the category API fails | ⊘ skipped (`test.skip`) |
+| 23 | `:124` Product name appears as the last breadcrumb item | ❌ **failed** (1st attempt) |
+| — | `:140` (final scenario) | never reached |
+| — | **entire `mobile-chrome` project** | **never ran at all** |
+
+Then: `##[error]The operation was canceled.` and
+`##[warning]No files were found with the provided path: playwright-report/. No artifacts will be uploaded.`
+— so there isn't even an HTML report to inspect.
+
+`run_attempt: 1` behaved identically (cancelled at 15m16s), so this is reproducible, not a flake.
+
+### 5c. Root cause — the PDP is broken server-side (the real blocker)
+
+The `dev-server.log` artifact from both attempts is decisive. **Every** SSR request to
+`/product/*` throws:
+
+```
+pwa-kit-runtime.httprequest INFO (…) GET /product/8637DS241-3
+pwa-kit-runtime.catchAndLog ERROR [object Promise]:
+{"stack":"ReferenceError: Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization
+    at Module.default (…/build/main-server.js:71360:42)
+    at …/build/main-server.js:130921:68
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)"}
+```
+
+19 occurrences in attempt 1; the same in attempt 2. It fires for **valid and invalid SKUs alike**
+(`/product/8637DS241`, `/product/8637DS241-3`, `/product/INVALID-SKU-00000`) — which is why even
+the *error-state* test fails. Homepage requests are unaffected (the 2 smoke tests pass).
+
+Read: **this is not a sandbox-provisioning gap, not a fixture problem, and not a missing CI secret.**
+The PDP route 500s on the server on every request. `ReferenceError: Cannot access
+'__WEBPACK_DEFAULT_EXPORT__' before initialization` inside a `loadable()`-split chunk is the
+classic signature of a **circular import / TDZ cycle** in the PDP module graph
+(`conventions.md` explicitly bans circular imports).
+
+I did not identify the exact cycle — that needs proper root-causing, not guessing. Two things worth
+looking at first, offered as hypotheses only:
+- Both `pages/product-detail/index.tsx:5` and `components/ui-kits/atoms/zimmPageToolbar/index.tsx:3`
+  import from the `@salesforce/retail-react-app/app/components/shared/ui` **barrel**, while
+  `components/breadcrumb/index.tsx:3` imports from `@chakra-ui/react` directly. That barrel is a
+  known hazard in this repo.
+- `components/pdpProductInfo/index.tsx:4` imports runtime constants from
+  `'app/theme/components/pdpProductInfo'` via the `app/` path alias, and that same module is pulled
+  in by `theme/components/index.ts` → `theme/index.ts` → `_app-config`.
+
+The `Deploy Preview` job succeeded, so the MRT preview URL in the PR is worth a manual check to
+confirm the same failure outside the CI runner.
+
+### 5d. The `since_last_remote_commit` trap — it fired earlier on this branch
+
+`qa.yml`'s `detect-changes` uses `since_last_remote_commit: true`, so it diffs **only the most
+recent push**, not the whole PR. Two runs on this branch are recorded as **green while executing
+zero tests**:
+
+| SHA | Files in that push | Vitest | Storybook | Playwright | BrowserStack |
+|---|---|---|---|---|---|
+| `cf17c3d` (2026-08-20 08:39) | `.claude/registry/components.md`, `scripts/generateRegistry.mjs` | **skipped** | **skipped** | **skipped** | **skipped** |
+| `d904c63` (2026-08-20 08:46) | `.docs/integration/07-adyen.md` | **skipped** | **skipped** | **skipped** | **skipped** |
+
+`Unit tests (Vitest)` and `Storybook interaction & a11y tests` are **required status checks** on
+`develop` — and a *skipped* required check satisfies the gate. Anyone glancing at branch history
+and seeing two green ticks on 2026-08-20 would conclude the branch was healthy. It was not.
+
+Note the guard's blast radius is wider than the test suites: `tier1-guard`'s own path list contains
+`package.json`, but its trigger condition only prints a warning, so it can never fail either.
+
+### 5e. Verdict on test evidence for the current head
+
+- **Unit + Storybook: genuine.** 146 Vitest assertions and 27 Storybook interaction/a11y tests
+  really executed and really passed on `d526ad1`. That is real evidence — for the component layer.
+- **E2E: genuinely negative.** The suite ran and every PDP scenario failed. This is not "no
+  evidence"; it is **evidence the feature does not work**.
+- **Mobile viewport: no evidence at all.** `mobile-chrome` never executed.
+- **Cross-browser: no evidence.** BrowserStack cannot run until `RETAIL_APP_HOME_SIT` exists.
+- **Lint / `tsc --noEmit` / Prettier: no CI evidence.** No workflow runs them; the PR body's
+  `[x] npx tsc --noEmit passes` / `[x] npm run lint passes` are self-reported only.
+
+**So: this PR has solid unit/story evidence for its components and red end-to-end evidence for the
+feature as a whole.** The component tests pass because they render `PdpProductInfo` in isolation
+with props; the page only breaks once the real module graph is assembled server-side.
+
+### 5f. Which checks actually gate the merge
+
+`develop` branch protection, `required_status_checks.contexts`:
+
+```
+Storybook interaction & a11y tests
+Unit tests (Vitest)
+🔴 Branch Target Check
+```
+
+`strict: true` (must be up to date with base) · `required_approving_review_count: 1` ·
+`require_code_owner_reviews: true` · `dismiss_stale_reviews: true` ·
+`require_last_push_approval: false`.
+
+**Neither Playwright E2E nor BrowserStack E2E is a required check.** The entire E2E suite for this
+story is red and it does **not** block the merge button. The only thing standing between this PR
+and `develop` today is the missing code-owner approval.
+
+---
+
+## 6. Merge state
+
+- `mergeable`: **MERGEABLE** — **no conflicts**.
+- `mergeStateStatus`: **BLOCKED** — 0 approving reviews; `require_code_owner_reviews: true` with
+  code owners spanning `@ZimmermannAU/tier-1-approvers` (`package.json`),
+  `@ZimmermannAU/tier-2-approvers` (`overrides/app/theme/components/`, `overrides/app/routes.tsx`),
+  `@ZimmermannAU/pwa-squad-a` + `@ZimmermannAU/pwa-squad-b` (`routes.tsx`), and
+  `@ZimmermannAU/pwa-squad-b` (`overrides/app/pages/product-detail/`).
+- **Behind `develop`: 0 commits.** (`git log --oneline origin/feature/SFCC-89…..origin/develop` → 0.)
+  `develop` was merged in at `d904c63` on 2026-08-20. Ahead of `develop` by **24 commits**.
+- `isDraft`: false.
+- Scale: **30 files, +1702 / −99**.
+
+---
+
+## 7. Prioritised list — what must be addressed before merge
+
+### P0 — blocks merge, must be fixed
+
+1. **Fix the PDP SSR crash.** `ReferenceError: Cannot access '__WEBPACK_DEFAULT_EXPORT__' before
+   initialization` on every `/product/:productId` request (§5c). The feature does not work
+   server-side. Everything else on this list is cosmetic next to this. Root-cause the import cycle
+   (start with the `shared/ui` barrel and the `app/theme/components/pdpProductInfo` runtime-constant
+   import), then re-run the Playwright suite and confirm the PDP scenarios actually go green.
+
+2. **Resolve the Tier 1 `package.json` change — U6.** `isomorphic-dompurify@^3.19.0` was added
+   without the Integration/SI Partner approval that AGENTS.md Hard Rule #7 and `frozenFiles.md`
+   require, and which the PR body itself still says is outstanding. Either secure the approval
+   (`@ZimmermannAU/tier-1-approvers` review is required by CODEOWNERS regardless) with a note on
+   whether an existing dependency could have done the job, or back the dependency out. This cannot
+   merge without it.
+
+3. **Get a human review.** Nobody has reviewed this. Five team reviewers are requested and none
+   have responded. At minimum: a Squad B code owner (per CODEOWNERS, for `pages/product-detail/`),
+   a Tier 2 approver (theme + `routes.tsx`), and a Tier 1 approver (`package.json`). The Tier 2
+   guard comment's four checkboxes are all still unticked — including "UI Designer has been
+   notified", which applies because `overrides/app/theme/components/` is in the diff.
+
+### P1 — should be fixed in this PR
+
+4. **Rewrite the PR body.** It is stale in four material ways (§1) — most seriously it tells
+   reviewers the DOMPurify Tier 1 change *hasn't* happened when it has, and its changed-files table
+   omits every Tier 1 file. A reviewer relying on that table would approve a Tier 1 change without
+   knowing it.
+
+5. **U5 — `productData.ts:7` regex.** Real bug, one-line fix, and `index.test.ts` already exists to
+   cover it. Also move that test to `overrides/app/utils/productData.test.ts` per the co-location
+   convention (CodeRabbit nitpick, uncontested).
+
+6. **U8 — `generateRegistry.mjs` cache versioning.** The consumer-count fix in this PR silently
+   does nothing on a normal run because `BASE_CACHE_SCHEMA` wasn't bumped. Shipping a fix that
+   doesn't take effect is worse than not shipping it.
+
+7. **U1 — `standardProduct()` cross-site fallback.** The author already applied exactly this
+   pattern to the other three fixtures; this one was missed. Small, consistent, and `testing.md`
+   is explicit that multi-region fixtures must not be retrofitted.
+
+8. **Settle the Squad A / Squad B ownership contradiction** between the registry (changed to Squad A
+   in this PR) and `CODEOWNERS:159` (still Squad B). Pick one; don't merge with them disagreeing.
+
+### P2 — reply in-thread, do not change code
+
+9. **U4 — breadcrumb leaf category. Reply, do not apply.** This has now been raised three times and
+   reverted twice (`47ad72b`, `0ec26f9`) because appending the leaf produces `Home/New/New/Product`.
+   AGENTS.md requires an in-thread reply citing those commits so CodeRabbit stops re-flagging it.
+   Applying it would re-introduce a known regression.
+
+10. **U3 — PDP document title / SEO. Reply, then spin off a ticket.** The gap is real and SEO is a
+    stated project priority, but CodeRabbit's fix (add `react-helmet` as a new direct dependency)
+    walks straight into the same Hard Rule #7 wall as U6. The repo-correct path is a `Seo`
+    component, which doesn't exist in `overrides/` yet. Out of scope for a "static product
+    information" story.
+
+11. **U2 — E2E error-page guards.** Valid but minor, and unverifiable until P0 is fixed. Fold in
+    when re-running the suite.
+
+12. **U7 — registry prop-union grammar.** Dev tooling only. Fix or document the restricted grammar.
+
+13. **Untracked nitpicks:** `ProductPage.js:50` `nth(1)` positional selector (violates `testing.md`
+    selector priority — worth fixing); `.spec.js` → `.spec.ts` naming (**blocked**: needs a Tier 1
+    `playwright.config.js` change, so defer with a note); CodeRabbit docstring coverage 66.67% vs
+    80% threshold.
+
+### Process note for whoever picks this up
+
+Do not read the two green CI runs of 2026-08-20 (`cf17c3d`, `d904c63`) as evidence of anything —
+both skipped every test job (§5d). And be aware that the E2E suites are **not required checks**, so
+this PR can reach a mergeable state with its entire end-to-end suite red. The unit and Storybook
+passes are real, but they exercise components in isolation and by construction cannot catch the SSR
+failure that is the actual blocker.

@@ -1,0 +1,480 @@
+--- turn 1 ---
+hey claude - ready to work?
+
+--- turn 2 ---
+ensure all active local repos are up-to-date with the remote
+
+--- turn 3 ---
+leave those as is
+
+--- turn 4 ---
+now, let's work on SFCC-122 - access the codebase, confluence, JIRA, and the specific JIRA ticket to gather information about this spike task - report back
+
+--- turn 5 ---
+let's first reach out to mani - create a message to mani asking him about this Spike task, if we need to get on a session/call or if he has existing notes that i could reference to create the documentation for the SFCC MRT API Capabilities
+
+--- turn 6 ---
+while awaiting for mani's response, execute "Draft the SFCC-122 deliverable — the MRT API inventory doc, in the board's Objective/Background/Tasks/DoD spike house style, ready for a Confluence page. (Won't push anywhere without your review.)"
+
+perform a recursive execution - create,  check, improve, repeat until DoD is achieved
+
+--- turn 7 ---
+perform an in-depth confirmatory validation pass - go again: check current -> validate against codebase, confluence, jira -> based on findings, fix or pass
+
+--- turn 8 ---
+perform another in-depth confirmatory validation pass - go again: check current -> validate against codebase, confluence, jira -> based on findings, fix or pass
+
+--- turn 9 ---
+do a check into confluence to look for where this document will go when we publish it
+
+--- turn 10 ---
+publish this as a DRAFT only
+
+--- turn 11 ---
+before we proceed any further - help me learn and understand this spike task - let's work through this in phases, each phase more granular than the previous, starting with an ELI5 phase 1
+
+--- turn 12 ---
+go phase 2
+
+--- turn 13 ---
+go phase 3
+
+--- turn 14 ---
+what is "actual document"
+
+--- turn 15 ---
+let's revisit what we have been able to build for "SFCC-122 - Spike: Document SFCC MRT API Capabilities"
+
+let's perform:
+
+* an audit of what we have been able to build so far against the requirements at https://zimmermannworkboard.atlassian.net/browse/SFCC-122 and the knowledge we have in the codebase, confluence, and jira
+* an audit of what we have against official SFCC MRT docs at /Users/marcel.a.n.navarro/Dev/SFCC_ManagedRuntimeAdministration.md and  /Users/marcel.a.n.navarro/Dev/SFCC_ManagedRuntimeOverview.md
+
+
+report back with findings
+
+--- turn 16 ---
+execute - fix B1-B4
+
+--- turn 17 ---
+given the current status of the TSD, here's what Mani said about this when i reached out to him for direction:
+"Context
+You reached out regarding SFCC-122 – "Document SFCC MRT API Capabilities", a spike focused on documenting what Salesforce Commerce Cloud Managed Runtime currently provides for:
+
+* Product data
+* Category data
+* Pricing data
+
+The goal is to enable the squad to build and test in lower environments while the MuleSoft integration is not yet available.
+Information Requested
+You asked Mani for any existing documentation or knowledge regarding:
+
+1. Current Business Manager (BM) configuration and the `bkzk-002` sandbox.
+2. What product, category, and pricing data are currently loaded in lower environments.
+3. How that data was loaded.
+4. The planned approach for loading catalog and pricebook data before MuleSoft is available (e.g., sample imports, manual BM setup, OCAPI Data API, etc.).
+
+You also offered to discuss it live if documentation was unavailable, but preferred existing references if they existed.
+Mani's Response
+Mani provided two key pointers:
+
+* Most of the information is already documented in Confluence.
+* You should check with Victor for additional details.
+
+Outcome / Next Actions
+
+* Review the existing Confluence documentation identified by Mani.
+* Follow up with Victor to gather any missing details regarding sandbox setup, catalog data, pricing data, and data loading strategy.
+* Use the collected information as the basis for producing the SFCC MRT capability documentation required by SFCC-122.
+
+Conversation Conclusion
+You acknowledged Mani's guidance and indicated that you would follow up accordingly."
+
+is Mani's claim verified that: "Most of the information is already documented in Confluence."
+
+and with regards to "You should check with Victor for additional details." what do i need to reach out to Victor for?
+
+--- turn 18 ---
+what is this: "Want me to (a) fold the Confluence findings into the deliverable — close the catalogue-ID caveat, correct the OCAPI/loading-mechanism section, and rewrite §6 so the open questions are just the genuine Victor items — and/or (b) draft the message to Victor from the six points above?"
+
+--- turn 19 ---
+execute (a) "Fold the Confluence findings into the deliverable"
+
+--- turn 20 ---
+while we still have open items awaiting resolution from victor (the 6 items) - we are eventually to restructure the TSD into the centralized TSD template at https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/352419841/Technical+Solution+Document+TSD+Template / /Users/marcel.a.n.navarro/Downloads/Zimmermann-PWA/TSD-Templates/TSD-Template.md
+
+are we ready to re-structure/re-template now? or await resolution on the 6-items from victor first?
+
+--- turn 21 ---
+execute the restructure:
+target - edit the current confluence page for SFCC-122, following the template at https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/352419841/Technical+Solution+Document+TSD+Template / /Users/marcel.a.n.navarro/Downloads/Zimmermann-PWA/TSD-Templates/TSD-Template.md
+
+--- turn 22 ---
+the decision record is wrong:
+
+first, i reached out to mani 22
+
+then i was directed by mani to refer to docs 22-23
+
+then after my draft i am awaiting for victor's review and resolution to the open items 23
+
+--- turn 23 ---
+i'm more known as angelo, adjust that
+
+--- turn 24 ---
+prior to the re-structure/re-template, did we already have "options" - where was this sourced from? what documentation backs the suggested decision?
+
+--- turn 25 ---
+add explicit source citations into §3 and §4
+
+--- turn 26 ---
+how do i test this over on my end?
+
+--- turn 27 ---
+app run - loaded - homepage -> menu category -> pdp
+
+here are the filtered API results:
+configurations?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.3 kB	280 ms	
+59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU	404	fetch	index.esm.js:1	1.2 kB	448 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	889 B	282 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	217 ms	
+clothing?levels=2&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.2 kB	590 ms	
+59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU	404	fetch	index.esm.js:1	1.2 kB	213 ms	
+product-search?siteId=ZimmermannAU&refine=cgid%3Dc…rue&allVariationProperties=true&limit=25&offset=0	200	fetch	index.esm.js:1	3.3 kB	551 ms	
+clothing?locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.2 kB	223 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	352 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	889 B	196 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	338 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	890 B	203 ms	
+4673TS251?expand=availability%2Cpromotions%2Coptio…k=true&currency=AUD&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	3.5 kB	272 ms	
+new-arrivals?levels=1&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	230 ms
+
+--- turn 28 ---
+help me do these verifications, where and what do i look for:
+
+1. Click the `product-search` request → Response and check the `total` field — that turns "3.3 kB implies hits" into an exact count.
+2. Click the `4673TS251` request → Response, find `prices` / `price` — confirm a real AUD value came back (i.e. the pricebook is loaded and assigned, not just the product).
+3. The repeated `59b4364e-...` 404 — click it to see the full path. My guess is an Einstein recommender or a not-yet-created guest resource (benign), but worth confirming it's not something you rely on. If it is Einstein, that matches the TSD's note that recs fall back to a static group.
+
+--- turn 29 ---
+1: product-search:
+
+1. {limit: 1, hits: [{currency: "AUD", hitType: "master", image: {alt: "Illuminate Fitted Blouse",…},…}],…}
+   1. hits: [{currency: "AUD", hitType: "master", image: {alt: "Illuminate Fitted Blouse",…},…}]
+      1. 0: {currency: "AUD", hitType: "master", image: {alt: "Illuminate Fitted Blouse",…},…}
+         1. currency: "AUD"
+         2. hitType: "master"
+         3. image: {alt: "Illuminate Fitted Blouse",…}
+            1. alt: "Illuminate Fitted Blouse"
+            2. disBaseLink: "https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BKZK_002/on/demandware.static/-/Sites-zimmermann-catalog/default/dwddc2315d/images/9.4673ts251.gvscp.guava-seascape.jpg"
+            3. link: "https://zimmermann-dev.sfdc-8tgtt5-ecom1.exp-delivery.com/on/demandware.static/-/Sites-zimmermann-catalog/default/dwddc2315d/images/9.4673ts251.gvscp.guava-seascape.jpg"
+            4. title: "Illuminate Fitted Blouse"
+         4. imageGroups: [{images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…}],…},…]
+            1. 0: {images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…}],…}
+            2. 1: {images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…},…],…}
+            3. 2: {images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…},…],…}
+            4. 3: {images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…},…],…}
+            5. 4: {images: [{alt: "Illuminate Fitted Blouse",…}], viewType: "swatch"}
+            6. 5: {images: [{alt: "Illuminate Fitted Blouse",…}],…}
+         5. price: 625
+         6. pricePerUnit: 625
+         7. priceRanges: [{maxPrice: 625, minPrice: 625, pricebook: "au-aud-list-prices"}]
+            1. 0: {maxPrice: 625, minPrice: 625, pricebook: "au-aud-list-prices"}
+         8. productId: "4673TS251"
+         9. productName: "Illuminate Fitted Blouse"
+         10. productType: {master: true}
+            1. master: true
+         11. representedProduct: {id: "4673TS251GVSCP0P", c_ap21Category: "Tops",…}
+            1. c_ap21Category: "Tops"
+            2. c_careInstructions: "Main: 52% Linen, 48% Silk, Slip: 86% Recycled Polyester, 14% ElastaneDry clean only code F (hydrocarbon only);\nRemove any detachable trims prior to dry cleaning;\nCover to protect trim;\nCool iron with protective cloth;\nLight steam only;\nDo not spot clean\n\nGentle cold hand wash separately with mild detergent\nRemove any detachable trims prior to cleaning\nCover to protect trim;\nDo not soak, rub or wring\nDo not bleach\nDo not tumble dry\nDry flat in shade\nCool iron with protective cloth\nDo not spot clean\nDry cleanable code P\n\n Always check the label or care card for specific care instructions."
+            3. c_color: "GVSCP"
+            4. c_colourId: "559571"
+            5. c_countryOfOrigin: "China"
+            6. c_fabricComposition: "52% Linen  48% Silk"
+            7. c_hsCode: "AD=62069010,AM=6206901000,AR=62069000290U,AU=6206900056,AZ=6206901000,BB=62069010000,BL=6206901090,BM=6206900,BN=62069000,BO=6206900000,BR=62069000,BS=62069000,BY=6206901000,CA=6206900000,CH=62069000,CL=62069000,CN=6206900099,CO=6206900000,CR=620690000000,DO=62069000,EC=6206900000,EG=6206900000,GB=6206901090,GE=62069010000,GP=6206901090,GT=6206900000,HK=62069020,HN=620690000000,IL=62069000008,IN=62069000,JO=62069000000,KG=6206901000,KH=62069000,KR=6206900000,KY=62069000,KZ=6206901000,LB=62069000,MA=6206900000,ME=6206901000,MO=62069000,MV=6206900000,MX=6206909900,MY=6206900000,NC=62069000,NO=62069000,NZ=6206900200A,PA=620690100000,PH=62069000,PK=62069090,PR=6206900040,PY=62069000,QA=62069000,RU=6206901000,SA=620690009999,TC=62069000,TH=62069000001,TR=620690100000,TT=62069010,TW=62069000001,UA=6206901000,US=6206900040,UY=6206900000,UZ=6206901000,VN=62069000,ZA=6206906,FR=6206901090,IT=6206901090,ES=6206901090,BE=6206901090,DE=6206901090,CY=6206901090,DK=6206901090,FI=6206901090,LT=6206901090,LV=6206901090,NL=6206901090,PT=6206901090,RO=6206901090,SE=6206901090,SK=6206901090,AT=6206901090,BG=6206901090,CZ=6206901090,EE=6206901090,GR=6206901090,HR=6206901090,IE=6206901090,LU=6206901090,MC=6206901090,PL=6206901090,SG=62069000,ID=62069000,JP=620690210,AE=62069000,KW=62069000,BH=62069000,TN=62069010098,MD=6206901000,IC=6206901090,MQ=6206901090"
+            8. c_isFinalSale: false
+            9. c_isNew: false
+            10. c_isSale: false
+            11. c_label: "Ready to Wear"
+            12. c_refinementColor: "Guava Seascape"
+            13. c_season: "S25"
+            14. c_size: "0P"
+            15. c_sizeFit: "Slim fit  This garment fits true to size Available in size 0P, suited to clients who are under 5'3\"/ 160cm  Model is 5'9.5\"/178 cm, bust size 32C/10C and wears a size 0"
+            16. c_styleId: "251265"
+            17. c_styleNumber: "4673TS251"
+            18. c_stylingNotes: "Style the Illuminate Fitted Blouse with a pair of wide leg pants, a ZIMMERMANN strappy heeled sandal and a ZIMMERMANN mini purse for a fun event look or pair with flat sandals for a relaxed weekend look."
+            19. id: "4673TS251GVSCP0P"
+         12. variants: [{price: 625, productId: "4673TS251GVSCP0P",…}, {price: 625, productId: "4673TS251GVSCP0",…},…]
+            1. 0: {price: 625, productId: "4673TS251GVSCP0P",…}
+            2. 1: {price: 625, productId: "4673TS251GVSCP0",…}
+            3. 2: {price: 625, productId: "4673TS251GVSCP1",…}
+            4. 3: {price: 625, productId: "4673TS251GVSCP2",…}
+            5. 4: {price: 625, productId: "4673TS251GVSCP3",…}
+            6. 5: {price: 625, productId: "4673TS251GVSCP4",…}
+         13. variationAttributes: [{id: "color", name: "Colour", values: [{name: "Guava Seascape", value: "GVSCP"}]},…]
+            1. 0: {id: "color", name: "Colour", values: [{name: "Guava Seascape", value: "GVSCP"}]}
+            2. 1: {id: "size", name: "Size",…}
+   2. limit: 1
+   3. offset: 0
+   4. query: ""
+   5. searchPhraseSuggestions: {}
+   6. selectedRefinements: {cgid: "clothing"}
+      1. cgid: "clothing"
+   7. selectedSortingOption: "best-matches"
+   8. total: 1
+
+
+2. {currency: "AUD", id: "4673TS251",…}
+
+1. c_ap21Category: "Tops"
+2. c_careInstructions: "Main: 52% Linen, 48% Silk, Slip: 86% Recycled Polyester, 14% ElastaneDry clean only code F (hydrocarbon only);\nRemove any detachable trims prior to dry cleaning;\nCover to protect trim;\nCool iron with protective cloth;\nLight steam only;\nDo not spot clean\n\nGentle cold hand wash separately with mild detergent\nRemove any detachable trims prior to cleaning\nCover to protect trim;\nDo not soak, rub or wring\nDo not bleach\nDo not tumble dry\nDry flat in shade\nCool iron with protective cloth\nDo not spot clean\nDry cleanable code P\n\n Always check the label or care card for specific care instructions."
+3. c_countryOfOrigin: "China"
+4. c_fabricComposition: "52% Linen  48% Silk"
+5. c_hsCode: "AD=62069010,AM=6206901000,AR=62069000290U,AU=6206900056,AZ=6206901000,BB=62069010000,BL=6206901090,BM=6206900,BN=62069000,BO=6206900000,BR=62069000,BS=62069000,BY=6206901000,CA=6206900000,CH=62069000,CL=62069000,CN=6206900099,CO=6206900000,CR=620690000000,DO=62069000,EC=6206900000,EG=6206900000,GB=6206901090,GE=62069010000,GP=6206901090,GT=6206900000,HK=62069020,HN=620690000000,IL=62069000008,IN=62069000,JO=62069000000,KG=6206901000,KH=62069000,KR=6206900000,KY=62069000,KZ=6206901000,LB=62069000,MA=6206900000,ME=6206901000,MO=62069000,MV=6206900000,MX=6206909900,MY=6206900000,NC=62069000,NO=62069000,NZ=6206900200A,PA=620690100000,PH=62069000,PK=62069090,PR=6206900040,PY=62069000,QA=62069000,RU=6206901000,SA=620690009999,TC=62069000,TH=62069000001,TR=620690100000,TT=62069010,TW=62069000001,UA=6206901000,US=6206900040,UY=6206900000,UZ=6206901000,VN=62069000,ZA=6206906,FR=6206901090,IT=6206901090,ES=6206901090,BE=6206901090,DE=6206901090,CY=6206901090,DK=6206901090,FI=6206901090,LT=6206901090,LV=6206901090,NL=6206901090,PT=6206901090,RO=6206901090,SE=6206901090,SK=6206901090,AT=6206901090,BG=6206901090,CZ=6206901090,EE=6206901090,GR=6206901090,HR=6206901090,IE=6206901090,LU=6206901090,MC=6206901090,PL=6206901090,SG=62069000,ID=62069000,JP=620690210,AE=62069000,KW=62069000,BH=62069000,TN=62069010098,MD=6206901000,IC=6206901090,MQ=6206901090"
+6. c_isFinalSale: false
+7. c_isNew: false
+8. c_isSale: false
+9. c_label: "Ready to Wear"
+10. c_season: "S25"
+11. c_sizeFit: "Slim fit  This garment fits true to size Available in size 0P, suited to clients who are under 5'3\"/ 160cm  Model is 5'9.5\"/178 cm, bust size 32C/10C and wears a size 0"
+12. c_styleId: "251265"
+13. c_styleNumber: "4673TS251"
+14. c_stylingNotes: "Style the Illuminate Fitted Blouse with a pair of wide leg pants, a ZIMMERMANN strappy heeled sandal and a ZIMMERMANN mini purse for a fun event look or pair with flat sandals for a relaxed weekend look."
+15. currency: "AUD"
+16. id: "4673TS251"
+17. imageGroups: [{images: [{alt: "Illuminate Fitted Blouse",…}, {alt: "Illuminate Fitted Blouse",…}],…},…]
+18. inventory: {ats: 10, backorderable: false, id: "inventory_m_au", orderable: true, preorderable: false,…}
+19. longDescription: "The Illuminate Fitted Blouse in Guava Seascape from our Spring 2025 Collection, Illumination. A silk linen organza blouse featuring short sleeves with rolled cuffs, a stand collar with a shell button detail, finished with concealed placket. <br><ul><li> Silk linen organza blouse </li><li> Short sleeves with rolled cuffs</li><li> Stand collar with a shell button detail </li><li> Concealed placket with buttons down the centre front </li><li> Comes with separate cami </li></ul>"
+20. master: {masterId: "4673TS251", orderable: true, price: 625}
+21. minOrderQuantity: 1
+22. name: "Illuminate Fitted Blouse"
+23. pageTitle: "Illuminate Fitted Blouse"
+24. price: 625
+25. pricePerUnit: 625
+26. priceRanges: [{maxPrice: 625, minPrice: 625, pricebook: "au-aud-list-prices"}]
+27. primaryCategoryId: "new-arrivals"
+28. slugUrl: "https://zimmermann-dev.sfdc-8tgtt5-ecom1.exp-delivery.com/4673TS251.html"
+29. stepQuantity: 1
+30. type: {master: true}
+31. variants: [{orderable: true, price: 625, productId: "4673TS251GVSCP0P",…},…]
+32. variationAttributes: [{id: "color", name: "Colour", values: [{name: "Guava Seascape", orderable: true, value: "GVSCP"}]},…]
+
+
+3. Request URL
+http://localhost:3000/mobify/proxy/api/shopper/shopper-context/v1/organizations/f_ecom_bkzk_002/shopper-context/59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU
+Request Method
+GET
+Status Code
+404 Not Found
+Remote Address
+[::1]:3000
+Referrer Policy
+no-referrer
+accept-ranges
+bytes
+cache-control
+no-cache, no-store
+cf-cache-status
+DYNAMIC
+cf-ray
+a1ff7dccbf653424-HKG
+connection
+keep-alive
+content-language
+en-US
+content-length
+403
+content-type
+application/problem+json
+correlation-id
+0fcfc3d8-c50b-46d7-8b44-895cfe9d917e
+date
+Fri, 24 Jul 2026 02:28:25 GMT
+expires
+Thu, 01 Dec 1994 16:00:00 GMT
+jweb
+y
+pragma
+no-cache
+server
+cloudflare
+sfdc_correlation_id
+a1ff7dccbf653424
+strict-transport-security
+max-age=31536000; includeSubDomains
+vary
+Accept-Encoding
+x-envoy-upstream-service-time
+6
+x-proxy-request-url
+https://qmyt7hks.api.commercecloud.salesforce.com/shopper/shopper-context/v1/organizations/f_ecom_bkzk_002/shopper-context/59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU
+x-ratelimit-limit
+99999
+x-ratelimit-remaining
+999
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.9
+authorization
+Bearer eyJ2ZXIiOiIxLjAiLCJqa3UiOiJzbGFzL3Byb2QvYmt6a18wMDIiLCJraWQiOiI0OGFkODkzOC1hNDYzLTRiNjMtODA3Yy05YzY5N2M4Yjg1MzEiLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4zLjQiLCJhbGciOiJFUzI1NiJ9.eyJhdXQiOiJHVUlEIiwic2NwIjoic2ZjYy5zaG9wcGVyLXN0YW5kYXJkIHNmY2MucHdkbGVzc19sb2dpbiBzZmNjLnNob3BwZXItY29udGV4dC5ydyBzZmNjLnRzX2V4dF9vbl9iZWhhbGZfb2YiLCJzdWIiOiJjYy1zbGFzOjpia3prXzAwMjo6c2NpZDpjMmFiMWZlMC0xMDhjLTQ5YWQtOTE3Mi0wMjkzNzk3ZWViMWM6OnVzaWQ6NTliNDM2NGUtN2E5MS00MzQzLWFjNjAtZTYxZWZiZWM5M2M2Iiwic3NjIjoicW15dDdoa3MiLCJjdHgiOiJzbGFzIiwiaXNzIjoic2xhcy9wcm9kL2JremtfMDAyIiwiaXN0IjoxLCJkbnQiOiIwIiwiYXVkIjoiY29tbWVyY2VjbG91ZC9wcm9kdWN0aW9uL2JremstMDAyLWQyOGUxMmQyLTI1ZjYtNDkzNy05YjlmLTNjMDYxMGQwMWZkNiIsIm5iZiI6MTc4NDg1OTUwMCwic3R5IjoiVXNlciIsImlzYiI6InVpZG86c2xhczo6dXBuOkd1ZXN0Ojp1aWRuOkd1ZXN0IFVzZXI6OmdjaWQ6YWJsckpHbGJrMGxlc1JsMGMza3FZWWtYb1g6OmNoaWQ6WmltbWVybWFubkFVIiwiZXhwIjoxNzg0ODYxMzMwLCJpYXQiOjE3ODQ4NTk1MzAsImp0aSI6IkMyQzE0MTM4NDI1OTMwLTk0Mjc1ODQ2NTI3MTY5MDAzOTA1ODQ4MzUzIn0.7ZzG3ibhwKZspJ1Bpg_kwCZhE-0fbGw9mbOR-utud8fCFshFdQL0BY46pybmUGpRGDH3cLpeFgi1xxFLJ5lVdw
+connection
+keep-alive
+correlation-id
+0fcfc3d8-c50b-46d7-8b44-895cfe9d917e
+dnt
+1
+host
+localhost:3000
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+sfdc_user_agent
+pwa-kit-react-sdk@3.18.0 commerce-sdk-react@5.2.0
+user-agent
+Mozilla/5.0 (X11; Linux aarch64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 CrKey/1.54.250320 Edg/150.0.0.0
+
+
+here they are, additionally, teach me what we're looking at here, i want to understand these
+
+--- turn 30 ---
+what changes the TSD based on the findings we made? - btw, i removed the local .MDs of the spikes already
+
+--- turn 31 ---
+for these findings, do these utilize all the resulting filtered APIs i provided?
+
+here they are again:
+app run - loaded - homepage -> menu category -> pdp
+configurations?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.3 kB	280 ms	
+59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU	404	fetch	index.esm.js:1	1.2 kB	448 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	889 B	282 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	217 ms	
+clothing?levels=2&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.2 kB	590 ms	
+59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU	404	fetch	index.esm.js:1	1.2 kB	213 ms	
+product-search?siteId=ZimmermannAU&refine=cgid%3Dc…rue&allVariationProperties=true&limit=25&offset=0	200	fetch	index.esm.js:1	3.3 kB	551 ms	
+clothing?locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.2 kB	223 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	352 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	889 B	196 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	890 B	203 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	338 ms	
+4673TS251?expand=availability%2Cpromotions%2Coptio…k=true&currency=AUD&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	3.5 kB	272 ms	
+new-arrivals?levels=1&locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	230 ms	
+59b4364e-7a91-4343-ac60-e61efbec93c6?siteId=ZimmermannAU	404	fetch	index.esm.js:1	1.2 kB	298 ms	
+product-search?siteId=ZimmermannAU&refine=cgid%3Dc…rue&allVariationProperties=true&limit=25&offset=0	200	fetch	index.esm.js:1	3.3 kB	403 ms	
+clothing?locale=en&siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.2 kB	327 ms	
+product-lists?siteId=ZimmermannAU	200	fetch	index.esm.js:1	1.0 kB	340 ms	
+baskets?siteId=ZimmermannAU	200	fetch	index.esm.js:1	890 B	736 ms
+
+--- turn 32 ---
+what was the initial reason behind leaving the 1 and implicit use of the 3? are they not aligned with the spike task TSD or what?
+
+--- turn 33 ---
+it is core that a TSD is for one-problem and that problem only - what would be the verdict then in terms of what APIs are part of this spike task TSD?
+
+--- turn 34 ---
+here's what we'll do:
+
+1. obtain the current TSD from Confluence - then given the updates/changes/revisions/improvements/refinements - do an in-depth analysis of the current TSD, the updates/changes/revisions/improvements/refinements to be implemented against the CODEBASE, CONFLUENCE, and JIRA to verify and validate before we execute the changes
+2. once verified and validated, create a draft of what will be the new TSD in /Desktop
+3. once i approve, execute into Confluence
+4. we are currently asking Victor for enlightenment on these following items: 
+   1. "What's actually loaded in `bkzk-002` right now — has any catalog/product data been imported, or is it just the empty structure? Any sample/test pricing, or empty pricebook shells?
+   2. Has `data/core` (and any manual `data/sample`) import actually been run against `bkzk-002` — by whom, when, and via the GitHub Action or `sfcc-ci` directly?
+   3. Is the first-time BM setup done on the sandbox — storefront catalog assigned per site, search index rebuilt — or still pending? (This is what makes `shopper-search` return results.)
+   4. Is there a usable `data/sample` catalog + pricebook we can import now to unblock front-end work, and who runs it — can front-end trigger it, or does he/platform?
+   5. SFCC-121 status/timeline — when the real MuleSoft catalogue feed is expected, so we know how long the interim sample load needs to carry us.
+   6. Access — do we have the sandbox/WebDAV/`sfcc-ci` access (and AmOAuth2 client if using the SCAPI Admin path) to load data ourselves?"
+      1. and he has answered: What's actually loaded in `bkzk-002` right now — has any catalog/product data been imported, or is it just the empty structure? Any sample/test pricing, or empty pricebook shells? 
+categories, pricebooks, and inventory already configured. 1 sample product available with price and inventory.
+      2. Has `data/core` (and any manual `data/sample`) import actually been run against `bkzk-002` — by whom, when, and via the GitHub Action or `sfcc-ci` directly?
+      3. Is the first-time BM setup done on the sandbox — storefront catalog assigned per site, search index rebuilt — or still pending? (This is what makes `shopper-search` return results.) 
+done as part of developer setup
+      4. Is there a usable `data/sample` catalog + pricebook we can import now to unblock front-end work, and who runs it — can front-end trigger it, or does he/platform?
+sample product already available on bkzk-002
+      5. SFCC-121 status/timeline — when the real MuleSoft catalogue feed is expected, so we know how long the interim sample load needs to carry us.
+discussions still pending for product attributes
+      6. Access — do we have the sandbox/WebDAV/`sfcc-ci` access (and AmOAuth2 client if using the SCAPI Admin path) to load data ourselves?
+SCAPI credentials will be provided.
+         1. are there any other questions, clarifications, and concerns we need from victor for this TSD?
+         2. ensure the TSD is updated accordingly/appropriately/as needed with the enlightenment provided by victor
+
+--- turn 35 ---
+let's first work on the follow-ups to victor:
+
+provide me the follow-up question list - ensure the questions are strictly in the scope of the spike task TSD
+
+for example, an open-item is how the product was added, make sure to ask that
+
+--- turn 36 ---
+what is the status of our TSD draft?
+
+--- turn 37 ---
+execute: (A) Proceed now with a v0.3 that folds in everything already confirmed (dev verification + scope tightening + Victor's first answers), draft it to `/Desktop` for your approval, and treat the follow-ups as a later v0.4. Keeps momentum; front-end-relevant facts land sooner.
+
+--- turn 38 ---
+execute an audit of the current draft at /Users/marcel.a.n.navarro/Desktop/TSD-SFCC-122-v0.3-DRAFT.md against the codebase, confluence, jira, the answers of victor to the the initial open items, and the findings of our actual API test
+
+report back with your findings
+
+--- turn 39 ---
+Fix needed (1) 🔴
+
+* §5.3 code citation `home/index.tsx:52-58` is wrong — the `useProductSearch` block actually spans lines 52-60 (it closes at 60). Content of the code block is correct; only the line range is off.
+   * GO FOR EXECUTION
+
+Should soften (2) 🟠 - AWAIT FOR VICTOR'S FOLLOW-UP ANSWERS
+
+* §5.1 note "steps 1-4 have already been performed by platform." Victor confirmed the outcome (categories/pricebooks/inventory configured, sample product, BM setup) — so the end-state is solid — but he did not answer how it was loaded (Q2, your own example follow-up: Action vs `sfcc-ci` vs manual). The phrasing implies a specific mechanism we haven't confirmed. Soften to "the outcome of steps 1-4 exists (load mechanism unconfirmed, Q2)."
+* Q2 ("how the sample was loaded / is the process repeatable") isn't surfaced as open anywhere in §2.2/§7 — it's silently assumed in §5.1. Add it as an explicit open item so the draft doesn't imply more certainty than we have.
+
+Judgment call (1) 🟡  - REMOVE FOR PURITY
+
+* §6.3 mentions the `shopper-context` 404 as a benign trace aside. Defensible (it explains a 404 in the verification trace, marked out-of-scope), but a strict one-problem reading would drop even that mention. Your call — keep as a trace note, or remove for purity.
+
+Observation (no action) - NO ACTION
+
+* Source discrepancy, harmless: Confluence page 315490342's example payload names `4673TS251` "Aster Fit & Flare Dress," but the live sandbox `4673TS251` is "Illuminate Fitted Blouse." The draft correctly uses only the ID, never a name — so no error; the Confluence name was just illustrative.
+
+Still pending your decision - NO ACTION
+
+* Date: §8/version-history use 24 Jul (matches the API response header from your run). Confirm, or normalize to 23 Jul.
+* §1.2 update note: still there as one italic line — keep or drop.
+
+--- turn 40 ---
+Hold the push until Victor answers
+
+then we address the following:
+Should soften (2) 🟠 - AWAIT FOR VICTOR'S FOLLOW-UP ANSWERS
+
+* §5.1 note "steps 1-4 have already been performed by platform." Victor confirmed the outcome (categories/pricebooks/inventory configured, sample product, BM setup) — so the end-state is solid — but he did not answer how it was loaded (Q2, your own example follow-up: Action vs `sfcc-ci` vs manual). The phrasing implies a specific mechanism we haven't confirmed. Soften to "the outcome of steps 1-4 exists (load mechanism unconfirmed, Q2)."
+* Q2 ("how the sample was loaded / is the process repeatable") isn't surfaced as open anywhere in §2.2/§7 — it's silently assumed in §5.1. Add it as an explicit open item so the draft doesn't imply more certainty than we have.
+
+--- turn 41 ---
+victor has answered:
+
+1. How was the sample product loaded? Was it added via the `data/sample` import (GitHub Action or `sfcc-ci` directly), a BM site-archive import, or by hand in Business Manager? And is that step documented and repeatable? it was manually created since there is still no integration between ap21 and sfcc
+2. Is more sample data coming, or is one product the intended interim state? A single style can't exercise product listing, category navigation, or faceting. Can we get a broader sample set — several styles across a few categories — for front-end build and test? need to manually create the products.
+3. Is any sample data configured with a sale price? The current product only has a list price (`au-aud-list-prices`). To build and test strikethrough / sale display we need at least one product with an `au-aud-sale-prices` entry. promotions have to be configured. we have a workshop today on promotions
+4. Is the sample product's attribute set stable, or will it change once the SFCC-121 product-attribute discussions conclude? Front-end binds the PDP/PLP to specific attributes (colour, size, fabric, care, etc.), so we need to know whether we're building against the final shape or a placeholder. ongoing discussions on product attributes. not yet final.
+5. Is `ZimmermannAU` the only seeded site, or are the other storefronts' catalogues and pricebooks also configured? The storefront has to work across all sites; we've only verified AU on `bkzk-002` so far.
+6. Who owns loading sample data going forward, and do front-end devs need to run it? You mentioned SCAPI credentials will be provided — are those for us to load/refresh data ourselves (and does a search-index rebuild come with each load), or does platform own that? (Note: for consuming the data, SLAS is already working — this is only about who populates it.) we need products from ap21. 
+
+
+execute the remaining work, ask for my approval prior to confluence push
+
+--- turn 42 ---
+run a final in-depth analysis of the current draft against the codebase, confluence, jira, the findings from our manual test - the APIs and results, victor's initial and follow-up responses
+
+report back
+
+--- turn 43 ---
+execute: Fix the 🔴 data/sample over-assertion (soften + surface the Confluence conflict as a follow-up) and, optionally, the 🟡 §6.3 qualifier and the dropped SCAPI-creds note
+
+====================================================================================================
+### [handover] [2026-08-04] ZIMM - SFCC-123 — 8 user turns — db43b418-77ac-476e-bf6e-c4aa5da9281d.jsonl
+====================================================================================================

@@ -1,0 +1,9 @@
+- [User role](user_role.md) — Angelo (Marcel Angelo Navarro) is front-end dev lead on Zimmermann, engineering side not design side
+- [No assumptions, verify with source](no-assumptions-verify-with-source.md) — Angelo: state only verified facts + cite source; ask the owner for unknowns, don't infer
+- [F2R spike (SFCC-205)](f2r-spike.md) — Figma→React handover-hardening spike; scope, collaborators, workflow
+- [SFCC-122 spike](sfcc-122.md) — MRT API capabilities spike; crux: SCAPI-via-MRT serves product/category/pricing, data was the blocker; deliverable = published DRAFT spike-findings doc (Confluence 349437965)
+- [SFCC-123 spike](sfcc-123.md) — Contentful integration TSD & content model; assignee Jhoan; crux: SFCC-side integration already substantially built
+- [TSD scope principle](tsd-scope-principle.md) — Tim's rule: a TSD focuses on one problem/solution, lean, link don't reproduce sources
+- [Tim's TSD playbook](tim-tsd-playbook.md) — ~/Dev/TSD-PLAYBOOK-TIM-LAVELLE.md: 11 principles + checklist distilled from Tim's reviews; read before drafting any TSD
+- [SFCC-123 review: Marcel actions](sfcc-123-review-marcel-actions.md) — Tim's 2 comment mentions: separate MRT-apps TSD (w/ Gideon), and ask Emma/IT re New Relic monitoring
+- [SFCC-249 reformat draft](sfcc-249-reformat-draft.md) — Contentful TSD, published as v31 (01 Aug), now v42 after Tim's review comments; 3 drift-risk rows removed, extracted locally on Desktop; sign-off pending

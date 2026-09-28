@@ -1,0 +1,598 @@
+=== BASE index.tsx ===
+     1	import React, { useEffect, useId } from 'react';
+     2	import { chakra, Drawer, DrawerOverlay, useMultiStyleConfig, useModalContext, ModalFocusScope } from '@chakra-ui/react';
+     3	import type { SystemStyleObject } from '@chakra-ui/react';
+     4	import { motion } from 'framer-motion';
+     5	import { ZimmButton } from 'app/components/ui-kits/atoms/zimmButton';
+     6	import { useUiCopy } from 'app/hooks/useUiCopy';
+     7	
+     8	const ZIMM_DRAWER_RECIPE = 'ZimmDrawer';
+     9	
+    10	// Shared scroll-lock state — multiple ZimmDrawer instances can be open simultaneously (e.g. a
+    11	// nested utility drawer over a PDP drawer). Each open instance increments this counter; only
+    12	// the final cleanup (count back to 0) restores the original overflow value, preventing an
+    13	// earlier-closing drawer from unlocking the body while a second drawer is still open.
+    14	let scrollLockCount = 0;
+    15	let scrollLockPrev = '';
+    16	
+    17	// framer-motion's `Transition.ease` wants a literal, mutable 4-tuple (`BezierDefinition`) — a
+    18	// plain array literal infers as `number[]`, and `as const` infers a *readonly* tuple, neither of
+    19	// which satisfies it, hence the explicit cast.
+    20	const BEZIER_SLIDES_EASING = [0.87, 0, 0.13, 1] as [number, number, number, number];
+    21	// Mirrors theme/foundation/motion.ts's `duration.default` (300ms) and `easing.slides`
+    22	// (cubic-bezier(0.87, 0, 0.13, 1), "panels and overlays entering the screen") — hand-converted
+    23	// to framer-motion's shape (seconds, not ms; a bezier tuple, not a CSS `cubic-bezier()` string)
+    24	// since motion.ts's tokens are CSS-string form and framer-motion doesn't accept that form. One
+    25	// shared value for both enter and exit — that symmetry is the whole point (SFCC-898).
+    26	const DRAWER_TRANSITION = { duration: 0.3, ease: BEZIER_SLIDES_EASING };
+    27	
+    28	// `motion(chakra.div)` — framer OUTSIDE, chakra INSIDE. This ordering matters: framer's
+    29	// `motion()` only intercepts its own known animation props (initial/animate/exit/transition/
+    30	// variants) and forwards everything else straight to the wrapped component, so `transition`
+    31	// reaches framer-motion directly here. Chakra's OWN internal Drawer does the reverse
+    32	// (`chakra(Slide)`) — chakra wraps the animated component — and chakra's `shouldForwardProp`
+    33	// treats any prop literally named `transition` as a CSS shorthand style prop (it's a real
+    34	// Chakra/styled-system prop name), silently swallowing it before it ever reaches the wrapped
+    35	// component's real props (confirmed directly in @chakra-ui/system's should-forward-prop.js).
+    36	// That's why `<DrawerContent transition={...}>` had no effect and why this file no longer uses
+    37	// Chakra's `<DrawerContent>` at all — SFCC-898's close-animation defect (asymmetric enter/exit;
+    38	// Chakra's own Slide defaults to a spring-physics enter vs. a fixed 150ms tween exit, per
+    39	// @chakra-ui/transition's slide.js) can't be fixed through any prop that component exposes.
+    40	const MotionChakraDiv = motion(chakra.div);
+    41	
+    42	// Matches Figma's own named drawer sizes exactly (SFCC-898) — see zimmDrawer.css.ts's
+    43	// file-level comment for the width/usage table. `xLarge` has no consumer yet (Cart is a full
+    44	// page today, not a drawer).
+    45	export type ZimmDrawerSize = 'large' | 'tablet' | 'small' | 'xLarge' | 'mobile' | 'prompt';
+    46	
+    47	type ZimmDrawerBaseProps = {
+    48	  /** Whether the drawer is open. */
+    49	  isOpen: boolean;
+    50	  /** Called on backdrop click, Escape, and the close button (all via Chakra's Drawer). */
+    51	  onClose: () => void;
+    52	  /** Desktop/tablet width variant — see ZimmDrawerSize. Collapses to the mobile treatment
+    53	   *  below the tablet breakpoint regardless of which value is chosen — see zimmDrawer.css.ts. */
+    54	  size: ZimmDrawerSize;
+    55	  children: React.ReactNode;
+    56	  /** Text style for the title. 'large' applies heading1 (24px, uppercase, Futura Round regular);
+    57	   *  'small' applies body2Strong (14px bold). Defaults to 'large'. Only relevant when `title`
+    58	   *  is provided. */
+    59	  titleStyle?: 'large' | 'small';
+    60	  /** Element to focus when the drawer closes. Use when the trigger may not have received
+    61	   *  keyboard focus before opening (e.g. mouse click) — without this Chakra falls back to
+    62	   *  document.body and AC10 focus-return fails. */
+    63	  finalFocusRef?: React.RefObject<HTMLElement>;
+    64	  /** Element to focus when the drawer opens. Overrides Chakra's default (first focusable element
+    65	   *  in the panel, usually the close button) — use to land focus directly on the primary input. */
+    66	  initialFocusRef?: React.RefObject<HTMLElement>;
+    67	};
+    68	
+    69	/**
+    70	 * Exactly one of:
+    71	 * - `title`       — renders an inline header row (title left, close button right); the drawer's
+    72	 *                   accessible name is derived from the rendered title element automatically.
+    73	 * - `labelledBy`  — ID of an existing element that labels the drawer (e.g. ZimmPdpDrawer's own
+    74	 *                   tab header). Paired with the floating close button by default. Pass
+    75	 *                   `boxedHeader` alongside it when the drawer has no header content of its own
+    76	 *                   to supply (e.g. ZimmCountryLanguageMismatch, whose heading lives in its body)
+    77	 *                   but still wants the close button in the same in-flow header row `title` gets,
+    78	 *                   instead of floating over the content — the title `<span>` renders with no
+    79	 *                   text, purely to hold the close button's usual right-aligned position. The
+    80	 *                   drawer's accessible name still comes from `labelledBy`, unaffected.
+    81	 * - `aria-label`  — explicit string label when neither a visible title nor a separate element
+    82	 *                   is available.
+    83	 */
+    84	type ZimmDrawerProps = ZimmDrawerBaseProps &
+    85	  (
+    86	    | { title: string; labelledBy?: never; 'aria-label'?: never; boxedHeader?: never }
+    87	    | { title?: never; labelledBy: string; 'aria-label'?: never; boxedHeader?: boolean }
+    88	    | { title?: never; labelledBy?: never; 'aria-label': string; boxedHeader?: never }
+    89	  );
+    90	
+    91	// Deliberately not named `ZimmDrawerContentProps` — scripts/generateRegistry.mjs's
+    92	// extractTsProps merges every `*Props`-suffixed type in a file into one component's registry
+    93	// row when it can't isolate the preferred one (ZimmDrawerProps' multi-line union body isn't
+    94	// matched by its regex, which can't cross a newline — a documented limitation, not a bug to
+    95	// patch there). That merge was leaking this internal helper's own fields (ariaLabel,
+    96	// contentStyles, closeButtonStyles) into ZimmDrawer's public registry entry.
+    97	type ZimmDrawerContentConfig = {
+    98	  children: React.ReactNode;
+    99	  onClose: () => void;
+   100	  /** Renders an inline header row (title left, close button right) instead of the floating
+   101	   *  close button when provided — see ZimmDrawerProps' `title` member. */
+   102	  title?: string;
+   103	  titleId?: string;
+   104	  titleStyle?: 'large' | 'small';
+   105	  labelledBy?: string;
+   106	  ariaLabel?: string;
+   107	  /** Forces the same in-flow header row `title` renders (empty title span, close button in its
+   108	   *  usual right-aligned slot) instead of the floating close button — see ZimmDrawerProps'
+   109	   *  `labelledBy` member. Meaningless without `labelledBy`. */
+   110	  boxedHeader?: boolean;
+   111	  contentStyles: SystemStyleObject;
+   112	  headerStyles: SystemStyleObject;
+   113	  headerTitleStyles: SystemStyleObject;
+   114	  closeButtonStyles: SystemStyleObject;
+   115	  /** SFCC-831/689 rework — the boxed close button's own row (title/boxedHeader branch only),
+   116	   *  giving it a real 44px height to measure `header`'s paddingBlock-driven variants against.
+   117	   *  See zimmDrawer.css.ts's `headerCloseButton` for why the floating branch below doesn't
+   118	   *  need this (its own `closeButtonStyles` already sets an explicit height). */
+   119	  headerCloseButtonStyles: SystemStyleObject;
+   120	};
+   121	
+   122	/**
+   123	 * Replaces Chakra's own `<DrawerContent>` — see the `MotionChakraDiv` comment above for why.
+   124	 * Reuses Chakra's real dialog/focus/aria mechanics directly (`useModalContext`,
+   125	 * `ModalFocusScope` — both genuinely public exports, not reaching into Chakra internals) so
+   126	 * focus trap, initial focus, focus restore, body-scroll lock, and Escape/overlay-click-to-close
+   127	 * all still come from Chakra exactly as before; only the slide transition itself is now ours.
+   128	 *
+   129	 * Renders the inline header row (title left — empty when there's no `title` text — close button
+   130	 * right) when either `title` or `boxedHeader` is passed, or a floating close button only when
+   131	 * neither is — see ZimmDrawer's own docblock for when each is used.
+   132	 *
+   133	 * @param props see ZimmDrawerContentConfig
+   134	 */
+   135	const ZimmDrawerContent = ({
+   136	  children,
+   137	  onClose,
+   138	  title,
+   139	  titleId,
+   140	  titleStyle = 'large',
+   141	  labelledBy,
+   142	  ariaLabel,
+   143	  boxedHeader,
+   144	  contentStyles,
+   145	  headerStyles,
+   146	  headerTitleStyles,
+   147	  closeButtonStyles,
+   148	  headerCloseButtonStyles,
+   149	}: ZimmDrawerContentConfig) => {
+   150	  const { t } = useUiCopy();
+   151	  const { getDialogProps, getDialogContainerProps } = useModalContext();
+   152	  const dialogProps = getDialogProps({ 'aria-label': ariaLabel });
+   153	  // getDialogProps always computes `aria-labelledby` from Chakra's own <DrawerHeader> mount
+   154	  // state, which ZimmDrawer never renders (no header sub-component in this tree) — so it
+   155	  // always resolves to undefined regardless of what's passed in above. Set it directly so the
+   156	  // `title` and `labelledBy` prop variants of ZimmDrawerProps actually work.
+   157	  if (title && titleId) {
+   158	    dialogProps['aria-labelledby'] = titleId;
+   159	  } else if (labelledBy) {
+   160	    dialogProps['aria-labelledby'] = labelledBy;
+   161	  }
+   162	  const containerProps = getDialogContainerProps();
+   163	
+   164	  return (
+   165	    <ModalFocusScope>
+   166	      <chakra.div {...containerProps} __css={{ position: 'fixed', inset: 0, display: 'flex', zIndex: 'modal' }}>
+   167	        <MotionChakraDiv
+   168	          {...dialogProps}
+   169	          initial={{ x: '100%' }}
+   170	          animate={{ x: 0 }}
+   171	          exit={{ x: '100%' }}
+   172	          transition={DRAWER_TRANSITION}
+   173	          __css={{ position: 'fixed', top: 0, right: 0, bottom: 0, outline: 0, ...contentStyles }}
+   174	        >
+   175	          {title || boxedHeader ? (
+   176	            <chakra.div sx={headerStyles}>
+   177	              <chakra.span
+   178	                id={title ? titleId : undefined}
+   179	                sx={headerTitleStyles}
+   180	                textStyle={titleStyle === 'small' ? 'body2Strong' : 'heading1'}
+   181	              >
+   182	                {title}
+   183	              </chakra.span>
+   184	              <chakra.div sx={headerCloseButtonStyles}>
+   185	                <ZimmButton variant="icon" icon="close" label={t('drawer.close', 'Close')} onClick={onClose} />
+   186	              </chakra.div>
+   187	            </chakra.div>
+   188	          ) : (
+   189	            <chakra.div sx={closeButtonStyles}>
+   190	              <ZimmButton variant="icon" icon="close" label={t('drawer.close', 'Close')} onClick={onClose} />
+   191	            </chakra.div>
+   192	          )}
+   193	          {/* SFCC-926 — tester reported no scrollbar when drawer content exceeds the panel
+   194	              height. flex:1 + minHeight:0 lets this grow into remaining space after the
+   195	              fixed header; overflowY:auto gives it its own independent scrollbar. */}
+   196	          <chakra.div __css={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+   197	            {children}
+   198	          </chakra.div>
+   199	        </MotionChakraDiv>
+   200	      </chakra.div>
+   201	    </ModalFocusScope>
+   202	  );
+   203	};
+   204	
+   205	/**
+   206	 * Generic right-anchored slide-in drawer shell — overlay, panel, and a Figma-matched size
+   207	 * variant (see ZimmDrawerSize), built on Chakra's Drawer primitive (focus trap, initial focus,
+   208	 * focus restore, body-scroll lock, and Escape/overlay-click-to-close all come from Chakra, not
+   209	 * hand-rolled).
+   210	 *
+   211	 * Pass `title` to render an inline header row (title text left, close button right) sized per the
+   212	 * Figma drawer/header frames. Omit `title` and pass `labelledBy`/`aria-label` instead for drawers
+   213	 * that supply their own header (e.g. ZimmPdpDrawer's tab row) — the close button floats on its own
+   214	 * by default. Add `boxedHeader` alongside `labelledBy` when the drawer has no header content of its
+   215	 * own (e.g. ZimmCountryLanguageMismatch, whose heading lives in its body) but still wants the close
+   216	 * button sitting in that same in-flow header row rather than floating over the content.
+   217	 *
+   218	 * @param props see ZimmDrawerProps
+   219	 */
+   220	export const ZimmDrawer = (props: ZimmDrawerProps) => {
+   221	  const { isOpen, onClose, size, children, titleStyle = 'large', finalFocusRef, initialFocusRef } = props;
+   222	  const styles = useMultiStyleConfig(ZIMM_DRAWER_RECIPE, { variant: size });
+   223	  const titleId = useId();
+   224	
+   225	  const title = 'title' in props ? props.title : undefined;
+   226	  const labelledBy = !title && 'labelledBy' in props ? props.labelledBy : undefined;
+   227	  const ariaLabel = !title && 'aria-label' in props ? props['aria-label'] : undefined;
+   228	  const boxedHeader = !title && 'labelledBy' in props ? props.boxedHeader : undefined;
+   229	
+   230	  // SFCC-926 — tester reported body scroll still active while any drawer is open, allowing
+   231	  // the page behind the overlay to scroll alongside the drawer. ZimmDrawer bypasses Chakra's
+   232	  // own <DrawerContent>, so blockScrollOnMount may not fire. Locking body overflow explicitly
+   233	  // ensures only the drawer's internal scroll area is accessible while it is open.
+   234	  // Uses the module-level counter so multiple open instances don't race to restore overflow.
+   235	  useEffect(() => {
+   236	    if (!isOpen) return;
+   237	    if (scrollLockCount === 0) {
+   238	      scrollLockPrev = document.body.style.overflow;
+   239	      document.body.style.overflow = 'hidden';
+   240	    }
+   241	    scrollLockCount++;
+   242	    return () => {
+   243	      scrollLockCount--;
+   244	      if (scrollLockCount === 0) {
+   245	        document.body.style.overflow = scrollLockPrev;
+   246	        scrollLockPrev = '';
+   247	      }
+   248	    };
+   249	  }, [isOpen]);
+   250	
+   251	  // Chakra's FocusLock remains active during the exit animation, so any focus call made
+   252	  // while the drawer is still mounted (rAF, close-button onClick) gets trapped and dropped.
+   253	  // onCloseComplete fires after the animation finishes and FocusLock is released — the only
+   254	  // reliable moment to restore focus. Covers both close-button click and Escape for all
+   255	  // consumers that pass finalFocusRef.
+   256	  const handleCloseComplete = () => {
+   257	    if (finalFocusRef) finalFocusRef.current?.focus();
+   258	  };
+   259	
+   260	  return (
+   261	    <Drawer
+   262	      isOpen={isOpen}
+   263	      onClose={onClose}
+   264	      placement="right"
+   265	      onCloseComplete={handleCloseComplete}
+   266	      initialFocusRef={initialFocusRef}
+   267	    >
+   268	      <DrawerOverlay sx={styles.overlay} />
+   269	      {/* aria-labelledby (not aria-label) for the title case: Chakra's own <DrawerContent>
+   270	          would clobber it with its own headingId (undefined without a DrawerHeader), but
+   271	          ZimmDrawerContent bypasses <DrawerContent> entirely and sets dialogProps itself
+   272	          (see its own comment above) — the clobbering bug this would otherwise work around
+   273	          doesn't apply here, so referencing the visible title node is safe and preferred. */}
+   274	      <ZimmDrawerContent
+   275	        onClose={onClose}
+   276	        title={title}
+   277	        titleId={title ? titleId : undefined}
+   278	        titleStyle={titleStyle}
+   279	        labelledBy={labelledBy}
+   280	        ariaLabel={ariaLabel}
+   281	        boxedHeader={boxedHeader}
+   282	        contentStyles={styles.content}
+   283	        headerStyles={styles.header}
+   284	        headerTitleStyles={styles.headerTitle}
+   285	        closeButtonStyles={styles.closeButton}
+   286	        headerCloseButtonStyles={styles.headerCloseButton}
+   287	      >
+   288	        {children}
+   289	      </ZimmDrawerContent>
+   290	    </Drawer>
+   291	  );
+   292	};
+=== HEAD index.tsx ===
+     1	import React, { useEffect, useId } from 'react';
+     2	import { chakra, Drawer, DrawerOverlay, useMultiStyleConfig, useModalContext, ModalFocusScope } from '@chakra-ui/react';
+     3	import type { SystemStyleObject } from '@chakra-ui/react';
+     4	import { motion } from 'framer-motion';
+     5	import { ZimmButton } from 'app/components/ui-kits/atoms/zimmButton';
+     6	import { useUiCopy } from 'app/hooks/useUiCopy';
+     7	
+     8	const ZIMM_DRAWER_RECIPE = 'ZimmDrawer';
+     9	
+    10	// Shared scroll-lock state — multiple ZimmDrawer instances can be open simultaneously (e.g. a
+    11	// nested utility drawer over a PDP drawer). Each open instance increments this counter; only
+    12	// the final cleanup (count back to 0) restores the original overflow value, preventing an
+    13	// earlier-closing drawer from unlocking the body while a second drawer is still open.
+    14	let scrollLockCount = 0;
+    15	let scrollLockPrev = '';
+    16	
+    17	// framer-motion's `Transition.ease` wants a literal, mutable 4-tuple (`BezierDefinition`) — a
+    18	// plain array literal infers as `number[]`, and `as const` infers a *readonly* tuple, neither of
+    19	// which satisfies it, hence the explicit cast.
+    20	const BEZIER_SLIDES_EASING = [0.87, 0, 0.13, 1] as [number, number, number, number];
+    21	// Mirrors theme/foundation/motion.ts's `duration.default` (300ms) and `easing.slides`
+    22	// (cubic-bezier(0.87, 0, 0.13, 1), "panels and overlays entering the screen") — hand-converted
+    23	// to framer-motion's shape (seconds, not ms; a bezier tuple, not a CSS `cubic-bezier()` string)
+    24	// since motion.ts's tokens are CSS-string form and framer-motion doesn't accept that form. One
+    25	// shared value for both enter and exit — that symmetry is the whole point (SFCC-898).
+    26	const DRAWER_TRANSITION = { duration: 0.3, ease: BEZIER_SLIDES_EASING };
+    27	
+    28	// `motion(chakra.div)` — framer OUTSIDE, chakra INSIDE. This ordering matters: framer's
+    29	// `motion()` only intercepts its own known animation props (initial/animate/exit/transition/
+    30	// variants) and forwards everything else straight to the wrapped component, so `transition`
+    31	// reaches framer-motion directly here. Chakra's OWN internal Drawer does the reverse
+    32	// (`chakra(Slide)`) — chakra wraps the animated component — and chakra's `shouldForwardProp`
+    33	// treats any prop literally named `transition` as a CSS shorthand style prop (it's a real
+    34	// Chakra/styled-system prop name), silently swallowing it before it ever reaches the wrapped
+    35	// component's real props (confirmed directly in @chakra-ui/system's should-forward-prop.js).
+    36	// That's why `<DrawerContent transition={...}>` had no effect and why this file no longer uses
+    37	// Chakra's `<DrawerContent>` at all — SFCC-898's close-animation defect (asymmetric enter/exit;
+    38	// Chakra's own Slide defaults to a spring-physics enter vs. a fixed 150ms tween exit, per
+    39	// @chakra-ui/transition's slide.js) can't be fixed through any prop that component exposes.
+    40	const MotionChakraDiv = motion(chakra.div);
+    41	
+    42	// Matches Figma's own named drawer sizes exactly (SFCC-898) — see zimmDrawer.css.ts's
+    43	// file-level comment for the width/usage table. `xLarge` has no consumer yet (Cart is a full
+    44	// page today, not a drawer).
+    45	export type ZimmDrawerSize = 'large' | 'tablet' | 'small' | 'xLarge' | 'mobile' | 'prompt';
+    46	
+    47	type ZimmDrawerBaseProps = {
+    48	  /** Whether the drawer is open. */
+    49	  isOpen: boolean;
+    50	  /** Called on backdrop click, Escape, and the close button (all via Chakra's Drawer). */
+    51	  onClose: () => void;
+    52	  /** Desktop/tablet width variant — see ZimmDrawerSize. Collapses to the mobile treatment
+    53	   *  below the tablet breakpoint regardless of which value is chosen — see zimmDrawer.css.ts. */
+    54	  size: ZimmDrawerSize;
+    55	  children: React.ReactNode;
+    56	  /** Text style for the title. 'large' applies heading1 (24px, uppercase, Futura Round regular);
+    57	   *  'small' applies body2Strong (14px bold). Defaults to 'large'. Only relevant when `title`
+    58	   *  is provided. */
+    59	  titleStyle?: 'large' | 'small';
+    60	  /** Element to focus when the drawer closes. Use when the trigger may not have received
+    61	   *  keyboard focus before opening (e.g. mouse click) — without this Chakra falls back to
+    62	   *  document.body and AC10 focus-return fails. */
+    63	  finalFocusRef?: React.RefObject<HTMLElement>;
+    64	  /** Element to focus when the drawer opens. Overrides Chakra's default (first focusable element
+    65	   *  in the panel, usually the close button) — use to land focus directly on the primary input. */
+    66	  initialFocusRef?: React.RefObject<HTMLElement>;
+    67	  /** Whether to render the semi-transparent dark overlay behind the drawer. Defaults to true.
+    68	   *  Pass false only when the approved drawer design explicitly omits the overlay. */
+    69	  hasOverlay?: boolean;
+    70	};
+    71	
+    72	/**
+    73	 * Exactly one of:
+    74	 * - `title`       — renders an inline header row (title left, close button right); the drawer's
+    75	 *                   accessible name is derived from the rendered title element automatically.
+    76	 * - `labelledBy`  — ID of an existing element that labels the drawer (e.g. ZimmPdpDrawer's own
+    77	 *                   tab header). Paired with the floating close button by default. Pass
+    78	 *                   `boxedHeader` alongside it when the drawer has no header content of its own
+    79	 *                   to supply (e.g. ZimmCountryLanguageMismatch, whose heading lives in its body)
+    80	 *                   but still wants the close button in the same in-flow header row `title` gets,
+    81	 *                   instead of floating over the content — the title `<span>` renders with no
+    82	 *                   text, purely to hold the close button's usual right-aligned position. The
+    83	 *                   drawer's accessible name still comes from `labelledBy`, unaffected.
+    84	 * - `aria-label`  — explicit string label when neither a visible title nor a separate element
+    85	 *                   is available.
+    86	 */
+    87	type ZimmDrawerProps = ZimmDrawerBaseProps &
+    88	  (
+    89	    | { title: string; labelledBy?: never; 'aria-label'?: never; boxedHeader?: never }
+    90	    | { title?: never; labelledBy: string; 'aria-label'?: never; boxedHeader?: boolean }
+    91	    | { title?: never; labelledBy?: never; 'aria-label': string; boxedHeader?: never }
+    92	  );
+    93	
+    94	// Deliberately not named `ZimmDrawerContentProps` — scripts/generateRegistry.mjs's
+    95	// extractTsProps merges every `*Props`-suffixed type in a file into one component's registry
+    96	// row when it can't isolate the preferred one (ZimmDrawerProps' multi-line union body isn't
+    97	// matched by its regex, which can't cross a newline — a documented limitation, not a bug to
+    98	// patch there). That merge was leaking this internal helper's own fields (ariaLabel,
+    99	// contentStyles, closeButtonStyles) into ZimmDrawer's public registry entry.
+   100	type ZimmDrawerContentConfig = {
+   101	  children: React.ReactNode;
+   102	  onClose: () => void;
+   103	  /** Renders an inline header row (title left, close button right) instead of the floating
+   104	   *  close button when provided — see ZimmDrawerProps' `title` member. */
+   105	  title?: string;
+   106	  titleId?: string;
+   107	  titleStyle?: 'large' | 'small';
+   108	  labelledBy?: string;
+   109	  ariaLabel?: string;
+   110	  /** Forces the same in-flow header row `title` renders (empty title span, close button in its
+   111	   *  usual right-aligned slot) instead of the floating close button — see ZimmDrawerProps'
+   112	   *  `labelledBy` member. Meaningless without `labelledBy`. */
+   113	  boxedHeader?: boolean;
+   114	  contentStyles: SystemStyleObject;
+   115	  headerStyles: SystemStyleObject;
+   116	  headerTitleStyles: SystemStyleObject;
+   117	  closeButtonStyles: SystemStyleObject;
+   118	  /** SFCC-831/689 rework — the boxed close button's own row (title/boxedHeader branch only),
+   119	   *  giving it a real 44px height to measure `header`'s paddingBlock-driven variants against.
+   120	   *  See zimmDrawer.css.ts's `headerCloseButton` for why the floating branch below doesn't
+   121	   *  need this (its own `closeButtonStyles` already sets an explicit height). */
+   122	  headerCloseButtonStyles: SystemStyleObject;
+   123	};
+   124	
+   125	/**
+   126	 * Replaces Chakra's own `<DrawerContent>` — see the `MotionChakraDiv` comment above for why.
+   127	 * Reuses Chakra's real dialog/focus/aria mechanics directly (`useModalContext`,
+   128	 * `ModalFocusScope` — both genuinely public exports, not reaching into Chakra internals) so
+   129	 * focus trap, initial focus, focus restore, body-scroll lock, and Escape/overlay-click-to-close
+   130	 * all still come from Chakra exactly as before; only the slide transition itself is now ours.
+   131	 *
+   132	 * Renders the inline header row (title left — empty when there's no `title` text — close button
+   133	 * right) when either `title` or `boxedHeader` is passed, or a floating close button only when
+   134	 * neither is — see ZimmDrawer's own docblock for when each is used.
+   135	 *
+   136	 * @param props see ZimmDrawerContentConfig
+   137	 */
+   138	const ZimmDrawerContent = ({
+   139	  children,
+   140	  onClose,
+   141	  title,
+   142	  titleId,
+   143	  titleStyle = 'large',
+   144	  labelledBy,
+   145	  ariaLabel,
+   146	  boxedHeader,
+   147	  contentStyles,
+   148	  headerStyles,
+   149	  headerTitleStyles,
+   150	  closeButtonStyles,
+   151	  headerCloseButtonStyles,
+   152	}: ZimmDrawerContentConfig) => {
+   153	  const { t } = useUiCopy();
+   154	  const { getDialogProps, getDialogContainerProps } = useModalContext();
+   155	  const dialogProps = getDialogProps({ 'aria-label': ariaLabel });
+   156	  // getDialogProps always computes `aria-labelledby` from Chakra's own <DrawerHeader> mount
+   157	  // state, which ZimmDrawer never renders (no header sub-component in this tree) — so it
+   158	  // always resolves to undefined regardless of what's passed in above. Set it directly so the
+   159	  // `title` and `labelledBy` prop variants of ZimmDrawerProps actually work.
+   160	  if (title && titleId) {
+   161	    dialogProps['aria-labelledby'] = titleId;
+   162	  } else if (labelledBy) {
+   163	    dialogProps['aria-labelledby'] = labelledBy;
+   164	  }
+   165	  const containerProps = getDialogContainerProps();
+   166	
+   167	  return (
+   168	    <ModalFocusScope>
+   169	      <chakra.div {...containerProps} __css={{ position: 'fixed', inset: 0, display: 'flex', zIndex: 'modal' }}>
+   170	        <MotionChakraDiv
+   171	          {...dialogProps}
+   172	          initial={{ x: '100%' }}
+   173	          animate={{ x: 0 }}
+   174	          exit={{ x: '100%' }}
+   175	          transition={DRAWER_TRANSITION}
+   176	          __css={{ position: 'fixed', top: 0, right: 0, bottom: 0, outline: 0, ...contentStyles }}
+   177	        >
+   178	          {title || boxedHeader ? (
+   179	            <chakra.div sx={headerStyles}>
+   180	              <chakra.span
+   181	                id={title ? titleId : undefined}
+   182	                sx={headerTitleStyles}
+   183	                textStyle={titleStyle === 'small' ? 'body2Strong' : 'heading1'}
+   184	              >
+   185	                {title}
+   186	              </chakra.span>
+   187	              <chakra.div sx={headerCloseButtonStyles}>
+   188	                <ZimmButton variant="icon" icon="close" label={t('drawer.close', 'Close')} onClick={onClose} />
+   189	              </chakra.div>
+   190	            </chakra.div>
+   191	          ) : (
+   192	            <chakra.div sx={closeButtonStyles}>
+   193	              <ZimmButton variant="icon" icon="close" label={t('drawer.close', 'Close')} onClick={onClose} />
+   194	            </chakra.div>
+   195	          )}
+   196	          {/* SFCC-926 — tester reported no scrollbar when drawer content exceeds the panel
+   197	              height. flex:1 + minHeight:0 lets this grow into remaining space after the
+   198	              fixed header; overflowY:auto gives it its own independent scrollbar. */}
+   199	          <chakra.div __css={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+   200	            {children}
+   201	          </chakra.div>
+   202	        </MotionChakraDiv>
+   203	      </chakra.div>
+   204	    </ModalFocusScope>
+   205	  );
+   206	};
+   207	
+   208	/**
+   209	 * Generic right-anchored slide-in drawer shell — overlay, panel, and a Figma-matched size
+   210	 * variant (see ZimmDrawerSize), built on Chakra's Drawer primitive (focus trap, initial focus,
+   211	 * focus restore, body-scroll lock, and Escape/overlay-click-to-close all come from Chakra, not
+   212	 * hand-rolled).
+   213	 *
+   214	 * Pass `title` to render an inline header row (title text left, close button right) sized per the
+   215	 * Figma drawer/header frames. Omit `title` and pass `labelledBy`/`aria-label` instead for drawers
+   216	 * that supply their own header (e.g. ZimmPdpDrawer's tab row) — the close button floats on its own
+   217	 * by default. Add `boxedHeader` alongside `labelledBy` when the drawer has no header content of its
+   218	 * own (e.g. ZimmCountryLanguageMismatch, whose heading lives in its body) but still wants the close
+   219	 * button sitting in that same in-flow header row rather than floating over the content.
+   220	 *
+   221	 * @param props see ZimmDrawerProps
+   222	 */
+   223	export const ZimmDrawer = (props: ZimmDrawerProps) => {
+   224	  const {
+   225	    isOpen,
+   226	    onClose,
+   227	    size,
+   228	    children,
+   229	    titleStyle = 'large',
+   230	    finalFocusRef,
+   231	    initialFocusRef,
+   232	    hasOverlay = true,
+   233	  } = props;
+   234	  const styles = useMultiStyleConfig(ZIMM_DRAWER_RECIPE, { variant: size });
+   235	  const titleId = useId();
+   236	
+   237	  const title = 'title' in props ? props.title : undefined;
+   238	  const labelledBy = !title && 'labelledBy' in props ? props.labelledBy : undefined;
+   239	  const ariaLabel = !title && 'aria-label' in props ? props['aria-label'] : undefined;
+   240	  const boxedHeader = !title && 'labelledBy' in props ? props.boxedHeader : undefined;
+   241	
+   242	  // SFCC-926 — tester reported body scroll still active while any drawer is open, allowing
+   243	  // the page behind the overlay to scroll alongside the drawer. ZimmDrawer bypasses Chakra's
+   244	  // own <DrawerContent>, so blockScrollOnMount may not fire. Locking body overflow explicitly
+   245	  // ensures only the drawer's internal scroll area is accessible while it is open.
+   246	  // Uses the module-level counter so multiple open instances don't race to restore overflow.
+   247	  useEffect(() => {
+   248	    if (!isOpen) return;
+   249	    if (scrollLockCount === 0) {
+   250	      scrollLockPrev = document.body.style.overflow;
+   251	      document.body.style.overflow = 'hidden';
+   252	    }
+   253	    scrollLockCount++;
+   254	    return () => {
+   255	      scrollLockCount--;
+   256	      if (scrollLockCount === 0) {
+   257	        document.body.style.overflow = scrollLockPrev;
+   258	        scrollLockPrev = '';
+   259	      }
+   260	    };
+   261	  }, [isOpen]);
+   262	
+   263	  // Chakra's FocusLock remains active during the exit animation, so any focus call made
+   264	  // while the drawer is still mounted (rAF, close-button onClick) gets trapped and dropped.
+   265	  // onCloseComplete fires after the animation finishes and FocusLock is released — the only
+   266	  // reliable moment to restore focus. Covers both close-button click and Escape for all
+   267	  // consumers that pass finalFocusRef.
+   268	  const handleCloseComplete = () => {
+   269	    if (finalFocusRef) finalFocusRef.current?.focus();
+   270	  };
+   271	
+   272	  return (
+   273	    <Drawer
+   274	      isOpen={isOpen}
+   275	      onClose={onClose}
+   276	      placement="right"
+   277	      onCloseComplete={handleCloseComplete}
+   278	      initialFocusRef={initialFocusRef}
+   279	    >
+   280	      {hasOverlay && <DrawerOverlay sx={styles.overlay} />}
+   281	      {/* aria-labelledby (not aria-label) for the title case: Chakra's own <DrawerContent>
+   282	          would clobber it with its own headingId (undefined without a DrawerHeader), but
+   283	          ZimmDrawerContent bypasses <DrawerContent> entirely and sets dialogProps itself
+   284	          (see its own comment above) — the clobbering bug this would otherwise work around
+   285	          doesn't apply here, so referencing the visible title node is safe and preferred. */}
+   286	      <ZimmDrawerContent
+   287	        onClose={onClose}
+   288	        title={title}
+   289	        titleId={title ? titleId : undefined}
+   290	        titleStyle={titleStyle}
+   291	        labelledBy={labelledBy}
+   292	        ariaLabel={ariaLabel}
+   293	        boxedHeader={boxedHeader}
+   294	        contentStyles={styles.content}
+   295	        headerStyles={styles.header}
+   296	        headerTitleStyles={styles.headerTitle}
+   297	        closeButtonStyles={styles.closeButton}
+   298	        headerCloseButtonStyles={styles.headerCloseButton}
+   299	      >
+   300	        {children}
+   301	      </ZimmDrawerContent>
+   302	    </Drawer>
+   303	  );
+   304	};

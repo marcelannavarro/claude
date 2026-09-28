@@ -1,0 +1,710 @@
+[2026-09-07T03:32:24 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 250ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 ...
+[2026-09-07T03:32:24 user RESULT] ...mponents/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 250ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 21ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  11:32:09
+   ...
+[2026-09-07T03:32:24 user RESULT] ...ts) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 250ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 21ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  11:32:09
+   Duration  14.60s (transform 472ms, setup 5.18s, collect 15.62s, tests 4...
+[2026-09-07T03:32:24 user RESULT] ...rrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 250ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 21ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  11:32:09
+   Duration  14.60s (transform 472ms, setup 5.18s, collect 15.62s, tests 400ms, environment 19.26s, pre...
+[2026-09-07T03:32:24 user RESULT] ...rganisms/zimmProductCard/index.test.tsx (76 tests) 250ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 21ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  11:32:09
+   Duration  14.60s (transform 472ms, setup 5.18s, collect 15.62s, tests 400ms, environment 19.26s, prepare 610ms)...
+[2026-09-07T03:46:58 user RESULT] ...+NGzeqKB/8XRhwcKVpuKtTo/8+9dRTAwcOdEuUsBMmTFCaKBlDN4TxHchEPP6sQ0uWLGndunWHDh3mzZvnX1knmqQpOiWQOuAKxx49eribJXTr1k2RnWR5kK5LhgwZoj6yevderGu8cuXKfPnybd++3d36ceHChV999VXnzp2DrzqQyadC3O3Y1GzoIiP0A+BUJkhCkP7fUD/jiy++UCvo7vOjBvgvf/mLqjHq1+sjptuOQypNyzIu3GfMmOF3M9Vr1r8TPfjkk08SveqgTMRTt27dfv36aS/R2T/iTtIUUqFCBXXN3BWGe4n7SWqi5UE33...
+[2026-09-07T03:46:58 user RESULT] ...mxQYSSdOeu5upx1FtPduJeIL3BVQdQJmibr5q0O5WWa4QkeSLd17sduH+HuNOnKSMUwOjfFFNRsGtDFI1XJVfdaU1HqCsCd6u66gYL3YPerUK/nLl1xtvvKGerDrCX3zxhR6ou7pq1argjtQ/VbljfIy/UCUpReQ999yjkrSrX8fl7uOoYoiK6aHxxtKlS7uv1vjUYOiaQ6OsOlGh8dLkh5rK+Yx+Ckk+RFdo8iswhQsXfuihhzQMq/ZMLYSbIcuLzSKi97VixQo1RYr+bO/2DBzJckfNPUcT8Wh0Tpmilf3QdLWIuAWQ1FWtWrV69eqqaC...
+[2026-09-07T03:46:58 user RESULT] ...CTz/9dMmSJUWLFr3ssssKFCiQfOWgjz766J133qlevXqtWrX8hT/++OMbb7zx008/XXLJJdqmBwC5UJ7ff//dSzMrV65s2bLl0Ucf/d1335UvX37u3LkuZD/++OOGDRvmy/f/N0ilS5deunSpHqgNuOuuu4oUKfL999+fdNJJs2bNKlOmTKKVg/TCO++889RTT920aVPnzp379u3rxRqV5s2bb9y4UXvPnz//zJkzK1So4AFAbpOOZZlJkyadccYZq1evfu2116699tpjjz3WLZ8/f36JEiW++OILha8La2XxPffc06ZNm1WrVq1YsUJxnJ...
+[2026-09-07T03:49:43 user RESULT] ...hS+++OJXn16S1K1bN4hkGYcLmd8bPnw4MTKcXRubPc5zaZ4yR097wJ28I7N56faxIqVLpaEVRV1MGy52B3qXPgWaVlT4B9cZ5rR7XJikPmVnl6uGkXjpath0pMzw9JLEZdZ5pWjI0suhG0SLgno8PC0emz1erFix999/v379+vxfpUoV38PLbF66fQyNU7pUmuLFiz/yyCMfffRR1F8JZh//wrx583y6jcPltPNl1KtXj8CT6CVcKL3lllvuvPNOvkicQE2coJ+UPXv2dKTM8PSSxF0zRYsWdQ9zRggi2c01a9YM79muXTv/fgmNrjBXrlx...
+[2026-09-07T03:50:04 user RESULT] ...SEphDkkpzCEphTkkpTCHpBTmkJTCHJJSmENSCnNISmEOSSnMISmFOSSlMIekFOaQlMIcklKYQ1IKc0hKYQ5JKcwhKYU5JKUwh6QU5pCUwhySUpgjnlLu3r079ZWPHj26f/9+77SwZ88e769y4MCB9evXHzt2LKz8999//+2337yTYdOmTWl5J2cu8ZTy8ccfT0pKiiwvVapUu3btwgpHjhzZq1cv/8cFCxZc/L9ccskl2PDqq69eeumlmzdv9mtSyEOTJk3i+JtvvilQoACVr7rqqrvvvvvdd9+NfHWsuu2223788UcvCpyEE06dOjWsnLd...
+[2026-09-07T03:50:04 user RESULT] ...+9x48ZdddVVK1asmDdv3t133+3vdzp37ty8efNu2LABaZxkONSjR48WLVp8/vnny5YtQ6NevXpFqxxkx44dWNi9e3ci5ejRo4cPH/7pp59SPnjwYM5JIWe78MILu3Xr5gkzxFPKgwcP7tq1a8+ePajZpUsXf8Pcd999N1euXNOnT//ll19cyerVq6mMlETEhIQEDPZv9BRZOQgh8PDhwwRFL3SbHGq+/vrrx44de+211+gDEJizZMlSt25degXBW5yI+BJPKR955JGtW7eWLVv25Zdf9m8vgltffPHF0aNH27VrV758eUKjF9pF3Av1Hfn/...
+[2026-09-07T04:07:09 user RESULT] ...+abzbXgti0bIwCeDokA2CJgwBgBA8YIGDBGwIAxAgaMETBgjIABYwQMGCNgwBgBA8YIGDBGwIAxAgaMETBgjIABYwQMGMudgNPT06P/n127dkVAvpdjAauo6ifXOPGkU+tdcPHoMU+Ehe07dHpm/LPh8ebNm7XCd999l5GR0bRZ89Vr1sQ/u2jx4lNq1Nq9e/d119/w4EN/j5cPGHhfHOqbs96qU/c8raPH27dvv7x5qx07dujxjz/+eG69C5+b8nxY7dHBQ1v9T5sIyB9yLGCFpNiGPPrILV1u6td/4Ny587Rwx84dIbPop8J/WiEjY5ci...
+[2026-09-07T04:07:09 user RESULT] ...R44cme1/UhnAPhWMctW6deueeuqp5cuXd+3atXjx4vHyadOm7dy5Uw9KlChx4YUXhoWLFy+ePXt2yZIlGzRoULRo0dQrJ1uwYMEHH3xw2mmnnXXWWfHCbdu2zZw5c/v27fXr19dzRoCh3PzvA3/yySft27cvXLjw999/X6VKlalTp4aQFi5ceMkll4T/sHLFihXfe+89PVDnPXr0OPLIIzdt2nTUUUdNmjSpcuXKWa2cTD/YrVu3SpUqffvtt126dLnjjjuixAdH27Ztv/nmG229UKFCEydOrFq1agS4yc1T6LFjx5588slz586dMWNGs2b...
+[2026-09-07T04:07:10 user RESULT] ...f1I/zZt2lRrBjl+bzkcoPSRzADrfNUprllZtTA6NXWuKxiPPvpotIL6S5pEVXOhq7Imch5//PEst6N7G7qW6/BHS3r06PFeTNhi6OhqYkazR1pt+fLlevDRRx9pOiS7NxYmIX5IqQ5buMG77rpLT9WVVdOqE11ve99991U8FID4qVG1lpMmTVKM9d5uvPHG7JrHhB1pGua9X2geO4jNKhUpUkRtoHZ08sknK0sJ3XV9FkX6/vvv18f5+9//HmT/ifQ9q2mNXhXuReNbDYxT50AcdNBB99xzz9y5c9Vl0CTCF198kd3HCXI8QOkjmQEOJzN0...
+[2026-09-07T04:07:10 user RESULT] ...vGaKpTC9WUhae7OpbhVIcaH13+S5cunV3/7cUXX9QpqLsj2e0onG166qmnwh2prxjEpmpyeGP6V4HJ8qfRrJJuhIQb1IhX7VU41ayfRi2D7iSpTdMH0amfeTvqZivhhx56qMbJWe5IvevnnntOfWYNgLUX9WD1MV999VVlLIj1AjQ21gMlXGnXPR419eF4OPN2NNOW3ccJUuZAqIXX3J4eqGUOp/qy21HOB6hAaO5dH0eT6s/G6IGeqoUPUkwyZ6HVR9Kh0kU6WqLzbOLEifqydDdSnSg1OGpe1MQFsdM9mtuM9+GHH2ogqikcdcmy3IsmM...
+[2026-09-07T04:11:41 user RESULT] ...gwcPzvKfVAawX3mjHLV27drnn39+2bJl7du3L1SoULx88uTJO3bs0IPChQtfcsklYeGiRYtmzpxZpEiROnXqFChQIP3KyebPn//hhx+eddZZ5513Xrxw69at06ZN27ZtW+3atfWcEWAoJ/994E8//bRly5ZHHXXU999/X758+QkTJoSQFixYcPnll4d/WLlMmTLvv/++HqjzTp06HXfccRs3bvzVr341ZsyYcuXKpVo5mX6wQ4cOZcuW/fbbb9u1a3fvvfdGiRNH8+bNv/nmG209X758o0ePrlChQgS4yclL6OHDh59++umzZ8+eOnXq1Vd...
+[2026-09-07T04:11:42 user RESULT] ...3CVp+wQXnT548NYR25cqVY8aOe/W118M6EyY81LRpk332+eGAH5s0+bNFi6Y98aQe77vvvld2vfwf9wzRjlavWTNy1ANXX3VlBOwd8rkJXbVa1Ysval/z8MMVsPRrZn3zzWVXdFW1nLywWdMmivnLL8/W42lPPPX9998/9dR0PV6xYoWS3LlTxyhR1Y8eM65OndqKt1bQkk4dO2RkFBs/4aEh9w09rk6dJk1+FwF7h3wO8KJFi9V+/vyLLxqedmr6Nf9x9x3R91HXq65WezheWKJEiVYtW06e+rgePz5tWquWF8x8adbmzZsnPjapfr16Rx...
+[2026-09-07T04:11:42 user RESULT] ...1/+ctfrr/+ej3VJ61evfruHED4vEpdrr3os+uookSD6G9/+1v8Jef6qtViV62uK4WqfV12teTVV19t0KDBrbfeqsf6RMkfR4ex845SlYQ8d7Q3K/gmtGpFBbVly5avvPKKqpR4+VFHHaX/Z8+eHZ4mpzeZ2lQqkZ999lnc5kxFxb1atWonnXSSKjpVUPFyFSbVWu+8844eK0JaZ+f37rPPPsqDKg1Vwul7dGqxq9Jr0qSJCro+WqrVSpUqNWTIEO3rrrvu2v3D2J0d1ahRIyMj44033ti+fbueqtbSwe/OAaTy4osvahiidevW6p1OmjQp1...
+[2026-09-07T04:12:06 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 240ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 ...
+[2026-09-07T04:12:06 user RESULT] ...mponents/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 240ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:11:51
+   ...
+[2026-09-07T04:12:06 user RESULT] ...ts) 130ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 240ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:11:51
+   Duration  15.01s (transform 781ms, setup 6.04s, collect 15.22s, tests 3...
+[2026-09-07T04:12:06 user RESULT] ...rrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 240ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:11:51
+   Duration  15.01s (transform 781ms, setup 6.04s, collect 15.22s, tests 393ms, environment 19.44s, pre...
+[2026-09-07T04:12:06 user RESULT] ...rganisms/zimmProductCard/index.test.tsx (76 tests) 240ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:11:51
+   Duration  15.01s (transform 781ms, setup 6.04s, collect 15.22s, tests 393ms, environment 19.44s, prepare 636ms)...
+[2026-09-07T04:14:18 user RESULT] ...EbAgDECBowRMGCMgAFjBAwYI2DAGAEDxggYMEbAgDECBowRMGCMgAFjBAwYS3zAM2bM+N5/UhlApvIFCXXgwIGnn356165dgwYNKlq0aHR8xYoVJ0+e1I1ixYo1bdo0HNy2bdvatWtLlCjRvHnzQoUKxT841ubNm99999169eo1aNAgOnj8+PHVq1efOHGiWbNmeswAMJTIfx/4ww8/vP32288999xvvvmmWrVqy5YtC0PasmXLDTfcEP7DyhUrVnz77bd1Q50PGTKkePHihw8fPv/88xctWlS5cuWsDo6lb3zggQcqVar01Vdf9e/f/8EH...
+[2026-09-07T04:14:18 user RESULT] ...YS3zAM2bM+N5/UhlApvIFCXXgwIGnn356165dgwYNKlq0aHR8xYoVJ0+e1I1ixYo1bdo0HNy2bdvatWtLlCjRvHnzQoUKxT841ubNm99999169eo1aNAgOnj8+PHVq1efOHGiWbNmeswAMJTIfx/4ww8/vP32288999xvvvmmWrVqy5YtC0PasmXLDTfcEP7DyhUrVnz77bd1Q50PGTKkePHihw8fPv/88xctWlS5cuWsDo6lb3zggQcqVar01Vdf9e/f/8EHHwwiHxxdunT58ssv9bvnz59/4cKF1atXDwA3iVxCz5kzp3bt2uvXr1+1al...
+[2026-09-07T04:16:49 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 132ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 257ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 ...
+[2026-09-07T04:16:49 user RESULT] ...mponents/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 132ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 257ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:16:46
+   ...
+[2026-09-07T04:16:49 user RESULT] ...ts) 132ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 257ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:16:46
+   Duration  2.12s (transform 381ms, setup 384ms, collect 2.35s, tests 412...
+[2026-09-07T04:16:49 user RESULT] ...rrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx (76 tests) 257ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:16:46
+   Duration  2.12s (transform 381ms, setup 384ms, collect 2.35s, tests 412ms, environment 1.38s, prepar...
+[2026-09-07T04:16:49 user RESULT] ...rganisms/zimmProductCard/index.test.tsx (76 tests) 257ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 23ms
+
+ Test Files  3 passed (3)
+      Tests  109 passed (109)
+   Start at  12:16:46
+   Duration  2.12s (transform 381ms, setup 384ms, collect 2.35s, tests 412ms, environment 1.38s, prepare 124ms)...
+[2026-09-07T04:17:13 user RESULT] ...vXjcHwD4jjwN8+x13DRs2fPyLY8uXLx/3T6619IoVKzYqc8TmXzdfceXV23/f7re3a9tmxoyZU6dOW7fu+z533VGmTOn/vjb5xRfHd+xwobuR4cOf6tTp4lKlSra5oPWIEZnuWmp1q1Sp3PCcs2vVrBkA+4w8DvB9997z25YtGzZudH+WLVt28+bf3OXffttcqFChgw8u4XfW5WeezlRQb7v9Tr9Rzezxx9e+pfdt/2lyXtGiRVu2aHH/AwP2y8g4++wG+lc1uZrx0kTXkUdXVxf6/Xnzlixd6q542GGHRc8awN4tjwNcuXKl3r169ri5p2...
+[2026-09-07T04:17:13 user RESULT] ...JNm3ahLf/EhPeokbmySef3LBhQ69evbS/thx99NE6BPXKZmZmqplq1aqVzpGlS5fWFXWzCqG/ri7rJPrzzz/r8m+//bZz507ls3LlytOmTevSpcv48eP//e9/h+9r3Lhx69atGzly5O23357wYetGdIO//vpreOP9998/aNAgpeiGG27Q0b9kyRIdiA0aNNDDO/XUU7WD7lcHqAIwYcKEgw46KPxkdWu6Tffn559/3rZtWz2A1q1b65D96aefXn/9dR33c+fOHTx4sBqB8J2qldA/6ZTRsWNHHVuPPfaY7lF3F30R/BM/7rjj3JYTTzzR3b...
+[2026-09-07T04:17:13 user RESULT] ...U7WD7lcHqAIwYcKEgw46KPxkdWu6Tffn559/3rZtWz2A1q1b65D96aefXn/9dR33c+fOHTx4sBqB8J2qldA/6ZTRsWNHHVuPPfaY7lF3F30R/BM/7rjj3JYTTzzR3bv+36FDB/eqilKqZ1GlShVlW6dR34+YMmXK999/f9NNN+myXsyjjjrqvPPOc/+klz0rL9HPMe6y/qlTp056KY499tjgr++Uf+sT3ksWX8bc0O3rXNy7d+/oPzVv3lxvdNmyZXV+DPKHdAbYufHGG9Wb0mk1xT6vvvrqt99+G8RaDNc4KyQ9e/bUBZ3mK1WqdMsttwR...
+[2026-09-07T04:17:13 user RESULT] ...pkZaXk76c45bLPpr6QVi8rVqzoD4i/h6agNJJXDOI+C53C1q1bdYjHfU7DfeQoK59w1lqo+xCiGvAgr+nw0DqtRobB30J3t23btpzNSCV8GXNAzb5mNHTm1VSiOoB6VXWbelS6oPOLDir1j8LnuPTKpwEG0kgrvV999ZVaEZ0UXAOg0dD+MYfHBPkGAQYM4/vAgGEEGDCMAAOGGQtw9Fum6aUZhDVr1rhP/Gdlu5PdZ6F1tb9nqkJTNbn5iML69eu1rBXdriebra8NafZI8+r5Z601P0tzgLXG2Llz57iNer/btWvn/wyXd8hKQYZoPQrHV...
+[2026-09-07T04:17:13 user RESULT] ...xz/r07NkziP20T6VKlbJVXiNZTYkg9KOeatl0sGbxkxWzZs1Seps3bz5w4MDChQtri05Jl156abt27fRo1TL7T5KkLpShe1fbq26zjk7/qK666qrbbrtNTz/6AYx3331Xp7B77rlHrbTuLq7sTrInHt0eLWmihNx9992zZ8/WS+S26AXRs2jRooX7M/clTZTP9u3b652tWLFisn2S3Utu6o3sZdI8iXXAAQeod3T55ZdHO1RhTzzxhDpIajRGjRqltiXICwlrSqhTrW6YDlOlKO4nM1Po06dPmTJlHnjgAZdeR428mmX1otWY+42pC2WosZ...
+[2026-09-07T04:17:13 user RESULT] ...CvW4UpDOH7E3rt372eeeUbdb82HNW3aVIPz1NuBPJfOAGtKOYj1h5VYpWLWrFlPPfWUjnsNTRXp1AEOYl9eadas2bBhw4YOHRrkyLZt2zRfpU6v36Kes2a/NMs1duzYEiVK+O1qjd//05AhQ8LbZ86cqTZ5wYIFd9999263A3krnQF2A2AFuHXr1krLww8/PHHiRHVr1YXWPJNGwtGZ5LDcF2R4/fXX1WEOV+dJWKwjIT02t2pVoECBNm3a1K1bVxPOGvcm2x4Ae0A6A6wOc6FChTTNo1ZX66VattGB7upXqAXetWuX1mZT30JuCjLMnz//...
+[2026-09-07T04:17:13 user RESULT] ...fz2qVOnbtu2TReKFy9++umnu42fffbZ7NmzDz744IYNGx544IGpdw5btmzZe++9d9xxx5144ol+42+//fbWW29t2bLl7LPP1m0GgEHp/HnR+fPnX3TRRYULF/7xxx8rV648adIkF6Tly5efddZZhQr97+RSoUKFd999VxeU81tuuaVEiRI///zzIYccMn78+COOOCLZzmG64s0333z44YevWbPmyiuvdL+7rRNH27ZtV69erXvfb7/9xo0bV6VKlQCwJp1d6GeeeeaYY45ZuHDh9OnTzz///P33399tnzZtWtmyZb/66isFzAVSebv99ts7...
+[2026-09-07T04:17:22 assistant TEXT] ...p/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/f27013ef-785b-4c0c-b11e-78200eb25438/scratchpad/bagicon-glyph-fixed-multiliner.png)
+
+`tsc` clean, all 109 tests still pass. Can you check this on your end?...
+[2026-09-07T04:24:01 user RESULT] ...the category ID. In the case of a price  refinement, this is the price range. Ranges are enclosed by parentheses and delimited by \"..\"; for example,  \"(100..999)\" and \"(Aa..Fa)\" are valid ranges.
+61429	 * - **Min Length:** 1
+61430	 * - **Max Length:** 4000
+61431	 *
+61432	 * @property values: The array of hierarchica...
+[2026-09-07T04:35:33 user TEXT] ...not guessed), returns `ZimmProductCardBaseProps &amp; ZimmProductCardPlpVariation | null`.
+- `overrides/app/pages/product-list/productListCardMapper.test.ts` — 14 tests, all passing.
+
+**Files changed:**
+- `overrides/app/pages/product-list/index.tsx` — removed `console.log` marker (already done by parent); swapped `&lt;ProductT...
+[2026-09-07T04:35:50 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:35:49
+   Duration  798ms (transform 29ms, setup 92ms, collect 99ms, tests 2ms, envi...
+[2026-09-07T04:35:50 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:35:49
+   Duration  798ms (transform 29ms, setup 92ms, collect 99ms, tests 2ms, environment 404ms, prepare 44ms)...
+[2026-09-07T04:35:50 user RESULT] .../Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:35:49
+   Duration  798ms (transform 29ms, setup 92ms, collect 99ms, tests 2ms, environment 404ms, prepare 44ms)...
+[2026-09-07T04:39:07 user RESULT] ... ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 12ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms...
+[2026-09-07T04:39:07 user RESULT] ... ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 12ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 10ms
+ ✓ overr...
+[2026-09-07T04:39:07 user RESULT] ...t.ts (5 tests) 12ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 10ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/pr...
+[2026-09-07T04:39:07 user RESULT] ...ction.test.ts (5 tests) 11ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 10ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/utils/r...
+[2026-09-07T04:39:07 user RESULT] .../ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 10ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/th...
+[2026-09-07T04:39:07 user RESULT] .../app/hooks/useUiCopy.test.tsx (7 tests) 10ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 47ms
+ ✓ overrides/app/utils/recentlyViewe...
+[2026-09-07T04:39:07 user RESULT] ...utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 47ms
+ ✓ overrides/app/utils/recentlyViewedCard.test.ts (17 tests) 3ms
+ ✓ overrides/app/components/list-...
+[2026-09-07T04:39:07 user RESULT] ...pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 47ms
+ ✓ overrides/app/utils/recentlyViewedCard.test.ts (17 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) ...
+[2026-09-07T04:39:07 user RESULT] ...des/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 47ms
+ ✓ overrides/app/utils/recentlyViewedCard.test.ts (17 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test....
+[2026-09-07T04:39:07 user RESULT] ...x (6 tests) 47ms
+ ✓ overrides/app/utils/recentlyViewedCard.test.ts (17 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css....
+[2026-09-07T04:39:07 user RESULT] ...s
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓...
+[2026-09-07T04:39:07 user RESULT] ...overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ o...
+[2026-09-07T04:39:07 user RESULT] ...est.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndi...
+[2026-09-07T04:39:07 user RESULT] ....test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/resolveImageEntry.tes...
+[2026-09-07T04:39:07 user RESULT] ...its/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test....
+[2026-09-07T04:39:07 user RESULT] ... ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 2ms
+ ✓ overrides/app/pages/product-list/productLis...
+[2026-09-07T04:39:07 user RESULT] ...s
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 2ms
+
+ Test Files...
+[2026-09-07T04:39:07 user RESULT] ...p/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 2ms
+
+ Test Files  57 passed (57)
+      Tests  943 passed (943)
+   Start at  12:38:56
+   Duration ...
+[2026-09-07T04:39:07 user RESULT] ...roup.css.test.ts (3 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 2ms
+
+ Test Files  57 passed (57)
+      Tests  943 passed (943)
+   Start at  12:38:56
+   Duration  10.60s (transform 3.13s, setup 16.47s, collect 46.99s, tests...
+[2026-09-07T04:39:07 user RESULT] ...s (3 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 2ms
+
+ Test Files  57 passed (57)
+      Tests  943 passed (943)
+   Start at  12:38:56
+   Duration  10.60s (transform 3.13s, setup 16.47s, collect 46.99s, tests 10.72s, environment 52.11s, ...
+[2026-09-07T04:39:07 user RESULT] ...pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 2ms
+
+ Test Files  57 passed (57)
+      Tests  943 passed (943)
+   Start at  12:38:56
+   Duration  10.60s (transform 3.13s, setup 16.47s, collect 46.99s, tests 10.72s, environment 52.11s, prepare 3.80s)...
+[2026-09-07T04:56:54 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:56:53
+   Duration  1.29s (transform 32ms, setup 199ms, collect 161ms, tests 2ms, en...
+[2026-09-07T04:56:54 user RESULT] ... RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:56:53
+   Duration  1.29s (transform 32ms, setup 199ms, collect 161ms, tests 2ms, environment 699ms, prepare 67m...
+[2026-09-07T04:56:54 user RESULT] .../Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  12:56:53
+   Duration  1.29s (transform 32ms, setup 199ms, collect 161ms, tests 2ms, environment 699ms, prepare 67ms)...
+[2026-09-07T05:07:43 user RESULT] ...ged changes...
+
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 134ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 33ms
+stderr | overrides/app/theme/index.test.tsx > rendered output > textStyle applies ...
+[2026-09-07T05:07:43 user RESULT] ...a
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx (27 tests) 134ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 33ms
+stderr | overrides/app/theme/index.test.tsx > rendered output > textStyle applies the brand type style end to end
+Could not parse CSS stylesheet
+
+stderr ...
+[2026-09-07T05:07:43 user RESULT] ...test.tsx > rendered output > Button renders square and uppercase from the theme override
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/theme/index.test.tsx (128 tests) 191ms
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > forwards item, itemsKey, and maxColumns to the given contentC...
+[2026-09-07T05:07:47 user RESULT] ...g calls onContentOutComplete only during the contentOut phase
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 1572ms
+
+ Test Files  11 passed (11)
+      Tests  291 passed (291)
+   Start at  13:07:36
+   Duration  5.82s (transform 1.35s, setup 3.35s, collect 24.10s, test...
+[2026-09-07T05:07:47 user RESULT] ...tComplete only during the contentOut phase
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 1572ms
+
+ Test Files  11 passed (11)
+      Tests  291 passed (291)
+   Start at  13:07:36
+   Duration  5.82s (transform 1.35s, setup 3.35s, collect 24.10s, tests 6.20s, environment 10.03s, pre...
+[2026-09-07T05:07:47 user RESULT] ...Out phase
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 1572ms
+
+ Test Files  11 passed (11)
+      Tests  291 passed (291)
+   Start at  13:07:36
+   Duration  5.82s (transform 1.35s, setup 3.35s, collect 24.10s, tests 6.20s, environment 10.03s, prepare 671ms)
+
+[feature/SFCC-83...
+[2026-09-07T05:08:22 user RESULT] ...elated to your staged changes...
+
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  13:08:20
+   Duration  1.09s (transform 14ms, setup 89ms, collect 105ms, tests 2ms, env...
+[2026-09-07T05:08:22 user RESULT] ...taged changes...
+
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  13:08:20
+   Duration  1.09s (transform 14ms, setup 89ms, collect 105ms, tests 2ms, environment 425ms, prepare 41ms...
+[2026-09-07T05:08:22 user RESULT] .../Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  13:08:20
+   Duration  1.09s (transform 14ms, setup 89ms, collect 105ms, tests 2ms, environment 425ms, prepare 41ms)
+
+[feature/SFCC-83-84_rece...
+[2026-09-07T05:11:07 user RESULT] ...button> and no anchor when href is an unsafe javascript: URL
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx (6 tests) 188ms
+
+ Test Files  65 passed (65)
+      Tests  1025 passed (1025)
+   Start at  13:10:44
+   Duration  23.14s (transform 3.93s, setup 38.89s, collect 118.04s, ...
+[2026-09-07T05:11:07 user RESULT] ...chor when href is an unsafe javascript: URL
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx (6 tests) 188ms
+
+ Test Files  65 passed (65)
+      Tests  1025 passed (1025)
+   Start at  13:10:44
+   Duration  23.14s (transform 3.93s, setup 38.89s, collect 118.04s, tests 11.97s, environment 127.1...
+[2026-09-07T05:11:07 user RESULT] ...cript: URL
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx (6 tests) 188ms
+
+ Test Files  65 passed (65)
+      Tests  1025 passed (1025)
+   Start at  13:10:44
+   Duration  23.14s (transform 3.93s, setup 38.89s, collect 118.04s, tests 11.97s, environment 127.12s, prepare 5.76s)...
+[2026-09-07T05:11:11 assistant TEXT] ...tsc clean, all 1025 tests pass. Finalizing the merge commit....
+[2026-09-07T05:11:27 user RESULT] ...Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 2217ms
+ ✓ overrides/app/components/product-view/index.test.tsx (11 tests) 127ms
+ ✓ overrides/app/components/footer/footerNavColumn/index.test.tsx (7 tests) 72...
+[2026-09-07T05:11:27 user RESULT] ...rse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 2217ms
+ ✓ overrides/app/components/product-view/index.test.tsx (11 tests) 127ms
+ ✓ overrides/app/components/footer/footerNavColumn/index.test.tsx (7 tests) 72ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 31ms
+ ...
+[2026-09-07T05:11:27 user RESULT] ...x (27 tests) 2217ms
+ ✓ overrides/app/components/product-view/index.test.tsx (11 tests) 127ms
+ ✓ overrides/app/components/footer/footerNavColumn/index.test.tsx (7 tests) 72ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 31ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/com...
+[2026-09-07T05:11:27 user RESULT] ...t.tsx (11 tests) 127ms
+ ✓ overrides/app/components/footer/footerNavColumn/index.test.tsx (7 tests) 72ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 31ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/components/footer/index.test.tsx (12 tests) 84ms
+
+ Test Files  23 passed ...
+[2026-09-07T05:11:27 user RESULT] ...rNavColumn/index.test.tsx (7 tests) 72ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 31ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/components/footer/index.test.tsx (12 tests) 84ms
+
+ Test Files  23 passed (23)
+      Tests  391 passed (391)
+   Start at  13:11:20
+   Dur...
+[2026-09-07T05:11:27 user RESULT] ...omponents/recipeGuards.test.ts (6 tests) 31ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/components/footer/index.test.tsx (12 tests) 84ms
+
+ Test Files  23 passed (23)
+      Tests  391 passed (391)
+   Start at  13:11:20
+   Duration  7.12s (transform 1.34s, setup 6.99s, collect 36.15s, tests ...
+[2026-09-07T05:11:27 user RESULT] ...uards.test.ts (6 tests) 31ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/components/footer/index.test.tsx (12 tests) 84ms
+
+ Test Files  23 passed (23)
+      Tests  391 passed (391)
+   Start at  13:11:20
+   Duration  7.12s (transform 1.34s, setup 6.99s, collect 36.15s, tests 10.85s, environment 20.66s, pr...
+[2026-09-07T05:11:27 user RESULT] ...verrides/app/components/_app/index.test.tsx (6 tests) 48ms
+ ✓ overrides/app/components/footer/index.test.tsx (12 tests) 84ms
+
+ Test Files  23 passed (23)
+      Tests  391 passed (391)
+   Start at  13:11:20
+   Duration  7.12s (transform 1.34s, setup 6.99s, collect 36.15s, tests 10.85s, environment 20.66s, prepare 1.51s)
+
+Recorded resolu...
+[2026-09-07T05:12:04 user RESULT] ...r count /       held as an invariant across all commits / - [x] `npm run test` (Vitest) — 379 passed / 25 files / - [x] Storybook interaction + a11y — 24 suites / 106 tests. `.storybook/preview.tsx` sets /       `a11y: {test: 'error'}`, so every story is also an axe assertion / - [x] `npm run audit:tokens` — 14 unacknowledged / 22 a...
+[2026-09-07T05:12:33 user RESULT] ...6)
+ccc318d fix(ui-kits): confirm ZimmSlideIndicator colour tokens against Figma (SFCC-236)
+5802802 feat(ui-kits): add badge slot to ZimmProductCard (SFCC-236)
+e999cee feat(ui-kits): add ZimmProductCard organism (SFCC-236)
+79dcc67 feat(ui-kits): add ZimmProductCardContent molecule (SFCC-236)
+219d0a1 feat(ui-kits): add Zimm...
+[2026-09-07T05:18:25 user RESULT] ... ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides...
+[2026-09-07T05:18:25 user RESULT] ... ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+...
+[2026-09-07T05:18:25 user RESULT] ...ductInfo.test.ts (43 tests) 5ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/inde...
+[2026-09-07T05:18:25 user RESULT] ...t.ts (14 tests) 3ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 55ms
+ ✓ overrid...
+[2026-09-07T05:18:25 user RESULT] ...rrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 55ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app...
+[2026-09-07T05:18:25 user RESULT] ...nuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmProductName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 55ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.cs...
+[2026-09-07T05:18:25 user RESULT] ...ctName/index.test.tsx (2 tests) 16ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 55ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zi...
+[2026-09-07T05:18:25 user RESULT] ...verrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ o...
+[2026-09-07T05:18:25 user RESULT] ...omponents/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 ...
+[2026-09-07T05:18:25 user RESULT] ....test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 1ms
+ ✓ overrides/app/utils/contentfulImage.test....
+[2026-09-07T05:18:25 user RESULT] ...ts) 2ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 1ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts...
+[2026-09-07T05:18:25 user RESULT] ...s
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 1ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test....
+[2026-09-07T05:18:25 user RESULT] ...1ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+
+ Test Files  56 passed (56)
+      Tests  907 passed (907)
+   Start at  13:18:15
+   Duratio...
+[2026-09-07T05:18:25 user RESULT] ...s
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+
+ Test Files  56 passed (56)
+      Tests  907 passed (907)
+   Start at  13:18:15
+   Duration  10.50s (transform 1.82s, setup 16.01s, collect 44.61s, tests...
+[2026-09-07T05:18:25 user RESULT] ...app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+
+ Test Files  56 passed (56)
+      Tests  907 passed (907)
+   Start at  13:18:15
+   Duration  10.50s (transform 1.82s, setup 16.01s, collect 44.61s, tests 10.86s, environment 52.02s, ...
+[2026-09-07T05:18:25 user RESULT] ...zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+
+ Test Files  56 passed (56)
+      Tests  907 passed (907)
+   Start at  13:18:15
+   Duration  10.50s (transform 1.82s, setup 16.01s, collect 44.61s, tests 10.86s, environment 52.02s, prepare 3.86s)...
+[2026-09-07T05:19:40 user RESULT] ... ✓ overrides/app/hooks/useCountryConfig.test.ts (11 tests) 13ms
+ ✓ overrides/app/components/uiCopyProvider/index.test.tsx (6 tests) 11ms
+ ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 11ms
+ ✓ overrides/a...
+[2026-09-07T05:19:40 user RESULT] ... ✓ overrides/app/hooks/useCountryConfig.test.ts (11 tests) 13ms
+ ✓ overrides/app/components/uiCopyProvider/index.test.tsx (6 tests) 11ms
+ ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/hook...
+[2026-09-07T05:19:40 user RESULT] ...ntryConfig.test.ts (11 tests) 13ms
+ ✓ overrides/app/components/uiCopyProvider/index.test.tsx (6 tests) 11ms
+ ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 9ms
+ ✓ overrides/app/utils/richText...
+[2026-09-07T05:19:40 user RESULT] ...opyProvider/index.test.tsx (6 tests) 11ms
+ ✓ overrides/app/hooks/useContentfulClient.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 9ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/pro...
+[2026-09-07T05:19:40 user RESULT] ...p/hooks/useContentfulClient.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 9ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 4ms
+ ✓ overrides/app/utils/re...
+[2026-09-07T05:19:40 user RESULT] ...verrides/app/hooks/useSubscribeSection.test.ts (5 tests) 11ms
+ ✓ overrides/app/hooks/useUiCopy.test.tsx (7 tests) 9ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 4ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/pa...
+[2026-09-07T05:19:40 user RESULT] ...s/app/hooks/useUiCopy.test.tsx (7 tests) 9ms
+ ✓ overrides/app/utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 4ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides...
+[2026-09-07T05:19:40 user RESULT] ...utils/richText.test.tsx (72 tests) 8ms
+ ✓ overrides/app/pages/product-detail/productInfo.test.ts (43 tests) 4ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test....
+[2026-09-07T05:19:40 user RESULT] ...ductInfo.test.ts (43 tests) 4ms
+ ✓ overrides/app/utils/resolveByRegion.test.ts (16 tests) 3ms
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTe...
+[2026-09-07T05:19:40 user RESULT] ...s
+ ✓ overrides/app/pages/product-detail/variantScopedPrice.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 60ms
+ ...
+[2026-09-07T05:19:40 user RESULT] ...p/components/list-menu/megaMenuContent/toMegaMenuItem.test.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 60ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/pages/product-list/product...
+[2026-09-07T05:19:40 user RESULT] ...st.ts (10 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 60ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 3ms
+ ✓ overrides/app/...
+[2026-09-07T05:19:40 user RESULT] ...s/atoms/zimmTextInput/zimmTextInput.css.test.ts (14 tests) 3ms
+ ✓ overrides/app/theme/fontFace.test.tsx (6 tests) 60ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.t...
+[2026-09-07T05:19:40 user RESULT] ...heme/fontFace.test.tsx (6 tests) 60ms
+ ✓ overrides/app/utils/safeHref.test.ts (20 tests) 2ms
+ ✓ overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndi...
+[2026-09-07T05:19:40 user RESULT] ... overrides/app/pages/product-list/productListCardMapper.test.ts (14 tests) 3ms
+ ✓ overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test....
+[2026-09-07T05:19:40 user RESULT] ...its/atoms/zimmSizeChip/zimmSizeChip.css.test.ts (14 tests) 2ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui...
+[2026-09-07T05:19:40 user RESULT] ...s
+ ✓ overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test....
+[2026-09-07T05:19:40 user RESULT] ...tor/zimmSlideIndicator.css.test.ts (4 tests) 2ms
+ ✓ overrides/app/utils/contentfulImage.test.ts (5 tests) 1ms
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+
+ Test Files  64 passed (64)
+      Tests  999 ...
+[2026-09-07T05:19:40 user RESULT] ...s
+ ✓ overrides/app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+
+ Test Files  64 passed (64)
+      Tests  999 passed (999)
+   Start at  13:19:25
+   Duration  14.61s (transform 2.09s, setup 22.83s, collect 79.02s, tests...
+[2026-09-07T05:19:40 user RESULT] ...app/utils/resolveImageEntry.test.ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+
+ Test Files  64 passed (64)
+      Tests  999 passed (999)
+   Start at  13:19:25
+   Duration  14.61s (transform 2.09s, setup 22.83s, collect 79.02s, tests 12.92s, environment 63.20s, ...
+[2026-09-07T05:19:40 user RESULT] ...ts (7 tests) 1ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+
+ Test Files  64 passed (64)
+      Tests  999 passed (999)
+   Start at  13:19:25
+   Duration  14.61s (transform 2.09s, setup 22.83s, collect 79.02s, tests 12.92s, environment 63.20s, prepare 4.48s)...
+[2026-09-07T05:19:40 user RESULT] ... overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts (3 tests) 1ms
+
+ Test Files  64 passed (64)
+      Tests  999 passed (999)
+   Start at  13:19:25
+   Duration  14.61s (transform 2.09s, setup 22.83s, collect 79.02s, tests 12.92s, environment 63.20s, prepare 4.48s)...
+[2026-09-07T05:19:43 assistant TEXT] ...All 999 tests pass, tsc clean. Finalizing the merge and pushing....
+[2026-09-07T05:20:17 user RESULT] ... Test Files  29 passed (29)
+      Tests  559 passed (559)
+   Start at  13:20:06
+   Duration  8.12s (transform 938ms, setup 9.40s, collect 41.86s, tests 11.98s, environment 29.49s, pr...
+[2026-09-07T05:20:17 user RESULT] ... Test Files  29 passed (29)
+      Tests  559 passed (559)
+   Start at  13:20:06
+   Duration  8.12s (transform 938ms, setup 9.40s, collect 41.86s, tests 11.98s, environment 29.49s, prepare 2.04s)
+
+Recorded resolu...
+[2026-09-07T05:22:04 assistant TEXT] ...* now points at `3b93bc6` — confirmed via `headRefOid`, `mergeable: MERGEABLE` (no conflicts), fully up to date with `develop`.
+
+`tsc` and the full test suite (999 tests) passed clean on the SFCC-236 branch after the merge. Nothing was force-pushed except the deliberate correction to SFCC-83-84 (no PR existed there, so no...

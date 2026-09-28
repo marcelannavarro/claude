@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Phase 1: build @arche/templates-base",
+  "description": "templates-base TemplateSource: AGENTS.md skeleton, CLAUDE.md stub, .claude/rules/* rule fragments, .docs/memory/* files, the human-in-lead skills as Eta templates. (pack-sdk contract built in Task 3.)",
+  "activeForm": "Building pack-sdk + templates-base",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

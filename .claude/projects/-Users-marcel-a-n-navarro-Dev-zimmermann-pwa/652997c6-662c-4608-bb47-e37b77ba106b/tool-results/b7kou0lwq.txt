@@ -1,0 +1,637 @@
+=== CURRENT state of the three files I edited ===
+  header/index.tsx: errors=2 warnings=3
+      41:3 @typescript-eslint/no-unused-vars — 'AccountIcon' is defined but never used.
+      45:3 @typescript-eslint/no-unused-vars — 'HeartIcon' is defined but never used.
+      51:9 prettier/prettier — Replace `ZimmLogo` with `·ZimmLogo·`
+      64:7 @typescript-eslint/no-unused-vars — 'IconButtonWithRegistration' is assigned a value but never used.
+      436:31 prettier/prettier — Replace `width:·'min(597px,·60vw)',·height:·'min(70px,·7.04vw)'` with 
+  footer/index.tsx: errors=392 warnings=2
+      1:16 prettier/prettier — Replace `useState,·useEffect,·useRef,·useCallback,·type·CSSProperties}
+      2:9 prettier/prettier — Replace `createPortal}·from·'react-dom'` with `·createPortal·}·from·'r
+      3:9 prettier/prettier — Replace `chakra,·useMultiStyleConfig}·from·'@chakra-ui/react'` with `·
+      4:9 prettier/prettier — Replace `cssVars,·cssTextStyles}·from·'app/utils/cssVars'` with `·cssV
+      5:9 prettier/prettier — Replace `ZimmLogo}········from·'app/components/ui-kits/atoms/zimmLogo'
+      6:9 prettier/prettier — Replace `ZimmIcon}········from·'app/components/ui-kits/atoms/zimmIcon'
+      7:9 prettier/prettier — Replace `ZimmNavItem}·····from·'app/components/ui-kits/atoms/zimmNavIt
+      8:9 prettier/prettier — Replace `ZimmButton}······from·'app/components/ui-kits/atoms/zimmButto
+      9:9 prettier/prettier — Replace `ZimmTextInput}···from·'app/components/ui-kits/atoms/zimmTextI
+      10:9 prettier/prettier — Replace `ZimmInputAction}·from·'app/components/ui-kits/molecules/zimmI
+      11:14 prettier/prettier — Replace `FooterConfigEntry}·from·'app/types/contentful'` with `·Footer
+      12:9 prettier/prettier — Replace `FOOTER_FIXTURE}·from·'./contentfulFixture'` with `·FOOTER_FIX
+      15:40 prettier/prettier — Insert `;`
+      21:3 prettier/prettier — Delete `··`
+      22:1 prettier/prettier — Replace `····data?:··············FooterConfigEntry` with `··data?:·Foo
+      23:1 prettier/prettier — Replace `····copyrightYear?:·····number` with `··copyrightYear?:·numbe
+      24:1 prettier/prettier — Delete `··`
+      25:1 prettier/prettier — Replace `····initialSubscribed?:·boolean` with `··initialSubscribed?:·
+      26:1 prettier/prettier — Delete `··`
+      27:3 prettier/prettier — Replace `··privacyPolicyHref?:·string` with `privacyPolicyHref?:·strin
+      28:2 prettier/prettier — Insert `;`
+      40:1 prettier/prettier — Replace `····` with `··`
+      41:3 prettier/prettier — Replace `··fontFamily:·cssVars.font.family.body,·······` with `fontFam
+      42:3 prettier/prettier — Replace `··margin:·····` with `margin:·`
+      43:1 prettier/prettier — Replace `····color:·····` with `··color:`
+      44:2 prettier/prettier — Insert `;`
+      52:3 prettier/prettier — Delete `··`
+      53:2 prettier/prettier — Insert `;`
+      58:3 prettier/prettier — Delete `··`
+      59:3 prettier/prettier — Replace `··margin:········` with `margin:·`
+      60:1 prettier/prettier — Replace `····color:········` with `··color:`
+      61:1 prettier/prettier — Replace `····paddingTop:····` with `··paddingTop:·`
+      62:1 prettier/prettier — Delete `··`
+      63:2 prettier/prettier — Insert `;`
+      67:3 prettier/prettier — Replace `··display:········` with `display:·`
+      68:1 prettier/prettier — Replace `····alignItems:·····` with `··alignItems:·`
+      69:1 prettier/prettier — Delete `··`
+      70:1 prettier/prettier — Replace `····width:··········` with `··width:·`
+      71:3 prettier/prettier — Replace `··height:·········` with `height:·`
+      72:2 prettier/prettier — Insert `;`
+      79:24 prettier/prettier — Replace `·=·cssVars.color.opacity[50]` with `=·cssVars.color.opacity[5
+      82:23 prettier/prettier — Replace `··=·cssVars.color.text.secondary` with `·=·cssVars.color.text
+      83:21 prettier/prettier — Replace `····=·1000·` with `=·1000;`
+      86:29 prettier/prettier — Replace `⏎····'By·providing·your·details,·you·agree·to·receive·email·u
+      89:1 prettier/prettier — Replace `····` with `··`
+      90:1 prettier/prettier — Replace `····'If·you·experience·any·difficulty,·please·contact·us·for·
+      93:3 prettier/prettier — Replace `··isOpen:············boolean` with `isOpen:·boolean;`
+      94:1 prettier/prettier — Replace `····onClose:···········()·=>·void` with `··onClose:·()·=>·voi
+      95:1 prettier/prettier — Replace `····onSubmit:··········(firstName:·string,·lastName:·string)·
+      96:1 prettier/prettier — Replace `····privacyPolicyHref:·string` with `··privacyPolicyHref:·str
+      97:2 prettier/prettier — Insert `;`
+      99:26 prettier/prettier — Replace `isOpen,·onClose,·onSubmit,·privacyPolicyHref` with `·isOpen,·
+      100:1 prettier/prettier — Replace `····const·[mounted,·setMounted]·=·useState(false)` with `··co
+      101:3 prettier/prettier — Replace `··const·formRef········=·useRef<HTMLFormElement>(null)` with 
+      102:1 prettier/prettier — Replace `····const·firstFocusRef··=·useRef<HTMLDivElement>(null)` with
+      103:1 prettier/prettier — Replace `····const·triggerRef·····=·useRef<Element·|·null>(null)` with
+      104:1 prettier/prettier — Replace `····const·styles·········=·useMultiStyleConfig('Footer',·{})`
+      106:1 prettier/prettier — Replace `····useEffect(()·=>·{·setMounted(true)·},·[])` with `··useEff
+      108:1 prettier/prettier — Delete `··`
+      109:3 prettier/prettier — Delete `··`
+      110:1 prettier/prettier — Replace `········` with `····`
+      111:1 prettier/prettier — Replace `············triggerRef.current·=·document.activeElement` with
+      112:7 prettier/prettier — Delete `······`
+      113:1 prettier/prettier — Replace `············` with `······`
+      114:1 prettier/prettier — Replace `················const·firstInput·=·firstFocusRef.current?.que
+      115:1 prettier/prettier — Replace `················firstInput?.focus()` with `········firstInput
+      116:1 prettier/prettier — Replace `············},·0)` with `······},·0);`
+      117:1 prettier/prettier — Replace `············return·()·=>·clearTimeout(id)` with `······return
+      118:1 prettier/prettier — Delete `····`
+      119:1 prettier/prettier — Delete `······`
+      120:1 prettier/prettier — Replace `············` with `······`
+      121:9 prettier/prettier — Replace `········triggerRef.current.focus()` with `triggerRef.current.
+      122:1 prettier/prettier — Replace `············` with `······`
+      123:1 prettier/prettier — Replace `········` with `····`
+      124:1 prettier/prettier — Replace `····},·[isOpen])` with `··},·[isOpen]);`
+      126:3 prettier/prettier — Delete `··`
+      127:3 prettier/prettier — Delete `··`
+      128:1 prettier/prettier — Replace `········if·(!isOpen)·return` with `····if·(!isOpen)·return;`
+      129:1 prettier/prettier — Replace `········const·prev·=·document.body.style.overflow` with `····
+      130:1 prettier/prettier — Replace `········document.body.style.overflow·=·'hidden'` with `····do
+      131:1 prettier/prettier — Replace `········return·()·=>·{·document.body.style.overflow·=·prev·}`
+      132:1 prettier/prettier — Replace `····},·[isOpen])` with `····};⏎··},·[isOpen]);`
+      134:1 prettier/prettier — Delete `··`
+      135:3 prettier/prettier — Replace `··const·handleKeyDown·=·useCallback(` with `const·handleKeyDo
+      136:1 prettier/prettier — Replace `········if·(e.key·===·'Escape')·{·onClose();·return` with `··
+      137:1 prettier/prettier — Replace `········if·(e.key·!==·'Tab'·||·!formRef.current)·return` with
+      139:1 prettier/prettier — Delete `··`
+      140:1 prettier/prettier — Delete `····`
+      141:11 prettier/prettier — Replace `······'button,·[href],·input,·select,·textarea,·[tabindex]:no
+      142:1 prettier/prettier — Replace `············)` with `········),`
+      143:1 prettier/prettier — Replace `········).filter((el)·=>·!el.hasAttribute('disabled'))` with 
+      145:1 prettier/prettier — Replace `········const·first·=·focusable[0]` with `······const·first·=
+      146:1 prettier/prettier — Replace `········const·last··=·focusable[focusable.length·-·1]` with `
+      148:1 prettier/prettier — Delete `··`
+      149:9 prettier/prettier — Replace `····e.preventDefault()` with `e.preventDefault();`
+      150:1 prettier/prettier — Replace `············last?.focus()` with `········last?.focus();`
+      151:1 prettier/prettier — Delete `··`
+      152:1 prettier/prettier — Replace `············e.preventDefault()` with `········e.preventDefaul
+      153:1 prettier/prettier — Replace `············first?.focus()` with `········first?.focus();`
+      154:1 prettier/prettier — Delete `··`
+      155:7 prettier/prettier — Replace `·[onClose])` with `⏎····[onClose],⏎··);`
+      157:3 prettier/prettier — Delete `··`
+      158:1 prettier/prettier — Replace `········if·(!isOpen)·return` with `····if·(!isOpen)·return;`
+      159:1 prettier/prettier — Replace `········document.addEventListener('keydown',·handleKeyDown)` 
+      160:1 prettier/prettier — Replace `········return·()·=>·document.removeEventListener('keydown',·
+      161:1 prettier/prettier — Replace `····},·[isOpen,·handleKeyDown])` with `··},·[isOpen,·handleKe
+      163:1 prettier/prettier — Delete `··`
+      164:1 prettier/prettier — Replace `········e.preventDefault()` with `····e.preventDefault();`
+      165:1 prettier/prettier — Replace `········const·form······=·e.currentTarget` with `····const·fo
+      166:1 prettier/prettier — Replace `········const·firstName·=·(form.elements.namedItem('firstName
+      167:1 prettier/prettier — Replace `········const·lastName··=·(form.elements.namedItem('lastName'
+      168:1 prettier/prettier — Replace `········onSubmit(firstName.trim(),·lastName.trim())` with `··
+      169:3 prettier/prettier — Replace `··}` with `};`
+      171:3 prettier/prettier — Delete `··`
+      172:5 prettier/prettier — Replace `····if·(e.target·===·e.currentTarget)·onClose()` with `if·(e.
+      173:1 prettier/prettier — Replace `····}` with `··};`
+      175:1 prettier/prettier — Replace `····if·(!mounted·||·!isOpen)·return·null` with `··if·(!mounte
+      177:1 prettier/prettier — Delete `··`
+      178:1 prettier/prettier — Replace `········` with `····`
+      179:1 prettier/prettier — Replace `············` with `······`
+      180:1 prettier/prettier — Delete `······`
+      181:1 prettier/prettier — Replace `············` with `······`
+      182:1 prettier/prettier — Replace `················position:········` with `········position:·`
+      183:1 prettier/prettier — Replace `················inset:············` with `········inset:·`
+      184:1 prettier/prettier — Replace `················background:·······` with `········background:
+      185:1 prettier/prettier — Replace `················display:·········` with `········display:·`
+      186:1 prettier/prettier — Replace `················alignItems:······` with `········alignItems:·
+      187:1 prettier/prettier — Replace `················justifyContent:··` with `········justifyConte
+      188:1 prettier/prettier — Replace `················padding:··········` with `········padding:·`
+      189:9 prettier/prettier — Replace `········zIndex:···········` with `zIndex:·`
+      190:1 prettier/prettier — Replace `············` with `······`
+      191:1 prettier/prettier — Replace `········` with `····`
+      192:1 prettier/prettier — Replace `············` with `······`
+      193:1 prettier/prettier — Replace `················` with `········`
+      194:1 prettier/prettier — Replace `················` with `········`
+      195:1 prettier/prettier — Delete `········`
+      196:1 prettier/prettier — Replace `················` with `········`
+      197:9 prettier/prettier — Delete `········`
+      198:1 prettier/prettier — Replace `············` with `······`
+      199:1 prettier/prettier — Delete `········`
+      200:11 prettier/prettier — Delete `··········`
+      201:1 prettier/prettier — Replace `····················` with `··········`
+      202:1 prettier/prettier — Replace `························` with `············`
+      203:13 prettier/prettier — Delete `············`
+      204:1 prettier/prettier — Replace `····························` with `··············`
+      205:15 prettier/prettier — Replace `··············margin:·······` with `margin:·`
+      206:1 prettier/prettier — Replace `····························` with `··············`
+      207:1 prettier/prettier — Replace `····························color:·······` with `············
+      208:1 prettier/prettier — Replace `························` with `············`
+      209:1 prettier/prettier — Replace `····················` with `··········`
+      210:1 prettier/prettier — Replace `························` with `············`
+      211:1 prettier/prettier — Replace `····················` with `··········`
+      213:1 prettier/prettier — Delete `··········`
+      214:1 prettier/prettier — Replace `····················<div·ref={firstFocusRef}·style={{marginBo
+      215:1 prettier/prettier — Replace `························` with `············`
+      216:11 prettier/prettier — Delete `··········`
+      218:1 prettier/prettier — Replace `····················` with `··········`
+      219:1 prettier/prettier — Replace `····················<div·style={{marginBottom:·cssVars.spacin
+      220:1 prettier/prettier — Delete `············`
+      221:11 prettier/prettier — Delete `··········`
+      223:1 prettier/prettier — Replace `····················` with `··········`
+      224:11 prettier/prettier — Delete `··········`
+      225:1 prettier/prettier — Replace `························` with `············`
+      226:1 prettier/prettier — Replace `························` with `············`
+      227:1 prettier/prettier — Delete `··············`
+      228:1 prettier/prettier — Replace `····························margin:·······` with `···········
+      229:1 prettier/prettier — Delete `··············`
+      230:1 prettier/prettier — Replace `····························color:·······` with `············
+      231:1 prettier/prettier — Replace `························` with `············`
+      232:1 prettier/prettier — Replace `····················` with `··········`
+      233:1 prettier/prettier — Replace `························` with `············`
+      234:13 prettier/prettier — Replace `············<a⏎····························href={privacyPolic
+      238:1 prettier/prettier — Replace `····························` with `··············`
+      239:1 prettier/prettier — Replace `························` with `············`
+      240:1 prettier/prettier — Replace `························` with `············`
+      241:1 prettier/prettier — Replace `····················` with `··········`
+      243:1 prettier/prettier — Replace `····················` with `··········`
+      244:11 prettier/prettier — Delete `··········`
+      245:1 prettier/prettier — Replace `························` with `············`
+      246:1 prettier/prettier — Replace `····························` with `··············`
+      247:15 prettier/prettier — Replace `··············margin:·······` with `margin:·`
+      248:1 prettier/prettier — Replace `····························` with `··············`
+      249:1 prettier/prettier — Replace `····························color:········` with `···········
+      250:1 prettier/prettier — Replace `························` with `············`
+      251:1 prettier/prettier — Delete `··········`
+      252:13 prettier/prettier — Delete `············`
+      253:1 prettier/prettier — Replace `····················` with `··········`
+      255:1 prettier/prettier — Delete `··········`
+      256:1 prettier/prettier — Replace `····················<div·style={{display:·'flex',·gap:·cssVar
+      257:1 prettier/prettier — Replace `························<ZimmButton⏎·························
+      264:1 prettier/prettier — Replace `························<ZimmButton⏎·························
+      270:1 prettier/prettier — Replace `····················` with `··········`
+      271:1 prettier/prettier — Replace `················` with `········`
+      272:1 prettier/prettier — Replace `············` with `······`
+      273:5 prettier/prettier — Delete `····`
+      274:1 prettier/prettier — Replace `········document.body` with `····document.body,`
+      275:1 prettier/prettier — Replace `····)` with `··);`
+      276:2 prettier/prettier — Insert `;`
+      283:64 prettier/prettier — Insert `;`
+      285:31 prettier/prettier — Replace `heading:·string;·body:·string;·initialSubscribed?:·boolean;·p
+      287:33 prettier/prettier — Replace `····=·"You're·on·the·list!·Be·the·first·to·know·about·new·col
+      288:105 prettier/prettier — Insert `;`
+      290:28 prettier/prettier — Replace `⏎····heading,⏎····body,⏎····initialSubscribed·=·false,⏎····pr
+      296:1 prettier/prettier — Replace `····` with `··`
+      297:1 prettier/prettier — Delete `··`
+      298:1 prettier/prettier — Replace `····const·[submitState,·setSubmitState]·=·useState<SubmitStat
+      301:3 prettier/prettier — Delete `··`
+      302:1 prettier/prettier — Delete `··`
+      303:3 prettier/prettier — Replace `··const·pendingEmailRef·=·useRef('')` with `const·pendingEmai
+      304:1 prettier/prettier — Replace `····const·[modalOpen,··setModalOpen]··=·useState(false)` with
+      305:3 prettier/prettier — Replace `··const·styles·=·useMultiStyleConfig('Footer',·{})` with `con
+      307:1 prettier/prettier — Replace `····` with `··`
+      308:5 prettier/prettier — Replace `····pendingEmailRef.current·=·email` with `pendingEmailRef.cu
+      309:1 prettier/prettier — Replace `········setModalOpen(true)` with `····setModalOpen(true);`
+      310:1 prettier/prettier — Replace `····}` with `··};`
+      312:1 prettier/prettier — Delete `··`
+      312:32 @typescript-eslint/no-unused-vars — '_firstName' is defined but never used.
+      312:52 @typescript-eslint/no-unused-vars — '_lastName' is defined but never used.
+      313:1 prettier/prettier — Replace `········` with `····`
+      314:1 prettier/prettier — Delete `····`
+      315:1 prettier/prettier — Replace `········` with `····`
+      316:5 prettier/prettier — Delete `····`
+      317:1 prettier/prettier — Replace `········setModalOpen(false)` with `····setModalOpen(false);`
+      318:1 prettier/prettier — Replace `········setSubmitState('unavailable')` with `····setSubmitSta
+      319:3 prettier/prettier — Replace `··}` with `};`
+      321:3 prettier/prettier — Delete `··`
+      322:1 prettier/prettier — Replace `········` with `····`
+      323:1 prettier/prettier — Delete `······`
+      324:7 prettier/prettier — Replace `······<chakra.p·__css={styles.subscribeBody}>⏎···············
+      327:1 prettier/prettier — Replace `············` with `······`
+      328:1 prettier/prettier — Replace `················` with `········`
+      329:1 prettier/prettier — Replace `····················` with `··········`
+      330:1 prettier/prettier — Replace `························` with `············`
+      331:1 prettier/prettier — Replace `························` with `············`
+      332:1 prettier/prettier — Replace `························` with `············`
+      333:1 prettier/prettier — Replace `························` with `············`
+      334:1 prettier/prettier — Replace `························` with `············`
+      335:1 prettier/prettier — Replace `························` with `············`
+      336:1 prettier/prettier — Replace `························` with `············`
+      337:11 prettier/prettier — Delete `··········`
+      338:1 prettier/prettier — Replace `················` with `········`
+      339:1 prettier/prettier — Replace `················{submitState·===·'success'·&&·(⏎·············
+      342:1 prettier/prettier — Delete `········`
+      343:1 prettier/prettier — Replace `····················` with `··········`
+      344:9 prettier/prettier — Delete `········`
+      345:1 prettier/prettier — Replace `············` with `······`
+      347:1 prettier/prettier — Replace `············` with `······`
+      348:1 prettier/prettier — Replace `················` with `········`
+      349:1 prettier/prettier — Delete `········`
+      350:1 prettier/prettier — Replace `················` with `········`
+      351:1 prettier/prettier — Delete `········`
+      352:1 prettier/prettier — Replace `············` with `······`
+      353:1 prettier/prettier — Replace `········` with `····`
+      354:3 prettier/prettier — Replace `··)` with `);`
+      355:2 prettier/prettier — Insert `;`
+      366:3 prettier/prettier — Replace `··phoneHref?:····string·` with `phoneHref?:·string;`
+      367:3 prettier/prettier — Replace `··whatsAppHref?:·string·` with `whatsAppHref?:·string;`
+      368:3 prettier/prettier — Replace `··emailHref?:····string·` with `emailHref?:·string;`
+      369:2 prettier/prettier — Insert `;`
+      371:21 prettier/prettier — Replace `href?:·string;·label:·string;·icon:·'phone'·|·'whatsapp'·|·'e
+      373:26 prettier/prettier — Replace `phoneHref,·whatsAppHref,·emailHref` with `·phoneHref,·whatsAp
+      374:1 prettier/prettier — Replace `····` with `··`
+      375:1 prettier/prettier — Replace `········{href:·phoneHref,····label:·'Call·us',··icon:·'phone'
+      376:5 prettier/prettier — Replace `····{href:·whatsAppHref,·label:·'WhatsApp',·icon:·'whatsapp'`
+      377:5 prettier/prettier — Replace `····{href:·emailHref,····label:·'Email·us',·icon:·'email'` wi
+      378:1 prettier/prettier — Replace `····]` with `··];`
+      379:1 prettier/prettier — Delete `··`
+      380:5 prettier/prettier — Replace `····<div·style={{display:·'flex',·gap:·cssVars.spacing['2xs']
+      381:5 prettier/prettier — Replace `········{links.map(({href,·label,·icon` with `>⏎······{links.
+      382:1 prettier/prettier — Delete `········`
+      383:1 prettier/prettier — Delete `··········`
+      384:1 prettier/prettier — Delete `············`
+      385:11 prettier/prettier — Delete `··········`
+      386:1 prettier/prettier — Replace `················` with `········`
+      387:1 prettier/prettier — Delete `··········`
+      388:1 prettier/prettier — Replace `····················` with `··········`
+      389:1 prettier/prettier — Replace `····················` with `··········`
+      390:1 prettier/prettier — Replace `····················` with `··········`
+      391:1 prettier/prettier — Replace `························` with `············`
+      392:11 prettier/prettier — Delete `··········`
+      393:1 prettier/prettier — Replace `················)` with `········),`
+      394:1 prettier/prettier — Replace `············` with `······`
+      395:1 prettier/prettier — Replace `········` with `····`
+      396:3 prettier/prettier — Replace `··)` with `);`
+      397:2 prettier/prettier — Insert `;`
+      403:3 prettier/prettier — Replace `··copyrightYear:··number` with `copyrightYear:·number;`
+      404:1 prettier/prettier — Replace `····copyrightOwner:·string` with `··copyrightOwner:·string;`
+      405:1 prettier/prettier — Replace `····legalLinks:·····ReadonlyArray<{label:·string;·href:·strin
+      406:2 prettier/prettier — Insert `;`
+      408:21 prettier/prettier — Replace `copyrightYear,·copyrightOwner,·legalLinks` with `·copyrightYe
+      409:3 prettier/prettier — Replace `··const·styles·=·useMultiStyleConfig('Footer',·{})` with `con
+      410:1 prettier/prettier — Delete `··`
+      411:1 prettier/prettier — Replace `········` with `····`
+      412:1 prettier/prettier — Replace `············` with `······`
+      413:1 prettier/prettier — Replace `················` with `········`
+      414:1 prettier/prettier — Replace `····················` with `··········`
+      415:1 prettier/prettier — Replace `····················` with `··········`
+      416:1 prettier/prettier — Replace `····················` with `··········`
+      417:1 prettier/prettier — Replace `····················` with `··········`
+      418:1 prettier/prettier — Delete `··········`
+      419:11 prettier/prettier — Delete `··········`
+      420:1 prettier/prettier — Replace `················` with `········`
+      421:1 prettier/prettier — Delete `··········`
+      423:11 prettier/prettier — Replace `··········<chakra.span·__css={styles.localeText}>⏎···········
+      426:1 prettier/prettier — Delete `··········`
+      427:1 prettier/prettier — Replace `················` with `········`
+      429:1 prettier/prettier — Delete `········`
+      430:1 prettier/prettier — Delete `··········`
+      432:11 prettier/prettier — Replace `··········<span·style={{...bottomBarTextStyle,·color:·cssVars
+      433:13 prettier/prettier — Insert `}}⏎··········>⏎`
+      434:11 prettier/prettier — Delete `··········`
+      435:1 prettier/prettier — Delete `··········`
+      436:13 prettier/prettier — Delete `············`
+      437:1 prettier/prettier — Replace `····························` with `··············`
+      438:1 prettier/prettier — Replace `································` with `················`
+      439:1 prettier/prettier — Replace `································` with `················`
+      440:1 prettier/prettier — Replace `································` with `················`
+      441:1 prettier/prettier — Replace `································` with `················`
+      442:1 prettier/prettier — Replace `································` with `················`
+      443:1 prettier/prettier — Replace `································` with `················`
+      444:17 prettier/prettier — Replace `················style={{...bottomBarTextStyle,·color:·cssVars
+      445:15 prettier/prettier — Insert `··}}⏎`
+      446:1 prettier/prettier — Replace `························` with `············`
+      447:1 prettier/prettier — Replace `····················` with `··········`
+      448:1 prettier/prettier — Replace `················` with `········`
+      449:1 prettier/prettier — Replace `············` with `······`
+      450:1 prettier/prettier — Replace `········` with `····`
+      451:3 prettier/prettier — Replace `··)` with `);`
+      452:2 prettier/prettier — Insert `;`
+      466:3 prettier/prettier — Replace `··data··············` with `data·`
+      467:3 prettier/prettier — Replace `··copyrightYear····` with `copyrightYear`
+      468:3 prettier/prettier — Delete `··`
+      469:1 prettier/prettier — Delete `··`
+      471:1 prettier/prettier — Replace `····const·{⏎········subscribeHeading,⏎········subscribeBody,⏎
+      479:1 prettier/prettier — Replace `····const·legalItems·=·legalLinks.map((e)·=>·({label:·e.field
+      480:1 prettier/prettier — Replace `····const·styles·····=·useMultiStyleConfig('Footer',·{})` wit
+      482:1 prettier/prettier — Delete `··`
+      483:1 prettier/prettier — Delete `····`
+      484:7 prettier/prettier — Delete `······`
+      485:1 prettier/prettier — Replace `················` with `········`
+      486:1 prettier/prettier — Replace `····················` with `··········`
+      487:1 prettier/prettier — Replace `························` with `············`
+      488:1 prettier/prettier — Replace `····························` with `··············`
+      489:15 prettier/prettier — Delete `··············`
+      490:1 prettier/prettier — Replace `····························` with `··············`
+      491:1 prettier/prettier — Replace `····························` with `··············`
+      492:1 prettier/prettier — Replace `························` with `············`
+      493:1 prettier/prettier — Delete `··········`
+      495:11 prettier/prettier — Delete `··········`
+      496:1 prettier/prettier — Replace `························` with `············`
+      497:1 prettier/prettier — Replace `····························` with `··············`
+      498:1 prettier/prettier — Replace `································` with `················`
+      499:1 prettier/prettier — Delete `··················`
+      501:19 prettier/prettier — Replace `··················<p` with `<p⏎···················`
+      502:1 prettier/prettier — Replace `········································` with `·············
+      503:1 prettier/prettier — Replace `········································...(group.fields.head
+      504:25 prettier/prettier — Replace `············}}>` with `:·{}),⏎····················}}`
+      505:19 prettier/prettier — Replace `··` with `>⏎`
+      506:1 prettier/prettier — Replace `····································` with `·················
+      507:1 prettier/prettier — Delete `··················`
+      509:19 prettier/prettier — Replace `··················<ul` with `<ul⏎···················`
+      510:1 prettier/prettier — Replace `········································listStyle:·····` with
+      511:1 prettier/prettier — Replace `········································padding:········` wit
+      512:1 prettier/prettier — Replace `········································margin:·········` wit
+      513:1 prettier/prettier — Replace `········································display:·······` with
+      514:1 prettier/prettier — Replace `········································` with `·············
+      515:23 prettier/prettier — Replace `··················alignItems:····` with `alignItems:·`
+      516:1 prettier/prettier — Replace `········································width:·········` with
+      517:1 prettier/prettier — Replace `········································gap:············` wit
+      518:1 prettier/prettier — Replace `····································}}>` with `··············
+      519:19 prettier/prettier — Replace `··` with `>⏎`
+      520:23 prettier/prettier — Replace `······················<li·key={link.sys.id}·style={{` with `<
+      521:25 prettier/prettier — Insert `style={{⏎··`
+      522:1 prettier/prettier — Replace `················································...(group.fie
+      523:29 prettier/prettier — Replace `················}}>` with `:·{}),⏎························}}`
+      524:23 prettier/prettier — Replace `··` with `>⏎`
+      527:25 prettier/prettier — Replace `························<ZimmNavItem·href={link.fields.href}·
+      529:1 prettier/prettier — Replace `········································` with `·············
+      530:1 prettier/prettier — Replace `····································` with `·················
+      531:1 prettier/prettier — Delete `··················`
+      532:17 prettier/prettier — Delete `················`
+      533:1 prettier/prettier — Replace `····························` with `··············`
+      534:1 prettier/prettier — Replace `························` with `············`
+      535:1 prettier/prettier — Replace `····················` with `··········`
+      536:1 prettier/prettier — Replace `················` with `········`
+      538:1 prettier/prettier — Delete `········`
+      539:1 prettier/prettier — Replace `····················` with `··········`
+      540:1 prettier/prettier — Delete `········`
+      541:7 prettier/prettier — Delete `······`
+      543:1 prettier/prettier — Replace `············<BottomBar⏎················copyrightYear={copyrig
+      548:1 prettier/prettier — Delete `····`
+      549:3 prettier/prettier — Replace `··)` with `);`
+      550:2 prettier/prettier — Insert `;`
+      554:22 prettier/prettier — Insert `;`
+  components/footer.ts: errors=230 warnings=0
+      5:3 prettier/prettier — Replace `··tablet:·····'48em',····` with `tablet:·'48em',·`
+      6:1 prettier/prettier — Delete `··`
+      7:3 prettier/prettier — Replace `··desktop:····'64em',···` with `desktop:·'64em',`
+      8:11 prettier/prettier — Insert `;`
+      12:21 prettier/prettier — Replace `···=·'3rem'···` with `=·'3rem';`
+      13:20 prettier/prettier — Replace `····=·'8.75rem'` with `=·'8.75rem';`
+      14:20 prettier/prettier — Replace `····=·'20rem'··` with `=·'20rem';`
+      15:20 prettier/prettier — Replace `····=·'37.5rem'` with `=·'37.5rem';`
+      16:23 prettier/prettier — Replace `·=·'rgba(255,·255,·255,·0.5)'` with `=·'rgba(255,·255,·255,·0
+      17:22 prettier/prettier — Replace `··=·'30rem'··` with `=·'30rem';`
+      18:36 prettier/prettier — Insert `;`
+      28:3 prettier/prettier — Delete `··`
+      29:1 prettier/prettier — Replace `········'container',·'main',` with `····'container',⏎····'mai
+      30:1 prettier/prettier — Replace `········'subscribe',·'subscribeHeading',·'subscribeBody',` wi
+      31:1 prettier/prettier — Replace `········'links',·'linksInner',·'linkCol',` with `····'links',
+      32:5 prettier/prettier — Replace `····'bottomBar',·'bottomInner',` with `'bottomBar',⏎····'bott
+      33:1 prettier/prettier — Replace `········'legalGrid',·'localeText',` with `····'legalGrid',⏎··
+      34:3 prettier/prettier — Delete `··`
+      35:1 prettier/prettier — Replace `····` with `··`
+      36:1 prettier/prettier — Delete `····`
+      37:5 prettier/prettier — Delete `····`
+      38:1 prettier/prettier — Replace `············` with `······`
+      39:7 prettier/prettier — Replace `······width:···········` with `width:·`
+      40:1 prettier/prettier — Replace `········` with `····`
+      42:1 prettier/prettier — Delete `····`
+      43:1 prettier/prettier — Replace `········` with `····`
+      44:5 prettier/prettier — Delete `····`
+      45:1 prettier/prettier — Replace `············display:·······` with `······display:·`
+      46:1 prettier/prettier — Delete `······`
+      47:5 prettier/prettier — Delete `····`
+      49:1 prettier/prettier — Replace `········` with `····`
+      50:1 prettier/prettier — Delete `····`
+      51:5 prettier/prettier — Delete `····`
+      52:1 prettier/prettier — Replace `············display:·······` with `······display:·`
+      53:1 prettier/prettier — Replace `············` with `······`
+      54:7 prettier/prettier — Replace `······gap:···········` with `gap:·`
+      55:1 prettier/prettier — Replace `············padding:·······` with `······padding:·`
+      56:1 prettier/prettier — Replace `············` with `······`
+      57:1 prettier/prettier — Replace `················flexDirection:··` with `········flexDirection
+      58:1 prettier/prettier — Delete `········`
+      59:1 prettier/prettier — Replace `················gap:·············` with `········gap:·`
+      60:1 prettier/prettier — Replace `················padding:········` with `········padding:·`
+      61:7 prettier/prettier — Delete `······`
+      62:1 prettier/prettier — Delete `····`
+      64:5 prettier/prettier — Delete `····`
+      65:5 prettier/prettier — Delete `····`
+      66:1 prettier/prettier — Replace `············` with `······`
+      67:1 prettier/prettier — Delete `······`
+      68:1 prettier/prettier — Replace `················flex:···` with `········flex:`
+      69:1 prettier/prettier — Replace `················` with `········`
+      70:1 prettier/prettier — Replace `············` with `······`
+      71:1 prettier/prettier — Replace `········` with `····`
+      73:1 prettier/prettier — Delete `····`
+      74:1 prettier/prettier — Replace `········` with `····`
+      75:5 prettier/prettier — Delete `····`
+      76:7 prettier/prettier — Replace `······textStyle:····` with `textStyle:·`
+      77:1 prettier/prettier — Delete `······`
+      78:1 prettier/prettier — Delete `······`
+      79:7 prettier/prettier — Replace `······fontFamily:··` with `fontFamily:`
+      80:1 prettier/prettier — Replace `············margin:········` with `······margin:·`
+      81:7 prettier/prettier — Replace `······color:········` with `color:·`
+      82:7 prettier/prettier — Replace `······lineHeight:···` with `lineHeight:·`
+      83:1 prettier/prettier — Delete `······`
+      84:5 prettier/prettier — Delete `····`
+      86:1 prettier/prettier — Replace `········` with `····`
+      87:5 prettier/prettier — Delete `····`
+      88:7 prettier/prettier — Replace `······textStyle:···` with `textStyle:`
+      89:7 prettier/prettier — Replace `······fontFamily:··` with `fontFamily:`
+      90:7 prettier/prettier — Replace `······margin:········` with `margin:·`
+      91:1 prettier/prettier — Replace `············color:········` with `······color:·`
+      92:7 prettier/prettier — Replace `······maxWidth:······` with `maxWidth:·`
+      93:1 prettier/prettier — Replace `············` with `······`
+      94:5 prettier/prettier — Delete `····`
+      96:1 prettier/prettier — Replace `········` with `····`
+      97:1 prettier/prettier — Delete `····`
+      98:7 prettier/prettier — Delete `······`
+      99:1 prettier/prettier — Replace `············width:···········` with `······width:·`
+      100:1 prettier/prettier — Replace `············maxWidth:·········` with `······maxWidth:·`
+      101:7 prettier/prettier — Replace `······padding:·········` with `padding:·`
+      102:1 prettier/prettier — Replace `········` with `····`
+      104:1 prettier/prettier — Delete `····`
+      105:1 prettier/prettier — Delete `····`
+      106:7 prettier/prettier — Delete `······`
+      107:1 prettier/prettier — Replace `················` with `········`
+      108:1 prettier/prettier — Delete `······`
+      109:1 prettier/prettier — Delete `······`
+      110:1 prettier/prettier — Replace `················` with `········`
+      111:7 prettier/prettier — Delete `······`
+      112:1 prettier/prettier — Replace `········` with `····`
+      114:1 prettier/prettier — Delete `····`
+      115:5 prettier/prettier — Delete `····`
+      116:1 prettier/prettier — Replace `············display:······` with `······display:·`
+      117:1 prettier/prettier — Replace `············flexWrap:·····` with `······flexWrap:·`
+      118:1 prettier/prettier — Replace `············gap:··········` with `······gap:·`
+      119:1 prettier/prettier — Replace `············` with `······`
+      120:1 prettier/prettier — Replace `············alignItems:··` with `······alignItems:`
+      121:1 prettier/prettier — Delete `······`
+      122:1 prettier/prettier — Replace `················flexWrap:·······` with `········flexWrap:·`
+      123:1 prettier/prettier — Replace `················gap:············` with `········gap:·`
+      124:1 prettier/prettier — Replace `················` with `········`
+      125:1 prettier/prettier — Replace `············` with `······`
+      126:1 prettier/prettier — Delete `······`
+      127:1 prettier/prettier — Replace `················` with `········`
+      128:7 prettier/prettier — Delete `······`
+      129:1 prettier/prettier — Replace `············` with `······`
+      130:9 prettier/prettier — Replace `········gap:············` with `gap:·`
+      131:1 prettier/prettier — Replace `················` with `········`
+      132:7 prettier/prettier — Delete `······`
+      133:1 prettier/prettier — Replace `········` with `····`
+      135:1 prettier/prettier — Replace `········` with `····`
+      136:5 prettier/prettier — Delete `····`
+      137:1 prettier/prettier — Replace `············display:·······` with `······display:·`
+      138:1 prettier/prettier — Delete `······`
+      139:1 prettier/prettier — Replace `············gap:···········` with `······gap:·`
+      140:1 prettier/prettier — Replace `············alignItems:···` with `······alignItems:`
+      141:7 prettier/prettier — Replace `······width:··········` with `width:·`
+      142:1 prettier/prettier — Replace `············minWidth:······` with `······minWidth:`
+      143:7 prettier/prettier — Replace `······flexShrink:·····` with `flexShrink:·`
+      144:1 prettier/prettier — Delete `······`
+      145:1 prettier/prettier — Replace `················width:······` with `········width:·`
+      146:1 prettier/prettier — Replace `················` with `········`
+      147:1 prettier/prettier — Replace `············` with `······`
+      148:1 prettier/prettier — Replace `········` with `····`
+      150:1 prettier/prettier — Replace `········` with `····`
+      151:1 prettier/prettier — Delete `····`
+      152:1 prettier/prettier — Replace `········` with `····`
+      153:1 prettier/prettier — Replace `············padding:······` with `······padding:`
+      154:1 prettier/prettier — Replace `············display:·······` with `······display:·`
+      155:1 prettier/prettier — Delete `······`
+      156:1 prettier/prettier — Replace `············` with `······`
+      157:7 prettier/prettier — Replace `······alignItems:···` with `alignItems:`
+      158:7 prettier/prettier — Replace `······borderTop:····` with `borderTop:`
+      159:1 prettier/prettier — Replace `············` with `······`
+      160:9 prettier/prettier — Replace `········borderTop:····` with `borderTop:·`
+      161:1 prettier/prettier — Replace `················paddingLeft:·` with `········paddingLeft:`
+      162:1 prettier/prettier — Replace `················` with `········`
+      163:7 prettier/prettier — Delete `······`
+      164:5 prettier/prettier — Delete `····`
+      166:1 prettier/prettier — Replace `········` with `····`
+      167:5 prettier/prettier — Delete `····`
+      168:1 prettier/prettier — Delete `······`
+      169:1 prettier/prettier — Replace `············width:··········` with `······width:`
+      170:5 prettier/prettier — Delete `····`
+      172:1 prettier/prettier — Delete `····`
+      173:5 prettier/prettier — Delete `····`
+      174:1 prettier/prettier — Replace `············display:·······` with `······display:·`
+      175:1 prettier/prettier — Replace `············` with `······`
+      176:1 prettier/prettier — Replace `············alignItems:····` with `······alignItems:·`
+      177:1 prettier/prettier — Replace `············gap:············` with `······gap:·`
+      178:1 prettier/prettier — Replace `············padding:······` with `······padding:`
+      179:1 prettier/prettier — Replace `············` with `······`
+      180:9 prettier/prettier — Replace `········flexDirection:·` with `flexDirection:`
+      181:9 prettier/prettier — Replace `········alignItems:·····` with `alignItems:·`
+      182:1 prettier/prettier — Replace `················` with `········`
+      183:7 prettier/prettier — Delete `······`
+      184:1 prettier/prettier — Replace `············` with `······`
+      185:1 prettier/prettier — Delete `········`
+      186:1 prettier/prettier — Replace `············` with `······`
+      187:1 prettier/prettier — Replace `········` with `····`
+      189:1 prettier/prettier — Delete `····`
+      190:1 prettier/prettier — Replace `········` with `····`
+      191:5 prettier/prettier — Delete `····`
+      192:7 prettier/prettier — Replace `······display:·······` with `display:·`
+      193:1 prettier/prettier — Delete `······`
+      194:1 prettier/prettier — Replace `············alignItems:····` with `······alignItems:·`
+      195:1 prettier/prettier — Replace `············gap:···········` with `······gap:·`
+      196:1 prettier/prettier — Replace `············width:·········` with `······width:·`
+      197:1 prettier/prettier — Replace `············` with `······`
+      198:9 prettier/prettier — Replace `········flexDirection:··` with `flexDirection:·`
+      199:1 prettier/prettier — Replace `················alignItems:·····` with `········alignItems:·`
+      200:1 prettier/prettier — Replace `················` with `········`
+      201:9 prettier/prettier — Replace `········gap:············` with `gap:·`
+      202:1 prettier/prettier — Replace `················width:··········` with `········width:·`
+      203:1 prettier/prettier — Replace `············` with `······`
+      204:1 prettier/prettier — Delete `······`
+      205:1 prettier/prettier — Replace `················` with `········`
+      206:7 prettier/prettier — Delete `······`
+      207:5 prettier/prettier — Delete `····`
+      209:1 prettier/prettier — Replace `········` with `····`
+      210:1 prettier/prettier — Delete `····`
+      211:5 prettier/prettier — Delete `····`
+      212:1 prettier/prettier — Replace `········` with `····`
+      213:1 prettier/prettier — Replace `············display:······` with `······display:·`
+      214:1 prettier/prettier — Replace `············flexWrap:·····` with `······flexWrap:·`
+      215:1 prettier/prettier — Delete `······`
+      216:7 prettier/prettier — Replace `······gap:··········` with `gap:·`
+      217:7 prettier/prettier — Replace `······width:········` with `width:·`
+      218:1 prettier/prettier — Delete `······`
+      219:7 prettier/prettier — Delete `······`
+      220:1 prettier/prettier — Replace `················` with `········`
+      221:1 prettier/prettier — Replace `················gap:·····` with `········gap:`
+      222:1 prettier/prettier — Replace `················width:····` with `········width:·`
+      223:1 prettier/prettier — Delete `········`
+      224:1 prettier/prettier — Replace `············` with `······`
+      225:1 prettier/prettier — Delete `······`
+      226:1 prettier/prettier — Replace `················` with `········`
+      227:7 prettier/prettier — Delete `······`
+      228:1 prettier/prettier — Replace `········` with `····`
+      230:1 prettier/prettier — Delete `····`
+      231:5 prettier/prettier — Delete `····`
+      232:1 prettier/prettier — Replace `············display:········` with `······display:·`
+      233:1 prettier/prettier — Replace `············alignItems:·····` with `······alignItems:·`
+      234:1 prettier/prettier — Delete `······`
+      235:1 prettier/prettier — Replace `············padding:·······` with `······padding:`
+      236:1 prettier/prettier — Replace `············whiteSpace:·····` with `······whiteSpace:·`
+      237:1 prettier/prettier — Delete `······`
+      238:1 prettier/prettier — Replace `················` with `········`
+      239:7 prettier/prettier — Delete `······`
+      240:1 prettier/prettier — Replace `········` with `····`
+      242:1 prettier/prettier — Delete `····`
+      243:1 prettier/prettier — Replace `········` with `····`
+      244:5 prettier/prettier — Delete `····`
+      245:1 prettier/prettier — Replace `············textStyle:·` with `······textStyle:`
+      246:1 prettier/prettier — Replace `············color:······` with `······color:·`
+      247:1 prettier/prettier — Replace `············display:···` with `······display:`
+      248:1 prettier/prettier — Replace `············` with `······`
+      249:7 prettier/prettier — Replace `······gap:········` with `gap:·`
+      250:1 prettier/prettier — Delete `······`
+      251:1 prettier/prettier — Replace `············border:·····` with `······border:·`
+      252:1 prettier/prettier — Replace `············padding:·····` with `······padding:·`
+      253:1 prettier/prettier — Replace `············cursor:·····` with `······cursor:·`
+      254:1 prettier/prettier — Replace `············` with `······`
+      255:1 prettier/prettier — Replace `············` with `······`
+      256:1 prettier/prettier — Replace `················outline:······` with `········outline:`
+      257:1 prettier/prettier — Replace `················outlineColor:·` with `········outlineColor:`
+      258:1 prettier/prettier — Delete `········`
+      259:7 prettier/prettier — Delete `······`
+      260:1 prettier/prettier — Replace `········` with `····`
+      261:3 prettier/prettier — Delete `··`
+      262:2 prettier/prettier — Insert `;`
+
+=== were the header prettier errors PRE-EXISTING? (check the backup) ===
+  ORIGINAL header: errors=1 warnings=0
+      4:1 None — Parsing error: The keyword 'import' is reserved

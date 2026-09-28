@@ -1,0 +1,294 @@
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/README.md ##########
+     1	# Skills — What They Are and How to Use Them
+     2	
+     3	This is the canonical reference for every skill in this folder. If you're looking for _why_
+     4	the skill system exists (the human-in-the-lead design philosophy), see the
+     5	[Human-in-the-Lead AI Development — Project Setup Overview](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305102849)
+     6	Confluence page (Part 2: AI Governance Layer) —
+     7	that page covers the rationale; this file covers the _mechanics_: what each skill does, what
+     8	to pass it, and what it hands back.
+     9	
+    10	## How skills work
+    11	
+    12	- Invoke a skill by typing `/skill-name` (optionally followed by an argument) in a Claude
+    13	  Code session. Each skill is a structured, reviewable process defined in its own
+    14	  `<skill-name>/SKILL.md` file — not a freeform prompt.
+    15	- Where a skill takes an argument, its `SKILL.md` uses `$ARGUMENTS` to capture whatever
+    16	  follows the skill name, e.g. `/new-component productBadge` or `/audit-tier overrides/app/hooks/use-wish-list.ts`.
+    17	  If you invoke a skill with no argument and one is expected, Claude asks for it.
+    18	- Every skill is **human-in-the-lead**: it either stops for confirmation at a defined
+    19	  checkpoint, or produces a read-only report/plan rather than making changes outright.
+    20	  See the checkpoint column in each table below.
+    21	- These `SKILL.md` files are also the master source for `.cursor/rules/skills/*.mdc` and
+    22	  `.vscode/instructions/workflows.md` — see [scripts/syncCursorRules.mjs](../../scripts/syncCursorRules.mjs).
+    23	  Edit the `SKILL.md` here, then run `npm run sync:ai-rules:fix`; never edit the generated
+    24	  Cursor/VS Code files directly.
+    25	
+    26	## Setup & onboarding
+    27	
+    28	| Skill                                      | Usage            | What it does                                                                                                                                                                                                                                                                                         | Human-in-the-lead checkpoint                                      |
+    29	| ------------------------------------------ | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+    30	| [`/session-start`](session-start/SKILL.md) | `/session-start` | Confirms the current branch is safe to work on, reads `.docs/memory/` tracking docs, runs health checks, and states current project position. Run at the **start of every session**.                                                                                                                 | Waits for you to confirm direction before writing any code        |
+    31	| [`/onboarding`](onboarding/SKILL.md)       | `/onboarding`    | Interactive walkthrough for a new developer or QA engineer — role and squad questions, mechanical setup checks (git hooks, Node version, branch), then role-specific orientation to the rules and tools. Run on a **first session on a new machine or first day on the project**.                    | Confirms understanding at each phase before moving on             |
+    32	| [`/project-init`](project-init/SKILL.md)   | `/project-init`  | One-time project setup walkthrough — runs `scripts/projectInitCheck.sh`, fixes automatable failures, then asks one question at a time for items that need a human answer (Jira prefix, BrowserStack, secrets, Zephyr product, etc.), updating the [7.1c CI/CD & Environment Setup Checklist](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305430530) Confluence page as it goes. | Asks one question at a time, waits for the answer before the next |
+    33	
+    34	## Planning & safety
+    35	
+    36	| Skill                                    | Usage                                               | What it does                                                                                                                                                                                                                                                                                 | Human-in-the-lead checkpoint                                             |
+    37	| ---------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+    38	| [`/feature-spec`](feature-spec/SKILL.md) | `/feature-spec <plain-English feature description>` | Turns a feature request into a scoped implementation spec **before any code is written** — clarifies requirements one question at a time, researches the codebase in parallel, checks sprint scope, then outputs a spec with file list, tier flags, and a ready-to-paste Claude Code prompt. | Produces a plan only — you review the spec before implementation begins  |
+    39	| [`/scope-check`](scope-check/SKILL.md)   | `/scope-check <a proposed Claude Code prompt>`      | Reviews a prompt _before you run it_ — classifies every file it would likely touch by protection tier, flags drift risk (refactoring upward, cross-squad reach), and verdicts it SAFE / RISKY / BLOCKED. Rewrites risky prompts into safely-scoped ones.                                     | You see the blast radius and verdict before the risky prompt is ever run |
+    40	| [`/audit-tier`](audit-tier/SKILL.md)     | `/audit-tier <file or directory path>`              | Identifies the protection tier (1–4), owner, and import blast radius of a path under `overrides/`. Use before editing anything you're unsure about.                                                                                                                                          | Tells you who to notify before you touch the file                        |
+    41	
+    42	## Development
+    43	
+    44	| Skill                                      | Usage                            | What it does                                                                                                                                                                                                      | Human-in-the-lead checkpoint                                    |
+    45	| ------------------------------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+    46	| [`/new-component`](new-component/SKILL.md) | `/new-component <componentName>` | Scaffolds a new Zimmermann component under `overrides/app/components/` — TypeScript, Chakra-first, folder layout and props typing per `.claude/rules/conventions.md`/`components.md`/`css.md`, paired Storybook story, optional test file. | You name the component and confirm the resulting file structure |
+    47	
+    48	## Quality & review
+    49	
+    50	| Skill                                    | Usage                                                                                   | What it does                                                                                                                                                                                                                                 | Human-in-the-lead checkpoint                                                   |
+    51	| ---------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+    52	| [`/code-quality`](code-quality/SKILL.md) | `/code-quality [file or directory]` (no argument = files changed on the current branch) | **Read-only** audit against `.claude/rules/conventions.md`, `typescript.md`, `css.md`, and `components.md` — naming/structure, circular imports, TypeScript coverage, test/story existence. Produces a prioritised 🔴/🟡/🔵 report. Use after implementing a feature or before opening a PR. | Report only — you decide what to fix and when                                  |
+    53	| [`/pr-checklist`](pr-checklist/SKILL.md) | `/pr-checklist`                                                                         | Runs `/code-quality` on the current branch's changed files, classifies each by tier and reviewer requirement, and generates a copy-paste-ready PR description with a test checklist. Pairs with `/code-quality`.                             | You review and submit the generated PR description — nothing is posted for you |
+    54	
+    55	## QA / testing
+    56	
+    57	| Skill                                  | Usage                                              | What it does                                                                                                                                                                                                                                                                               | Human-in-the-lead checkpoint                                                    |
+    58	| -------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+    59	| [`/qa-generate`](qa-generate/SKILL.md) | `/qa-generate` (then answers Jira story questions) | Two-step, human-gated E2E test generation: drafts a Gherkin `.feature` file and **stops completely**; only generates the Playwright spec after Lead QA has explicitly validated (and optionally annotated) the feature file. Use for any new storefront user journey needing E2E coverage. | Playwright spec is not generated until Lead QA signs off on the `.feature` file |
+    60	
+    61	## Contentful
+    62	
+    63	| Skill                                                                      | Usage                                                                                                  | What it does                                                                                                                                                                                               | Human-in-the-lead checkpoint                                                                              |
+    64	| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+    65	| [`/contentful-register-component`](contentful-register-component/SKILL.md) | `/contentful-register-component <component file path>`                                                 | Reads an existing component's TypeScript props, generates a `*ContentfulDefinition.ts` file mapping each prop to a Contentful variable type, and wires it into the `defineComponents` registry.            | You review the generated definition (and any skipped/ambiguous props) before it's published in Contentful |
+    66	| [`/contentful-drift-check`](contentful-drift-check/SKILL.md)               | `/contentful-drift-check [component or directory path]` (no argument = scan all registered components) | **Read-only** comparison of component props against their paired Contentful definitions — reports added props, removed props, and type mismatches. Use after props change, or to audit everything at once. | Report only — you resolve any drift found                                                                 |
+    67	
+    68	## Release management
+    69	
+    70	| Skill                                                    | Usage                                                                                    | What it does                                                                                                                                                                                                                                    | Human-in-the-lead checkpoint                                                                                    |
+    71	| -------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+    72	| [`/generate-changelog`](generate-changelog/SKILL.md)     | `/generate-changelog` (then answers version/range questions)                             | Builds a structured, four-audience changelog (dev team, QA, product, GitHub Release) from conventional commits and the upstream baseline. Writes to `docs/releases/`. Use before cutting a release branch.                                      | You review the changelog before it's published; the GitHub Release command is proposed, never run automatically |
+    73	| [`/upstream-sync-review`](upstream-sync-review/SKILL.md) | `/upstream-sync-review` (then supply a candidate `@salesforce/retail-react-app` version) | Reviews upstream release notes against `.docs/memory/upstreamBaseline.md`, maps changes to our override surface, and recommends BUMP / DEFER / WAIT — per the "read the changelog, bump opportunistically" policy in `.docs/upstreamPolicy.md`. | Recommendation only — you approve and run the actual `npm install` bump                                         |
+    74	
+    75	## Adding a new skill
+    76	
+    77	1. Create `.claude/skills/<skill-name>/SKILL.md` with `name` and `description` frontmatter (see any existing skill for the format).
+    78	2. Add it to the appropriate table above.
+    79	3. Add it to the skill list in [scripts/syncCursorRules.mjs](../../scripts/syncCursorRules.mjs) so it gets mirrored to `.cursor/rules/skills/` and `.vscode/instructions/workflows.md`, then run `npm run sync:ai-rules:fix`.
+    80	4. If it belongs in the [Project Setup Overview](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305102849) Confluence page's "Part 2" narrative, add a one-line mention there — but keep the detailed reference here to avoid duplication.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start/SKILL.md ##########
+     1	---
+     2	name: session-start
+     3	description: Run the mandatory session start ritual — reads tracking docs, runs branch + health checks, states current position. Use at the start of every coding session.
+     4	---
+     5	
+     6	Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+     7	
+     8	## Steps (in order — do not skip any)
+     9	
+    10	1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+    11	
+    12	2. **Read tracking docs** — read these in parallel:
+    13	   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+    14	   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+    15	   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+    16	   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+    17	   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+    18	
+    19	3. **Health checks** — run when the helper exists:
+    20	   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+    21	
+    22	4. **State current position** — in plain language, say exactly:
+    23	   - Current branch
+    24	   - Current sprint / phase (from `projectState.md`)
+    25	   - The last completed task and the next task
+    26	   - Any blockers or outstanding issues
+    27	
+    28	   Format: "Resuming from: [last completed task]. Next: [next task]. [Any blockers or health issues]."
+    29	
+    30	5. **Confirm readiness** — ask if the user wants to proceed with the stated next task or redirect to something else.
+    31	
+    32	Do not write any code until this ritual is complete and the user has confirmed direction.
+    33	
+    34	---
+    35	
+    36	## Living Memory — what belongs where
+    37	
+    38	`.docs/memory/` is the project's persistent memory. Keep it current — update the relevant file whenever a session produces new information that belongs there.
+    39	
+    40	**`.claude/session-notes.md` is different: a lightweight, Claude-writable, gitignored, per-developer staging area** (same pattern as `userProfile.md` below, but for tasks rather than profile info) for short-lived carryover items (e.g. "still need to do X next session") that haven't been promoted to `.docs/memory/` yet. It's **not** shared via git — each developer's notes stay local, so they never conflict or overwrite a teammate's. Unlike the files below, Claude may write to it directly. Use it for quick pending-item tracking; move anything durable and team-relevant into the right `.docs/memory/` file once it's confirmed, and clear the note.
+    41	
+    42	| File | What belongs there | When to update |
+    43	|---|---|---|
+    44	| `architecture.md` | Stack decisions, overrides pattern, key paths, structural choices | A new integration is added, a structural decision is made, or a key path changes |
+    45	| `projectState.md` | Phase, integration statuses (mock/live/not started), what's done and pending, unresolved dependencies | Any integration goes live, a phase changes, a feature is completed, or a dependency is resolved |
+    46	| `feedback.md` | What worked, what failed, patterns to avoid or repeat | After discovering a gotcha, a failed approach, or a validated pattern |
+    47	| `references.md` | Service URLs, API keys, credentials, logins, dashboards | A new credential or service URL is introduced (system roles live in `architecture.md`) |
+    48	| `userProfile.md` | User's role, expertise, working style, preferences | User shares a preference or working-style detail that should persist |
+    49	
+    50	**Rules:**
+    51	- Never leave a file with only its placeholder comment — populate it the moment you learn something that belongs there.
+    52	- **No duplication.** Every fact has exactly one home. Before writing something, check whether it already lives in another doc — if it does, reference that doc instead of copying. Applies across all `.md` files: `AGENTS.md`, memory files, and PRDs.
+    53	- **Conciseness.** Keep all `.md` instructions concise.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/audit-tier/SKILL.md ##########
+     1	---
+     2	name: audit-tier
+     3	description: Identify the protection tier, owner, and import blast radius of a file or directory under overrides/. Use before editing anything you're unsure about.
+     4	---
+     5	
+     6	Identify the protection tier and owner of a file or directory in this codebase.
+     7	
+     8	The path to audit is: $ARGUMENTS
+     9	
+    10	## What to output
+    11	
+    12	**1. Tier**
+    13	- Tier 1 (Frozen) — must not be modified without explicit owner approval
+    14	- Tier 2 (Protected) — feature branch only, requires second-developer PR review
+    15	- Tier 3 (Squad-owned) — only the owning squad should be prompting Claude here
+    16	- Tier 4 (Feature-local) — freely editable on a feature branch
+    17	
+    18	Check against:
+    19	- [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md) for Tier 1
+    20	- [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md) for Tier 2
+    21	- `.claude/rules/squadA.md` and `.claude/rules/squadB.md` for Tier 3 *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+    22	
+    23	**2. Owner**
+    24	Design System / Integration / SI Partner / Squad A / Squad B / Both Squads
+    25	
+    26	**3. Can Claude Code modify it?**
+    27	- Tier 1: No. Developer must name the file explicitly in the prompt AND confirm owner approval.
+    28	- Tier 2: Yes on a feature branch — second-developer PR review required before merging.
+    29	- Tier 3: Yes — but only the owning squad should be running Claude in this area.
+    30	- Tier 4: Yes, freely.
+    31	
+    32	**4. Import blast radius**
+    33	Run this to check how many non-test, non-story files import it (from `overrides/app/` — the customisation surface):
+    34	```bash
+    35	grep -rl "$(basename "$ARGUMENTS" | sed 's/\.[tj]sx\?$//')" overrides/app --include="*.ts" --include="*.tsx" \
+    36	  | grep -v '\.test\.' | grep -v '\.stories\.' | wc -l
+    37	```
+    38	If more than 5, flag it as **high blast radius** — a change here breaks many consumers.
+    39	
+    40	**5. Next step**
+    41	Specific action for the developer — e.g.:
+    42	- "Message #design-system before asking Claude to touch this"
+    43	- "This is Tier 3 Squad A — if you're Squad B, message the Squad A Lead first"
+    44	- "This is Tier 4 — safe to include in your prompt with an explicit file path"
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/new-component/SKILL.md ##########
+     1	---
+     2	name: new-component
+     3	description: Scaffold a new Zimmermann component under overrides/app/components/ — TypeScript, Chakra-first, with a paired Storybook story. Use whenever a new custom component is needed.
+     4	---
+     5	
+     6	Scaffold a new Zimmermann custom component.
+     7	
+     8	The component name is: $ARGUMENTS
+     9	
+    10	## Conventions
+    11	
+    12	Follow [.claude/rules/conventions.md](../../rules/conventions.md) (naming, folder layout,
+    13	cross-cutting rules), [components.md](../../rules/components.md) (props types, JSDoc policy,
+    14	composition, Storybook categorisation), and [css.md](../../rules/css.md) (Chakra token usage)
+    15	— together the single source of truth for scaffolding. Higher-level project rules live in
+    16	[AGENTS.md](../../../AGENTS.md). Do not restate rules here — read those files before
+    17	scaffolding.
+    18	
+    19	Key implications for scaffolding:
+    20	- Component lives in its own folder: `componentName/index.tsx` (Zimmermann-authored) or
+    21	  `component-name/index.tsx` (override of a base SF component).
+    22	- Props type named `<ComponentName>Props`, declared at the top of `index.tsx` by default.
+    23	- Storybook story is mandatory; Vitest only when the component owns non-trivial logic.
+    24	
+    25	## Steps
+    26	
+    27	1. Read one nearby existing custom component under [overrides/app/components/](../../../overrides/app/components/) to match code style, import order, and Chakra usage. If no Zimmermann-authored component exists yet, read a base template component from `node_modules/@salesforce/retail-react-app/app/components/` and convert the style to TypeScript + Chakra props.
+    28	
+    29	2. Create `overrides/app/components/<componentName>/index.tsx`:
+    30	   - Functional React component, named export (`export function <ComponentName>`) plus default export.
+    31	   - `type <ComponentName>Props = { ... }` at the top of the file.
+    32	   - JSDoc above the component if it will be consumed by ≥2 callers (shared/Tier 2).
+    33	   - Chakra primitives for layout (`Box`, `Flex`, `Text`, etc.) using theme tokens — no hardcoded hex, pixel spacing, or raw font sizes.
+    34	   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation. Exception: Context-backed, app-wide static-content hooks (`useIntl`, `useUiCopy`) may be called directly — they read from a Provider mounted once at the app root and degrade gracefully with none present, so they don't create the reuse problem this rule exists to prevent. See components.md's exception note for the full reasoning.
+    35	
+    36	3. Create `overrides/app/components/<componentName>/index.stories.tsx` — but first decide
+    37	   if a story is needed at all. Per [components.md](../../rules/components.md) →
+    38	   **Storybook**, purely internal sub-components that only render inside one parent
+    39	   don't need their own story; cover their variants via the parent. If a story *is* needed:
+    40	   - Storybook 8.6 CSF3 default export.
+    41	   - Pick the right category prefix from components.md — `Foundation/`, `Elements/`,
+    42	     `Layout/`, `Commerce/`, `Forms/`, `Pages/`, or `Contentful/`. Ask the developer if it's
+    43	     not obvious which one fits (with your recommendation).
+    44	   - `title: '<Category>/<ComponentName>'` (e.g. `'Commerce/ProductTile'`,
+    45	     `'Layout/Header'`).
+    46	   - At least one named export `Default`. Add named exports for meaningful states only —
+    47	     not every prop combination.
+    48	   - Add a `play` function only if the component has interactive behaviour worth asserting.
+    49	
+    50	4. If the component owns non-trivial logic (branching, prop→JSX mapping decisions, event wiring), create `index.test.ts`/`index.test.tsx` (Vitest) in the same folder — even if that logic's effects are also covered by a hook's own test or a parent's assembly-level Storybook `play`. Resolve any duplication by mocking the hook/child whose internals are proven elsewhere and testing only this component's own contract, not by skipping the file. See testing.md's note under "What to test (and what to skip)". Skip only when the component has no branching/decision logic at all (pure prop interpolation).
+    51	
+    52	5. Optional: if the props type exceeds ~30 lines or will be consumed by sibling files, move it to `types.ts` in the same folder. Otherwise leave it inline.
+    53	
+    54	6. Run `npx tsc --noEmit` and confirm zero new errors.
+    55	
+    56	## Constraints
+    57	
+    58	- Do not modify any existing files (no auto-wiring into routes, parents, or the theme registry).
+    59	- Do not add npm packages — see [AGENTS.md](../../../AGENTS.md) Hard Rule 7.
+    60	- Do not import from `node_modules/@salesforce/retail-react-app/` source directly — re-export from `@salesforce/retail-react-app/...` paths.
+    61	- For new icons, use `@salesforce/retail-react-app/app/components/icons`; if a needed icon is missing, ask the developer.
+    62	
+    63	## Output
+    64	
+    65	Tell the developer:
+    66	- The paths of every file created.
+    67	- The import to copy: `import <ComponentName> from '.../components/<componentName>'` (no filename — resolves via `index.tsx`).
+    68	- A one-sentence note on where it likely wires in, or ask if unsure.
+    69	- A reminder that `npx tsc --noEmit` was run and passed.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/scope-check/SKILL.md ##########
+     1	---
+     2	name: scope-check
+     3	description: Review a proposed Claude Code prompt for scope safety before it runs. Classifies every likely-touched file by tier and verdicts the prompt SAFE / RISKY / BLOCKED, rewriting it when needed.
+     4	---
+     5	
+     6	Review a proposed Claude Code prompt for scope safety before it runs.
+     7	
+     8	The prompt to check is: $ARGUMENTS
+     9	
+    10	## What to do
+    11	
+    12	1. **Identify every file the prompt would likely touch** — both files named explicitly and files Claude would naturally reach through refactoring upward, shared imports, or "while I'm in here" changes.
+    13	
+    14	2. **Classify each file by tier**:
+    15	   - Tier 1 (Frozen) — see [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md)
+    16	   - Tier 2 (Protected) — see [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md)
+    17	   - Tier 3 (Squad-owned) — see `.claude/rules/squadA.md` and `.claude/rules/squadB.md` *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+    18	   - Tier 4 (Feature-local, safe)
+    19	
+    20	3. **Assess the risk**:
+    21	   - Is the prompt open-ended in a way that lets Claude drift into shared code?
+    22	   - Could Claude refactor upward into hooks or utilities not mentioned?
+    23	   - Does it cross squad boundaries (Squad A territory + Squad B territory in the same prompt)?
+    24	   - Does it name specific files, or just a feature area?
+    25	
+    26	4. **Verdict**: output one of:
+    27	   - ✅ SAFE — clearly scoped, no Tier 1 or 2 risk
+    28	   - ⚠️ RISKY — likely to drift, needs a rewrite before running
+    29	   - 🚫 BLOCKED — requires Tier 1 modification, stop and get owner approval first
+    30	
+    31	5. **If RISKY or BLOCKED**, rewrite the prompt so it is safely scoped:
+    32	   - Name exact file paths under `overrides/app/...`
+    33	   - End with "Do not modify any other files"
+    34	   - Split cross-squad work into two separate prompts
+    35	
+    36	## Output format
+    37	
+    38	Use a compact table for the file/tier list. One short paragraph for the verdict. If rewriting, show the improved prompt in a code block.
+

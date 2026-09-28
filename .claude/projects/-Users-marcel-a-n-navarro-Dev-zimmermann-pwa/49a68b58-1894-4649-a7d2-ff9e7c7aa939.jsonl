@@ -1,0 +1,4 @@
+{"type":"mode","mode":"normal","sessionId":"49a68b58-1894-4649-a7d2-ff9e7c7aa939"}
+{"type":"permission-mode","permissionMode":"default","sessionId":"49a68b58-1894-4649-a7d2-ff9e7c7aa939"}
+{"parentUuid":null,"isSidechain":false,"type":"system","subtype":"informational","content":"Unknown command: /resme. Did you mean /resume?","isMeta":false,"timestamp":"2026-09-14T17:21:41.208Z","uuid":"83384238-d5da-47f2-99fc-55fa3e355664","level":"warning","userType":"external","entrypoint":"cli","cwd":"/Users/marcel.a.n.navarro/Dev/zimmermann-pwa","sessionId":"49a68b58-1894-4649-a7d2-ff9e7c7aa939","version":"2.1.270","gitBranch":"fix/adyen-vendor-chunk-split"}
+{"type":"cost-state","sessionId":"49a68b58-1894-4649-a7d2-ff9e7c7aa939","totalCostUSD":0,"totalAPIDuration":0,"totalAPIDurationWithoutRetries":0,"totalToolDuration":0,"totalLinesAdded":0,"totalLinesRemoved":0,"totalDuration":510632,"startTime":1789406003217,"modelUsage":{},"hasUnknownModelCost":false}

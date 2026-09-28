@@ -1,0 +1,9 @@
+{
+  "id": "9",
+  "subject": "Confirmatory validation vs Confluence + Jira",
+  "description": "Independently re-verify the TSD's Confluence/Jira-sourced claims against live sources: page 268337165 (credentials hard blocker + owner), PWA TSD imagery section number/wording for the image-ownership contradiction, and current statuses of the 10 Contentful stories + SFCC-123. Re-read the on-disk artifact first.",
+  "activeForm": "Validating vs Confluence + Jira",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

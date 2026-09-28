@@ -1,0 +1,500 @@
+base exports: [33m55[39m | zimm.tsx exports: [33m25[39m | override re-exports from base: [33m55[39m | override total: [33m80[39m
+
+### SFCC-base-consumed names MISSING from the override (would be undefined in the real app build):
+Accordion  <- 5 base file(s): app/components/order-summary/index.jsx, app/components/promo-code/index.jsx, app/components/nested-accordion/index.jsx, app/components/locale-selector/index.jsx
+AccordionButton  <- 7 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/order-summary/index.jsx, app/components/promo-code/index.jsx, app/components/nested-accordion/index.jsx
+AccordionIcon  <- 2 base file(s): app/components/order-summary/index.jsx, app/components/store-display/index.jsx
+AccordionItem  <- 7 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/order-summary/index.jsx, app/components/promo-code/index.jsx, app/components/nested-accordion/index.jsx
+AccordionPanel
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import {PromoCode  <- 1 base file(s): app/components/order-summary/index.jsx
+AccordionPanel  <- 5 base file(s): app/components/promo-code/index.jsx, app/components/nested-accordion/index.jsx, app/components/locale-selector/index.jsx, app/components/store-display/index.jsx
+Alert  <- 1 base file(s): app/components/email-confirmation/index.jsx
+AlertIcon
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {BrandLogo  <- 1 base file(s): app/components/email-confirmation/index.jsx
+AspectRatio  <- 6 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/basic-tile/index.jsx, app/components/product-tile/index.jsx, app/components/product-scroller/index.jsx
+AuthHelpers} from '@salesforce/commerce-sdk-react'
+import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+import {useAppOrigin} from '@salesforce/retail-react-app/app/hooks/use-app-origin'
+import {setSessionJSONItem  <- 1 base file(s): app/components/social-login/index.jsx
+Badge  <- 7 base file(s): app/components/product-tile/index.jsx, app/components/header/index.jsx, app/hooks/use-bonus-product-selection-modal/components/bonus-product-item.js, app/pages/account/order-detail.jsx
+Box  <- 20 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/basic-tile/index.jsx, app/components/radio-card/index.jsx, app/components/product-tile/index.jsx
+BreadcrumbItem  <- 1 base file(s): app/components/breadcrumb/index.jsx
+BreadcrumbLink  <- 1 base file(s): app/components/breadcrumb/index.jsx
+Button  <- 30 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/search/index.jsx, app/components/_error/index.jsx, app/components/register/index.jsx
+Button} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {
+    AmexIcon  <- 1 base file(s): app/pages/cart/partials/cart-cta.jsx
+Center
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import {BasketIcon  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-checkout-header.jsx, app/pages/checkout/partials/checkout-header.jsx
+Center  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/cart/partials/empty-cart.jsx
+Checkbox
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {
+    VisibilityIcon  <- 1 base file(s): app/components/field/index.jsx
+Checkbox
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useCurrentCustomer} from '@salesforce/retail-react-app/app/hooks/use-current-customer'
+import {
+    getCreditCardIcon  <- 1 base file(s): app/pages/account/payments.jsx
+Collapse  <- 1 base file(s): app/pages/checkout-one-click/partials/one-click-payment-form.jsx
+Container  <- 7 base file(s): app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/social-login-redirect/index.jsx, app/pages/checkout/partials/shipping-address-selection.jsx, app/pages/reset-password/reset-password-landing.jsx
+Controller} from 'react-hook-form'
+import {
+    FormControl  <- 1 base file(s): app/components/field/index.jsx
+Controller} from 'react-hook-form'
+import {shallowEquals} from '@salesforce/retail-react-app/app/utils/utils'
+import {RadioCard  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout/partials/shipping-address-selection.jsx
+Divider
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import Seo from '@salesforce/retail-react-app/app/components/seo'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import {
+    ChevronDownIcon  <- 1 base file(s): app/pages/account/index.jsx
+Divider  <- 7 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/order-summary/index.jsx, app/components/header/index.jsx, app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx
+Drawer  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/product-list/index.jsx
+DrawerBody  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/product-list/index.jsx
+DrawerCloseButton
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+
+import Pagination from '@salesforce/retail-react-app/app/components/pagination'
+import ProductTile  <- 1 base file(s): app/pages/product-list/index.jsx
+DrawerCloseButton  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+DrawerContent  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/product-list/index.jsx
+DrawerFooter  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+DrawerHeader  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/product-list/index.jsx
+DrawerOverlay  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/pages/product-list/index.jsx
+Fade  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+FigmaLogo  <- 1 base file(s): app/pages/home/data.js
+Flex  <- 25 base file(s): app/components/pagination/index.jsx, app/components/forms/credit-card-fields.jsx, app/components/drawer-menu/drawer-menu.jsx, app/components/social-icons/index.jsx
+FormControl  <- 3 base file(s): app/pages/checkout-one-click/partials/one-click-cc-radio-group.jsx, app/pages/checkout/partials/cc-radio-group.jsx, app/pages/product-list/index.jsx
+FormErrorMessage
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {PlusIcon  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-cc-radio-group.jsx, app/pages/checkout/partials/cc-radio-group.jsx
+FormErrorMessage  <- 1 base file(s): app/components/field/index.jsx
+FormLabel  <- 2 base file(s): app/components/forms/credit-card-fields.jsx, app/components/field/index.jsx
+FormattedMessage  <- 18 base file(s): app/components/order-summary/index.jsx, app/components/promo-code/index.jsx, app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout-one-click/partials/one-click-payment-form.jsx
+FormattedMessage} from 'react-intl'
+import {
+    Alert  <- 2 base file(s): app/components/register/index.jsx, app/pages/reset-password/reset-password-landing.jsx
+FormattedMessage} from 'react-intl'
+import {
+    AspectRatio  <- 1 base file(s): app/hooks/use-add-to-cart-modal.js
+FormattedMessage} from 'react-intl'
+import {
+    Box  <- 4 base file(s): app/components/store-display/index.jsx, app/pages/checkout-one-click/partials/one-click-cc-radio-group.jsx, app/pages/checkout/partials/cc-radio-group.jsx, app/pages/cart/partials/empty-cart.jsx
+FormattedMessage} from 'react-intl'
+import {
+    Button  <- 1 base file(s): app/components/email-confirmation/index.jsx
+FormattedMessage} from 'react-intl'
+import {Alert  <- 2 base file(s): app/components/reset-password/index.jsx, app/components/login/index.jsx
+FormattedMessage} from 'react-intl'
+import {Flex  <- 2 base file(s): app/components/forms/password-requirements.jsx, app/pages/cart/partials/cart-cta.jsx
+FormattedMessage} from 'react-intl'
+import {getAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
+import {
+    Box  <- 1 base file(s): app/components/address-suggestion-dropdown/index.jsx
+FormattedMessage} from 'react-intl'
+import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
+import {SearchIcon  <- 1 base file(s): app/pages/page-not-found/index.jsx
+FormattedNumber  <- 2 base file(s): app/pages/checkout/partials/payment-form.jsx, app/pages/account/order-history.jsx
+FormattedNumber} from 'react-intl'
+import {
+    Box  <- 1 base file(s): app/components/order-summary/index.jsx
+GithubLogo  <- 1 base file(s): app/pages/home/data.js
+Grid  <- 4 base file(s): app/pages/account/order-detail.jsx, app/pages/account/index.jsx, app/pages/account/order-history.jsx, app/pages/product-list/index.jsx
+HStack
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import DynamicImage from '@salesforce/retail-react-app/app/components/dynamic-image'
+
+
+import {HeartIcon  <- 1 base file(s): app/components/product-tile/index.jsx
+HStack
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import DynamicImage from '@salesforce/retail-react-app/app/components/dynamic-image'
+import {HeartIcon  <- 1 base file(s): app/hooks/use-bonus-product-selection-modal/components/bonus-product-item.js
+HStack  <- 4 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/search/index.jsx, app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx, app/pages/checkout/partials/checkout-footer.jsx
+Heading
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useProducts  <- 1 base file(s): app/pages/account/wishlist/index.jsx
+Heading  <- 15 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/_error/index.jsx, app/components/product-scroller/index.jsx, app/components/order-summary/index.jsx
+Helmet} from 'react-helmet'
+import {
+    Box  <- 1 base file(s): app/components/_error/index.jsx
+IconButton  <- 11 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/product-tile/index.jsx, app/components/drawer-menu/drawer-menu.jsx, app/components/social-icons/index.jsx
+Img  <- 2 base file(s): app/components/basic-tile/index.jsx, app/pages/account/order-history.jsx
+Input  <- 1 base file(s): app/components/field/index.jsx
+InputGroup  <- 2 base file(s): app/components/field/index.jsx, app/components/search/index.jsx
+InputLeftElement  <- 1 base file(s): app/components/search/index.jsx
+InputRightElement  <- 2 base file(s): app/components/forms/credit-card-fields.jsx, app/components/field/index.jsx
+Link
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import PropTypes from 'prop-types'
+import {Link  <- 1 base file(s): app/pages/product-list/partials/empty-results.jsx
+Link  <- 4 base file(s): app/components/register/index.jsx, app/components/list-menu/list-menu-trigger.jsx, app/components/breadcrumb/index.jsx, app/pages/account/order-detail.jsx
+Modal  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalBody  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalCloseButton  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalContent  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalFooter  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalHeader  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+ModalOverlay  <- 2 base file(s): app/hooks/use-add-to-cart-modal.js, app/pages/product-list/index.jsx
+Popover  <- 3 base file(s): app/components/promo-popover/index.jsx, app/components/search/index.jsx, app/components/header/index.jsx
+PopoverArrow  <- 2 base file(s): app/components/promo-popover/index.jsx, app/components/header/index.jsx
+PopoverBody  <- 2 base file(s): app/components/promo-popover/index.jsx, app/components/header/index.jsx
+PopoverCloseButton  <- 1 base file(s): app/components/promo-popover/index.jsx
+PopoverContent  <- 3 base file(s): app/components/promo-popover/index.jsx, app/components/search/index.jsx, app/components/header/index.jsx
+PopoverFooter  <- 1 base file(s): app/components/header/index.jsx
+PopoverHeader  <- 2 base file(s): app/components/promo-popover/index.jsx, app/components/header/index.jsx
+PopoverTrigger  <- 4 base file(s): app/components/promo-popover/index.jsx, app/components/search/index.jsx, app/components/list-menu/list-menu-trigger.jsx, app/components/header/index.jsx
+Radio  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-payment-form.jsx, app/pages/checkout/partials/payment-form.jsx
+RadioCardGroup} from '@salesforce/retail-react-app/app/components/radio-card'
+import ActionCard from '@salesforce/retail-react-app/app/components/action-card'
+import {PlusIcon  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout/partials/shipping-address-selection.jsx
+RadioGroup  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-payment-form.jsx, app/pages/checkout/partials/payment-form.jsx
+Redirect} from 'react-router'
+import {
+    Accordion  <- 1 base file(s): app/pages/account/index.jsx
+Select  <- 3 base file(s): app/components/pagination/index.jsx, app/components/field/index.jsx, app/pages/product-list/index.jsx
+SimpleGrid  <- 10 base file(s): app/components/forms/credit-card-fields.jsx, app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout-one-click/partials/one-click-cc-radio-group.jsx, app/pages/checkout/partials/shipping-address-selection.jsx
+Skeleton
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {getCreditCardIcon} from '@salesforce/retail-react-app/app/utils/cc-utils'
+import {useOrder  <- 1 base file(s): app/pages/account/order-detail.jsx
+Skeleton
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useCurrentCustomer} from '@salesforce/retail-react-app/app/hooks/use-current-customer'
+import {useCustomerOrders  <- 1 base file(s): app/pages/account/order-history.jsx
+Skeleton  <- 6 base file(s): app/components/product-tile/index.jsx, app/components/product-scroller/index.jsx, app/hooks/use-bonus-product-selection-modal/components/bonus-product-item.js, app/pages/account/profile.jsx
+Spacer
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {CloseIcon  <- 1 base file(s): app/components/address-suggestion-dropdown/index.jsx
+Spacer  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx, app/pages/checkout/partials/checkout-footer.jsx
+Spinner
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import SearchSuggestions from '@salesforce/retail-react-app/app/components/search/partials/search-suggestions'
+import {SearchIcon  <- 1 base file(s): app/components/search/index.jsx
+Spinner
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AlertIcon  <- 1 base file(s): app/pages/social-login-redirect/index.jsx
+Spinner  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/address-suggestion-dropdown/index.jsx
+Stack
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import ProductTile from '@salesforce/retail-react-app/app/components/product-tile'
+import {ChevronLeftIcon  <- 1 base file(s): app/components/product-scroller/index.jsx
+Stack
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useForm  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout/partials/shipping-address-selection.jsx
+Stack  <- 30 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/product-tile/index.jsx, app/components/forms/credit-card-fields.jsx, app/components/_error/index.jsx
+Stack} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {CheckCircleIcon  <- 1 base file(s): app/components/forms/password-requirements.jsx
+StylesProvider  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx, app/pages/checkout/partials/checkout-footer.jsx
+Switch  <- 1 base file(s): app/pages/account/index.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+import {BrandLogo  <- 1 base file(s): app/components/_error/index.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import FormActionButtons from '@salesforce/retail-react-app/app/components/forms/form-action-buttons'
+import {useForm} from 'react-hook-form'
+import {useToast} from '@salesforce/retail-react-app/app/hooks/use-toast'
+
+import LoadingSpinner from '@salesforce/retail-react-app/app/components/loading-spinner'
+import {LocationIcon  <- 1 base file(s): app/pages/account/addresses.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AccountIcon  <- 1 base file(s): app/pages/cart/partials/empty-cart.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AlertIcon  <- 1 base file(s): app/pages/reset-password/reset-password-landing.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {Helmet} from 'react-helmet'
+import {useIntl  <- 1 base file(s): app/pages/page-not-found/index.jsx
+Text
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {InfoIcon  <- 1 base file(s): app/components/promo-popover/index.jsx
+Text  <- 28 base file(s): app/components/basic-tile/index.jsx, app/components/pagination/index.jsx, app/components/product-tile/index.jsx, app/components/forms/password-requirements.jsx
+Text} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AlertIcon  <- 2 base file(s): app/components/reset-password/index.jsx, app/components/login/index.jsx
+Text} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {PlusIcon  <- 1 base file(s): app/components/page-action-placeholder/index.jsx
+Text} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useIntl} from 'react-intl'
+import {SparkleIcon  <- 1 base file(s): app/components/search/partials/ask-assistant-banner.jsx
+Tooltip
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {
+    formatCreditCardNumber  <- 1 base file(s): app/components/forms/credit-card-fields.jsx
+Tooltip
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {LockIcon  <- 1 base file(s): app/pages/checkout-one-click/partials/one-click-payment-form.jsx
+Tooltip
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useCurrentBasket} from '@salesforce/retail-react-app/app/hooks/use-current-basket'
+import {LockIcon  <- 1 base file(s): app/pages/checkout/partials/payment-form.jsx
+VStack  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/hooks/use-bonus-product-selection-modal/components/bonus-product-item.js
+Wrap  <- 1 base file(s): app/pages/product-list/partials/selected-refinements.jsx
+WrapItem} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {CloseIcon  <- 1 base file(s): app/pages/product-list/partials/selected-refinements.jsx
+buildRedirectURI} from '@salesforce/retail-react-app/app/utils/utils'
+
+
+import {AppleIcon  <- 1 base file(s): app/components/social-login/index.jsx
+createCreditCardPaymentBodyFromForm
+} from '@salesforce/retail-react-app/app/utils/cc-utils'
+import AccountPaymentForm from '@salesforce/retail-react-app/app/pages/account/partials/account-payment-form'
+import {useForm} from 'react-hook-form'
+import {PlusIcon  <- 1 base file(s): app/pages/account/payments.jsx
+defineMessage  <- 4 base file(s): app/components/social-login/index.jsx, app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout/partials/shipping-address-selection.jsx, app/pages/account/addresses.jsx
+defineMessages} from 'react-intl'
+import {
+    AccountIcon  <- 2 base file(s): app/pages/home/data.js, app/pages/account/constant.js
+getCreditCardIcon
+} from '@salesforce/retail-react-app/app/utils/cc-utils'
+import useCreditCardFields from '@salesforce/retail-react-app/app/components/forms/useCreditCardFields'
+import Field from '@salesforce/retail-react-app/app/components/field'
+import {
+    AmexIcon  <- 1 base file(s): app/components/forms/credit-card-fields.jsx
+regionPropType} from '@salesforce/commerce-sdk-react/page-designer'
+import {ChevronLeftIcon  <- 1 base file(s): app/page-designer/layouts/carousel/index.jsx
+useAuthHelper  <- 2 base file(s): app/components/drawer-menu/drawer-menu.jsx, app/components/header/index.jsx
+useBreakpoint  <- 1 base file(s): app/page-designer/layouts/carousel/index.jsx
+useBreakpointValue
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {Component  <- 1 base file(s): app/page-designer/layouts/carousel/index.jsx
+useBreakpointValue
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {LocationIcon  <- 1 base file(s): app/components/store-display/index.jsx
+useBreakpointValue
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useCurrentBasket} from '@salesforce/retail-react-app/app/hooks/use-current-basket'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import RecommendedProducts from '@salesforce/retail-react-app/app/components/recommended-products'
+import {LockIcon  <- 1 base file(s): app/hooks/use-add-to-cart-modal.js
+useBreakpointValue  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+useCustomerId  <- 1 base file(s): app/pages/product-list/index.jsx
+useCustomerType} from '@salesforce/commerce-sdk-react'
+
+import {useCurrentBasket} from '@salesforce/retail-react-app/app/hooks/use-current-basket'
+
+import Link from '@salesforce/retail-react-app/app/components/link'
+import Search from '@salesforce/retail-react-app/app/components/search'
+import withRegistration from '@salesforce/retail-react-app/app/components/with-registration'
+import {
+    AccountIcon  <- 1 base file(s): app/components/header/index.jsx
+useCustomerType} from '@salesforce/commerce-sdk-react'
+import Link from '@salesforce/retail-react-app/app/components/link'
+
+import {
+    BrandLogo  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+useDisclosure  <- 2 base file(s): app/components/header/index.jsx, app/pages/product-list/index.jsx
+useForm} from 'react-hook-form'
+import {useLocation} from 'react-router-dom'
+import {useIntl  <- 1 base file(s): app/pages/reset-password/reset-password-landing.jsx
+useHistory  <- 1 base file(s): app/pages/product-list/index.jsx
+useHistory} from 'react-router-dom'
+
+
+import {
+    Button  <- 1 base file(s): app/components/pagination/index.jsx
+useIntl  <- 1 base file(s): app/components/store-display/index.jsx
+useIntl} from 'react-intl'
+
+
+import LocaleSelector from '@salesforce/retail-react-app/app/components/locale-selector'
+import NestedAccordion from '@salesforce/retail-react-app/app/components/nested-accordion'
+import SocialIcons from '@salesforce/retail-react-app/app/components/social-icons'
+
+// Components
+import {
+    Box  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+useIntl} from 'react-intl'
+
+
+import {
+    Alert  <- 1 base file(s): app/components/offline-banner/index.jsx
+useIntl} from 'react-intl'
+import PropTypes from 'prop-types'
+
+import {
+    Alert  <- 1 base file(s): app/pages/account/addresses.jsx
+useIntl} from 'react-intl'
+import PropTypes from 'prop-types'
+import {
+    Box  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-payment-form.jsx, app/pages/checkout/partials/payment-form.jsx
+useIntl} from 'react-intl'
+import PropTypes from 'prop-types'
+import {Box  <- 1 base file(s): app/pages/product-list/partials/selected-refinements.jsx
+useIntl} from 'react-intl'
+import {
+    Alert  <- 2 base file(s): app/pages/social-login-redirect/index.jsx, app/pages/account/profile.jsx
+useIntl} from 'react-intl'
+import {
+    Badge  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-checkout-header.jsx, app/pages/checkout/partials/checkout-header.jsx
+useIntl} from 'react-intl'
+import {
+    Box  <- 8 base file(s): app/components/forms/credit-card-fields.jsx, app/components/promo-code/index.jsx, app/pages/checkout-one-click/partials/one-click-shipping-address-selection.jsx, app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx
+useIntl} from 'react-intl'
+import {
+    Text  <- 1 base file(s): app/hooks/use-bonus-product-selection-modal/components/bonus-product-item.js
+useIntl} from 'react-intl'
+import {
+    useMultiStyleConfig  <- 1 base file(s): app/components/header/index.jsx
+useIntl} from 'react-intl'
+import {Button} from '@salesforce/retail-react-app/app/components/shared/ui'
+import logger from '@salesforce/retail-react-app/app/utils/logger-instance'
+import {useAuthHelper  <- 1 base file(s): app/components/social-login/index.jsx
+useIntl} from 'react-intl'
+import {Helmet} from 'react-helmet'
+import {
+    useCategory  <- 1 base file(s): app/pages/product-list/index.jsx
+useIntl} from 'react-intl'
+import {Link  <- 1 base file(s): app/components/pagination/index.jsx
+useIntl} from 'react-intl'
+import {Route  <- 1 base file(s): app/pages/account/index.jsx
+useIntl} from 'react-intl'
+import {SearchIcon  <- 1 base file(s): app/pages/product-list/partials/empty-results.jsx
+useIntl} from 'react-intl'
+import {useHistory  <- 1 base file(s): app/pages/account/order-detail.jsx
+useIntl} from 'react-intl'
+import {useLocation} from 'react-router'
+import {
+    Box  <- 1 base file(s): app/pages/account/order-history.jsx
+useLocation  <- 1 base file(s): app/pages/product-list/index.jsx
+useLocation} from 'react-router-dom'
+import PropTypes from 'prop-types'
+import {useIntl  <- 1 base file(s): app/hooks/use-add-to-cart-modal.js
+useMediaQuery
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AuthHelpers  <- 1 base file(s): app/components/header/index.jsx
+useMultiStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {
+    SocialFacebookIcon  <- 1 base file(s): app/components/social-icons/index.jsx
+useMultiStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AuthHelpers  <- 1 base file(s): app/components/drawer-menu/drawer-menu.jsx
+useMultiStyleConfig  <- 3 base file(s): app/components/product-tile/index.jsx, app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx, app/pages/checkout/partials/checkout-footer.jsx
+useParams} from 'react-router-dom'
+import {FormattedMessage  <- 1 base file(s): app/pages/product-list/index.jsx
+useProductSearch  <- 1 base file(s): app/pages/product-list/index.jsx
+useProducts  <- 1 base file(s): app/pages/account/order-detail.jsx
+useProducts} from '@salesforce/commerce-sdk-react'
+import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation'
+import {usePageUrls  <- 1 base file(s): app/pages/account/order-history.jsx
+usePromoCode} from '@salesforce/retail-react-app/app/components/promo-code'
+import ItemVariantProvider from '@salesforce/retail-react-app/app/components/item-variant'
+import CartItemVariantImage from '@salesforce/retail-react-app/app/components/item-variant/item-image'
+import CartItemVariantName from '@salesforce/retail-react-app/app/components/item-variant/item-name'
+import CartItemVariantAttributes from '@salesforce/retail-react-app/app/components/item-variant/item-attributes'
+import CartItemVariantPrice from '@salesforce/retail-react-app/app/components/item-variant/item-price'
+import PromoPopover from '@salesforce/retail-react-app/app/components/promo-popover'
+import {useProducts} from '@salesforce/commerce-sdk-react'
+import {BasketIcon  <- 1 base file(s): app/components/order-summary/index.jsx
+useRadio  <- 1 base file(s): app/components/radio-card/index.jsx
+useRadioGroup} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {CheckIcon  <- 1 base file(s): app/components/radio-card/index.jsx
+useRouteMatch  <- 1 base file(s): app/pages/account/index.jsx
+useRouteMatch} from 'react-router'
+import {
+    Box  <- 1 base file(s): app/pages/account/order-detail.jsx
+useSearchParams} from '@salesforce/retail-react-app/app/hooks'
+import PageActionPlaceHolder from '@salesforce/retail-react-app/app/components/page-action-placeholder'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import {ChevronRightIcon  <- 1 base file(s): app/pages/account/order-history.jsx
+useSearchSuggestions} from '@salesforce/commerce-sdk-react'
+import {
+    Input  <- 1 base file(s): app/components/search/index.jsx
+useShopperCustomersMutation
+} from '@salesforce/commerce-sdk-react'
+import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
+
+
+import {
+    Box  <- 1 base file(s): app/pages/product-list/index.jsx
+useShopperCustomersMutation} from '@salesforce/commerce-sdk-react'
+
+import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation'
+import {useToast} from '@salesforce/retail-react-app/app/hooks/use-toast'
+import {useWishList} from '@salesforce/retail-react-app/app/hooks/use-wish-list'
+
+import PageActionPlaceHolder from '@salesforce/retail-react-app/app/components/page-action-placeholder'
+import {HeartIcon  <- 1 base file(s): app/pages/account/wishlist/index.jsx
+useStores} from '@salesforce/commerce-sdk-react'
+import Link from '@salesforce/retail-react-app/app/components/link'
+import {ChevronLeftIcon  <- 1 base file(s): app/pages/account/order-detail.jsx
+useStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {
+    CheckIcon  <- 1 base file(s): app/components/locale-selector/index.jsx
+useStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {AlertIcon  <- 1 base file(s): app/components/offline-banner/index.jsx
+useStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {ChevronDownIcon  <- 1 base file(s): app/components/nested-accordion/index.jsx
+useStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {ChevronLeftIcon  <- 1 base file(s): app/components/pagination/index.jsx
+useStyleConfig
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Icons
+import {ChevronRightIcon  <- 1 base file(s): app/components/breadcrumb/index.jsx
+useStyles
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import LinksList from '@salesforce/retail-react-app/app/components/links-list'
+import {
+    VisaIcon  <- 2 base file(s): app/pages/checkout-one-click/partials/one-click-checkout-footer.jsx, app/pages/checkout/partials/checkout-footer.jsx
+useTheme
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+
+// Project Components
+import Link from '@salesforce/retail-react-app/app/components/link'
+
+// Others
+import {categoryUrlBuilder} from '@salesforce/retail-react-app/app/utils/url'
+import {ChevronDownIcon  <- 1 base file(s): app/components/list-menu/list-menu-trigger.jsx
+useTheme
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {Link} from 'react-router-dom'
+
+import {ChevronRightIcon  <- 1 base file(s): app/components/basic-tile/index.jsx
+useToast
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useForm} from 'react-hook-form'
+import {AlertIcon  <- 1 base file(s): app/pages/account/profile.jsx
+useToast
+} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {useForm} from 'react-hook-form'
+import {ChevronDownIcon  <- 1 base file(s): app/components/promo-code/index.jsx
+withRouter} from 'react-router-dom'
+import {Button} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {AlertIcon  <- 1 base file(s): app/components/offline-boundary/index.jsx
+{
+    Skeleton  <- 1 base file(s): app/pages/product-list/index.jsx
+
+### Names the override SHADOWS with a Zimmermann glyph AND SFCC base consumes:
+ChevronDownIcon  <- 3 base file(s): app/components/locale-selector/index.jsx, app/components/header/index.jsx, app/pages/product-list/index.jsx
+ChevronRightIcon  <- 6 base file(s): app/page-designer/layouts/carousel/index.jsx, app/components/pagination/index.jsx, app/components/search/partials/ask-assistant-banner.jsx, app/components/product-scroller/index.jsx, app/components/nested-accordion/index.jsx, app/components/locale-selector/index.jsx
+ChevronUpIcon  <- 2 base file(s): app/components/promo-code/index.jsx, app/pages/account/index.jsx
+
+### base exports NOT re-exported by override (regardless of SFCC use):
+FigmaLogo, GithubLogo, icon

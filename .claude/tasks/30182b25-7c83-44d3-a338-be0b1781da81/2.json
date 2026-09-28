@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Write the SFCC-681 TSD (local draft first)",
+  "description": "All research complete. Use the official 8-section template verbatim (Confluence 352419841). Exactly 2 options: Option A (single app) = recommended; Option B (per-integration app) = explored in full then invalidated on platform-architecture grounds (Mani + Salesforce ISV FAQ + firsthand New Project form evidence). Related Jira = SFCC-681 (cite SFCC-237 as origin, matching how SFCC-249 cites SFCC-123). Reviewers: Tim Lavelle (Technical Lead) + likely Gideon Linsangan as named collaborator. Evidence base: 4 passing Vitest tests on feature/mrt-blast-radius-tests (uncommitted); full Runtime Admin verification of all 7 environments; MRT platform docs. Keep env-config findings OUT (separate ticket, task #1) except one line on the region/LCP point in §2 or §7. Draft locally for user review, then publish to Confluence on their go-ahead.",
+  "activeForm": "Writing the SFCC-681 TSD",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

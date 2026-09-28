@@ -1,0 +1,9 @@
+{
+  "id": "12",
+  "subject": "Phase 7: gitlab + linear providers",
+  "description": "provider-gitlab + provider-linear. Success: swapping vcs github→gitlab regenerates equivalent artifacts with zero pack changes.",
+  "activeForm": "Building gitlab + linear providers",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

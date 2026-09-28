@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "SFCC-122: Hold MRT API session with Mani",
+  "description": "Set up and run the working session with Mani (per ticket background) to confirm BM config state and validate which SCAPI/OCAPI endpoints are usable now vs blocked pending MuleSoft.",
+  "activeForm": "Setting up MRT API session with Mani",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

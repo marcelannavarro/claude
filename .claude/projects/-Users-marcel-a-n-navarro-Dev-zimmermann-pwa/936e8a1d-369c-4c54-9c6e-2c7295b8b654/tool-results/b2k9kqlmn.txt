@@ -1,0 +1,241 @@
+
+**4. `buildDisImageSrc.ts` — URL construction safety**
+
+(a) *Quality bounds:* No clamp anywhere in `buildDisImageSrc.ts:23-27`. Empirically verified (ran the function directly): `quality=999`, `-5`, and `NaN` all pass straight through into the URL unchanged (`q=999`, `q=-5`, `q=NaN`). Traced every caller — `ZimmMediaTile.quality` ← `ZimmProductGallery.imageQuality`/`ZimmGalleryOverlay.imageQuality`, both optional — back to the only production call site, `product-view/index.tsx:819-829`, which passes **neither** prop today. So in production this whole passthrough is currently dead code; the function's own default (`80`) is what ships. Even if reached, `quality` is `number`-typed (no string-injection surface), and a DIS/Scene7-style backend treats `q` as a hint — worst case is a suboptimal/ignored image, not a broken or exploitable request.
+PLAUSIBLE gap, currently unreachable in production. 🔵. UNIFORM (applies identically to all three prop-passing sites, none of which is live).
+
+(b) *`url` validation:* None — both functions trust the caller completely (only `data:`/`blob:` prefixes are special-cased). Traced origin: production `url` always comes from `product.imageGroups[].images[].disBaseLink || .link` (`mapImageGroupsToGalleryMedia.ts:23`) — SFCC Commerce Cloud catalog data, never a query string or form field. Same trust boundary applies to the colour-swatch `imageUrl` (`zimmColourSwatch/index.tsx:91`, `style={{backgroundImage: \`url(${imageUrl})\`}}`, sourced from `product-view/index.tsx:387`'s variation-attribute image link) — also SFCC-sourced, and set via React's `style` object (CSSOM property assignment) rather than string-concatenated into markup, so there's no injection surface even hypothetically. Also checked the `href`/`forceReload` full-navigation path in `zimmColourSwatch` (`window.location.href = href`) for an open-redirect angle: `href` traces back to `product-view/index.tsx:387` (`v.href` from SFCC's own variation attributes) and `buildRelatedSwatches` (SFCC-708 related-swatch URLs) — both server/catalog-generated, never reflected shopper input.
+CONFIRMED no injection/open-redirect risk; consistent with this codebase's existing SFCC-catalog-is-trusted boundary, not a new exposure. 🔵. UNIFORM.
+
+(c) *`resolveDisImageSrc` regex edge case:* Mechanism CONFIRMED by direct execution, not just reasoning — `templatedSrc.replace(/\[([^\]]+)\]/g, '$1').replace(/\{[^}]+\}/g, String(width))` is global and matches **any** bracket/brace pair in the whole string, not just the one `buildDisImageSrc` appended:
+```
+url  = 'https://cdn.example.com/img.jpg?variant=[A]'
+→ resolved: '...?variant=A&amp;sw=204&amp;q=80'      (brackets silently stripped from the URL's own content)
+url  = 'https://cdn.example.com/img.jpg?tpl={foo}'
+→ resolved: '...?tpl=204&amp;sw=204&amp;q=80'        (the URL's own query VALUE is overwritten by the pixel width)
+```
+The brace case is a real value-substitution corruption, not just cosmetic. However: this is byte-for-byte identical to base SFCC's own `getSrc` in `node_modules/@salesforce/retail-react-app/app/utils/responsive-image.js:112-116` — this PR's own doc comment (`buildDisImageSrc.ts:1-11`) states it deliberately mirrors that exact upstream templated-URL convention. So this isn't a novel defect introduced by this PR; it's an inherited characteristic of the base PWA Kit's DIS-templating approach, and it applies equally to every other image on the PDP rendered through `DynamicImage` (which calls the same base `getSrc`), not just this new util. Real-world trigger (an SFCC catalog image URL containing a literal unencoded `[`/`]`/`{`/`}`) is plausible but low-likelihood given SFCC's own `dw/image/v2/...` URL conventions, and not a security issue regardless — no user input reaches this function.
+PLAUSIBLE (mechanism CONFIRMED, real-world trigger unverified). 🟡. UNIFORM-but-inherited (affects the new util and the base component it feeds equally; not specific to this PR's code).
+
+**5. Graceful degradation**
+
+`ZimmGalleryOverlay`: `if (!mounted || media.length === 0) return null;` (`index.tsx:187`), placed after every hook call (no rules-of-hooks violation) and before the JSX return. Values computed above the guard (`safeActiveIndex:117`, `currentItem`/`currentAlt:183-184`) are safe on an empty array via `Math.max(0, media.length - 1)` clamping plus optional chaining — no throw. Confirmed both by trace and the PR's own passing test, `'SFCC-731 AC 20 — renders nothing when media is empty, even if open'` (`index.test.tsx:76-77`).
+`ZimmProductGallery`: same pattern, `if (media.length === 0) return null;` (`index.tsx:192`); `getDesktopLayoutCounts(0)` (called via `useMemo` above the guard, `index.tsx:163-166`) hits the `total &lt;= 3` branch (`getDesktopLayoutCounts.ts:21-22`) and returns a valid all-zero/false shape rather than throwing. Confirmed by trace and `'renders nothing when media is empty'` (`index.test.tsx:62-63`).
+CONFIRMED clean, both fail closed. 🔵. UNIFORM.
+
+**6. Accessibility sweep**
+
+(a) *alt coverage:* `zimmMediaTile/index.tsx:90` (fallback `aria-label`), `:97` (`DynamicImage` `imageProps.alt`), `:115` (plain `&lt;Image alt={alt}&gt;`); `zimmGalleryOverlay/index.tsx:245` (`alt=""`, commented, parent button carries the real name at `:238`). No `&lt;img&gt;`/`&lt;Image&gt;` rendered directly by `zimmProductGallery`, `zimmColourSwatchGroup`, or `zimmColourSwatch` (colour fill is a `chakra.span` background-image, not an `&lt;img&gt;`). CONFIRMED clean, every instance deliberate. 🔵. UNIFORM.
+
+(b) *icon-button labels:* `ZimmButtonBaseProps.label: string` (`zimmButton/index.tsx:11-12`) is required across the discriminated union — there is no `variant="icon"` shape that omits it (`ZimmIconButtonProps` extends the same base type, `:28-33`). TypeScript enforces this at every call site; all icon-variant usages in the 6 focus files pass a real `intl.formatMessage(...)` string. CONFIRMED clean — no path exists for an unlabelled icon button. 🔵. UNIFORM.
+
+(c) *onClick on non-native elements:* grepped every `onClick=` in all 6 files. Every one resolves to a native `&lt;button&gt;` — either directly (`chakra.button type="button"` in `zimmGalleryOverlay:239`, `zimmProductGallery:211/219/244/252/290`, `zimmColourSwatchGroup:191/200`, `zimmColourSwatch:165`) or via `ZimmButton`/Chakra `IconButton` (`zimmMediaTile:134/140`, `zimmGalleryOverlay:194`, `zimmProductGallery:300/317`). None on a bare `div`/`span`/`Box`/`Flex`. CONFIRMED clean. 🔵. UNIFORM.
+
+(d) *scrollable `body` region* (`zimmGalleryOverlay/index.tsx:306-312`, `tabIndex={0} role="region" aria-label=...`): standard axe `scrollable-region-focusable` remediation, matches Deque's own official guidance, and is commented in-code as such. One real, narrowly-scoped, non-blocking caveat, not invented for the sake of it: touch-based screen readers (notably iOS VoiceOver) primarily scroll a region via swipe rather than arrow keys once focus lands inside it — a known limitation of this remediation pattern industry-wide, not something this code could do differently, and not a defect in this PR.
+CONFIRMED as a deliberate, correct pattern; noted caveat is an ecosystem limitation, not a code issue. 🔵. UNIFORM.
+
+(e) *video controls* (`zimmMediaTile/index.tsx:130-141`): `playing ? messages.pause : messages.play` / `muted ? messages.unmute : messages.mute` label wiring confirmed correct by trace and by the PR's own passing tests (`index.test.tsx:42-55` — verifies initial "Play video"/"Unmute video" labels, and correct toggle to "Pause video" on click with mute unaffected). No `&lt;video&gt;` element exists anywhere in the file — `playing`/`muted` are plain `useState` with no ref to a real media element — matches the file's own code comment (lines 30-38, 72-73) exactly. No orphaned/broken media reference.
+CONFIRMED clean. 🔵. UNIFORM.
+
+---
+
+### What I tried to falsify
+
+- Searched for any production path that could hand `ZimmMediaTile` an `undefined`/`null` `alt` despite the non-optional `string` type — found only one constructor (`mapImageGroupsToGalleryMedia.ts`), which defensively coalesces.
+- Reproduced the `resolveDisImageSrc` bracket/brace corruption by actually running the functions in Node rather than reasoning abstractly about the regex — confirmed both the cosmetic (bracket-stripping) and more severe (brace value-substitution) cases fire exactly as suspected.
+- Grepped every production call site of `imageQuality`/`quality` to see if the unbounded-quality gap is actually reachable today — it isn't; both props are currently unset everywhere in `product-view/index.tsx`.
+- Checked whether base SFCC's own `getSrc`/`getResponsivePictureAttributes` shares the same regex (to separate "novel PR defect" from "inherited upstream characteristic") — confirmed byte-for-byte identical in `node_modules/@salesforce/retail-react-app/app/utils/responsive-image.js`.
+- Checked whether the desktop/mobile header's duplicated `closeButton`/`nameText`/`colourSwatchesSection` (same JSX variable rendered in both `display`-toggled branches) causes double tab-stops or double AT announcements — confirmed `display: none` fully excludes the inactive branch from both the tab order and the accessibility tree, so this is a non-issue despite looking suspicious on first read.
+- Traced the colour-swatch `forceReload` full-page-navigation path (`window.location.href = href`) for an open-redirect angle — `href` is SFCC/catalog-generated, never reflected shopper input.
+- Went one hop past `useUiCopy`/`UiCopyProvider` into `useContentful.ts`'s actual fetch hook to confirm no failure path can throw synchronously during render — confirmed all failure modes are caught and converted to state.
+
+### What I could not verify
+
+- Whether the live Commerce Cloud API could ever actually return a non-string `alt` field at runtime (vs. the inline `alt?: string` type annotation) — no live API access from this read-only review.
+- Whether any real Zimmermann catalog image URL contains a literal `[`/`]`/`{`/`}` that would trigger the `resolveDisImageSrc` corruption in practice — assessed only against Salesforce's documented DIS/CDN URL shape, not live catalog data.
+- Actual VoiceOver/TalkBack swipe-vs-arrow-key behaviour on the `role="region"` scrollable body — out of scope per the task (no browser/AT checks); noted as a known ecosystem caveat rather than a reproduced finding.</result>
+<usage><subagent_tokens>218257</subagent_tokens><tool_uses>42</tool_uses><duration_ms>674021</duration_ms></usage>
+</task-notification>
+
+### L412 [2026-09-07T02:56:44 assistant]
+One finding worth flagging when the full report lands: the gallery overlay's thumbnail-strip image is the only one of five image-rendering paths in this PR with no `onError` handler, so a failed thumbnail load shows the raw broken-image icon — breaking the "no broken-image icon" guarantee the rest of the PR was built around. Everything else this angle checked (XSS surface, URL injection, uiCopy fallback chain, empty-media guards, full a11y sweep) came back clean. Still waiting on the other four angles plus the reconciled report.
+
+### L415 [2026-09-07T02:56:46 user]
+<task-notification>
+<task-id>af5f2d2d49c181e01</task-id>
+<tool-use-id>toolu_01MWiuW2pR6obzziLFzL8KCG</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/37973080-8be5-46e1-9aab-e2abcb81ea17/tasks/af5f2d2d49c181e01.output</output-file>
+<status>completed</status>
+<summary>Agent "PR81 conventions, styling, imports, structure" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># PR #81 Review — Styling Conformance, Tokens, Tier Ownership, Imports, Structure
+
+## 1. Styling hierarchy (overrideStyling.md)
+
+**Clean.** Swept all five new/changed `.css.ts` files (`zimmProductGallery.css.ts`, `zimmGalleryOverlay.css.ts`, `zimmMediaTile.css.ts`, `zimmColourSwatch.css.ts`, `zimmColourSwatchGroup.css.ts`) plus the `.tsx` files:
+
+- No bare Chakra token key standing in for a `var(--zimm-*)` reference anywhere — every colour/spacing value is either a `var(--zimm-*)` CSS custom property or a documented `audit-allow` raw literal (`zimmGalleryOverlay.css.ts:15` 720px, `:104` 102px; `zimmColourSwatch.css.ts:49` 47×72px — all pre-existing pattern, properly commented).
+- No raw `fontSize` — the two `textStyle` usages found (`zimmGalleryOverlay/index.tsx:200` `textStyle="productNames"`, `zimmColourSwatchGroup/index.tsx:178` `textStyle="caption"`) are both correct uses of the bare-key exception the rule explicitly carves out for `textStyle`.
+- No Chakra array-shorthand responsive prop anywhere (`grep` for `[base|md:|lg:|xl:` came back empty across all five recipe files) — both `zimmProductGallery.css.ts`'s `DESKTOP_UP`/`TABLET_UP` and `zimmGalleryOverlay.css.ts`'s `DESKTOP_UP` follow the same idiom: a precomputed `` `@media (min-width: ${breakpoints.X})` `` string constant, reused as a computed-property key (`[DESKTOP_UP]: {...}`). This is consistent with `footer.css.ts`'s inline `` [`@media (min-width: ${BP.tablet})`] `` pattern (same explicit-`@media`, no-array-shorthand principle) — the only difference is precomputing the string once vs. inlining it per usage, which is a DRY improvement, not a deviation. Both gallery files are also consistent with each other.
+- `zimmButton/index.tsx`'s new `sx?: SystemStyleObject` passthrough prop is the correct mechanism for the gallery components to reach `ZimmButton`'s canonical styling surface (`galleryButton`/`galleryDot` in `zimmProductGallery.css.ts`) without creating a competing `.zimm-*` global class — matches "one canonical styling surface per component type."
+
+No findings for this item.
+
+## 2. Semantic intent check
+
+Grepped all `var(--zimm-color-*)` usages in the six files. All `background:`/`bg:` uses match `bg.*`/`opacity.*` categories correctly (`bg-02`, `bg-07`, and `opacity-50` for the modal scrim — confirmed the same `opacity-50` token is the established scrim colour, already used identically in `zimmModal.css.ts:13` and `zimmDrawer.css.ts:57`). All `border`-bearing properties (`borderBottom`, and the inset-`boxShadow` focus-ring idiom) correctly use `border.*` tokens.
+
+**Finding:** `overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/zimmGalleryOverlay.css.ts:127` — `closeButton` part sets `color: 'var(--zimm-color-text-default)'`, but this button is rendered via `&lt;ZimmButton variant="icon" icon="close" ... /&gt;` (`index.tsx:189-197`) — an icon-only control, not text. A dedicated `--zimm-color-icon-default` token exists (`zimmTokens.ts:83`) specifically for this category, and this exact PR demonstrates correct use of the sibling `icon.*` token elsewhere: `zimmColourSwatchGroup.css.ts:201`, `pageButton`'s `_disabled` state, `color: 'var(--zimm-color-icon-disabled)'` for its ZimmIcon chevron. Using `text.default` on an icon element doesn't break the letter of the rule (the rule lists `text.*`/`icon.*` as both valid for `color:`), but it's an avoidable inconsistency against a more specific token this same PR shows awareness of.
+CONFIRMED (token mismatch verified in source) / 🔵 note (doesn't violate the letter of the hierarchy rule) / ONE-OFF.
+
+## 3. Recipe state exhaustiveness
+
+- **`triggerOverlay` (zimmProductGallery.css.ts:139-153):** only `_focusVisible` defined. Base style sets `cursor: 'pointer'` (line 147), which is the only hover affordance present anywhere for "click anywhere to open gallery." No comment in the file confirms a visual `_hover` state was considered and deliberately excluded, unlike most other decisions in this file which cite a specific Figma node or design-team direction. UNVERIFIED-design-intent — flagging per your instruction rather than assuming it's fine. 🔵 note.
+- **`galleryDot` (zimmProductGallery.css.ts:173-178):** only `_focusVisible` override, confirmed. This IS sufficient — `ZimmButton`'s shared `icon` variant recipe (`zimmButton.css.ts:150-192`) already defines `_hover`/`_active`/`_disabled`/`_focusVisible` for every icon-variant button, and `galleryDot`'s `sx` only needs to override `_focusVisible` (for the edge-clipping inset-shadow fix) — `_hover`/`_active`/`_disabled` remain correctly inherited. CONFIRMED sufficient, no gap.
+- **`thumbnail` (zimmGalleryOverlay.css.ts:101-115):** a 102×136px clickable button, only `_focusVisible` defined, no `_hover`. Unlike `galleryDot`/close button, this is a bespoke `chakra.button`, not routed through `ZimmButton`'s variant system — so there's no inherited hover state to fall back on. No comment addresses this one way or the other (contrast with the same file's `thumbnail` comment block at lines 96-100, which cites a specific Figma node for the aspect ratio but says nothing about hover). UNVERIFIED-design-intent, flagged explicitly. 🔵 note.
+- **Circle vs. square `ZimmColourSwatch` `_focusVisible`:** compared byte-for-byte (`zimmColourSwatch.css.ts:26-30` circle vs. `:67-71` square) — identical (`zIndex: 1`, same outline/outlineOffset). Nothing dropped. CONFIRMED clean.
+- **Adjacent finding (belongs here and cross-references item 5):** `videoControlsWrapper` (`zimmMediaTile.css.ts:17-26`) and `desktopButtonWrapper`/`compactButtonWrapper` (`zimmProductGallery.css.ts:78-87`, `:118-128`) all anchor `position: absolute; bottom: 0; right: 0` at the **same** z-index tier (`Z_INDEX_INTERACTIVE_CONTROL = 2`). For a video item that is also the last stacked/grid cell (desktop) or the currently active compact-carousel slide (mobile/tablet) while `showGalleryButton` is true, the video's play/pause/mute controls and the "Gallery +N" button occupy the identical bottom-right corner with no z-index tiebreak beyond DOM order. This isn't an element "left out" of the clickable list (both ARE lifted) — it's two same-tier controls never coordinated positionally. CONFIRMED at the code/geometry level (both explicitly `bottom:0/right:0`, tied z-index — verified in source); PLAUSIBLE that they visually collide on a real page (would need rendering to confirm exact overlap, which is out of scope here). 🟡 should-fix / UNIFORM (recurs at both the desktop-grid last-cell and the compact-carousel paths).
+
+## 4. Hover-gating correctness
+
+**Vacuous — confirmed, not assumed.** Grepped `hover` across all five new/changed `.css.ts` files (`zimmProductGallery.css.ts`, `zimmGalleryOverlay.css.ts`, `zimmMediaTile.css.ts`, `zimmColourSwatch.css.ts`, `zimmColourSwatchGroup.css.ts`) — zero matches. No `:hover`, `_hover`, or `@media (hover:` selector exists anywhere in this PR's new styling code, so there is no hidden-then-revealed-on-hover pattern to check for gating-condition consistency. This angle does not apply to this PR.
+
+## 5. Stacking-context / z-index lift-list completeness
+
+**Confirmed via `grep -rn` across the whole `overrides/` tree:** `Z_INDEX_INTERACTIVE_CONTROL = 2` is independently re-declared as a local `const` in exactly three files, no shared import:
+- `overrides/app/components/ui-kits/atoms/zimmMediaTile/zimmMediaTile.css.ts:12`
+- `overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/zimmGalleryOverlay.css.ts:17`
+- `overrides/app/components/ui-kits/organisms/zimmProductGallery/zimmProductGallery.css.ts:27` (alongside `Z_INDEX_TRIGGER_OVERLAY = 1` at line 26)
+
+This is a DRY violation per `conventions.md` ("extract to a shared utility... once the same pattern appears in two places" — here, three). Unlike `breakpoints`, which all three files correctly import from `app/theme/foundation`, there's no shared module for this feature-local z-index contract. 🟡 should-fix, CONFIRMED, UNIFORM.
+
+**Secondary finding on the same constant:** `zimmGalleryOverlay.css.ts` has no full-cover click-anywhere trigger (`Z_INDEX_TRIGGER_OVERLAY` doesn't exist in this file) — it's a plain modal with explicit header/body regions. Its lone use of `Z_INDEX_INTERACTIVE_CONTROL` (line 128, on `closeButton`, a flex item with no competing absolutely-positioned sibling) doesn't appear to be clearing anything real in this component. Looks like a copy-paste carryover from the trigger-overlay pattern rather than a needed value here. CONFIRMED (no competing z-index-1 element found in this file) / 🔵 note / ONE-OFF.
+
+**DOM-nesting trace for "left out of the clickable list":** traced every `desktopItem`/`compactSlide` subtree in `index.tsx` against its sibling `triggerOverlay`. No interactive element was found with `cursor: pointer`/`onClick` but no z-index lift while sharing a z-index-1-trigger container — every genuinely new interactive part (`desktopButtonWrapper`, `dotBar`, `compactButtonWrapper`, `videoControlsWrapper`, `closeButton`) does carry `zIndex: Z_INDEX_INTERACTIVE_CONTROL`. The real gap isn't an omission, it's the item-3/item-5 overlap described above — two lifted controls sharing one corner.
+
+## 6. Hard Rule 5/6 re: ZimmMediaTile extraction
+
+**Not in play — confirmed net-new.** `find` against the BASE worktree for `zimmProductGallery`/`zimmGalleryOverlay`/`zimmMediaTile` under `overrides/app/components/ui-kits/` returned nothing — none of these three existed in BASE at all. The entire organism/atom family is net-new in this PR. The "moved from zimmProductGallery.css.ts" comment in `zimmMediaTile.css.ts:1-6` describes internal development-time movement within this same unshipped PR, not a refactor of a previously-shipped, other-consumer-depended-on component — Hard Rule 5 ("never refactor upward") and Hard Rule 6 ("never rename/move a shared hook or component") both presuppose an existing, already-relied-upon artifact, which doesn't exist here.
+
+Verified the extraction is clean: `zimmProductGallery.css.ts`'s current `parts` array (lines 35-50) contains no `mediaFallback`/`videoControlsWrapper`, and `index.tsx` references only `styles.*` keys that exist in that same parts array (`root`, `desktopColumn`, `desktopItem`, `desktopGrid`, `desktopGridRow`, `desktopButtonWrapper`, `compactColumn`, `compactTrack`, `compactSlide`, `dotBar`, `compactButtonWrapper`, `triggerOverlay`, `galleryButton`, `galleryDot`) — no dangling references to the extracted parts. CONFIRMED clean, no violation.
+
+## 7. `theme/components/index.ts` registration
+
+**Confirmed clean.** `ZimmProductGallery`, `ZimmGalleryOverlay`, `ZimmMediaTile`, `ZimmColourSwatch`, `ZimmColourSwatchGroup` are each imported exactly once (`index.ts:28-32`) and included exactly once in the exported `components` object (`:62-66`). No duplicate imports, no imported-but-unused entries.
+
+## 8. Imports
+
+**(a) `dynamic-image` base-path import — confirmed correct, not a violation.** `grep -r` for `dynamic-image` under `overrides/` returns zero matches — it is not overridden anywhere. `zimmMediaTile/index.tsx:4`'s `import DynamicImage from '@salesforce/retail-react-app/app/components/dynamic-image'` is therefore the correct call per the rule (base path is only wrong when a relative override exists to prefer instead).
+
+**(b) `product-view/index.tsx:78` → `pages/product-detail/productInfo` — a real, new inverted dependency.** Confirmed via diff that this import is new in this PR (BASE's `product-view/index.tsx` had zero references to `productInfo`), while `productInfo.ts` itself is byte-for-byte unchanged (empty diff) — `buildRelatedSwatches` pre-dates this PR as a `pages/product-detail/index.tsx`-only helper, and this PR is what makes it a second, cross-layer consumer.
+- **Direction:** genuinely inverted — a `components/`-level file now depends on a `pages/`-level file, backwards from the normal composition direction `components.md` assumes (pages compose components).
+- **Circularity:** confirmed NOT circular today — `productInfo.ts` has zero imports of its own (`grep "^import"` returns nothing; it's deliberately dependency-free per its own JSDoc), so there's no cycle at present. But the layering violation is real regardless of whether a cycle currently exists.
+- **Promotion to `utils/`:** `buildRelatedSwatches` is a pure, side-effect-free mapping function (matches `conventions.md`'s Utilities definition exactly) now consumed by two call sites in two different architectural layers (`pages/product-detail/index.tsx:1074` and `product-view/index.tsx:398`) — precisely the DRY trigger ("once the same pattern appears in two places") this repo's own convention cites for promoting to `overrides/app/utils/`. Not asserting it must move now (that's a separate refactor the author reasonably deferred rather than bundling into this PR per the Minimal Changes rule) — but the current placement is the actual conformance question worth raising.
+🟡 should-fix / CONFIRMED / ONE-OFF (specific to this cross-import).
+
+Secondary, lower-confidence note: `overrides/app/pages/product-detail/**` is explicitly Squad-A territory per `.claude/rules/squadA.md` ("message the Squad A Lead directly before proceeding"), while `product-view/` isn't itself in that file's component list — this PR doesn't edit anything inside `pages/product-detail/`, only adds a new read-dependency on it from outside. Given `squadA.md` is self-described as "draft, scope still settling" and `overrideStyling.md`'s own Known Gaps section already downgrades this exact claim to "flagged for awareness, not a hard block," I'm surfacing this as a coordination note only. 🔵 note.
+
+**(c) General sweep:** no circular imports found one level deep on any new/changed file. Deepest relative import chain is two levels (`../../pages/product-detail/productInfo`, `../../atoms/zimmButton`) — none reach the `../../../..` (4-level) threshold. Checked `.docs/memory/sprintScope.md` — SFCC-731 (gallery) and SFCC-708 (related swatches) are both contemporaneous, already-implemented features, not forward references into undone later-sprint work. Clean.
+
+## 9. Structure
+
+- **Named exports match folder names:** confirmed for all five (`ZimmProductGallery`, `ZimmGalleryOverlay`, `ZimmMediaTile`, `ZimmColourSwatch`, `ZimmColourSwatchGroup`).
+- **Props type naming:** all follow `&lt;Component&gt;Props` convention. Export consistency is mixed within this same PR: `ZimmMediaTileProps` (`zimmMediaTile/index.tsx:42`) and `ZimmColourSwatchProps` (`zimmColourSwatch/index.tsx:173`, via a trailing `export type {}`) are exported; `ZimmProductGalleryProps`, `ZimmGalleryOverlayProps`, and `ZimmColourSwatchGroupProps` are not exported at all. No functional impact found — the story files for the organisms don't import these types. 🔵 note / ONE-OFF (internal inconsistency, not a rule violation — `components.md` mandates naming/placement, not export).
+- **Story file present:** confirmed for all five (`index.stories.tsx` in every folder).
+- **Test file present:** confirmed for the three scoped components — `ZimmGalleryOverlay/index.test.tsx`, `ZimmMediaTile/index.test.tsx`, and `ZimmProductGallery` has both `index.test.tsx` and a separate `getDesktopLayoutCounts.test.ts` for its extracted layout-count utility. (Presence only — depth/quality is explicitly another agent's lane.)
+- **No data-fetching hook in a leaf component:** confirmed clean — grepped all five for `useShopper*`/`useCurrentBasket`/`useCurrentCustomer`/`useProduct`/`useQuery`/`commerce-sdk-react`, zero matches. Only `useIntl`/`useUiCopy`/`useZimmModal` appear, all within the sanctioned exception (context-backed, no per-page fetch).
+- **Storybook categorisation finding:** `ZimmMediaTile` is filed under `title: 'Elements/ZimmMediaTile'` (`index.stories.tsx:22`), while its sibling organisms `ZimmProductGallery` and `ZimmGalleryOverlay` both correctly land in `Commerce/`. Per `components.md`'s own tiebreaker ("what does this component know about? Commerce → `Commerce/`... nothing domain-specific → `Elements/`"), `ZimmMediaTile` is tightly coupled to the PDP-gallery domain — its types are `ZimmGalleryPhotoItem`/`ZimmGalleryVideoItem`, its i18n message ids are `product_gallery.video.*`, and it exists specifically to serve `ZimmProductGallery`/`ZimmGalleryOverlay`. It reads as a miscategorisation against its own siblings. 🟡 should-fix / CONFIRMED (against the stated rule's tiebreaker) / ONE-OFF.
+
+---
+
+### What I tried to falsify
+
+- Assumed the `galleryDot`/video-control/close-button icon buttons had no inherited hover state, then checked `zimmButton.css.ts`'s `icon` variant directly and found `_hover`/`_active`/`_disabled` all defined there — reversed my initial assumption and confirmed the sx-override pattern is sufficient rather than flagging a false gap.
+- Assumed the circle swatch variant might have dropped a state present in the square variant (as the task hinted) — did a byte-for-byte comparison and found them identical; did not force a finding where none existed.
+- Assumed `Z_INDEX_INTERACTIVE_CONTROL`'s triplication meant every file needed it for a real trigger-overlay to clear — checked `zimmGalleryOverlay.css.ts` specifically for a `Z_INDEX_TRIGGER_OVERLAY` counterpart and found none, which changed that specific finding from "duplication, all load-bearing" to "duplication, one instance likely vestigial."
+- Assumed the `product-view` → `pages/product-detail/productInfo` import might be pre-existing scope creep from an earlier PR — diffed both files against BASE specifically to confirm it's newly introduced by this PR and that `productInfo.ts` truly has zero imports (ruling out an actual circular chain, not just an inverted one).
+- Assumed `ZimmProductGallery` might be a rename/move of some prior organism (per Hard Rule 6's framing in the task) — searched BASE explicitly rather than accepting the premise, and confirmed it doesn't exist there at all.
+- Considered flagging `--zimm-color-text-default` on `closeButton` as a hard `text.*`-on-icon violation, then re-read item 2's literal wording ("text.*/icon.* on color:") and downgraded it to a note, since the rule as stated accepts either category for `color:`.
+
+### What I could not verify
+
+- Whether the `videoControlsWrapper`/`compactButtonWrapper`/`desktopButtonWrapper` bottom-right z-index tie actually produces a visible overlap on a rendered page — this requires visual/browser rendering, explicitly out of scope for this pass. Flagged as code-confirmed geometry, rendering-unconfirmed.
+- Whether the missing `_hover` on `triggerOverlay` and `thumbnail` reflects a deliberate design omission or an unaddressed gap — no Figma node or design-team comment either way exists in the code for either, so I've reported this as explicitly unverifiable rather than guessing.
+- Whether CodeRabbit or a human reviewer already raised any of these findings on the live PR thread (I only diffed the two worktrees, not the PR conversation) — some may already be acknowledged/in-flight given the `b10a54a fix(gallery): address CodeRabbit PR #81 findings` commit visible in the HEAD log.</result>
+<usage><subagent_tokens>237352</subagent_tokens><tool_uses>34</tool_uses><duration_ms>748301</duration_ms></usage>
+</task-notification>
+
+### L417 [2026-09-07T02:57:02 assistant]
+Another solid batch — a real DRY violation (the same `Z_INDEX_INTERACTIVE_CONTROL` constant redeclared independently in three files, confirming the lead from zm-tester's earlier status update), a same-corner z-index collision between video controls and the "Gallery +N" button that's confirmed in code but needs a browser to confirm actually overlaps, and a components→pages inverted import (`product-view.tsx` now reaches into `pages/product-detail/productInfo`, backwards from the normal composition direction). Everything else on this angle — styling hierarchy, hover-state gating, the ZimmMediaTile extraction, theme registration — came back clean. Three angles still outstanding.
+
+### L423 [2026-09-07T02:57:03 user]
+<task-notification>
+<task-id>a1c3aa14d3d608a57</task-id>
+<tool-use-id>toolu_01ExrbiVmggS26UaMi9QHw9R</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/37973080-8be5-46e1-9aab-e2abcb81ea17/tasks/a1c3aa14d3d608a57.output</output-file>
+<status>completed</status>
+<summary>Agent "PR81 DRY, tokens, test coverage, stories" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Part A — DRY Duplication
+
+**A1. `Z_INDEX_INTERACTIVE_CONTROL = 2` — three independent declarations**
+`overrides/app/components/ui-kits/atoms/zimmMediaTile/zimmMediaTile.css.ts:12`, `overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/zimmGalleryOverlay.css.ts:17`, `overrides/app/components/ui-kits/organisms/zimmProductGallery/zimmProductGallery.css.ts:27` — all three declare `const Z_INDEX_INTERACTIVE_CONTROL = 2;` verbatim, no shared import. Confirmed there is no existing z-index module anywhere in `overrides/app/theme/` — grepped `zIndex`/`z-index` across the whole theme folder, `zimmTokens.ts`, and `theme/index.ts`: zero hits outside these three files (only Chakra's built-in string tokens `'overlay'`/`'sticky'` are used elsewhere, an unrelated scale). `zimmMediaTile.css.ts`'s own comment (lines 9–11) even says it's "kept as a named constant here too so a future caller doesn't have to guess a z-index that clears the same layer" — an explicit acknowledgment of the cross-file intent with nothing enforcing it. This is exactly the "Cross-file shared values" case `overrideStyling.md` requires a shared module for (precedent: `zimmColourSwatchGroupShared.ts`).
+CONFIRMED. UNIFORM (identical name+value, 3 files). 🟡
+
+**A2. Thumbnail/body-width constants re-typed across component and recipe**
+`overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.tsx:55` (`IMAGE_WIDTHS = { base: '100vw', lg: 720 }`, comment "matches `bodyInner`'s own `BODY_MAX_WIDTH` exactly (720px)") vs. `zimmGalleryOverlay.css.ts:15` (`BODY_MAX_WIDTH = '45rem'; // 720px`). Same pattern for `index.tsx:60,63,64` (`THUMBNAIL_REQUEST_WIDTH=204`/`THUMBNAIL_DISPLAY_WIDTH=102`/`THUMBNAIL_DISPLAY_HEIGHT=136`, comments claiming "matches `thumbnail`'s own 102px width") vs. `zimmGalleryOverlay.css.ts:104` (`width: '6.375rem', // 102px`). Both pairs are tied together only by a comment asserting agreement — no shared source.
+Judgement: achievable. This codebase already has a working precedent for exactly this cross-file numeric sharing — `zimmMediaTile.css.ts:7` exports `GALLERY_ITEM_ASPECT_RATIO` and `zimmMediaTile/index.tsx:6,123,128` imports it directly. Both values here divide cleanly at the standard 16px root (102/16=6.375, 720/16=45, no rounding), so a shared px constant (component imports the raw number; the co-located recipe derives `${px/16}rem`) was in reach, not blocked by a real technical wall.
+CONFIRMED. UNIFORM in shape (same "comment-only agreement" pattern, 2 instances in one file pair). 🟡
+
+**A3. `GALLERY_ITEM_ASPECT_RATIO` re-typed as a CSS string literal**
+`zimmMediaTile.css.ts:7` exports `GALLERY_ITEM_ASPECT_RATIO = 3 / 4` (a JS number, consumed via Chakra's `&lt;AspectRatio ratio={}&gt;` elsewhere). `zimmGalleryOverlay.css.ts:105` sets `aspectRatio: '3 / 4'` as its own string, with a comment (lines 96–98) arguing this "expresses it directly rather than duplicating `GALLERY_ITEM_ASPECT_RATIO`'s exact fraction as a second constant."
+I checked this claim against `node_modules/@emotion/unitless/dist/emotion-unitless.cjs.js` (the unit-suffix table Chakra's Emotion-based style engine actually consults) — `aspectRatio: 1` **is** in that list. That means `aspectRatio: GALLERY_ITEM_ASPECT_RATIO` (a bare `0.75`) would have serialized to valid, unit-free `aspect-ratio:0.75`, which the CSS spec treats as identical to `3 / 4`. The comment's implied justification for hardcoding a second literal doesn't hold up — the constant could have been reused directly with zero conversion. This is the strongest of the three DRY findings since it's evidence-backed, not judgement-only.
+CONFIRMED. ONE-OFF (only this one file re-expresses it as a CSS string). 🟡
+
+**A4. Roving-tabindex arrow-key handlers — real duplication in 2 of the 3 named files, not 3**
+Read `handleDotBarKeyDown` (`zimmProductGallery/index.tsx:153-161`), `handleThumbBarKeyDown` (`zimmGalleryOverlay/index.tsx:173-181`), `handleSwatchesKeyDown` (`zimmColourSwatchGroup/index.tsx:133-165`) line by line.
+- DotBar vs ThumbBar: **byte-identical logic** — same 2-key check (ArrowLeft/ArrowRight only), same current-index derivation (`Array.from(ref.current?.querySelectorAll('button'))` + `indexOf(document.activeElement)`), same guard order, same modulo wrap (`(currentIndex + delta + length) % length`), pure focus-move only. The comment's specific claim ("Same roving-focus technique as ZimmProductGallery's dot bar") is accurate and the two have **not** diverged.
+- SwatchGroup is materially different, not a diverged copy of the same thing: checks 4 keys (Left/Right/Up/Down, not 2); derives current index via a `data-swatch-value` attribute lookup against the `offered` array (not a DOM-NodeList index), explicitly because it must survive duplicate display names; and drives real side effects (`setPage`, `history.push`/`window.location.href`, `onSelect`) rather than a plain `.focus()` call. This solves a harder problem (paginated, URL-synced, forceReload-aware navigation) with a structurally different mechanism — it was never the same implementation, so "divergence" isn't the right frame for it.
+CONFIRMED for the DotBar/ThumbBar pair (UNIFORM, deliberately deferred, genuinely still consistent — the ~10-line/out-of-scope framing in the comment is defensible). The task's 3-way "near-identical" premise does not hold for SwatchGroup — that's a false pattern-match, not a hidden third instance. 🔵
+
+## Part B — Test Coverage Strategy
+
+**B1. Single-image "+N" suppression** — `overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx:134-137` only positively asserts a `"Gallery"`-named button exists for 1 image; `getByRole` name-matching is exact-string, so this wouldn't catch a stray `"Gallery +1"` rendering alongside it. The real guarantee comes from `getDesktopLayoutCounts.test.ts:5-7`, which exhaustively asserts `getDesktopLayoutCounts(1)` returns `showButton: false, remainingCount: 0` — that's what actually forecloses the desktop "+1" path; the compact path's label is a direct, trivially-correct `media.length &gt; 1` ternary (`index.tsx:185-188`). Note this is SFCC-731 **AC 9** (a designed acceptance criterion), not one of the CodeRabbit-flagged fixes (confirmed via grep across the full diff for "CodeRabbit" — only 3 hits exist, and none is this one).
+CONFIRMED real coverage overall, composed across two files; the component-level assertion itself isn't a true negative test but the pure-function layer is airtight. 🔵
+
+**B2. Image-error-recovery-on-new-source (`erroredSrc` keyed by src)** — `overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx:68-84` is a real, correctly-shaped regression test: renders, fires `error`, confirms fallback, **rerenders with a new `src` at the same position**, asserts the real `&lt;img&gt;` returns with the new URL. `zimmProductGallery/index.test.tsx:256-285` adds the cross-instance angle (desktop+compact each recover independently). `overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx` has **zero** mention of `error`/`fireEvent.error`/fallback anywhere in the file (full 234-line read) — unlike `zimmProductGallery`'s file, there's no comment here explaining the omission either.
+CONFIRMED strong coverage at the atom + ZimmProductGallery layer; a real, silent (unacknowledged) gap specific to ZimmGalleryOverlay — low risk since Overlay adds no error-handling logic of its own around MediaTile. 🔵
+
+**B3. Media-array-shrink clamp** — `zimmProductGallery/index.test.tsx:287-318` is thorough: drives `selectedIndex` to 6 via the mocked `IntersectionObserver` callback, rerenders with a shorter array, asserts the clamp lands on the new last slide (not the old one) **and** the live region reflects the new position. `zimmGalleryOverlay/index.test.tsx` has no `rerender()` call anywhere in the file (confirmed on full read) — the identical clamp (`safeActiveIndex`, `index.tsx:114-120`, explicitly commented as mirroring "ZimmProductGallery's own selectedIndex clamp (CodeRabbit, PR #81)") is **completely untested** here. Unlike B2, this logic is re-implemented locally in the Overlay, not delegated to a shared, already-tested atom — so there's no indirect coverage either. A colour swap while the overlay is open (SFCC-708 related-colour nav) is a realistic trigger for exactly this component.
+CONFIRMED gap, no test at all. This is the most significant finding in Part B. 🟡
+
+**Utility files** — `buildDisImageSrc.test.ts` (5 tests: default query, existing query, custom quality, `data:`/`blob:` passthrough, round-trip) and `mapImageGroupsToGalleryMedia.test.ts` (7 tests: mapping, `disBaseLink` preference, alt fallback, viewType filter, no-match, undefined/empty input) are pure/stateless and not implicated by the 3 named edge cases; each is solidly covered for its own logic. No findings.
+
+## Part C — Story Interactivity Fidelity
+
+**zimmProductGallery/index.stories.tsx**
+- `DotKeyboardNavigation` (lines 111-121): name and docblock claim to test "keyboard/screen-reader operability," but `play()` fires `fireEvent.click` (a mouse click, not a keyboard event) and asserts `toBeInTheDocument()` — tautological, nothing removes the element on click. CONFIRMED mismatch between story intent and what it actually verifies. Real keyboard nav is separately and properly verified at the Vitest layer (`index.test.tsx:160-174`), so the behavior isn't unverified anywhere overall — just mislabeled at this layer. 🔵
+- `OpenGalleryTrigger` (lines 127-142): a real `fn()` spy, call-count assertions after two distinct clicks. CONFIRMED genuinely wired.
+- `Default`/`FewImages`/`WithVideo`/`SingleImage`/`HiddenGalleryButton`/`ImageLoadFailure`: static args, no interactivity overclaimed. Fine.
+
+**zimmGalleryOverlay/index.stories.tsx**
+- `OverlayHarness` (lines 47-68): a real story-local `useState` for `isOpen` — genuine state backing, the pattern done right.
+- `CloseDismisses` (lines 109-119): real `waitFor`-based assertion that the dialog actually unmounts after the close click. CONFIRMED genuinely wired.
+- `ThumbnailNavigation` (lines 96-104): same shallow pattern as `DotKeyboardNavigation` above — click + `toBeInTheDocument()` tautology; doesn't assert anything about scrolling, active index, or the live region, despite its own docblock claiming "AC 16 — clicking a thumbnail scrolls the stack to that image," and despite the *same file* showing (in `CloseDismisses`) that it knows how to write a real `waitFor` assertion. CONFIRMED. UNIFORM with `DotKeyboardNavigation` — same shallow-assertion anti-pattern, two organisms. 🔵
+- `Default`/`WithColourSwatches`/`SingleImage`: static, fine.
+
+**zimmMediaTile/index.stories.tsx** — no `play` functions at all (`Photo`, `EagerPhoto`, `Video`, `LoadFailure`, `ResponsiveWidths` are pure args). Nothing overclaims interactivity. Fine.
+
+**zimmColourSwatchGroup/index.stories.tsx**
+- `Paginated`/`CircleVariantPaginated` (lines 95-128, 150-174): `page` state is owned internally by the component itself (`useState`), so next/prev clicks genuinely change rendered disabled-state and radio counts. CONFIRMED genuinely wired — no wrapper state needed here.
+- `KeyboardNavigation` (lines 183-207): `selectedValue: 'raspberry'` is a static arg with **no** story-level state feeding `onSelect`'s result back in. Verified against `index.tsx:243` (`isSelected={v.value === selectedValue}`) and the re-focus effect at `index.tsx:123-129` (keyed to `[selectedValue]`, so it only fires when that prop actually changes) — since `selectedValue` never changes in this story, pressing arrow keys never moves visible selection **or** DOM focus. The `play()` assertions still pass (`onSelect` fires correctly as a bare spy on every keypress), but the second assertion's own comment ("ArrowLeft from Raspberry wraps to...") tacitly concedes focus never left Raspberry after the first press. A developer manually clicking through this story in the Storybook UI would press arrows and see zero visual change. CONFIRMED — the clearest instance in this PR of a control that fires its callback correctly but can't demonstrate the interaction it's named for, because the driving prop is static. Contrast with `zimmGalleryOverlay`'s `OverlayHarness`, which shows the same codebase doing this correctly elsewhere. 🟡
+- `Default`/`SingleColour`/`WithUnpopulatedVariations`/`NoneSelected`/`CircleVariant`: static or asserting only static DOM shape. Fine.
+
+## What I tried to falsify
+Searched the whole `theme/` tree for any pre-existing z-index/pxToRem module before calling A1/A2 "no shared source exists." Read all three roving-tabindex handlers key-by-key rather than trusting the "near-identical" framing — this changed my answer on SwatchGroup from confirm to reject. Checked `@emotion/unitless`'s actual source in `node_modules` rather than asserting the aspect-ratio derivation "should" work. Checked whether the single-image "+N" case was covered by a sibling file (`getDesktopLayoutCounts.test.ts`) before calling it a gap — it changed the verdict from 🟡 to 🔵. Traced the `KeyboardNavigation` story's effect dependency array and handler code line-by-line instead of assuming a `play()` with passing assertions means real interactivity.
+
+## What I could not verify
+Did not execute any Storybook `play` function or open a real browser (out of scope) — the `DotKeyboardNavigation`/`ThumbnailNavigation` "no-op click" and `KeyboardNavigation`'s "focus never moves" conclusions are from static code tracing, not observed runtime behaviour. Confirmed `@emotion/unitless` exists in this project's own dependency tree with `aspectRatio` in its unitless map, but did not trace Chakra's exact style-serialization call chain to prove that specific table is the one consulted at render time (very likely given Chakra sits on Emotion, not independently confirmed end-to-end).</result>
+<usage><subagent_tokens>223240</subagent_tokens><tool_uses>33</tool_uses><duration_ms>656331</duration_ms></usage>
+</task-notification>
+

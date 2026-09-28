@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Step 2 — ZimmColourSwatch atom",
+  "description": "Implementer→Tester→Orchestrator→Scorer loop for the new atom + recipe + theme registration. Visual checkpoint against Figma nodes 40000307:13826/13831, 40002689:3839. Commit on PASS.",
+  "activeForm": "Building Step 2 — ZimmColourSwatch atom",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

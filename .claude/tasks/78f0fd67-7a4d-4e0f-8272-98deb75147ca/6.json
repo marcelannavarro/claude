@@ -1,0 +1,9 @@
+{
+  "id": "6",
+  "subject": "Write TSD using official 8-section template",
+  "description": "Confluence page 352419841 template. One TSD = one problem (Tim's rule). Do not reuse tsd-architecture.md's ad-hoc structure.",
+  "activeForm": "Writing TSD",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

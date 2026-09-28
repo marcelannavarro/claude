@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "Apply findings + final DoD sign-off",
+  "description": "Apply verifier findings, re-check until no material findings remain across A-H, confirm dashes clean + links resolve, declare DoD achieved.",
+  "activeForm": "Applying findings + signing off DoD",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

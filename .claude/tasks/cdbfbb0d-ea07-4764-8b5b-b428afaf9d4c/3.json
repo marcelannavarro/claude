@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Draft SFCC-123 TSD from template",
+  "description": "Fill Marcel's template into zimmermann-pwa/.docs/spikes/SFCC-123-contentful-integration-tsd.md: verify every [seed], resolve {{...}} placeholders, map the 10 Contentful stories to content types (§2), populate SFCC-side build scope (§3), locale table (§4), handoff boundary (§5), blockers (§6). Link sources rather than reproduce them.",
+  "activeForm": "Drafting SFCC-123 TSD from template",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

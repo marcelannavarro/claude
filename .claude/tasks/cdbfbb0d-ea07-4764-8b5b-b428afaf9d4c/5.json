@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Report & offer publish path",
+  "description": "Report the finished TSD to Marcel; offer next steps (draft-publish to Confluence SFCC space, link on SFCC-123, feed the 02-contentful.md §7 locale fix back). Do not publish or edit the live ticket without Marcel's approval.",
+  "activeForm": "Reporting & offering publish path",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

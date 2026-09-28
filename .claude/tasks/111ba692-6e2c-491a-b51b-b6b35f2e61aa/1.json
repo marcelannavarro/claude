@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Implement Vitest blast-radius proof suite (tests 1-3)",
+  "description": "Done on feature/mrt-blast-radius-tests: overrides/app/ssr/blastRadius.test.ts, 3 passing tests (rejection propagation, cross-region, event-loop blocking), all using real handler functions. tsc/lint/full suite all clean. Discovered en route: sendMagicLinkEmail (marketingCloud.ts) has no internal try/catch around its Marketing Cloud call, unlike its siblings — a real, specific gap, not hypothetical. \"After\" phase (wiring connectionPools.ts dispatchers) intentionally not done yet — separate step, needs Tier-1-approver check first. Not committed.",
+  "activeForm": "Implementing Vitest blast-radius proof suite",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

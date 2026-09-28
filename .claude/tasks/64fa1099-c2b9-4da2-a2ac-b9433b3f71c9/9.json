@@ -1,0 +1,9 @@
+{
+  "id": "9",
+  "subject": "Phase 4: git hooks + static analysis",
+  "description": "templates-base: .githooks/commit-msg (conventional), .githooks/pre-commit (secret + env guard), coderabbit.yaml (incl. Claude-provenance rule). pack-node: semgrep.yml (JS/TS security). CLI installs core.hooksPath. Gated by primitives.",
+  "activeForm": "Building git hooks + static analysis",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

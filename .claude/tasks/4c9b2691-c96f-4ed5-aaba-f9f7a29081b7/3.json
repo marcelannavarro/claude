@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Verify contract audit and flag open issues",
+  "description": "Deep-dive agent: confirm the 4 claimed contract fixes against zimm-contract.js, run validate.mjs, search for the unresolved \"4 undefined CSS custom properties\" in product-detail-options.",
+  "activeForm": "Verifying contract audit",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

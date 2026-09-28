@@ -1,0 +1,800 @@
+############# SPEC FILES: first 45 lines each #############
+
+==================== 02-design/specs/components/add-to-wishlist.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/add-to-wishlist.md → History
+-->
+
+# Add to Wishlist
+
+**Source:** Library element: `02-design/library/elements/add-to-wishlist/`
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+![Add to Wishlist, 8 July 2026](../../library/elements/add-to-wishlist/assets/2026-07-08-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-add-to-wishlist>` is an icon toggle button that adds or removes a product from the user's wishlist. It renders a `wishlist` icon in the unselected state and a `wishlist-selected` icon in the selected state. Clicking toggles the `selected` attribute and fires a `zimm-wishlist-change` custom event. Used within `<zimm-product-card>` and directly on product pages.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Icon size large | `--zimm-icon-size-lg` | Button width and height (20px) |
+| Border width default | `--zimm-border-width-default` | Focus ring width |
+| Border focus | `--zimm-color-border-focus` | Focus ring colour |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Button | Tap/click toggles `selected` attribute; fires `zimm-wishlist-change` | - |
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+| default | `selected` absent | Renders `wishlist.svg`; `aria-label="Add to wishlist"` | - |
+| selected | `selected` present | Renders `wishlist-selected.svg`; `aria-label="Remove from wishlist"` | - |
+| focus | `:focus-visible` | Outline: `var(--zimm-border-width-default) solid var(--zimm-color-border-focus)`, offset 2px | - |
+
+==================== 02-design/specs/components/banner.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-14 | /extract | Initial extraction from Zimmermann_Design_System_2026: Banner component set (node 2086-52955)
+Full history: GitHub → 02-design/specs/components/banner.md → History
+-->
+
+# Banner
+
+**Source:** Zimmermann_Design_System_2026: Banner ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2086-52955](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2086-52955))
+**Extracted:** 2026-07-14
+**Stack:** web, react
+**Status:** draft
+
+![Banner, 14 July 2026](../../library/elements/banner/assets/2026-07-14-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-banner>` is a full-width notification bar placed above the navigation. It displays a short promotional or operational message with a dismiss control. Three colour themes are available. Dismissing hides the component and fires a `zimm-banner-dismiss` event.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Background 02 | `--zimm-color-bg-02` | Default theme background |
+| Background 04 | `--zimm-color-bg-04` | Warm theme background |
+| Background 05 | `--zimm-color-bg-05` | Dark theme background |
+| Text default | `--zimm-color-text-default` | Message text (default/warm) |
+| Text inverse | `--zimm-color-text-inverse` | Message text (dark) |
+| Font family body | `--zimm-font-family-body` | Message text |
+| Font weight medium | `--zimm-font-weight-medium` | Message text |
+| Font size 3xs | `--zimm-font-size-3xs` | Message text (12px) |
+| Line height 2xs | `--zimm-font-lineheight-2xs` | Message text (18px) |
+| Border focus | `--zimm-color-border-focus` | Dismiss button focus ring |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Dismiss button | Tap/click hides banner; fires `zimm-banner-dismiss` | [1892:57331](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=1892-57331) |
+
+
+==================== 02-design/specs/components/button.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-16 | /extract | Added inverse attribute; fixed focus state; updated secondary pressed border; source: Figma node 901:2897
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/button.md → History
+-->
+
+# Button
+
+**Source:** Library element: `02-design/library/elements/button/`
+**Extracted:** 2026-07-16
+**Stack:** web, react
+**Status:** draft
+
+![Button, 8 July 2026](../../library/elements/button/assets/2026-07-08-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-button>` is a labelled action button with two visual variants (primary: filled, secondary: outlined), two size steps (large, medium), and an inverse mode for use on dark backgrounds. Label is set via the `label` attribute. The element is `disabled`-aware and `inverse`-aware. Note: the Figma component is named ZIM-Molecules-Button but is classified as an atom because it composes no sub-components.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Action gap | `--zimm-size-action-gap` | Button internal gap |
+| Action height large | `--zimm-size-action-height-lg` | Button height (large) |
+| Action height medium | `--zimm-size-action-height-md` | Button height (medium) |
+| Action padding H large | `--zimm-size-action-padding-h-lg` | Horizontal padding (large) |
+| Action padding H medium | `--zimm-size-action-padding-h-md` | Horizontal padding (medium) |
+| Font family body | `--zimm-font-family-body` | Button label |
+| Font weight medium | `--zimm-font-weight-medium` | Button label |
+| Font size 2xs | `--zimm-font-size-2xs` | Label text (large) |
+| Font size 3xs | `--zimm-font-size-3xs` | Label text (medium) |
+| Font line height 3xs | `--zimm-font-lineheight-3xs` | Label (large) |
+| Font line height 2xs | `--zimm-font-lineheight-2xs` | Label (medium) |
+| Letter spacing small | `--zimm-font-letterspacing-sm` | Label text |
+| Action primary bg default | `--zimm-color-action-primary-bg-default` | Primary: resting background |
+| Action primary bg hover | `--zimm-color-action-primary-bg-hover` | Primary: hover background |
+| Action primary bg pressed | `--zimm-color-action-primary-bg-pressed` | Primary: active/pressed background |
+| Action primary bg disabled | `--zimm-color-action-primary-bg-disabled` | Primary: disabled background |
+
+==================== 02-design/specs/components/card-editorial.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-16 | /extract | Initial extraction from Figma node 2083:54537 (Cards - editorial)
+Full history: GitHub -> 02-design/specs/components/card-editorial.md -> History
+-->
+
+# Card: Editorial
+
+**Source:** Figma (node 2083:54537, Cards - editorial, 15 July 2026)
+**Extracted:** 2026-07-16
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-card-editorial>` is a full-bleed editorial card (atom) used to present campaign imagery alongside short editorial copy and an optional CTA link. Appears in editorial modules, homepage banners, and campaign sections. Supports left-aligned (default) and centred text variants. Can be used standalone or in a multi-column grid.
+
+### Tokens used
+
+| Token | CSS variable | Used by |
+|---|---|---|
+| Heading family | `--zimm-font-family-heading` | Title |
+| Body family | `--zimm-font-family-body` | Description, link |
+| Weight medium | `--zimm-font-weight-medium` | Title, link |
+| Weight regular | `--zimm-font-weight-regular` | Description |
+| Font size xs (16px) | `--zimm-font-size-xs` | Title, description (desktop) |
+| Font size 2xs (14px) | `--zimm-font-size-2xs` | Description (mobile), link |
+| Line height xs (24px) | `--zimm-font-lineheight-xs` | Description (desktop) |
+| Line height 2xs (18px) | `--zimm-font-lineheight-2xs` | Title, description (mobile) |
+| Line height 3xs (16px) | `--zimm-font-lineheight-3xs` | Link |
+| Letter spacing xs (-0.12px) | `--zimm-font-letterspacing-xs` | Title, description (desktop) |
+| Scale 3xl (40px) | `--zimm-scale-3xl` | Card body top padding |
+| Text default | `--zimm-color-text-default` | All text |
+| Link hover | `--zimm-color-link-hover` | Link hover state |
+| Focus border | `--zimm-color-border-focus` | Link focus outline |
+
+> **Approximated tokens:** link letter-spacing uses `--zimm-font-letterspacing-xs` (-0.12px, Figma was -0.14px); description-to-link gap uses `--zimm-scale-l` (20px, Figma was 18px). Mobile body padding uses `--zimm-grid-margin-mobile` (30px), which is the canonical grid margin token defined in `common.css`.
+
+### Variants
+
+
+==================== 02-design/specs/components/disclaimer.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-16 | /extract | Initial extraction from Zimmermann_Design_System_2026: Disclaimer component (node 40000440-3466)
+Full history: GitHub → 02-design/specs/components/disclaimer.md → History
+-->
+
+# Disclaimer
+
+**Source:** Zimmermann_Design_System_2026: Disclaimer ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000440-3466](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000440-3466))
+**Extracted:** 2026-07-16
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-disclaimer>` is a full-width informational band placed immediately above the footer. It displays a "Terms and Conditions" label, a block of body copy, and an optional "Read more" link. The layout shifts from a stacked single-column on mobile to a two-column side-by-side arrangement at tablet and desktop. Background is the cream surface token (`--zimm-color-bg-02`). Atomic tier: molecule (label + paragraph + link).
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Background 02 | `--zimm-color-bg-02` | Component background (#f6f4f1) |
+| Text default | `--zimm-color-text-default` | Label, Read more link |
+| Text secondary | `--zimm-color-text-secondary` | Body copy (#666) |
+| Font family body | `--zimm-font-family-body` | All text |
+| Font weight medium | `--zimm-font-weight-medium` | All text |
+| Font size 3xs | `--zimm-font-size-3xs` | Label and body copy (12px) |
+| Font size 2xs | `--zimm-font-size-2xs` | Read more link (14px) |
+| Line height 2xs | `--zimm-font-lineheight-2xs` | Label and body copy (18px) |
+| Line height 3xs | `--zimm-font-lineheight-3xs` | Read more link (16px) |
+| Letter spacing sm | `--zimm-font-letterspacing-sm` | Label (uppercase tracking) |
+| Scale 400 | `--zimm-scale-400` | Gap between body text and Read more (16px) |
+| Scale 800 | `--zimm-scale-800` | Mobile horizontal padding / tablet-desktop vertical padding (32px) |
+| Scale 1000 | `--zimm-scale-1000` | Mobile vertical padding / tablet-desktop horizontal padding (40px) |
+
+### Attributes
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `disclaimer-text` | string | — | Body copy rendered in the right column. Required for meaningful output. |
+
+==================== 02-design/specs/components/flag.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/flag.md → History
+-->
+
+# Flag
+
+**Source:** Library element: `02-design/library/elements/flag/`
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-flag>` renders a country flag as an SVG image. Nine countries are supported. Used in the footer locale selector. The element has no intrinsic size; it scales to fill its container width at natural SVG aspect ratio. Pass `aria-hidden="true"` when the flag is decorative (e.g. used alongside visible country label text). An invalid `country` value renders nothing.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| None | - | No CSS custom properties used. Size is container-driven. |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Host | No interaction. | - |
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+| default | Valid `country` value | Renders `flag-[country].svg` | - |
+| invalid | Unrecognised `country` | Renders nothing (empty shadow root) | - |
+| decorative | `aria-hidden="true"` | Removes from accessibility tree | - |
+
+### Variants
+
+| `country` value | Country name | Asset |
+
+==================== 02-design/specs/components/footer.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-10 | /extract | Initial extraction from Figma Design System 2026: library element + spec co-produced
+Full history: GitHub → 02-design/specs/components/footer.md → History
+-->
+
+# Footer
+
+**Source:** Zimmermann_Design_System_2026: Footer ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=1892-59261](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=1892-59261))
+**Extracted:** 2026-07-10
+**Stack:** web, react
+**Status:** draft
+
+![Footer, 10 July 2026](../../library/elements/footer/assets/2026-07-10-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+The Footer is the full-width dark site footer. It renders at three breakpoints: Desktop (1440px), Tablet (1024px), and Mobile (402px). No interactive states. It is a static organism. The dark background (`#191919`) and bottom bar (`#282828`) distinguish it visually from the page body.
+
+### Element
+`<zimm-footer>`: organism. Composes `<zimm-logo>` (atom, inverse variant), `<zimm-icon>` (atom), and `<zimm-input-action>` (molecule, newsletter subscribe).
+
+Library files: [02-design/library/elements/footer/](../../library/elements/footer/)
+
+**Responsive:** Layout breakpoints handled entirely by CSS `@media` queries inside the component shadow DOM. No attributes needed. Resize the browser and the layout adapts automatically.
+
+### Tokens used
+| Token | CSS Variable | Used by |
+|---|---|---|
+| `--alias/color/bg/surface/inverse` | `--zimm-color-bg-inverse` | Footer background |
+| `--alias/color/bg/surface/inverse-deep` | `--zimm-color-bg-inverse-deep` | Bottom bar background |
+| `--alias/color/text/inverse` | `--zimm-color-text-inverse` | Body text, link text, email input, email border |
+| `--alias/color/text/inverse-grey` | `--zimm-color-text-inverse-muted` | Section headings, legal text. Note: Figma fallback #939393 differs from --zimm-color-grey-300 (#969696), verify with design. |
+| `--default/navigation` | `--zimm-font-size-3xs` (12px) | Nav-style link text, group labels |
+| `--brand/font/size/2xs` | `--zimm-font-size-2xs` (14px) | Email input placeholder |
+| `--size/label/label-sm` | `--zimm-font-size-4xs` (10px) | Bottom bar locale and legal text |
+| `--alias/space/padding/1000` | `--zimm-scale-1000` (40px) | Outer padding, desktop and tablet |
+| `--alias/space/padding/1200` | `--zimm-scale-1200` (48px) | Top padding, mobile; link section padding |
+| `--alias/space/padding/800` | `--zimm-scale-800` (32px) | Outer padding, mobile |
+| `--alias/space/padding/600` | `--zimm-scale-600` (24px) | Subscribe bottom padding mobile; bottom bar padding |
+| `--alias/space/gap/1200` | `--zimm-scale-1200` (48px) | Subscribe/links column gap, tablet+ |
+
+==================== 02-design/specs/components/icon.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/icon.md → History
+-->
+
+# Icon
+
+**Source:** Library element: `02-design/library/elements/icon/`
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+![Icon, 8 July 2026](../../library/elements/icon/assets/2026-07-08-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-icon>` is a single-purpose icon atom. It renders one of 31 named SVG icons at one of three sizes. Two icons (`carousel`, `carousel-selected`) are rendered via CSS border rather than SVG. The element is dimensioned entirely by token. Pass `aria-hidden="true"` on the host when the icon is decorative; omit it (or supply `aria-label`) when the icon carries meaning.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Icon size large | `--zimm-icon-size-lg` | Host dimensions when `size="20"` |
+| Icon size medium | `--zimm-icon-size-md` | Host dimensions when `size="16"` |
+| Icon size small | `--zimm-icon-size-sm` | Host dimensions when `size="12"` |
+| Border width default | `--zimm-border-width-default` | CSS-based carousel icons |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Host | No interaction. Consumers attach click handlers at the element level. | - |
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+| default | Icon rendered at specified type + size | - | - |
+| decorative | `aria-hidden="true"` on host | Removes from accessibility tree | - |
+
+==================== 02-design/specs/components/link.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-14 | /extract | Initial extraction from Zimmermann_Design_System_2026: Links component set (node 2262-63923)
+Full history: GitHub → 02-design/specs/components/link.md → History
+-->
+
+# Link
+
+**Source:** Zimmermann_Design_System_2026: Links ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2262-63923](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2262-63923))
+**Extracted:** 2026-07-14
+**Stack:** web, react
+**Status:** draft
+**Pattern type:** CSS class (not a component)
+
+![Links, 14 July 2026](assets/2026-07-14-link.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+Text links are styled via the `.zimm-text-link-lg` CSS class applied to a native `<a>` element. No custom element or Web Component. Three interactive states expressed entirely in CSS.
+
+### Usage
+
+```html
+<a href="/path" class="zimm-text-link-lg">Shop now</a>
+```
+
+### States
+
+| State | Text colour | Additional |
+|---|---|---|
+| Default | `--zimm-color-link-default` (`#191919`) | Underlined |
+| Hover | `--zimm-color-link-hover` (`#707070`) | Underlined |
+| Focused | `--zimm-color-link-hover` (`#707070`) | 1px solid focus ring, `--zimm-color-border-focus`, 2px offset |
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Link default | `--zimm-color-link-default` | Default text colour |
+| Link hover | `--zimm-color-link-hover` | Hover and focused text colour |
+
+==================== 02-design/specs/components/logo-masthead.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-14 | /extract | Initial extraction from Zimmermann_Design_System_2026: Logo masthead component set (node 2083-53998)
+Full history: GitHub → 02-design/specs/components/logo-masthead.md → History
+-->
+
+# Logo Masthead
+
+**Source:** Zimmermann_Design_System_2026: Logo masthead ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53998](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53998))
+**Extracted:** 2026-07-14
+**Stack:** web, react
+**Status:** draft
+
+![Logo masthead, 14 July 2026](../../library/elements/logo-masthead/assets/2026-07-14-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-logo-masthead>` is the full-width wordmark band that appears at the top of all main page templates, below the navigation. It renders the ZIMMERMANN wordmark pinned to the bottom-left of a fixed-height container. Height and wordmark size are breakpoint-aware. This is a distinct element from `<zimm-logo>` (the compact wordmark used in the footer and other contexts).
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Background 01 | `--zimm-color-bg-01` | Host background |
+
+### Interactive elements
+
+None. This is a static display element.
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+| default | - | Single appearance, no interactive states | [2083:53998](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53998) |
+
+### Variants
+
+| Variant (Figma) | Breakpoint | Host height | Padding bottom | Padding left | Wordmark width |
+|---|---|---|---|---|---|
+| Desktop | ≥768px | 114px | 40px | 40px | 631px |
+
+==================== 02-design/specs/components/logo.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/logo.md → History
+-->
+
+# Logo
+
+**Source:** Library element: `02-design/library/elements/logo/`
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-logo>` renders the Zimmermann wordmark as an SVG image. Two colour variants are available: `default` (dark wordmark on light backgrounds) and `inverse` (light wordmark on dark backgrounds). The element has no intrinsic dimensions; size is determined entirely by the container. No tokens are consumed internally.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| None | - | Element uses no CSS custom properties internally. Size is inherited from container. |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Host | No interaction. | - |
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+| default | `variant` absent or `="default"` | Dark wordmark (`logo-dark.svg`) | - |
+| inverse | `variant="inverse"` | Light wordmark (`logo-light.svg`) | - |
+
+### Variants
+
+| Variant | `variant` attribute | Asset | Use case |
+|---|---|---|---|
+
+==================== 02-design/specs/components/mega-menu.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /extract | Initial extraction from design screenshots: four mega menu states (New, Clothing, Accessories, Collections)
+Full history: GitHub -> 02-design/specs/components/mega-menu.md -> History
+-->
+
+# Mega Menu
+
+**Source:** Design screenshots (2026-07-15): New, Clothing, Accessories, Collections states
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-mega-menu>` is the panel content component for each navigation section. It renders a two-panel layout: a left panel containing category links and an optional personalised product module, and a right panel containing a full-height editorial image. One instance of this component is placed per navigation category into the corresponding named slot in `<zimm-navigation>` (`menu-new`, `menu-clothing`, `menu-accessories`, `menu-collections`, `menu-z-immerse`).
+
+The component is passive: it renders content and fills its container. Open/close state is managed entirely by `<zimm-navigation>`.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Background 07 | `--zimm-color-bg-07` | Host background |
+| Text default | `--zimm-color-text-default` | Category links |
+| Text secondary | `--zimm-color-text-secondary` | Link hover state (page-level CSS) |
+| Text muted | `--zimm-color-text-muted` | Personal module label |
+| Scale 300 | `--zimm-scale-300` | Personal label margin-bottom |
+| Scale 1000 | `--zimm-scale-1000` | Left panel horizontal padding, all-wrap margin-top, two-column gap |
+| Scale 1200 | `--zimm-scale-1200` | Left panel top padding, personal module padding-top |
+| Font family body | `--zimm-font-family-body` | Links and personal label |
+| Font size 3xs | `--zimm-font-size-3xs` | Links (12px) and personal label |
+| Font lineheight 3xs | `--zimm-font-lineheight-3xs` | Links |
+| Font weight medium | `--zimm-font-weight-medium` | Links |
+| Font weight regular | `--zimm-font-weight-regular` | Personal label |
+| Font letterspacing footer | `--zimm-font-letterspacing-footer` | Links (0.4px positive tracking) |
+
+> **Token candidate:** Letter spacing for mega menu links (0.4px) reuses `--zimm-font-letterspacing-footer`. Confirm whether a dedicated token like `--zimm-font-letterspacing-nav-menu` is intended, or if footer spacing is correct here.
+
+### Interactive elements
+
+==================== 02-design/specs/components/nav-item.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Initial spec generated from library element (Figma unavailable at handover pass)
+Full history: GitHub → 02-design/specs/components/nav-item.md → History
+-->
+
+# Nav Item
+
+**Source:** Library element: `02-design/library/elements/nav-item/`
+**Extracted:** 2026-07-15
+**Stack:** web, react
+**Status:** draft
+
+![Nav Item, 10 July 2026](../../library/elements/nav-item/assets/2026-07-10-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-nav-item>` is a single navigation link rendered as an uppercase anchor with a bottom-border active/hover indicator. Used exclusively within `<zimm-navigation>` to render the main nav link set. The `active` attribute marks the current page and applies `aria-current="true"` on the inner anchor. Hover state mirrors the active appearance.
+
+### Tokens used
+
+| Token | CSS Variable | Used by |
+|---|---|---|
+| Font family body | `--zimm-font-family-body` | Link text |
+| Font weight medium | `--zimm-font-weight-medium` | Link text |
+| Font size 3xs | `--zimm-font-size-3xs` | Link text (12px) |
+| Letter spacing small | `--zimm-font-letterspacing-sm` | Link text |
+| Text default | `--zimm-color-text-default` | Link colour |
+| Border focus | `--zimm-color-border-focus` | Active + hover bottom border |
+
+### Interactive elements
+
+| Element | Action | Node ID |
+|---|---|---|
+| Anchor | Navigate to href; hover shows active indicator | - |
+
+### States
+
+| State | Value | Note | Node ID |
+|---|---|---|---|
+
+==================== 02-design/specs/components/navigation.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-10 | /extract (rewrite) | Responsive approach corrected: CSS @media in shadow DOM replaces size attribute. active toggled internally by click handlers.
+2026-07-10 | /extract | Initial extraction from Figma Design System 2026: library element + spec co-produced
+Full history: GitHub → 02-design/specs/components/navigation.md → History
+-->
+
+# Navigation
+
+**Source:** Zimmermann_Design_System_2026: Navigation ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331))
+**Extracted:** 2026-07-10
+**Stack:** web, react
+**Status:** draft
+
+![Navigation, 10 July 2026](../../library/elements/navigation/assets/2026-07-10-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+The Navigation component is the site-wide header bar. It renders at three breakpoints (Desktop, Tablet, Mobile) with two states. Default is the resting bar. Active is triggered when a nav link is selected (Desktop/Tablet) or the hamburger icon is pressed (Mobile). In the Active state the bar triggers a full-width panel that slides down from the base of the bar over 300ms, covering the page content below. Both the bar and the panel use a white background. The panel content (links, imagery) is out of scope for this spec.
+
+### Element
+`<zimm-navigation>`: organism. Composes `<zimm-nav-item>` (atom), `<zimm-icon>` (atom), and `<zimm-mega-menu>` (molecule).
+
+Library files: [02-design/library/elements/navigation/](../../library/elements/navigation/)
+
+**Responsive:** Layout breakpoints are handled entirely by CSS `@media` queries inside the component's shadow DOM. There is no `size` attribute. Resize the browser window and the component adapts automatically: ≥1024px = Desktop, 768-1023px = Tablet, ≤767px = Mobile.
+
+**Interaction:** The `active` attribute is toggled internally by click handlers. Nav link click (Tablet/Desktop) or hamburger tap (Mobile) sets `active`. Close button or X tap removes `active`. The attribute is also settable externally for prototype forcing.
+
+### Tokens used
+| Token | CSS Variable | Used by |
+|---|---|---|
+| `--alias/color/bg/page` | `--zimm-color-bg-page` | Nav bar background; mega menu panel background |
+| `--alias/color/text/default` | `--zimm-color-text-default` | All nav link labels, Close label |
+| `--alias/color/border/field/focus` | `--zimm-color-border-focus` | Active nav-item border-bottom; search input border |
+| `--default/navigation` | `--zimm-font-size-3xs` (12px) via `.zimm-text-nav` | Nav link text size |
+| `--alias/space/padding/1000` | `--zimm-scale-1000` (40px) | Horizontal padding, Desktop and Tablet |
+| `--alias/space/padding/1200` | `--zimm-scale-1200` (48px) | Vertical padding, Desktop and Tablet |
+| `--alias/space/padding/800` | `--zimm-scale-800` (32px) | Horizontal padding, Mobile |
+| `--alias/space/padding/600` | `--zimm-scale-600` (24px) | Vertical padding, Mobile |
+| `--alias/space/gap/1000` | `--zimm-scale-1000` (40px) | Gap between nav links, Navbar Left |
+
+==================== 02-design/specs/components/product-showcase-blocks.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-16 | /extract | Initial spec stub from design intent
+Full history: GitHub -> 02-design/specs/components/product-showcase-blocks.md -> History
+-->
+
+# Product Showcase Blocks
+
+**Source:** Design intent
+**Extracted:** 2026-07-16
+**Stack:** web, react
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-product-showcase-blocks>` is a molecule that combines a large hero card with a 2-column grid of product cards. Both the hero and the product cards use `zimm-card-baseline`. The hero card is wider and taller (664px wide, 1047px image height) while the product cards are standard size (288px wide, 438px image height). Used on campaign pages and collection pages to present a featured product alongside shoppable items.
+
+The hero column is 664px wide. The product grid occupies the other column (two 288px columns, 100px column gap, 50px row gap). Total layout width is 1440px. An optional category links aside occupies the grid cell diagonally opposite the hero.
+
+### Composes
+
+- `zimm-card-baseline`
+- `zimm-cat-links-aside` (optional)
+
+### Variants
+
+| Variant | Attributes | Notes |
+|---|---|---|
+| Default | (none) | Hero left, 4 product cards stacked from top |
+| Hero right | `editorial-position="right"` | Hero right, products left |
+| 2 cards bottom-aligned | `align-products="end"` | 2 product cards anchored to the base of the hero height |
+| With aside, hero left | `slot="aside"` filled | Aside top-left of product grid, adjacent to hero |
+| With aside, hero right | `editorial-position="right"` + `slot="aside"` filled | Aside top-left of full layout (product grid is on the left) |
+
+### Slots
+
+| Slot | Content | Notes |
+|---|---|---|
+| `hero` | One `zimm-card-baseline` | Hero column. Width = `--hero-width` (664px). Image height = `--hero-card-image-height` (1047px), yielding a 664x1149px card. |
+| `product` | 1-4 `zimm-card-baseline` | Auto-placed into 2-column grid |
+
+==================== 02-design/specs/components/text-input.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-16 | /extract | Added Outline variant (full border, light-only). variant attribute added to component and contract.
+2026-07-16 | /extract | Initial extraction from Zimmermann_Design_System_2026: TextfieldV2 component (node 40000265:374). Flush variant only.
+Full history: GitHub -> 02-design/specs/components/text-input.md -> History
+-->
+
+# Text Input
+
+**Source:** Zimmermann_Design_System_2026: TextfieldV2 (https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000265-374)
+**Extracted:** 2026-07-16
+**Stack:** web
+**Status:** draft
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`<zimm-text-input>` is a floating-label text input. The label animates between a large placeholder position (14px, vertically centred) when the field is empty and an unfocused small label position (10px, top-pinned) when the field has a value or is focused. Two border styles via `variant`: `flush` (bottom border only, default) and `outline` (full border, light-only). Supports helper text, error state, and an optional trailing icon.
+
+Atomic tier: atom.
+
+### Screenshot
+
+![Text input component screenshot](../../library/elements/text-input/assets/2026-07-16-screenshot.png)
+
+### Tokens used
+
+| Token | CSS variable | Value | Used by |
+|---|---|---|---|
+| Border forms | `--zimm-color-border-forms` | #707070 | Default border (light) |
+| Text default | `--zimm-color-text-default` | #191919 | Hover/focus border (light), input text |
+| Grey white | `--zimm-color-grey-white` | white | Border and text (inverse) |
+| Grey 300 | `--zimm-color-grey-300` | #969696 | Disabled border, inverse label |
+| Text secondary | `--zimm-color-text-secondary` | #666 | Floating label (light) |
+| Status error | `--zimm-color-status-error` | #9c0000 | Error border, error text, label (light) |
+| Status error bg | `--zimm-color-status-error-bg` | #f98f8c | Error border, error text, label (inverse) |
+| Font family body | `--zimm-font-family-body` | Futura Round | All text |
+| Font weight regular | `--zimm-font-weight-regular` | 400 | Input text, label (unfloated) |
+| Font weight medium | `--zimm-font-weight-medium` | 500 | Label (floated) |
+| Font size 2xs | `--zimm-font-size-2xs` | 14px | Input text, label unfloated |
+| Font size 4xs | `--zimm-font-size-4xs` | 10px | Label floated |
+
+==================== 02-design/specs/templates/template-main-large-screen.md ====================
+<!-- managed-by: /extract | do-not-edit -->
+<!-- changelog
+2026-07-15 | /handover | Added Prototype link, Interactions section; updated logo-masthead status to extracted
+2026-07-14 | manual | Added column grid spec (3 breakpoints) to Layout section
+2026-07-10 | /extract | Initial extraction from Zimmermann Design System 2026: template spec
+Full history: GitHub → 02-design/specs/templates/template-main-large-screen.md → History
+-->
+
+# Template: Main Large Screen
+
+**Source:** Zimmermann_Design_System_2026: Template-Main-Large-Screen ([https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000257-7535](https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000257-7535))
+**Extracted:** 2026-07-10
+**Stack:** web, react
+**Status:** draft
+
+![Template: Main Large Screen, 10 July 2026](main-large-screen/assets/2026-07-10-screenshot.png)
+
+---
+
+<!-- design-layer: designer-owned. Do not edit below this line if you are a developer -->
+## Design layer
+
+### Overview
+
+`Template-Main-Large-Screen` is the primary large-screen page shell for Zimmermann. It establishes the four structural regions used by all main content pages: Navigation, Logo masthead, Main content, and Footer. Figma frame: 1440×891px. All four regions stack vertically with a 12px gap between them (Figma layout gap).
+
+### Structural regions
+
+| Region | Figma node | Height at 1440px | Component |
+|---|---|---|---|
+| Navigation | `40000257:7537` | 116px | `<zimm-navigation>` |
+| Logo masthead | `40000257:7538` | 114px | Pending extraction (see note) |
+| Main content | `40000266:3438` | Flexible (141px in Figma) | Content slot: varies per page type |
+| Footer | `40000257:7539` | 484px | `<zimm-footer>` |
+
+### Region detail
+
+**Navigation**
+- Component: `<zimm-navigation>` at Desktop breakpoint (1024px+)
+- Full-width, white background. Nav items: New, Clothing, Accessories, Collections, Z.Immerse. Right side: Search input, Profile/Wishlist/Bag icons
+- Internal padding: `--zimm-scale-1000` (40px) horizontal, `--zimm-scale-1200` (48px) vertical
+- Spec: [02-design/specs/components/navigation.md](../components/navigation.md)
+
+**Logo masthead**
+- Full-width white region with the large-format ZIMMERMANN wordmark pinned bottom-left

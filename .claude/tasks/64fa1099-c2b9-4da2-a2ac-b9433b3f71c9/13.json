@@ -1,0 +1,9 @@
+{
+  "id": "13",
+  "subject": "Phase 8: Shared Brain (@arche/brain)",
+  "description": "pgvector schema + ingestion (via wiki provider) + RAG API + MCP query_knowledge + /knowledge skill. Opt-in via primitives.sharedBrain.",
+  "activeForm": "Building Shared Brain",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

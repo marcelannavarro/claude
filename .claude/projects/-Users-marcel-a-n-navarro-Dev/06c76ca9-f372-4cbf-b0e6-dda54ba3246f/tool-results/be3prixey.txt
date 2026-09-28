@@ -1,0 +1,736 @@
+=== audit-tier ===
+---
+name: audit-tier
+description: Identify the protection tier, owner, and import blast radius of a file or directory under overrides/. Use before editing anything you're unsure about.
+---
+
+Identify the protection tier and owner of a file or directory in this codebase.
+
+The path to audit is: $ARGUMENTS
+
+## What to output
+
+**1. Tier**
+- Tier 1 (Frozen) — must not be modified without explicit owner approval
+- Tier 2 (Protected) — feature branch only, requires second-developer PR review
+- Tier 3 (Squad-owned) — only the owning squad should be prompting Claude here
+- Tier 4 (Feature-local) — freely editable on a feature branch
+
+Check against:
+- [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md) for Tier 1
+- [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md) for Tier 2
+- `.claude/rules/squadA.md` and `.claude/rules/squadB.md` for Tier 3 *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+
+**2. Owner**
+Design System / Integration / SI Partner / Squad A / Squad B / Both Squads
+
+**3. Can Claude Code modify it?**
+- Tier 1: No. Developer must name the file explicitly in the prompt AND confirm owner approval.
+- Tier 2: Yes on a feature branch — second-developer PR review required before merging.
+- Tier 3: Yes — but only the owning squad should be running Claude in this area.
+- Tier 4: Yes, freely.
+
+**4. Import blast radius**
+Run this to check how many non-test, non-story files import it (from `overrides/app/` — the customisation surface):
+```bash
+grep -rl "$(basename "$ARGUMENTS" | sed 's/\.[tj]sx\?$//')" overrides/app --include="*.ts" --include="*.tsx" \
+  | grep -v '\.test\.' | grep -v '\.stories\.' | wc -l
+```
+If more than 5, flag it as **high blast radius** — a change here breaks many consumers.
+
+**5. Next step**
+Specific action for the developer — e.g.:
+- "Message #design-system before asking Claude to touch this"
+- "This is Tier 3 Squad A — if you're Squad B, message the Squad A Lead first"
+- "This is Tier 4 — safe to include in your prompt with an explicit file path"
+
+=== code-quality ===
+---
+name: code-quality
+description: Audit recently changed or specified files for code quality issues — naming, circular imports, TypeScript coverage, test/story existence, and structural debt. Read-only. Use after implementing a feature or before opening a PR.
+---
+
+Audit code quality for the specified scope. Do not modify any files — this is a read-only
+diagnostic. Produce a prioritised report with actionable fixes.
+
+---
+
+## Input
+
+The user will provide one of:
+- A file path or directory to audit
+- No argument — default to files changed on the current branch: `git diff --name-only main`
+
+If no argument is given, run: `git diff --name-only main` and audit those files.
+Exclude test files (`*.test.ts`, `*.spec.ts`), stories (`*.stories.tsx`), and any registry files.
+
+---
+
+## Parallel execution
+
+For audits covering more than 5 files, split into four independent checks and run them
+as parallel agents simultaneously. Each agent receives only its own checklist — do not
+bundle all checks into one agent.
+
+- **Agent A — Naming & structure**
+- **Agent B — Import analysis**
+- **Agent C — TypeScript coverage**
+- **Agent D — Test & story coverage**
+
+For 5 files or fewer, run all checks sequentially in a single pass.
+
+---
+
+## Agent A — Naming & structure
+
+Rules are defined once, split across [.claude/rules/conventions.md](../../rules/conventions.md)
+(cross-cutting), [css.md](../../rules/css.md) (Chakra/styling), and
+[components.md](../../rules/components.md) (components/hooks/Storybook) — read the relevant
+ones first, then apply each rule to the files in scope. Do not re-list the rules here;
+that's how the files drift apart.
+
+Walk the file list and audit each file against the relevant section:
+
+- Every file → conventions.md **General** section.
+- Every file with JSX/Chakra props → css.md **Tokens** section (no hardcoded hex/px values).
+- `.tsx` under `overrides/app/components/` or `overrides/app/pages/` → components.md
+  **Components** + **Composition** sections, plus conventions.md **File naming and folder
+  structure**.
+- `.ts` under `overrides/app/hooks/` → components.md **Hooks** section.
+- `.ts` under `overrides/app/utils/` → conventions.md **Utilities** section.
+
+For each violation, record `file:line` and which rule file + bullet failed — the section
+anchor is enough (e.g. "components.md → Components → Props type placement").
+
+---
+
+## Agent B — Import analysis
+
+For each file, read the import statements and check:
+
+- No circular imports: if File A imports from File B, File B must not import from File A
+  (check by reading the imported file's imports in turn — one level deep is sufficient).
+- No imports from a higher tier without justification:
+  - A component must not import directly from internal `commerce-sdk-react` source paths.
+  - A page must not bypass its own hooks to call raw API functions.
+- No imports from a later-sprint feature (reference `.docs/memory/sprintScope.md` when present).
+- No `../../../..` chains longer than 3 levels — flag for path alias review.
+
+---
+
+## Agent C — TypeScript coverage
+
+Check each file against the relevant rule file:
+
+- Every `.ts`/`.tsx` → [typescript.md](../../rules/typescript.md) in full (no `any` without
+  justification, `type` vs `interface`, non-null assertions, discriminated unions, utility
+  types, `import type`, `satisfies`, `readonly`, generic naming).
+- Components → [components.md](../../rules/components.md) **Components** (props type name,
+  placement, optional `?`, callback naming, JSDoc).
+- Hooks → [components.md](../../rules/components.md) **Hooks** (typed params, explicit
+  return type, JSDoc with `@returns`).
+
+Then run `npx tsc --noEmit` **once** for the whole branch (not per file) and report any
+errors. Cross-reference any new errors against the files in scope.
+
+---
+
+## Agent D — Test & story coverage
+
+For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+- A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+- For logic-heavy components or hooks: a `*.test.ts` exists OR a `play` function exists in the story.
+- If a test file exists, verify:
+  - At least one test covers the primary render case.
+  - At least one test covers a user interaction (click, input) if the component has interactive elements.
+  - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+- If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+- If a logic-heavy file has neither a `.test.ts` nor a `play` function, flag as MISSING TEST.
+
+For each utility file under `overrides/app/utils/`:
+- **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+  transformation (currency, locale, mapping, parsing, etc.). Trivial re-exports and
+  one-liners are exempt.
+- If a test file exists, verify it covers both the happy path and at least one edge case
+  (empty input, null, locale variation — whichever applies).
+
+---
+
+## Output format
+
+Combine all agent results into a single prioritised report:
+
+```
+## Code Quality Report
+**Scope:** [files audited]
+**Branch:** [current branch]
+**Date:** [today]
+
+### 🔴 Must fix before PR merge
+[Issues that would fail review or cause runtime errors — one line per issue with file:line]
+
+### 🟡 Should fix in this PR
+[Issues that affect maintainability or violate conventions — one line per issue with file:line]
+
+### 🔵 Backlog (log, don't block)
+[Minor style issues, missing test cases for edge cases — one line per issue]
+
+### ✅ No issues found
+[List checks that passed cleanly]
+
+### Summary
+X must-fix · Y should-fix · Z backlog items
+```
+
+Do not suggest refactors beyond the scope of the changed files.
+Do not modify any files — report only.
+
+=== pr-checklist ===
+---
+name: pr-checklist
+description: Generate a PR description and merge checklist based on the files changed on the current branch. Pairs with /code-quality.
+---
+
+Generate a PR description and merge checklist based on the files changed in the current branch.
+
+## Steps
+
+1. **Run code quality check first.**
+   Run `git diff --name-only develop` to get all changed files, then invoke the [/code-quality](../code-quality/SKILL.md) skill on those files. Include a summary of any must-fix issues at the top of the PR description. If must-fix issues are found, state them prominently and recommend resolving before opening the PR.
+
+2. Run `git diff --name-only develop` to get all changed files.
+
+3. For each changed file, determine its tier:
+   - Tier 1: check [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md)
+   - Tier 2: check [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md)
+   - Tier 3: check `.claude/rules/squadA.md` and `.claude/rules/squadB.md` *(if added)*
+   - Tier 4: everything else
+
+4. Check for cross-squad changes — files from both Squad A and Squad B territory in the same PR.
+
+5. Output the following, copy-paste ready for a GitHub PR:
+
+---
+
+## PR Description
+
+**Summary**
+[2-3 bullets: what changed and why — be specific, not generic]
+
+**Changed files**
+| File | Tier | Owner | Reviewer required? |
+|------|------|-------|--------------------|
+[one row per file]
+
+**Required actions before merging**
+[Generated from tiers — examples:]
+- Tier 1 change detected in [file] — confirm owner approval before merging
+- Tier 2 change in [component] — a second developer must review this file specifically
+- Cross-squad change — both squad leads must approve
+
+**Notifications sent**
+- [ ] [Squad/owner notified via correct channel]
+
+**CodeRabbit pre-merge gates** (see `coderabbit.yaml` — these block merge in `error` mode)
+- [ ] PR title follows Conventional Commits: `type(scope): description` (valid types: feat,
+      fix, docs, style, refactor, perf, test, build, ci, chore, upstream-sync)
+- [ ] Jira issue URL pasted into this PR description (not auto-detected from branch name —
+      required for `issue_assessment` once the Jira Forge app is connected; recommended now)
+- [ ] Any new/modified shared component (≥2 callers) or exported hook has JSDoc — see
+      [components.md](../../rules/components.md) > Components / Hooks
+
+**Test checklist**
+- [ ] `npx tsc --noEmit` passes
+- [ ] `npm run lint` passes
+- [ ] `npm run test` passes (Vitest)
+- [ ] Affected pages tested in local dev server (ask developer to run `npm start` — Claude must not start the dev server, see [AGENTS.md](../../../AGENTS.md))
+- [ ] No regressions on golden paths for touched features
+- [ ] No console errors
+- [ ] WCAG 2.2 AA verified for any UI change — including `img alt`, `IconButton aria-label`,
+      and `role` on any non-native clickable element (see components.md > Components)
+- [ ] Any `dangerouslySetInnerHTML` wraps its value in a sanitizer (see conventions.md > General)
+[Add specific items based on which pages/components changed]
+
+---
+
+Keep the output practical and tight. Flag any Tier 1 changes prominently at the top.
+
+=== qa-generate ===
+---
+name: qa-generate
+description: Generate a Gherkin .feature file and Playwright test spec from a Jira story. Human-in-the-lead — Lead QA validates the .feature before Playwright is generated. Use for any new storefront user journey that needs E2E test coverage.
+---
+
+QA test generation is a two-step, human-gated process. Do not generate the Playwright spec
+until the `.feature` file has been explicitly confirmed by Lead QA.
+
+> **Three testing layers in this project** (per [AGENTS.md](../../../AGENTS.md)):
+> - Vitest — unit logic
+> - Storybook `play` functions — component interactions
+> - Playwright — E2E user journeys (this skill)
+>
+> The gherkin → Playwright workflow below is the **E2E layer only**. It does not replace
+> the Vitest / Storybook layers — write all three where each applies.
+
+> **Status:** the `e2e/` directory and Playwright harness must be in place before running this skill.
+> If `e2e/` does not yet exist, stop and tell the developer the QA harness must land first.
+
+---
+
+## Phase 1 — Gather story details
+
+Ask these questions one at a time. Wait for the answer before asking the next.
+
+1. What is the Jira story key? (e.g. SFCC-142)
+2. What is the story title?
+3. What are the acceptance criteria? (paste them directly)
+4. Which squad owns this story? (Squad A: checkout/cart/payments — Squad B: PDP/PLP/search/account)
+5. Which sprint is this? (Check `.docs/memory/sprintScope.md` — flag if the story references a later-sprint dependency)
+6. Is this a P0 journey? (P0 = Digital SIT gate critical path: guest checkout, registered checkout, PDP variant selection, ATC, auth)
+
+---
+
+## Phase 2 — Draft the .feature file
+
+Write the Gherkin file to:
+`e2e/features/{area}/{JIRA-KEY}_{short-description}.feature`
+
+Follow the standard in `e2e/features/README.md`:
+- Tags: `@{JIRA-KEY} @{area}` — add `@p0` if confirmed in Phase 1
+- Feature block with persona, goal, and value
+- Background block for shared preconditions
+- At least one happy path scenario and one failure/edge scenario
+- Plain English only — no selectors, URLs, or implementation detail
+- Under 150 lines — split by scenario group if longer
+
+**Stop here. Do not generate the Playwright test yet.**
+
+Present the draft and say:
+> "This is the draft `.feature` file. Please share it with Lead QA for validation.
+> When QA has approved or annotated it, reply with their feedback and I will proceed."
+
+---
+
+## Phase 3 — Apply QA annotations (if any)
+
+If Lead QA returns annotations in this format:
+```
+# QA ANNOTATION: [correction]
+```
+
+Update the `.feature` file to reflect the correction. Confirm the change explicitly:
+> "Updated [what changed]. No other changes made."
+
+Repeat until Lead QA confirms the file is correct.
+
+---
+
+## Phase 4 — Generate the Playwright spec
+
+Only proceed when Lead QA has confirmed the `.feature` file.
+
+Write the Playwright test to:
+- `e2e/tests/zimm/{area}/{JIRA-KEY}_{description}.spec.ts` — for standard tests
+- `e2e/tests/zimm/{area}/{JIRA-KEY}_{description}.p0.spec.ts` — for P0 tests
+
+Rules:
+- Files are TypeScript (`.spec.ts`) — the TS-only convention applies to E2E too.
+- Import Page Objects from `e2e/support/pages/` — never use raw selectors in the test file.
+- Selector priority in POMs: accessible selectors (role + accessible name, label, text) > semantic HTML attributes (alt, title) > `data-testid` (only when no semantics apply). See [.claude/rules/testing.md](../../rules/testing.md).
+- Import fixtures from `e2e/fixtures/` — never hardcode test data. Fixtures must be keyed by `SITE_ID` (Zimmermann has 7 storefronts across 11 active locales).
+- Test description must match the Scenario name in the `.feature` file exactly.
+- Use `waitForSelector` or `waitForResponse` — never `waitForTimeout`.
+- Under 200 lines — extract shared logic to `e2e/support/helpers/` if needed.
+
+---
+
+## Phase 5 — Check for new Page Object needs
+
+Read the generated test. If it references an element not yet in any Page Object:
+- Propose the addition to the relevant `e2e/support/pages/*.ts` file.
+- Do not create a new Page Object file without confirming the path first.
+- Page Object files stay under 150 lines — propose a split if exceeded.
+
+---
+
+## Phase 6 — Summary
+
+List every file created or modified:
+- `.feature` file path
+- `.spec.ts` file path
+- Any Page Object additions
+
+Then say:
+> "The `.feature` file requires Lead QA sign-off before this test is considered complete.
+> If QA annotates further changes, run `/qa-generate` again with the updated story key."
+
+---
+
+## Notes
+
+- Never generate tests on `develop` or `main` — check `git branch --show-current` first.
+- If the story references a component or hook from a later sprint (per `.docs/memory/sprintScope.md`),
+  stop and flag it: the test may need to be deferred or the spec written with a placeholder.
+- For Magento baseline regression tests, write to `e2e/features/regression/BASELINE-{area}-{behaviour}.feature`
+  and note that these files use a `@baseline @regression` tag set, not a Jira key tag.
+
+=== session-start ===
+---
+name: session-start
+description: Run the mandatory session start ritual — reads tracking docs, runs branch + health checks, states current position. Use at the start of every coding session.
+---
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Current sprint / phase (from `projectState.md`)
+   - The last completed task and the next task
+   - Any blockers or outstanding issues
+
+   Format: "Resuming from: [last completed task]. Next: [next task]. [Any blockers or health issues]."
+
+5. **Confirm readiness** — ask if the user wants to proceed with the stated next task or redirect to something else.
+
+Do not write any code until this ritual is complete and the user has confirmed direction.
+
+---
+
+## Living Memory — what belongs where
+
+`.docs/memory/` is the project's persistent memory. Keep it current — update the relevant file whenever a session produces new information that belongs there.
+
+**`.claude/session-notes.md` is different: a lightweight, Claude-writable, gitignored, per-developer staging area** (same pattern as `userProfile.md` below, but for tasks rather than profile info) for short-lived carryover items (e.g. "still need to do X next session") that haven't been promoted to `.docs/memory/` yet. It's **not** shared via git — each developer's notes stay local, so they never conflict or overwrite a teammate's. Unlike the files below, Claude may write to it directly. Use it for quick pending-item tracking; move anything durable and team-relevant into the right `.docs/memory/` file once it's confirmed, and clear the note.
+
+| File | What belongs there | When to update |
+|---|---|---|
+| `architecture.md` | Stack decisions, overrides pattern, key paths, structural choices | A new integration is added, a structural decision is made, or a key path changes |
+| `projectState.md` | Phase, integration statuses (mock/live/not started), what's done and pending, unresolved dependencies | Any integration goes live, a phase changes, a feature is completed, or a dependency is resolved |
+| `feedback.md` | What worked, what failed, patterns to avoid or repeat | After discovering a gotcha, a failed approach, or a validated pattern |
+| `references.md` | Service URLs, API keys, credentials, logins, dashboards | A new credential or service URL is introduced (system roles live in `architecture.md`) |
+| `userProfile.md` | User's role, expertise, working style, preferences | User shares a preference or working-style detail that should persist |
+
+**Rules:**
+- Never leave a file with only its placeholder comment — populate it the moment you learn something that belongs there.
+- **No duplication.** Every fact has exactly one home. Before writing something, check whether it already lives in another doc — if it does, reference that doc instead of copying. Applies across all `.md` files: `AGENTS.md`, memory files, and PRDs.
+- **Conciseness.** Keep all `.md` instructions concise.
+
+=== upstream-sync-review ===
+---
+name: upstream-sync-review
+description: Review the release notes / changelog for a new @salesforce/retail-react-app version before bumping. Lightweight policy — see .docs/upstreamPolicy.md.
+---
+
+This is a **slim overrides project** on `@salesforce/retail-react-app` — not a framework fork.
+The policy is **"read the changelog, bump opportunistically"** — see [.docs/upstreamPolicy.md](../../../.docs/upstreamPolicy.md).
+
+This skill helps you review a candidate version bump before doing it.
+
+---
+
+## Input
+
+Ask the developer:
+> "What candidate `@salesforce/retail-react-app` version are we considering? Paste a link to the GitHub release notes or the version number."
+
+If they give just a version (e.g. `10.1.0`), generate the release notes URL:
+`https://github.com/SalesforceCommerceCloud/pwa-kit/releases/tag/v<X.Y.Z>`
+
+---
+
+## Step 1 — Capture current state
+
+Read [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md). Note:
+- Current version
+- Reviewed-up-to version
+- Any deferred items
+
+---
+
+## Step 2 — Read the release notes
+
+Fetch the GitHub release notes for the candidate version (and any intermediate versions
+between current and candidate). Summarise:
+- Security fixes
+- SCAPI / SDK breaking changes
+- New configuration options
+- Bug fixes that affect surfaces we override
+
+The bump policy says: bump opportunistically only when a release contains **security** or
+**SDK** changes that affect us. Otherwise stay put.
+
+---
+
+## Step 3 — Map changes to our override surface
+
+For each notable change in the release notes, check whether we override the affected file
+under `overrides/app/`. If yes, the upgrade may need a re-port of the override.
+
+Quick check:
+```bash
+ls overrides/app/<area-from-release-notes>/ 2>/dev/null
+```
+
+For each override that may be affected, flag it as **Review** — the override must be
+diffed against the new base file in `node_modules/@salesforce/retail-react-app/` after the bump.
+
+---
+
+## Step 4 — Output a short recommendation
+
+Produce a brief recommendation in this shape:
+
+```markdown
+## Upstream review: @salesforce/retail-react-app v<X.Y.Z>
+
+**Current:** vA.B.C (per upstreamBaseline.md)
+**Candidate:** vX.Y.Z
+**Reviewed:** [today's date]
+
+### Notable changes
+- [bullet per relevant item from release notes]
+
+### Overrides that may need re-porting
+| Override path | Reason |
+|---|---|
+| overrides/app/... | [release-note item] |
+
+### Recommendation
+[BUMP / DEFER / WAIT FOR NEXT RELEASE] — with one-sentence reason.
+
+### If bumping
+- [ ] Update `package.json` and `package-lock.json` via `npm install @salesforce/retail-react-app@<X.Y.Z>`
+- [ ] Re-diff each flagged override against the new base file
+- [ ] Run `npx tsc --noEmit`, `npm run lint`, `npm run build`
+- [ ] Update `.docs/memory/upstreamBaseline.md` (Current + Reviewed up to)
+```
+
+---
+
+## Notes
+
+- This skill does **not** modify any files — it produces a recommendation only.
+- For Tier 1 files affected by the upgrade (`config/*`, `overrides/app/ssr.js`, `worker/main.js`), flag explicitly and require Integration lead approval before bumping.
+- Do not run `npm install` yourself — the developer must approve and run it (see [AGENTS.md](../../../AGENTS.md) Hard Rule 7).
+
+=== generate-changelog ===
+---
+name: generate-changelog
+description: Generate a release changelog from conventional commits and upstream baseline notes. Produces audience-specific outputs for the dev team, QA, product, and GitHub Release. Use before cutting a release branch or when preparing release notes.
+---
+
+Generate a structured release changelog. Ask clarifying questions one at a time,
+then research in parallel, then produce the output. Do not write code.
+
+---
+
+## Phase 1 — Establish the release range
+
+Ask these questions one at a time if not already provided:
+
+1. What is the release version? (e.g. `v1.2.0`)
+2. What is the base ref to compare from? (default: run `git describe --tags --abbrev=0` to find the last tag. If no tags exist yet, use the first commit.)
+3. Is there anything specific that should be highlighted or excluded from the changelog?
+
+---
+
+## Phase 2 — Parallel research
+
+Spawn three agents simultaneously. Each is self-contained.
+
+**Agent A — Git log analysis**
+Run: `git log [BASE_REF]..HEAD --pretty=format:"%h %s" --no-merges`
+Parse each commit by conventional type:
+- `feat` → Features
+- `fix` → Bug fixes
+- `perf` → Performance
+- `refactor` → Refactors (include in technical changelog only)
+- `test` → Test coverage (include in technical changelog only)
+- `docs` → Documentation (include in technical changelog only)
+- `build` / `ci` → Infrastructure (include in technical changelog only)
+- `chore` → Maintenance (omit from product/QA changelogs unless `chore(deps)`)
+- `upstream-sync` → Upstream sync (separate section)
+- `style` → Omit from all changelogs
+
+For each `feat` and `fix`, extract the scope (if present) and description.
+Group commits under their type. Return the full categorised list.
+
+**Agent B — Upstream baseline scan**
+Read [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md).
+Identify whether the `@salesforce/retail-react-app` version changed between BASE_REF and HEAD.
+Use `git log [BASE_REF]..HEAD -- .docs/memory/upstreamBaseline.md package.json` to find any bump.
+Return: the version bump (if any) and a one-sentence summary.
+
+**Agent C — New components / hooks scan**
+If `.claude/registry/` exists, run:
+`git diff [BASE_REF]..HEAD -- .claude/registry/`
+and parse for new entries in `components.md`, `hooks.md`, `utils.md`, `pages.md`.
+Otherwise, fall back to:
+`git log [BASE_REF]..HEAD --diff-filter=A --name-only -- 'overrides/app/components/**' 'overrides/app/hooks/**' 'overrides/app/pages/**' 'overrides/app/utils/**'`
+Return: lists of new components, hooks, utils, and pages added in this release.
+
+Wait for all three agents before proceeding.
+
+---
+
+## Phase 3 — Sprint context
+
+Read `.docs/memory/sprintScope.md` and [.docs/memory/projectState.md](../../../.docs/memory/projectState.md). Identify which sprint(s) were completed or progressed
+in this release cycle. State it in one sentence for the product changelog.
+
+---
+
+## Phase 4 — Generate the changelog
+
+Produce the following four sections. Write them into a single file at:
+`docs/releases/[TODAY]-[VERSION].md` (create the directory if it doesn't exist).
+
+---
+
+```markdown
+# Release [VERSION] — [TODAY]
+
+---
+
+## 🛠 Technical Changelog (Dev Team)
+
+### New components & hooks
+[From Agent C — list each new component and hook with its path under overrides/app/]
+
+### Features
+[From Agent A feat commits — scope: description]
+
+### Bug fixes
+[From Agent A fix commits — scope: description]
+
+### Performance
+[From Agent A perf commits]
+
+### Upstream sync
+[From Agent B — `@salesforce/retail-react-app` version bump (if any), what was reviewed]
+
+### Refactors & test coverage
+[From Agent A refactor and test commits]
+
+### Dependencies & infrastructure
+[From Agent A build, ci, chore(deps) commits]
+
+---
+
+## 🧪 QA Changelog (Test Team)
+
+### What changed that needs testing
+[For each feat and fix commit, one bullet: what changed and which user journey to test.
+Reference the relevant P0 test if one covers it. Flag any area where a P0 test does NOT exist.]
+
+### High-risk areas this release
+[Any changes to: checkout flow, auth, pricing, cart, product display, navigation, consent (Didomi), international (Global-e).
+State what specifically changed and the blast radius.]
+
+### Regression watch
+[Any changes to shared components (Tier 2) or shared hooks. List the component and
+all known consumers that should be spot-checked.]
+
+---
+
+## 📣 Product Changelog (Business / Stakeholders)
+
+### Sprint progress
+[From Phase 3 — one sentence on sprint completion]
+
+### What's new
+[feat commits only, in plain English, no technical detail. Group by user-facing feature area.]
+
+### What's fixed
+[fix commits only, in plain English. Focus on customer-facing fixes only.]
+
+### What's coming next
+[One sentence on the next sprint focus from .docs/memory/sprintScope.md]
+
+---
+
+## 🚀 GitHub Release Summary
+
+**[VERSION]** — [TODAY]
+
+[2–3 sentence summary suitable for the GitHub Release page. Highlights the biggest
+feature additions and most significant fixes. Suitable for external visibility.]
+
+**Full changelog:** `docs/releases/[TODAY]-[VERSION].md`
+**Release notes reviewed by:** [FILL IN]
+```
+
+---
+
+## Phase 5 — Offer GitHub Release draft
+
+After writing the file, ask:
+> "Would you like me to create a GitHub Release draft using this summary?
+> Run: `gh release create [VERSION] --draft --title '[VERSION]' --notes '[SUMMARY]'`"
+
+Do not run the command — provide it for the developer to execute.
+
+---
+
+## Notes
+
+- If commits mix conventional and non-conventional format (transition period), flag
+  the non-conventional commits separately as "Uncategorised" and note they couldn't
+  be automatically classified.
+- If the base ref does not exist (first release), use `--all` for the git log.
+- Always omit commit hashes from the product and QA sections — they are technical noise.
+
+=== scope-check ===
+---
+name: scope-check
+description: Review a proposed Claude Code prompt for scope safety before it runs. Classifies every likely-touched file by tier and verdicts the prompt SAFE / RISKY / BLOCKED, rewriting it when needed.
+---
+
+Review a proposed Claude Code prompt for scope safety before it runs.
+
+The prompt to check is: $ARGUMENTS
+
+## What to do
+
+1. **Identify every file the prompt would likely touch** — both files named explicitly and files Claude would naturally reach through refactoring upward, shared imports, or "while I'm in here" changes.
+
+2. **Classify each file by tier**:
+   - Tier 1 (Frozen) — see [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md)
+   - Tier 2 (Protected) — see [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md)
+   - Tier 3 (Squad-owned) — see `.claude/rules/squadA.md` and `.claude/rules/squadB.md` *(if absent, infer from path: checkout/cart/payments = Squad A; PDP/PLP/search/account = Squad B)*
+   - Tier 4 (Feature-local, safe)
+
+3. **Assess the risk**:
+   - Is the prompt open-ended in a way that lets Claude drift into shared code?
+   - Could Claude refactor upward into hooks or utilities not mentioned?
+   - Does it cross squad boundaries (Squad A territory + Squad B territory in the same prompt)?
+   - Does it name specific files, or just a feature area?
+
+4. **Verdict**: output one of:
+   - ✅ SAFE — clearly scoped, no Tier 1 or 2 risk
+   - ⚠️ RISKY — likely to drift, needs a rewrite before running
+   - 🚫 BLOCKED — requires Tier 1 modification, stop and get owner approval first
+
+5. **If RISKY or BLOCKED**, rewrite the prompt so it is safely scoped:
+   - Name exact file paths under `overrides/app/...`
+   - End with "Do not modify any other files"
+   - Split cross-squad work into two separate prompts
+
+## Output format
+
+Use a compact table for the file/tier list. One short paragraph for the verdict. If rewriting, show the improved prompt in a code block.
+

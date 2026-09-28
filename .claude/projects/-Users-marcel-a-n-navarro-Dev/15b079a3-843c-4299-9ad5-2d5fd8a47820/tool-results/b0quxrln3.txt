@@ -1,0 +1,1355 @@
+=== PR59 COMMITS ===
+1 8c25f119 | feat(footer): SFCC-55 global footer UI — atoms, molecules, subscribe …
+     …modal, and Figma token alignment
+     
+     Scaffold global footer component with responsive four-column desktop layout,
+     tablet/mobile stacked layout, and full dark/inverse theme across all breakpoints.
+     
+     UI kit atoms added:
+     - ZimmButton: primary/secondary/icon variants, large/medium sizes, light/inverse modes
+     - ZimmNavItem: underline-on-hover navigation link with active/focus states
+     - ZimmTextInput: flush floating-label input with hover/filled/focus border states
+     - ZimmIcon: centralised SVG icon set (Zimmermann custom + base PWA)
+     - ZimmInputAction molecule: text input with trailing icon-button for subscribe entry point
+     
+     Subscribe modal (HPC-035, HPC-037): first name, last name, email, privacy consent checkbox.
+     Marked as placeholder pending HPC-036 Omneo integration.
+     
+     Figma token alignment (nodes 901:2897, 40000265:374):
+     - Fix border colours: hover/filled → border.focus (#191919), inverse error → status.errorBackground (#f98f8c)
+     - Fix floated label and helper text: text.muted → text.secondary (#666, Figma text/subtle)
+     - Add FIELD_LABEL local constants (10px floated label) pending Tier 1 typography.ts ad
+2 a81a9274 | fix(footer): remove self-hosted Futura Round font files and FontStyle…
+     …s injector
+     
+     Monotype Desktop licence forbids server distribution of the .woff2 files.
+     Font delivery deferred until Zimmermann obtains the Monotype Web Page Content
+     entitlement. Font stack in foundation/fonts.ts already lists 'Futura Round'
+     as first preference (renders if installed) with Century Gothic / Gill Sans
+     as fallbacks — no component changes needed beyond removing the FontStyles
+     import and render from footer/index.tsx.
+3 5b33f843 | fix(ui-kit): address PR CodeRabbit findings — a11y, test coverage, an…
+     …d conventions
+     
+     - Remove console.log from footer locale button placeholder
+     - Rename ui-kit atom/molecule files to camelCase per conventions.md
+     - Replace hardcoded hex values in ZimmLogo with colors.text tokens
+     - Remove unused getRouterBasePath declaration from vendor.d.ts
+     - Remove unused pendingEmail state from SubscribeSection
+     - Fix ZimmIcon aria props union — remove branch allowing neither aria-hidden nor aria-label
+     - Remove pointerEvents:none from ZimmTextInput label (defeats htmlFor focus)
+     - Clear ZimmInputAction validationError on user edit via onChange
+     - Add fn() mock and toHaveBeenCalledOnce assertion to ZimmButton click stories
+     - Fix footer stories getByRole selector to use accessible name {name:/email/i}
+     - Change subscribe modal title from p to h2 for correct heading hierarchy
+4 98dc464e | fix(ui-kit): code quality fixes — spelling, type imports, and inline …
+     …cast comments
+     
+     - Rename color/borderColor/outlineColor/textColor/labelColor to Australian spelling
+       (colour/borderColour/outlineColour/textColour/labelColour) across zimmButton,
+       zimmNavItem, and zimmTextInput
+     - Add inline type modifier to CSSProperties imports across footer and all ui-kit atoms/molecules
+     - Add inline comments explaining as CSSProperties, as HTMLInputElement, and discriminated
+       union casts in zimmButton, zimmIcon, and zimmInputAction
+     - Extract MODAL_Z_INDEX and MODAL_MAX_WIDTH as named constants in footer
+     - Add shared comment explaining textStyles as CSSProperties cast pattern in footer
+5 200c0447 | fix(ui-kit): improve ZimmTextInput clear button hit area and extract …
+     …focus border constants
+     
+     - Add 24px minWidth/minHeight to clear button for touch accessibility (WCAG 2.5.5)
+     - Extract FOCUS_BORDER_WIDTH and FOCUS_PADDING_BOTTOM as named constants to replace
+       inline '2px' and '3px' focus-state literals
+6 f681d751 | fix(footer): align desktop spacing with Figma — fixed site-map width,…
+     … top padding, and subscribe gap
+     
+     - Desktop site-map: flex:1 fill → flex:0 0 600px fixed (Figma node 40000407:11736 w-[600px])
+     - Desktop content top padding: 48px → 64px (alias/space/1600)
+     - Desktop column gap: hardcoded 120px → justify-between auto-distribution across 600px
+     - Tablet links: flex:0 1 auto → flex:1 (Figma site-map size-full)
+     - Tablet columns: add flex-wrap:nowrap + flex-shrink:1 to prevent row wrap at narrow tablet
+     - Subscribe text→textfield gap: 24px → 40px (alias/space/1000)
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+7 b2a40e81 | fix(footer): pixel-perfect Figma corrections and harden ZimmNavItem
+     - Bump tablet top-padding from 48px to 64px (alias/space/1600) to match
+       Figma frame 2834:28813 — step-up from mobile applies at 768px, not 1024px
+     - Fix tablet legal row gap from 24px to 0 24px (row 0, col 24px) per Figma
+     - Remove redundant desktop padding-top override (tablet rule already covers it)
+     - Add SAFE_HREF_RE allowlist to ZimmNavItem blocking javascript:/data: URIs
+     - Render <button> when href is absent or unsafe — no scroll, no redirect
+     - Fix focus ring showing on mouse click: use pointerdown ref to distinguish
+       keyboard focus from pointer focus; outline only for keyboard navigation
+8 718de245 | chore(ci): trigger build environment
+9 a2a2af4a | refactor(ui-kit): introduce cssVars utility and migrate inline styles…
+     … to CSS custom properties
+     
+     Create overrides/app/utils/cssVars.ts exporting var(--zimm-*) string references that
+     mirror the zimmTokens.ts key names, plus cssTextStyles presets replacing textStyles spreads.
+     
+     Migrate footer/index.tsx, ZimmNavItem, ZimmTextInput, and ZimmLogo to use cssVars/cssTextStyles
+     instead of resolved JS token literals — so the browser DevTools element inspector shows
+     var(--zimm-color-text-inverse) rather than rgb(255,255,255), and likewise for spacing,
+     typography, border, and motion tokens.
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+10 7fcb5b5f | refactor(ui-kit): migrate atoms to cssVars and complete token coverage
+     - ZimmButton: replace all direct foundation imports (colors, spacing,
+       textStyles, actionSizes, borderWidths, motion) with cssVars/cssTextStyles
+     - ZimmNavItem: replace hardcoded outlineOffset literal with
+       cssVars.focusRingOffset.default
+     - footer: fix mobile horizontal padding from spacing.l (20px) to
+       spacing['2xl'] (32px) to match Figma alias/space/800 (3 sections)
+     - cssVars: add focusRingOffset, actionSize, cssTextStyles.button/buttonSm;
+       fix font-family for navigation/caption/footer text styles (heading not body);
+       add letterSpacing['2xs'], spacing 6xl/7xl; complete opacity (40/30/15),
+       background (01-04), status (success/storeClosed), link, and iconSize groups
+11 1cb7391b | fix(ui-kit): remove non-Figma CSS properties and align token usage wi…
+     …th foundation
+     
+     - ZimmButton: remove borderRadius, minWidth, overflow not present in Figma spec
+     - ZimmNavItem: remove redundant lineHeight override now consistent via cssTextStyles preset
+     - Footer: drop redundant lineHeight override on labelStyle; replace hardcoded outline-offset with focusRingOffset token
+     - cssVars: document lineHeight/normal gap pending Tier 1 correction in typography.ts
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+12 565281d4 | fix(ui-kit): align atoms to Figma tokens and switch nav underline to …
+     …border-b
+     
+     - zimmNavItem: replace text-decoration+text-underline-offset with borderBottom on inner span (Figma border-b solid); switch outer from padding:8px to height:cssVars.spacing.xl (Figma h-[24px]); remove TEXT_UNDERLINE_OFFSET constant; add not-in-Figma comments on cursor, outline, reset properties
+     - zimmTextInput: remove FOCUS_BORDER_WIDTH/FOCUS_PADDING_BOTTOM (not in Figma); apply spacing tokens for top:3xs, height:l, minWidth/minHeight:xl; drop hardcoded lineHeight:12px from FIELD_LABEL
+     - zimmLogo: apply Figma-confirmed height:39px and overflow:clip (was height:auto)
+     - footer: update site-map ZimmNavItem from minHeight+padding:0 workaround to height:auto; add height:auto+padding:xs 0 on legal links for Figma Small/Default py-8px state
+13 65cd289e | fix(footer): resolve nav font-family drift, add uppercase on site-map…
+     … links, and tokenise column width
+     
+     - ZimmNavItem: override cssTextStyles.navigation heading family with
+       cssVars.font.family.body — Figma Default/Navigation binds
+       brand/font/family/body, not heading/medium
+     - Footer site-map ZimmNavItem calls: explicitly pass
+       textTransform:'uppercase' via style prop (makes Figma intent visible
+       at call site rather than relying on cssTextStyles spread alone)
+     - cssVars.spacing: expose '3500' → var(--zimm-scale-3500) to surface
+       the 140px numeric alias from zimmTokens
+     - FIXED_COL_WIDTH: replace hardcoded '140px' with cssVars.spacing['3500']
+       — last unresolved spacing literal that had a matching token
+14 6061d68f | fix(ui-kit): replace programmatic focus with userEvent.tab() in ZimmN…
+     …avItem KeyboardFocus story
+15 dc86c131 | refactor(ui-kit): migrate ZimmButton to Chakra Button+button.ts and r…
+     …esolve rule violations
+     
+     - Add primaryInverse, secondaryInverse, icon, iconInverse variants and icon size to
+       button.ts so all interaction states (hover, press, focus, disabled) live in CSS
+       pseudo-props, not React state
+     - Rewrite ZimmButton: remove useState for hovered/pressed/focused, delegate to
+       ChakraButton (label variants) and IconButton (icon variant) styled by button.ts
+     - Fix WCAG 2.2 AA SC 2.4.7 gap: replace plain <button> clear control in ZimmTextInput
+       with chakra.button + _focusVisible sx
+     - Move atoms/molecules from ui-kits/atoms|molecules to components/ui-kits/<name>/
+       to align with conventions.md folder layout
+     - Fix footer logo alignment: remove shared padding from .zimm-footer-main, give
+       each sibling (zimm-footer-content-row and zimm-footer-logo) its own padding per
+       Figma node structure
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+16 3c91b09a | fix(ui-kit): replace ZimmIcon px size union with iconSizes keys and r…
+     …emove :root injection from footer
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+17 39ad4953 | refactor(ui-kits): organise components into atoms/ and molecules/ sub…
+     …directories
+18 3a37a4cd | refactor(footer): extract provisional values to _foundation, wire foo…
+     …ter.ts theme config, and annotate ui-kit atoms
+     
+     - Replace scattered hardcoded rem/rgba/em values in footer with a _foundation
+       constant object; keys mirror Figma alias token paths for a mechanical migration
+       when the UI designer confirms each token in foundation/
+     - Trim footer.ts to 3 parts (container, bottomBar, localeButton); connect via
+       useMultiStyleConfig — footer/index.tsx now uses chakra.footer / chakra.div /
+       chakra.button so colours and localeButton interactive states (including
+       _focusVisible) come from the theme config rather than inline styles or raw
+       :focus-visible selectors in FooterStyles
+     - FooterStyles retains sole ownership of all @media layout CSS; no duplication
+       with the theme config
+     - Add provisional §7-raise annotations to zimmLogo constants; tighten cssVars
+       decorator backgrounds in zimmButton, zimmNavItem, zimmTextInput, and
+       zimmInputAction stories
+19 5bee3591 | fix(footer): guard ContactIconRow against missing hrefs and close SAF…
+     …E_HREF_RE protocol-relative bypass
+     
+     - ContactIconRow now accepts optional phoneHref/whatsAppHref/emailHref props;
+       each icon renders as a live <a> when a Contentful href is present, or an inert
+       <span aria-hidden> when absent — layout unchanged, no broken links reachable
+       by keyboard or assistive tech until HPC-034 supplies real values
+     - Tighten SAFE_HREF_RE in ZimmNavItem with a negative lookahead (\/(?!\/)) to
+       reject protocol-relative URLs (//attacker.example) that previously passed the
+       allowlist as apparent same-origin paths
+20 7ac46e3a | fix(a11y): replace text.muted with text.secondary in subscribe modal …
+     …and fix ZimmLogo story label contrast
+21 b231f068 | refactor(footer): migrate layout to footer.ts theme config and fix su…
+     …bscribe state machine
+     
+     Moves all responsive layout CSS out of the inline FooterStyles <style> tag into
+     footer.ts (useMultiStyleConfig), removing the !important injection-order guards.
+     Replaces className-based divs with chakra.* elements consuming __css={styles.*}.
+     
+     Subscription flow no longer sets subscribed=true with no API call. Introduces a
+     SubmitState discriminated union ('idle'|'unavailable'|'success'|'error'): the
+     modal submit now sets 'unavailable' until HPC-036 (Omneo) lands. Email is
+     retained in a useRef for the future Omneo POST.
+     
+     Fixes copyright alignment in the bottom bar: removes the copyright wrapper div
+     and the display:contents trick on legalGrid (unreliable in Emotion __css @media
+     blocks). Copyright <span> is now a direct flex sibling of legalGrid, matching
+     the Figma flat Legal row structure.
+22 77dacd61 | fix(footer): update SubscribeSubmit story assertion to match unavaila…
+     …ble state
+23 8aec89ba | fix(footer): address CodeRabbit PR-55 review findings
+     - Add phoneHref/whatsAppHref/emailHref to FooterConfigEntry and wire into ContactIconRow
+     - Add SubscribeModalOpen, SubscribeEmailValidation stories; update SubscribeSubmit assertion
+     - Add EmptySubmitValidation and InvalidEmailValidation stories to ZimmInputAction
+     - Extend ZimmNavItem PlaceholderButton story with unsafe-href button-fallback cases
+     - Add OPACITY_ICON_HOVER/DISABLED constants and ICON_TRANSITION to button.ts icon variants
+     - Fix generateRegistry extractTsProps leaking internal sub-component props; regenerate registry
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+24 fe8bfec1 | refactor(ui-kit): replace cssVars/cssTextStyles with raw var(--zimm-*…
+     …) strings
+     
+     - Remove all cssVars/cssTextStyles imports from footer, atoms, stories, and
+       useZimmTextInputState hook; replace every reference with the equivalent
+       raw var(--zimm-*) CSS custom property string
+     - Clean cssTextStyles presets in cssVars.ts to use raw var() strings
+       internally (no longer self-referencing cssVars)
+     - cssVars.ts now has zero consumers across overrides/
+25 8ebd9c6c | fix(footer): address CodeRabbit second-pass review findings
+     - Add native `disabled` to locale button placeholder so it is removed
+       from the tab order (aria-disabled alone was insufficient)
+     - Fix stale footer.ts comment referencing removed _foundation.breakpoints
+     - Fix generateRegistry.mjs lineRe regex to preserve commas inside generic
+       type params (e.g. React.MouseEvent<A, B>) instead of truncating at first comma
+     
+     Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+26 fe128fdd | fix(registry): scope prop extraction and escape Markdown table cells
+     extractTsProps merged every *Props block in a file, so footer/index.tsx's
+     SubscribeModalProps and BottomBarProps leaked isOpen/onClose/copyrightOwner
+     into the Footer registry row. It now prefers <ComponentName>Props and falls
+     back to merging only when a file does not follow that convention.
+     
+     Also escapes | in free-text table cells (union types like 'button' | 'submit'
+     were shifting every later column) and marks truncated prop types with an
+     explicit ellipsis instead of cutting mid-token.
+     
+     BASE_CACHE_SCHEMA bumped to 3: a cache written by the previous extractor holds
+     merged props for base components and must be discarded.
+27 34486eb2 | feat(theme): self-host Futura Round for development and testing
+     foundation/fonts.ts already lists 'Futura Round' first in both stacks, so the
+     @font-face declaration is the only thing that makes it resolve — no component,
+     recipe or token changes. Only two faces ship because only two are used: all 22
+     textStyles resolve to fontWeight 400 or 500, and fonts.body === fonts.heading.
+     
+     fontFace.tsx resolves the bundle-prefixed asset root synchronously. It
+     reimplements two lines of getAssetUrl rather than importing it: that helper
+     pulls in ssr-config (cosmiconfig/fs), and importing it lazily cannot work
+     because the css`` template is evaluated at module-init, so every URL would
+     silently lose its bundle prefix and fall back to the system font.
+     
+     The fallback stack renders roughly 13% wider, which is why serving the real
+     faces matters for design-parity review against Figma.
+     
+     Tier 1 files touched, approved by a tier-1-approver (GitHub identity verified):
+       .storybook/main.js       — staticDirs mapping so fonts resolve in Storybook
+       .storybook/preview.tsx   — mounts ZimmFontFace, mirroring _app-config
+       .claude/rules/frozenFiles.md — records the self-hosted fonts
+     
+     L
+28 78f22362 | refactor(ui-kit): replace cssVars/cssTextStyles with raw var(--zimm-*…
+     …) strings
+     
+     The cssVars object was an indirection over strings that are already the public
+     contract: --zimm-* custom properties defined on :root by zimmTokensGlobal. A
+     recipe reading cssVars.font.size['3xs'] and one reading 'var(--zimm-font-size-3xs)'
+     emit identical CSS, but the former hides which variable is in play at the point
+     of use and needs a second lookup to review. Every consumer now names the variable
+     directly, and utils/cssVars.ts is deleted rather than left orphaned.
+     
+     ZimmNavItem's baseStyle moves height to minHeight and whiteSpace to normal so
+     "ACKNOWLEDGEMENT OF COUNTRY" wraps from the recipe instead of an inline style
+     override at the call site.
+29 32202391 | refactor(zimm-text-input): move colour derivation from the hook into …
+     …the theme recipe
+     
+     useZimmTextInputState was deriving border and label colours itself, which put
+     Figma's colour cascade in a hook while every other visual decision for the
+     component lived in its recipe. resolveBorderColour, resolveHoverBorderColour and
+     resolveLabelColour now live in theme/components/zimmTextInput.ts, and the hook
+     returns only interaction state (focused, filled, hasError).
+     
+     The recipe is the single styling surface for the component, so a variant or
+     state added later cannot disagree with the hook about what colour applies.
+30 e950e6eb | feat(footer): global footer UI with ZimmFooter recipe and Contentful-…
+     …shaped data
+     
+     The recipe is registered as ZimmFooter, not Footer: extendTheme deep-merges, so
+     a recipe sharing a name with an SFCC base recipe inherits it rather than
+     replacing it. Under the old name the copyright rendered at 14px instead of 10px
+     and the subscribe heading lost its 24px gap.
+     
+     Footer takes its content as a required prop and fetches nothing; FooterContainer
+     supplies FOOTER_FIXTURE. Contentful is a later sprint, so the fixture keeps the
+     component renderable for static-first build and review, and the data shape is
+     already the one the CMS will deliver.
+     
+     Declared for review:
+       - Provisional constants (SPACE_SECTION, SIZE_COL_* and friends) carry their
+         Figma alias in a comment; they are rem where the matching --zimm-scale-NNN
+         alias is px, which would not scale under browser zoom (WCAG 1.4.4).
+       - The Acknowledgement label binds "of Country" with a non-breaking space so it
+         wraps as Figma shows. No shared column max-width can do this and also keep
+         "Book an Appointment" on one line — the viable window is 1.9px.
+       - Subscribe column is 21px taller than Figma; the two 
+31 3ba238ea | test(theme): add recipe guards and text-input colour coverage
+     recipeGuards.test.ts covers three failure modes that produce plausible-looking
+     CSS rather than an error, so nothing else would catch them:
+     
+       - a spacing-scale key on a sizing prop. width/height resolve through
+         theme.sizes, not theme.space, and Chakra's default sizes.xl is 36rem — a
+         bare 'xl' rendered each 24px contact icon at 576px.
+       - a bare scale key inside a compound shorthand. Chakra only resolves a token
+         as the entire value, so padding: 'xs 0' is emitted verbatim and dropped.
+       - a recipe silently inheriting a base SFCC recipe of the same name.
+     
+     Each guard was verified by mutation: reintroducing the defect fails that guard
+     and nothing else. Button, Header and ListMenu are listed as intentional merges.
+     
+     zimmTextInput.test.ts covers the Figma colour cascade, which moved out of
+     useZimmTextInputState and into the recipe — a mis-ordered branch there renders
+     a plausible-but-wrong border with no type or build error.
+32 733a4ac0 | style(icons): apply Prettier formatting to zimm icon paths
+33 77042f87 | docs(header): explain the disabled base SFCC icon-button block
+     AccountIcon, HeartIcon and IconButtonWithRegistration read as dead imports.
+     They serve the commented-out base SFCC icon-button block, disabled at copy-first
+     and superseded by the Account | Saved | Bag text buttons the Zimmermann design
+     uses. HPC-018 requires Search / Account / Bag in the header; Account ships as
+     text, so nothing is missing. Kept as a reference to the base implementation, per
+     AGENTS.md's rule on commented-out code.
+     
+     Comments only — no functional change.
+34 91ac5225 | fix(button): keep the icon transition at 0.15s instead of the 200ms m…
+     …otion token
+     
+     The upstream change routed the icon variants through --zimm-motion-duration-fast,
+     which measures 0.2s in the browser against the previous 0.15s. baseStyle's own
+     comment records the opposite decision — "0.15s matches no motion token (fast
+     200ms / default 300ms) — left as-is pending the UI designer's confirmation rather
+     than retimed silently" — and retiming only the icon variants would leave this file
+     running two different durations.
+     
+     OPACITY_ICON_HOVER/DISABLED are kept as-is: verified to emit identical values, and
+     they remove two magic numbers used twice each.
+     
+     Open for the UI designer: whether icon transitions should move to the 200ms token.
+     If so, baseStyle and the icon variants move together and this constant becomes the
+     token version.
+35 0183c852 | feat(footer): wire Contentful contact hrefs through to ContactIconRow
+     ContactIconRow already accepted phoneHref/whatsAppHref/emailHref but the call site
+     passed none of them, so the three contact icons rendered as inert <span> elements
+     with no destination. FooterConfigEntry gained the fields upstream; this connects
+     them.
+     
+     No visible change today — the fixture carries no values, so the icons stay
+     decorative and degrade exactly as before. Once Contentful supplies them they
+     render as focusable <a> (tel:, wa.me, mailto:), verified locally.
+     
+     Note for when that happens: phase 3's "contact icons are not focusable" assertion
+     currently encodes the unwired state as correct and will need rewriting rather than
+     weakening.
+36 ec5bf9bb | test(ui-kit): cover unsafe-href fallback and input-action validation
+     SAFE_HREF_RE had no test anywhere in the repo, despite e9c2180 closing a
+     protocol-relative bypass in it. PlaceholderButton now exercises all four rejection
+     cases — omitted, javascript:, data:, and // — asserting each falls back to <button>
+     with no href. Mutation-verified: removing the (?!\/) lookahead fails it, and so
+     does allowing javascript:.
+     
+     The two ZimmInputAction stories cover the negative validation paths and, more
+     importantly, assert onSubmit was not called — proving the handler is blocked rather
+     than merely that an error appeared. Mutation-verified against three defects:
+     dropping either guard, and the silent-submit case where the error renders but
+     onSubmit fires anyway.
+     
+     Both run in CI via qa.yml's storybook-test job, which triggers on
+     overrides/app/components/**.
+37 3d4d65cc | fix(footer): stop the About column reserving width its content does n…
+     …ot use
+     
+     Every site-map column is meant to hug its content, with the gaps between them
+     absorbing the remainder — Contact measured 135px against a 131px longest line and
+     Help 105.6px against 105.6px. About sat at 160px against a 115px longest line,
+     45px of dead space that pushed Contact right and made the row look lopsided
+     against Figma.
+     
+     The cause is that a wrapped element takes the width available to it, not the width
+     of its longest line, so the Acknowledgement item filled linkCol's 160px cap.
+     width:min-content resolves instead to the widest unbreakable run, which the
+     non-breaking space in that label makes exactly "ACKNOWLEDGEMENT" (115px), leaving
+     the two-line wrap intact.
+     
+     It is applied per instance rather than in the recipe because it is only correct for
+     a label whose break is deliberate. On a single-line label it collapses to the
+     longest word and wraps it — "Book an Appointment" goes 131px to 76px over two
+     lines. Keying it off the NBSP ties the sizing to the same signal that already marks
+     the break as intentional.
+     
+     About 160 -> 115px, slack 45 -> 0, gaps 99.7 -> 122.2px. Wrap ve
+38 c3d05eae | fix(footer): align the bottom bar gutter with the content above it on…
+     … tablet
+     
+     contentRow and the logo area both step their horizontal padding from 2xl (32px)
+     to 3xl (40px) at BP.tablet. bottomInner held 2xl until BP.desktop, so across the
+     whole 768-1023px band the bottom bar was inset 8px less than everything above it —
+     the locale control and the legal links sat left of the subscribe column and the
+     logo, on both edges.
+     
+     Measured left inset, subscribe column vs locale control:
+     
+       1440   40 / 40    aligned
+       1200   40 / 40    aligned
+       1023   40 / 32    -8
+        900   40 / 32    -8
+        768   40 / 32    -8
+        700   32 / 32    aligned
+        375   32 / 32    aligned
+     
+     They already agreed at desktop and at mobile, so alignment was the intent and the
+     breakpoint was simply the odd one out. Now aligned at every width.
+39 c3f6982a | feat(icons): add the four Zimmermann chevrons and stop re-exporting t…
+     …he base ones
+     
+     ZimmIcon's type union declares chevron-down/left/right/up, but zimm.tsx defined
+     none of them, so all four resolved to the base template's chevron — a filled glyph
+     where the design system draws a 1px stroke. It rendered in the footer on the
+     subscribe submit and the locale control, visibly heavier than the stroked icons
+     beside it.
+     
+     Geometry is taken from Figma nodes 40002082:49961 (down), 40002128:29217 (up),
+     40002182:52555 (left) and 40002182:52552 (right). All four export the identical
+     path — the design system draws one glyph and rotates it, and the export strips the
+     rotation — so they are reproduced as that polyline at each of the four rotations
+     about the centre of a 24x24 box. The node footprints Figma reports confirm it:
+     15x6 for down/up, 6x15 for left/right.
+     
+     viewBox is 24 rather than this file's usual 20 because that is the frame the design
+     system draws them in, confirmed by Icon_chevron_down returning as a 24x24 symbol
+     with the vector inset at x 4.5-19.5, y 9-15. No strokeWidth, linecap or linejoin
+     are set: Figma specifies none, so the SVG defaults are the faithful reprodu
+40 00ab6501 | fix(zimm-text-input): make the clear control opt-in, defaulting off
+     The clear-x rendered unconditionally once a field had a value, so the footer's
+     subscribe field showed two trailing controls — the clear and the submit chevron
+     that ZimmInputAction injects through `trailing`. Figma shows one.
+     
+     Nothing asked for it. The extracted TextfieldV2 spec defines a `trailing-icon`
+     attribute and no `clearable`, and SFCC-55's AC specifies the Stay in Touch section
+     as "an email input field and submit button" — two controls, not three. It was added
+     on the belief that Figma's footer glyph was an x; Kiera confirmed on 2026-08-20
+     that it is the submit chevron, which `trailing` now carries, but the x was never
+     removed.
+     
+     Kept as opt-in rather than deleted: a clear affordance is reasonable on a text
+     input atom — a search field would want one — it just should not be the atom
+     imposing it on every consumer. No consumer opts in today, so the subscribe field
+     and the modal's two name fields all render without it.
+     
+       subscribe, empty       ["Subscribe"]
+       subscribe, with value  ["Subscribe"]     was ["Clear input", "Subscribe"]
+       modal clear buttons    0
+     
+     The recipe's clearButt
+41 b1d137a8 | style(theme): drop the stray trailing newline in foundation/sizes.ts
+     d83d20c added a blank line at the end of the file, which Prettier rejects — it was
+     the only ESLint error on the branch. Removing it brings the file back to matching
+     develop exactly; `git diff origin/develop -- overrides/app/theme/foundation/sizes.ts`
+     is now empty.
+     
+     Whitespace only. No token, scale or value is touched.
+     
+     foundation/sizes.ts is Tier 1 (Design System, UI-designer owned). Committed by a
+     verified member of @ZimmermannAU/tier-1-approvers per AGENTS.md's Tier 1 Approval
+     process. CODEOWNERS will still route the file for review on the PR.
+42 2dd5e137 | test(zimm-text-input): split the clear-control stories across both si…
+     …des of clearable
+     
+     The Filled story asserted a clear button was present and clickable, which the
+     opt-in change removed — it failed in CI (1 of 73) after passing locally, because
+     I ran Vitest but not test-storybook.
+     
+     Filled now covers the default: a value present, and queryByRole confirming no clear
+     control appears. That is the state the footer's subscribe field relies on to show
+     the submit chevron alone. Clearable carries the original assertions with the prop
+     opted in, so both sides of the flag are exercised rather than the old behaviour
+     simply being restored.
+     
+     I had reported that no story referenced the clear button. That was wrong — I grepped
+     for the literal aria-label "Clear input" and the story matches on /clear input/i,
+     so a case-sensitive search found nothing.
+43 006e1f65 | fix(zimm-nav-item): derive item height from line-height and padding, …
+     …not centring
+     
+     Spacing came from minHeight 24px plus align-items:center. Centring only distributes
+     what a single line leaves over, so a wrapped label overflowed the floor and lost its
+     leading entirely — the first line of "ACKNOWLEDGEMENT OF COUNTRY" sat flush against
+     the item above it while every other item had 4.5px above its text.
+     
+     Figma's Site Map (node 40000407:11736 > About Section > Links) allows equal space
+     above and below the text and lets the height follow the line count:
+     
+       footer-item  y=0    60 x 24
+       footer-item  y=24   82 x 24
+       footer-item  y=48   47 x 24
+       footer-item  y=72  107 x 24
+       footer-item  y=96  118 x 38   <- two lines
+     
+     Its text boxes are cap-height (8px for one line, 22px for two) where a browser line
+     box is not, so the rule transfers rather than the numbers. The inner span reserves
+     1px for the underline indicator, so one line measures 15px and two measure 29px;
+     lineHeight 14px with 4.5px each side yields 24 and 38 exactly. Column items now total
+     134px, matching Figma's Links frame.
+     
+     Also changes `padding: 0` to `paddingInline: 0`. The shorthand sa
+44 f664f59f | refactor(security): extract isSafeHref into a shared util with coverage
+45 fce5af18 | feat(footer): activate contact channels with href validation and new-…
+     …tab handling
+46 cc9a8f1c | fix(footer): correct the locale placeholder label for the served stor…
+     …efront
+47 ea2f03e2 | feat(footer): make the wordmark navigate home like the header's
+48 7e1c0815 | test(theme): cover fontFace asset resolution and clear mocks between …
+     …input-state tests
+49 706e47d8 | fix(registry): resolve descriptions against the row's own declaration
+50 712065f8 | fix(registry): escape angle brackets outside code spans and match ext…
+     …ended Props types
+     
+     escapeCell only escaped the pipe. Bare angle brackets are the same hazard — GitHub parses
+     `Array<Foo>` in a table cell as raw HTML and drops it, so `React.Ref<HTMLInputElement>`
+     rendered as `React.Ref`. Escaping them blanket would have been a regression: inside a code
+     span GFM already shows `<` literally and does not decode entities, so `` `<picture>` ``
+     would have rendered as visible `&lt;picture&gt;`. Verified with a GFM parser — 4 of the 8
+     real occurrences are inside backticks. Splitting on the code-span pattern escapes only the
+     bare ones.
+     
+     extractTsProps' block regex allowed only whitespace or `=` between the type name and its
+     opening brace, so `extends BoxProps` and `= BoxProps &` matched nothing and the
+     preferredTypeName lookup fell into the merge-everything fallback it exists to prevent.
+     Button and PageContainer were emitting an empty props cell; ZimmButton was silently
+     dropping two variant types.
+     
+     Also re-indents the two-pass loop added in 706e47d, whose body was never shifted, leaving
+     the closing braces stacked. Generator output is byte-identical, and nothing lints .mjs
+51 2c4ab7ab | refactor(footer): replace type assertions with honest signatures on t…
+     …he guard path
+     
+     Four uncommented `as` casts, all on branches that matter.
+     
+     isSafeHref returns a plain boolean, which carries no narrowing, so the contact row had to
+     re-assert `href as string` inside the branch the guard had already proved — on the line that
+     decides `rel="noopener noreferrer"`, the attribute that stops the storefront URL reaching
+     WhatsApp in the Referer header. A `href is string` predicate was tried and rejected as
+     unsound: `javascript:void(0)` is a string that returns false, so the else branch would
+     narrow to `undefined`. Widening leavesTheSite makes no narrowing claim at all and leaves
+     safeHref's shared contract untouched.
+     
+     ZimmNavItem's two `as React.MouseEventHandler<...>` casts were never needed — parameter
+     contravariance already allows a union-typed handler where an element-specific one is
+     expected; verified by deleting them. They were live suppressions on the prop's only wiring
+     point: narrowing ZimmNavItemProps.onClick to one element would no longer fail to compile.
+     
+     namedItem keeps `| null` rather than asserting it away, so the `?.` that follows has
+     something real to ca
+52 0269957f | refactor(footer): reattach detached comments, name the recipe key, dr…
+     …op dead state
+     
+     Three comments had drifted from their subjects, each introduced earlier on this branch:
+     
+     - zimmTextInput's `clearable` docblock was inserted between `trailing`'s docblock and
+       `trailing` itself, so `trailing` had no doc in editors and the first block dangled.
+     - footer.ts's `logoButton` part was added between the 13-line Figma comment for `logo` and
+       `logo`, so the mobile inset-divider rationale read as documentation for a button reset.
+       logoButton now sits after logo; the recipe still resolves 34 parts to 34 baseStyle keys.
+     - footer/index.tsx's subscribe-heading note ended mid-sentence and described values that had
+       moved to footer.ts. Completed from what subscribeHeading actually sets.
+     
+     types/contentful.ts pointed at scripts/contentful/content-types/footer.js, which does not
+     exist — only shoppableImage.js is there. The real mirror is contentfulSchema.placeholder.ts.
+     
+     'ZimmFooter' was written at five call sites; a typo in any of them yields an empty style
+     object rather than an error, so it is now a named constant.
+     
+     useZimmTextInputState returned a `floated` flag no consumer
+53 8cdc1f2a | feat(footer): extract dialog mechanics into useSubscribeModal with pl…
+     …ay coverage
+     
+     SubscribeModal held four effects, three with cleanup functions, plus a focus-trap callback —
+     past components.md's extract-to-hook threshold and ~143 lines. The mechanics (mount gating,
+     focus save/restore, body-scroll lock, Escape/Tab trap) touch no JSX, so they move out whole
+     and the component keeps its markup and recipe lookup. Effect order and dependency arrays are
+     preserved exactly: focus restore depends on running after the open-effect's cleanup.
+     SubscribeModal is now 77 lines.
+     
+     Mutation testing during the extraction found the behaviour had no CI coverage at all —
+     breaking the focus-into-modal setTimeout and breaking Escape-to-close each passed the full
+     Storybook suite. Only a throwaway Playwright script caught them. SubscribeModalOpen now
+     asserts focus entry, Escape dismissal and focus restore; all three mutations fail it.
+     
+     Two further gaps closed in the same file:
+     
+     - No committed assertion covered the contact row's target/rel treatment. Default now asserts
+       that the http(s) channel opens a new tab with rel="noopener noreferrer" and says so in its
+       accessible name (WCAG 3.
+54 52e5f188 | refactor(footer): descope the HPC-035 name-capture modal behind an op…
+     …t-in prop
+     
+     SFCC-55's AC scopes the Stay in Touch section to "an email input field and submit button as a
+     placeholder component", and the story defers the Omneo sign-up and states the footer is built
+     "without any content behind the different links and buttons". A modal collecting names to POST
+     to Omneo is content behind a button.
+     
+     The modal itself is a real requirement — HPC-035 and HPC-037, both confirmed in
+     .docs/prd/homepage.md §6 — but it belongs to that flow, not to this story's AC, and it has no
+     design: all nine of its theme parts carry no Figma node reference, against 27 Figma-referenced
+     parts elsewhere in footer.ts. Shipping it would put undesigned UI on eight storefronts and give
+     QA a layout the designer never signed off; the 2 July note on the story records Dani's design
+     sign-off as still pending.
+     
+     So enableNameCapture defaults to false and the modal is not mounted. Submitting a valid email
+     resolves straight to the placeholder message, which is what the AC describes. The email is
+     cleared from the pending-signup ref on that path — nothing was sent, so nothing needs retaining.
+     
+     The mod
+55 9ec0740d | fix(footer): reserve the subscribe control slot so the result message…
+     … cannot shift the layout
+     
+     Submitting an email grew the footer 490 → 512. The field and the message are built differently —
+     the form is 45px (36px content + 4/4 padding + 1px border) while the message was 68px (36px of
+     wrapped body2 plus its own 16/16 padding) — and nothing reserved the slot, so the 23px difference
+     propagated: slot 45 → 68, subscribe column 163 → 186, footer +22.
+     
+     Figma's success state (node 4019:46044) keeps a Textfield instance at 320x59 at the same y=82 and
+     the footer stays 476 in both states: the message is a state of the field, occupying the field's
+     box, not a paragraph with padding of its own. So the slot is now reserved and the message no
+     longer supplies vertical padding.
+     
+     Both halves are load-bearing, which the measurements only showed at mobile. Dropping the padding
+     alone appears to fix it at desktop and tablet — the message becomes shorter than the field, so the
+     column shrinks 9px and the taller site-map column keeps the row height unchanged. On mobile the
+     columns stack and the footer moves. Verified Δ0 on footer, content row, column and slot at 1440,
+     768, 375 and 320, with no
+56 af87b5b7 | docs(fonts): reconcile six font statements that contradicted the code
+     Futura Round has been self-hosted since 34486eb, but six places still described the opposite
+     or claimed a restriction nothing implements. A reader following any of them would reach the
+     wrong conclusion, and one was actively steering designers away from the review the fonts were
+     added to enable.
+     
+     - .claude/rules/frozenFiles.md said "self-hosted for development and testing". There is no
+       environment gate: ZimmFontFace mounts unconditionally inside _app-config's ChakraProvider,
+       and pwa-kit-dev's staticFolderCopyPlugin copies overrides/app/static in both the client and
+       SSR webpack configs, so the .woff2 publish with every bundle. Now says so explicitly,
+       because the previous wording implied a gate that does not exist.
+     - overrides/app/theme/foundation/fonts.ts asserted the inverse of reality — "not self-hosted,
+       the Monotype licence forbids it, so the fallback is what customers actually render".
+     - overrides/app/components/foundation/typography.stories.tsx told designers not to sign off
+       brand type there because specimens render the fallback. .storybook/preview.tsx mounts
+       ZimmFontFace, so they render the real
+57 c6fda369 | fix(a11y): give the icon button a 24px minimum target size
+     SFCC-55's only accessibility note names this control: "the minimum size of that email sign up
+     button is taken into consideration for accessibility purposes." Measured, it rendered 16x16 —
+     the icon's own boxSize — and was the sole footer control under WCAG 2.2 AA SC 2.5.8's 24x24
+     floor. Contacts, locale, wordmark and nav links all already passed.
+     
+     The floor had been written twice and reached neither the right element nor a working property:
+     
+     - zimmTextInput.ts's clearButton carries minWidth/minHeight 24px under a correct SC 2.5.8
+       citation, but clearable is opt-in and has no consumer, so that control never renders. The
+       {trailing} slot holding the real submit button had no styles at all.
+     - button.ts's sizes.icon set `p: 'xs'`, which reads as a 32x32 target. Chakra's IconButton
+       hard-sets `padding: "0"` as a *style prop*, and style props merge after __css, so every
+       p/px/py declared there is silently discarded. Removed rather than left in place — it looked
+       like it was working, which is why the gap survived review.
+     
+     Fixed with minW/minH on the same token the sibling clearButton uses. `var(--zimm-scale-xl)
+58 31b35fb1 | fix(theme): scale the field content height with the root font-size
+     FIELD_CONTENT_HEIGHT was 36px. footer.ts's SIZE_SUBSCRIBE_SLOT (2.8125rem) documents itself as
+     derived from it — "36px content + 4px/4px padding + 1px border" — and chose rem so the reserved
+     slot scales under zoom (WCAG 1.4.4). Freezing the content half in px broke that the moment the
+     root font-size moved: at 200% the slot reached 90px while the field reached only 53px, a 37px
+     divergence, because the padding scaled and the content height did not.
+     
+     In rem the derivation holds at every zoom level: at 200%, 72 + 16 + 1 = 89px against a 90px
+     slot, the 1px residue being the deliberately-px border.
+     
+     Worth being precise about the consequence, because it is not a rendering bug: both states stayed
+     under the slot at every zoom, so the no-layout-shift guarantee held either way. What was broken
+     was the derivation, and therefore the accuracy of the comment describing it — over-reservation,
+     not clipping.
+     
+     theme/components/ is Tier 2 (UI designer) and SIZE_SUBSCRIBE_SLOT is already annotated
+     PROVISIONAL pending Kiera; this value should ride along with that sign-off rather than land
+     silently, which the comment now reco
+59 e686bd36 | test(theme): make the recipe guards fail on empty input and see respo…
+     …nsive forms
+     
+     Three changes, the first of which is the reason for the other two.
+     
+     All four existing guards assert `expect(offenders).toEqual([])`, and an empty input satisfies
+     that exactly as well as a clean one. Stubbing the components map to {} left every test green —
+     verified — so four regression guards written from four shipped defects could have stopped
+     checking silently. A collect()-is-non-empty precondition fixes that. A `> 0` floor rather than
+     pinned counts: during this work a sibling change registered a recipe and the measurement moved
+     441 entries / 6 recipes to 453 / 7, so a pinned number would already be red.
+     
+     walk() reported the leaf key as `prop`, making responsive forms invisible: `width: 'xl'` and
+     `_hover: {boxSize: '2xs'}` were caught, `width: ['xl','2xl']` and `width: {base:'xl'}` were not
+     — which are exactly the shapes overrideStyling.md teaches. Carrying the last key forward fixes
+     only the array case, because `base`/`md` are not numeric indices; detecting a responsive
+     *container* handles both. The all-keys-are-breakpoints test is load-bearing: `xl` and `2xl` are
+     keys in breakpoints *a
+60 4f4b97f2 | test(footer): cover the modal focus trap and scroll lock, and harden …
+     …two assertions
+     
+     useSubscribeModal's Tab trap and body-scroll lock had no coverage anywhere — the most intricate
+     logic in the file. Mount, focus-into-first-field, Escape and focus-restore were already
+     asserted; the trap's wrap directions, its disabled filter, and the overflow save/restore were
+     not.
+     
+     Split by what each layer can actually reach. A play covers both wrap directions and the scroll
+     lock: user-event dispatches a cancelable bubbling keydown, the hook's document-level listener
+     calls preventDefault, and user-event then skips its own focus move — so the trap's focus() is
+     the only one observed. Nothing in SubscribeModal is ever disabled, so line 82's filter is
+     unreachable from a story; a unit test supplies a synthetic disabled control at both ends of the
+     focus order, where an unfiltered trap would wrap to the wrong element in either direction. A
+     third case covers the scroll lock restoring a non-empty prior value, which a story only ever
+     sees as ''.
+     
+     Mutation-tested, and the matrix is orthogonal — each assertion is killed by exactly the mutation
+     it targets: an early-returning Tab branch fails t
+61 52b8ac19 | refactor(ui-kit): drop a cast justified by a false claim, and freeze …
+     …the CMS arrays
+     
+     ZimmIcon carried two `as` casts under the comment "TypeScript cannot index a discriminated
+     union type directly — each branch must be cast individually". That is not true: both keys exist
+     in every member of the union (one required, one optional-never), so the rest object indexes
+     directly. Deleting the casts compiles clean. They also widened 'aria-hidden' from
+     `true | undefined` to `boolean | undefined`, losing literal precision for nothing.
+     
+     Being precise about severity, since an earlier reading of mine overstated it: the casts did NOT
+     weaken the XOR. That is enforced by the parameter annotation, which a body-local cast cannot
+     reach — all four invalid call sites are still rejected with the casts present, verified. So this
+     was a false explanatory comment plus needless imprecision, not a safety hole. The comment is
+     replaced rather than deleted, because "add a cast here" is exactly what a future reader would
+     reintroduce.
+     
+     FooterNavGroupEntry.links, FooterConfigEntry.navGroups and .legalLinks are now readonly
+     ReadonlyArray. The footer only maps over them — an exhaustive search for mutation m
+62 f8d2f752 | docs(fonts): drop the licence open-item text and depersonalise a bran…
+     …ch reference
+     
+     Removes the Monotype entitlement open-item wording added in af87b5b, in four source files:
+     
+     - .claude/rules/frozenFiles.md — the "Open item — Monotype entitlement" block
+     - overrides/app/theme/foundation/fonts.ts — the trailing entitlement sentence
+     - .docs/architecture.md — the entitlement clause
+     - .docs/memory/projectState.md — the entitlement clause
+     
+     The factual statements stay: the fonts are self-hosted, mounted unconditionally, and served on
+     every tier, with no environment gate. Those were the contradictions worth fixing, and they are
+     unaffected.
+     
+     Also replaces "F2R component work continues separately on Han's branch" in projectState.md with
+     the branch names — `feature/f2r-component-registry` and `feature/f2r-implementation-workflow`.
+     Both are F2R, so naming both rather than picking one. A branch reference survives a person
+     changing teams; a name does not.
+     
+     Only .claude/rules/ is edited directly. The pre-commit AI-rules sync rewrites
+     .cursor/rules/tier1FrozenFiles.mdc and .github/copilot-instructions.md from it, which is also
+     why editing those two directly is blocke
+63 1ed34ea3 | fix(security): close the backslash and control-character bypasses in …
+     …isSafeHref
+     
+     `e9c2180` closed `//host` and the docblock claimed the class was handled. It was not. Three
+     more forms resolved off-site:
+     
+         isSafeHref('/\example.com')   -> true, resolves to https://example.com/
+         isSafeHref('/\/evil.com')     -> true, resolves to https://evil.com/
+         isSafeHref('/<TAB>/evil.com') -> true, resolves to https://evil.com/
+     
+     Two distinct causes.
+     
+     A browser treats `/\host` as `//host`, so a backslash is an authority reference just as much as
+     a second slash is. The lookahead only excluded the forward slash — now `(?![/\\])`.
+     
+     The WHATWG URL parser strips leading/trailing C0-or-space and removes tab/LF/CR from anywhere in
+     the input *before* it parses, so `/<TAB>/evil.com` is parsed as `//evil.com`. The guard was
+     testing the raw string while the browser resolved a different one. Fixed by normalising the same
+     way the parser does, then testing. A plain space is deliberately not stripped — the parser
+     percent-encodes it, so `/ /evil.com` stays on-site and must remain allowed. That case is in the
+     tests precisely so this is not read as "reject anything unusual".
+    
+64 1bc0a9d7 | refactor(footer): name the layout-comparison precision in the no-shif…
+     …t assertion
+     
+     `Math.round(n * 10) / 10` encoded "one decimal place" as a bare literal, which conventions.md
+     calls out — any literal with semantic meaning gets a name. Replaced with a named constant and
+     `toFixed`, plus a note on why the rounding exists at all: getBoundingClientRect reports
+     sub-pixel jitter, so comparing raw values would fail an equality check on a layout that never
+     moved.
+     
+     No behavioural change — the assertion compares the same values to the same precision.
+65 13add6e6 | fix(registry): resolve union-alias props instead of merging variants
+     extractTsProps' block regex requires an object-literal body, so a union
+     alias (`type ZimmButtonProps = ZimmLabelButtonProps | ZimmIconButtonProps`)
+     never matched and fell through to the merge-everything fallback. That
+     flattened both variants into one row, presenting mutually-exclusive props
+     as co-required: ZimmButton advertised `label: string` alongside a required
+     `icon: ZimmIconType`, a combination the type forbids.
+     
+     Detect the union alias for the preferred type, resolve its members, and
+     mark any prop absent from at least one member optional — which is what `?`
+     means at a union. Resolution follows one level of intersection because both
+     members are `ZimmButtonBaseProps & {...}`, and reading only their own
+     literals dropped the shared `label` entirely. Members declared in another
+     file yield the union expression rather than the misreporting merge.
+     
+     Net registry effect is `icon:` -> `icon?:`; no other row changes and the
+     generator stays idempotent. Left in the file's existing no-semicolon style:
+     scripts/ is outside `npm run lint`'s overrides/**/*.{ts,tsx} scope and HEAD
+     already carries 369 prettier-rul
+66 a207b9a2 | test(zimm-text-input): add the conventional beforeEach/afterEach hooks
+     .claude/rules/testing.md states the lifecycle hooks without qualification.
+     This file's resolvers are pure and it mocks nothing, so the hooks reset no
+     observable state — added for consistency with the rule as written rather
+     than for isolation, and noted as such at the declaration so the next reader
+     doesn't hunt for the shared state they are protecting.
+     
+     `base` becomes a `let` reinitialised per test. Typed with the exported
+     ZimmTextInputStyleProps rather than an inline literal so the default state
+     tracks the resolvers' own signature.
+67 ec9d1619 | fix(registry): make union prop resolution order-independent and fail …
+     …closed
+     
+     Two defects in 13add6e's union handling, both reproduced before fixing.
+     
+     Partial unions were published as complete. `.filter(Boolean)` dropped members
+     declared in other files and the bail-out only fired when every member failed,
+     so `A | B` with an external B resolved to A's props alone — and with
+     members.length shrunk to 1, every surviving prop satisfied the
+     present-in-every-member test and was reported required. Now all-or-nothing:
+     if any member is unresolvable the union expression is returned.
+     
+     Requiredness depended on declaration order. Optionality was inferred from
+     presence count and the first member's text was kept verbatim, so a prop that
+     one variant makes optional could be published as mandatory. Reversing
+     ZimmButton's operands turned `variant?: 'primary' | 'secondary'` into
+     `variant: 'icon'` — the same false-requiredness claim 13add6e set out to fix,
+     relocated. A prop is now required only where every member carries it and every
+     member declares it without `?`, and types are unioned across members instead
+     of taken from whichever operand came first.
+     
+     Within a member an 
+68 5ecd5150 | refactor(footer): decompose into atoms/molecules/organisms with co-lo…
+     …cated styles
+     
+     What changed:
+     - Split footer/index.tsx (561 lines, 5 components in one file) into independently
+       reusable pieces: ZimmModal (atom), ZimmContactIconRow (molecule),
+       ZimmSubscribeSection/ZimmSubscribeModal (organisms), plus footer-local
+       BottomBar/FooterNavColumn. footer/index.tsx is now pure assembly (~140 lines).
+     - Extracted the subscribe state machine into useSubscribeSection, and generalized
+       useSubscribeModal -> useZimmModal so its focus/scroll/Tab-trap mechanics aren't
+       form-specific. Both now have direct unit tests they lacked as inline logic.
+     - Co-located each component's theme recipe as <name>.css.ts beside it, replacing
+       the single 506-line theme/components/footer.ts (6 recipes + a small
+       footerShared.ts for the two values genuinely needed in more than one file).
+       No runtime change: Chakra resolves a recipe by name, not file path.
+     - Fixed two accessibility bugs surfaced by local CodeRabbit review while touching
+       this code: the bottom-bar locale control was a focusable, labelled button with
+       no action (WCAG 3.2.4/4.1.2 — now a non-interactive div, same treatment as the
+  
+69 a063e147 | refactor(ui-kits): co-locate zimmButton/zimmNavItem/zimmTextInput the…
+     …me recipes
+     
+     What changed:
+     - Moved theme/components/button.ts, zimmNavItem.ts, and zimmTextInput.ts (+ its
+       test) to sit beside their component as zimmButton.css.ts, zimmNavItem.css.ts,
+       and zimmTextInput.css.ts — same pattern the footer decomposition established.
+       Recipe keys ('Button', 'ZimmNavItem', 'ZimmTextInput') are unchanged, so this
+       is a pure file move: Chakra resolves a recipe by name, not path.
+     - Registered the three new locations in theme/components/index.ts and fixed the
+       stale `theme/components/<name>.ts` path mentioned in surrounding comments
+       (zimmButton/index.tsx, the base components/button/index.tsx wrapper,
+       zimmTextInput/index.tsx, and useZimmTextInputState.ts + its test).
+     - zimmIcon, zimmLogo, and zimmInputAction are untouched — none of the three
+       have a separate theme file to begin with (they style entirely through inline
+       Chakra props), so the co-location pattern has nothing to move for them.
+     - Documented the co-location pattern in .docs/architecture.md's Key Paths
+       section, which still only described the old single-file-per-component
+       location.
+     
+     Also fi
+70 9d5f89c6 | refactor(theme): require var(--zimm-*) over bare Chakra token keys in…
+     … overrides
+     
+     What changed:
+     - Replaced 24 bare spacing-scale keys (gap/padding*/margin*, e.g. 'xs', '2xs',
+       '3xl') and 5 bare semantic colour tokens ('background.05', 'text.inverse',
+       etc.) with their var(--zimm-*) equivalents, across 9 files. Both forms
+       resolve to the identical value (theme.space/theme.colors ARE registered from
+       the Zimmermann foundations — see theme/index.ts) — this is a house-style
+       change, not a bug fix. Two of the instances were in JSX (footerNavColumn's
+       sx merge), not just recipe files.
+     - Caught mid-fix: zimmTextInput.css.ts's `top: floated ? '3xs' : '50%'` had a
+       bare key hiding inside a conditional branch. Fixed, and fixed the guard that
+       should have caught it (see below) — the component's own test asserted the
+       old bare value and needed updating too.
+     - Extended theme/components/recipeGuards.test.ts with a new guard: no
+       override-component style may use a bare token key on a registered scale.
+       Runs on every `npm run test`, so this becomes a mechanical PR check rather
+       than something a reviewer re-verifies by eye each time.
+     - That new guard initially had t
+71 5b2be3f3 | feat(contentful): add region-aware footer/link content model, move to…
+     …oling to org-level Environment Templates
+     
+     - Add region, link, footerNavGroup, footerConfig, uiCopy content types.
+       region and link are reusable, referenceable primitives so a footerConfig
+       (or any future content type) can be scoped to one or more storefronts,
+       with a narrower-scoped entry taking precedence over a broader one
+       (resolveByRegion utility implements the precedence/override rules).
+     - Replace the per-environment sync.js + migrations/*.mjs pipeline with
+       buildTemplate.js + setup/installTemplate.mjs + setup/seedRegions.mjs,
+       built on Contentful's organization-scoped Environment Template API —
+       content types are now authored once and installed per environment,
+       with install status/versioning tracked natively instead of a hand-rolled
+       migration-history content type and drift-detection script.
+     - Decommission the unused shoppableImage content type and its Experience
+       component (0 entries in dev, superseded by no active feature).
+     - Update CODEOWNERS, Tier 1 protectedFiles.md, and integration docs to
+       match the new tooling; regenerate derived AI-rule configs.
+     
+     Verified end-to-end
+72 98bd6332 | chore: sync package-lock.json with package.json
+     node_modules was stale relative to package.json (missing ts-morph, needed
+     for npm run generate:contentful, among other drift) — npm install brought
+     the lockfile back in sync.
+     
+     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+     Claude-Session: https://claude.ai/code/session_01E54tVwenkd33qoF4azqdxi
+73 466e62b7 | feat(theme): build scripts/auditTokenUsage.mjs, close the missing-aud…
+     …it gap
+     
+     What changed:
+     - Built scripts/auditTokenUsage.mjs (npm run audit:tokens) — documented in
+       overrideStyling.md/css.md as existing for a while, but never actually
+       committed to the repo (confirmed missing at the start of this session, and
+       the same gap was independently flagged on a different branch back on
+       2026-08-17). Scans overrides/app/components/** and
+       overrides/app/theme/components/** (.ts/.tsx/.scss, excluding
+       *.test.ts(x)/*.stories.tsx) for raw hex/px/rem/em literals that should be a
+       var(--zimm-*) token instead.
+     - A match is downgraded from a failure to an acknowledged exception (still
+       printed, doesn't affect the exit code) when the surrounding comment block
+       already contains "provisional"/"pending"/"placeholder", or an explicit
+       "audit-allow: <reason>" — reads this codebase's existing explanatory
+       comments as the allow-list, rather than requiring a second list that would
+       drift from the code.
+     - Calibrated against the real codebase, not just written and shipped: the
+       first pass used a fixed 2-line context window and missed real exceptions —
+       this codebase'
+74 ad4fbc63 | fix(contentful): render Experience Builder canvas correctly in Conten…
+     …tful Studio
+     
+     Two independent bugs prevented the /:slug Experience page from ever rendering
+     inside Contentful Studio's Experience Builder canvas iframe (blank canvas,
+     empty component picker), despite working fine on the live site:
+     
+     - useFetchBySlug's canvas-mode detection branches on `typeof window !==
+       'undefined'`, which differs between the SSR pass and the client's first
+       hydration pass inside an iframe, causing React hydration errors #418/#423
+       that discarded the whole render. Defer ExperienceFetch's mount until after
+       hydration, scoped only to Contentful's canvas requests (detected via the
+       `expEditorMode` query param, visible server-side) so normal storefront SSR
+       is unaffected.
+     - In editor/canvas mode, useFetchBySlug always returns `experience: undefined`
+       by SDK design — the real data arrives via postMessage instead. Our own
+       `!experience` check was treating that as "page not found" and never letting
+       ExperienceRoot mount at all. Now only applies that check outside
+       supervised/editor mode.
+     
+     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+     Claude-Session: http
+75 5640c259 | feat(footer): wire footer container to live Contentful footerConfig c…
+     …ontent
+     
+     FooterContainer now fetches footerConfig via the Delivery API (client.getEntries,
+     include: 3) instead of a hardcoded fixture, resolving the right entry for the
+     current storefront's region via resolveByRegion's pickMostSpecificByRegion/
+     filterByRegion utilities. Renders nothing on load/error/no-match rather than
+     falling back to placeholder content.
+     
+     Also:
+     - fix(utils): widen resolveByRegion's RegionAwareEntry.sys type past a TS "weak
+       type" false positive — this was its first real consumer against concrete
+       entry types, exposing a latent bug that blocked every content-type generic
+       from satisfying the constraint.
+     - rename contentfulFixture.ts -> index.stories.content.ts, since it now only
+       ever feeds index.stories.tsx (Storybook), not the live container.
+     - chore(contentful): bootstrapSpace.mjs now creates non-default locales as
+       optional: true, so a required localized field can publish with only 'en'
+       set — translation happens later via a separate app, not as a publish
+       precondition.
+     
+     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+     Claude-Session: https://
+76 c5a8422f | test(footer): add Vitest coverage for FooterContainer, FooterNavColum…
+     …n, ZimmSubscribeSection
+     
+     Each suite is scoped to its own component's contract rather than relying on
+     coverage proven transitively elsewhere:
+     
+     - footer/index.test.tsx: scopeToRegion as pure-function tests (region-scoped
+       link filtering, legalLinks, undefined handling), plus FooterContainer
+       integration tests (pending/resolved/rejected/no-match fetch states, region-
+       priority resolution via pickMostSpecificByRegion, no-client case).
+     - footerNavColumn/index.test.tsx: extracted the NBSP width:min-content gate
+       into a named, exported hasIntentionalLineBreak function so it's testable
+       directly rather than asserting on Chakra's sx-generated CSS in jsdom; plus
+       render tests for the showContactChannels structural branch.
+     - zimmSubscribeSection/index.test.tsx: mocks useSubscribeSection (own state
+       machine already covered by useSubscribeSection.test.ts) and
+       ZimmSubscribeModal (focus-trap mechanics already covered by
+       useZimmModal.test.tsx + footer/index.stories.tsx's mutation-tested
+       SubscribeModalOpen play), isolating this suite to ZimmSubscribeSection's own
+       render-branch and event-wiring 
+77 0b8db3e6 | feat(footer): wire footer microcopy to Contentful uiCopy via useUiCop…
+     …y hook
+     
+     useUiCopy bulk-fetches every uiCopy entry in one CDA call (reusing
+     useContentfulEntries) and exposes t(key, fallback) — creating N entries costs
+     one call, not N. Fallback-on-failure by design, unlike FooterContainer's
+     fail-closed handling of structural content: losing a button label to a
+     Contentful outage shouldn't blank a control.
+     
+     FooterContainer calls useUiCopy() once and threads the resolved strings down
+     through Footer to BottomBar (copyrightLabel) and ZimmSubscribeSection
+     (emailLabel, subscribeButtonLabel, successMessage, unavailableMessage) as new
+     optional props, each still defaulting to its current hardcoded English text —
+     both leaves stay Storybook-testable without live CMS access, and neither
+     double-fetches since only the container calls the hook.
+     
+     Exported SUBSCRIBE_SUCCESS_MESSAGE/SUBSCRIBE_UNAVAILABLE_MESSAGE from
+     ZimmSubscribeSection rather than retyping those sentences as FooterContainer's
+     t() fallbacks.
+     
+     Tests: useUiCopy.test.ts (5), extended footer/index.test.tsx with useUiCopy
+     mocking + a wiring-proof test, extended zimmSubscribeSection/index.test.tsx
+     w
+78 c735478e | feat(contentful): add editor-facing title field to uiCopy content type
+     Studio's entry list previously showed the raw dot-path key (e.g.
+     footer.subscribe.buttonLabel), which isn't scannable once there are more than
+     a handful of entries. title is a required, non-localized Symbol — same role
+     as footerConfig's internalTitle — and is now the displayField. Never rendered
+     in the app; key stays the code-referenced lookup slug.
+     
+     Pushed live via sync:contentful + install:contentful --target dev (template
+     v3, no validation findings) and backfilled title on the 5 existing dev
+     entries so they're not left on a required field with no value.
+     
+     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+     Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+79 90069b27 | refactor(footer): make useUiCopy a true app-wide utility via Context
+     useUiCopy no longer fetches directly — it reads from UiCopyContext, populated
+     by the new UiCopyProvider (bulk-fetches every uiCopy entry once, one CDA call)
+     mounted in _app-config. Same public API as before ({t, isLoading}), so it's
+     now trivially importable from any component, anywhere, the same way useIntl()
+     already is in this app: no Storybook/test setup required, since useUiCopy()
+     degrades to fallback-only text with no Provider mounted rather than throwing.
+     
+     This replaces the footer-only container-fetch-and-prop-drill pattern from the
+     previous commit, which only worked because FooterContainer was the sole
+     consumer. Context sharing removes the redundant-fetch concern that motivated
+     that pattern in the first place.
+     
+     Cleaned up BottomBar and ZimmSubscribeSection to match: both dropped their
+     copyrightLabel/emailLabel/subscribeButtonLabel/successMessage/
+     unavailableMessage props entirely and call useUiCopy() directly instead.
+     Footer/FooterContainer shed all the prop-threading that existed only to plumb
+     these through — footer/index.tsx is back to being purely about footerConfig.
+     
+     Tests migrated t
+80 542ac658 | docs(rules): align governance docs with this branch's footer/uiCopy p…
+     …atterns
+     
+     Reviewed .claude/rules/ and .claude/skills/ against what this branch actually
+     established over the footer-CDA-wiring and useUiCopy-globalization work.
+     Found and fixed concrete gaps, not just drift:
+     
+     - components.md: the container/presentational rule blocked leaf components
+       from calling data-fetching hooks with no exception, but we deliberately had
+       BottomBar/ZimmSubscribeSection call useUiCopy() directly — app-wide static
+       content read from a Provider mounted once at the root (same pattern as
+       useIntl), not a per-page fetch. Documented the exception so the next
+       session doesn't either avoid a legitimate pattern or misapply it to a real
+       SDK hook.
+     - testing.md: "don't duplicate coverage across layers" had no guidance on
+       *how* to resolve that tension, which is exactly what led to two rounds of
+       user correction on ZimmSubscribeSection's test suite. Clarified: scope the
+       assertions (mock what's covered elsewhere), don't skip the component's own
+       file. Also documented the ZimmIcon/Vitest SVG-barrel gap discovered this
+       branch (no test had ever rendered an icon-consuming compo
+81 7b9b5dc8 | fix(storybook): define WEBPACK_TARGET so ssr-config resolves the brow…
+     …ser-safe branch
+     
+     pwa-kit-runtime's ssr-config.js picks ssr-config.server.js (Node-only,
+     pulls in cosmiconfig's fs/os/module deps) unless WEBPACK_TARGET === 'web'.
+     The real app build sets this via pwa-kit-dev's own DefinePlugin;
+     .storybook/main.js never did, so any story importing config/contentful.ts's
+     getConfig() (e.g. footer/index.stories.tsx) broke the browser bundle with
+     "Module not found: fs/os/module" errors.
+     
+     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+     Claude-Session: https://claude.ai/code/session_01JGufQTc5rhNzFUksUURiM7
+82 49a95b93 | docs(rules): stop instructing the bare token key the guard now blocks
+     The "Component-local tokens" section still told developers to reference
+     spacing by bare name (`marginBottom: 'xs'`) and to use Chakra's responsive
+     array shorthand. Both now fail `npm run test`: recipeGuards.test.ts's
+     bare-token guard treats `marginBottom` as a watched prop and `'xs'` as a
+     watched key, and it walks responsive arrays attributing every element to the
+     same prop. A developer following the rules file broke the build.
+     
+     Rewritten to the `var(--zimm-scale-*)` form, with the responsive pattern shown
+     as the explicit BP-keyed media query that co-located recipes actually use.
+     
+     Citations replaced with files that exist. The section pointed at
+     theme/components/imageGallery.ts and swatchGroup.ts, neither of which has ever
+     existed on any branch; it now cites footer.css.ts and bottomBar.css.ts, whose
+     contentRow and linksInner parts genuinely carry BP media queries.
+     
+     Two false claims removed rather than reworded, since replacing them is how the
+     earlier drift happened: that these recipes re-express base SFCC numerics for
+     the same computed output (they are namespaced ZimmFooter* precisely so they do
+   
+83 58834991 | test(storybook): fix the two failing suites in the a11y gate
+     test-storybook was red at 4 of 83. It is a required check that reports
+     `skipping` whenever change-detection decides a commit isn't Storybook-relevant,
+     so it had never run against this branch's changes.
+     
+     ZimmSubscribeModal — the play function used getByRole and threw before the
+     dialog existed. useZimmModal initialises `mounted: false` and ZimmModal returns
+     null until it flips in an effect, while @storybook/react-dom-shim resolves its
+     render promise from a useLayoutEffect, which runs before React's passive
+     effects. So play began first. Switched to `await findByRole`, which retries.
+     Not a masked defect: the mounted gate is deliberate SSR protection for
+     createPortal, and a control run reverting only this change reproduced the
+     original error verbatim with the whole portal subtree absent. Not vacuous
+     either — an absent role still fails, at ~1064ms against a 97ms pass.
+     
+     ZimmSubscribeSection — axe reported the heading at 2.95:1. The recipe hardcodes
+     inverse colours with no light variant, so mounted in isolation on Storybook's
+     white canvas its own text is genuinely unreadable, and the body and input are
+     whi
+84 ac224a60 | docs(theme): correct stale button.ts paths after the recipe co-location
+     theme/components/button.ts moved to
+     components/ui-kits/atoms/zimmButton/zimmButton.css.ts in a063e14, but ten
+     comments across eight files still pointed at the old path. Every one now
+     resolves to a file that exists.
+     
+     Comment-only: 10 lines changed, 10 replaced, no token value, scale, export or
+     behaviour touched anywhere. Verified by diffing the added lines and confirming
+     none is executable.
+     
+     This deliberately crosses protection tiers in one change, which AGENTS.md Hard
+     Rule #10 requires confirming first — scope was confirmed before the sweep. The
+     files span squad-owned (zimmNavItem.css.ts, zimmButton/index.tsx), Tier 2
+     (globalStyles.ts) and Tier 2 designer-owned (header.ts, listMenu.ts), a test
+     (theme/index.test.tsx), and two Tier 1 frozen foundation files
+     (typography.ts, sizes.ts).
+     
+     On the Tier 1 pair: Hard Rule #3's stated rationale is that design-token
+     changes go through the UI designer, which a corrected comment path does not
+     engage, and foundation/ is not among Hard Rule #4's four absolutes. Edited
+     under a verified tier-1-approvers identity per AGENTS.md's Tier 1 Approval
+     section
+85 e00379c0 | docs(rules): correct the useIntl claims in the container/presentation…
+     …al exception
+     
+     The exception paragraph asserted that both `useIntl` and `useUiCopy` "degrade
+     gracefully with no Provider present (fallback text, not a throw)" and that both
+     read from a Provider "mounted once at the app root (`_app-config`)". Neither is
+     true of `useIntl`, and the graceful-degradation property is the paragraph's
+     whole justification for permitting the call from a presentational leaf.
+     
+     `useIntl` throws — react-intl's `invariantIntlContext` raises "[React Intl]
+     Could not find required `intl` object", unconditionally, not dev-gated. And its
+     `IntlProvider` is mounted by the base SFCC `_app`, not by `_app-config`. Both
+     render paths nest AppConfig outermost, so `_app-config` wraps Switch wraps
+     `_app` wraps `IntlProvider` — a strictly narrower subtree. The error-boundary
+     branch makes the gap concrete: when `error` is truthy `_app` never mounts, so
+     `UiCopyProvider` is present and `IntlProvider` is not.
+     
+     `.storybook/preview.tsx` already wraps every story in an `IntlProvider`, which
+     is only necessary because of this. `vitest.setup.ts` supplies no equivalent, so
+     any test rendering a `useInt
+86 00b8cdf1 | docs: refresh projectState metadata and the seed-regions command
+     projectState.md is the file AGENTS.md requires reading at every session start,
+     and it had drifted past the point of being trustworthy:
+     
+     - Stamp still read 2026-08-18, predating a063e14 — the commit that invalidated
+       its own claim about button.ts.
+     - Four `button.ts` references, a path that no longer exists (moved to
+       ui-kits/atoms/zimmButton/zimmButton.css.ts). ac224a6 swept the same stale
+       path across overrides/ but did not touch this file.
+     - Described per-component overrides as living in theme/components/, when 10 of
+       the 12 registered recipes are now co-located beside their components. Only
+       header.ts and listMenu.ts remain there as recipes, plus navConstants.ts and
+       footerShared.ts for cross-file shared values.
+     - The entire footer / ui-kits / uiCopy body of work was absent from both
+       What's Complete and In Progress. SFCC-55 appeared once, incidentally, about
+       self-hosted fonts.
+     
+     Added an In Progress entry recording the decomposition, the live Contentful
+     wiring, region resolution and the uiCopy path — including the three open items
+     rather than only the wins: the footer is not in the 
+87 a728beac | docs(header): drop an unsupported HPC-025 citation from the icon-bloc…
+     …k comments
+     
+     Both comments claimed "Account is present as text, so nothing is missing" about
+     HPC-018's confirmed Search / Account / Bag header set. That is true at `lg`+ and
+     false below it, where the mobile cluster renders Search / Store Locator / Bag.
+     
+     The first attempt at rescoping them cited HPC-025 as confirming the mobile
+     arrangement was deliberate. That citation is wrong. HPC-025 appears twice in
+     .docs/prd/homepage.md and both concern the country/region selector — it confirms
+     mobile navigation is a hamburger menu and that the selector sits inside it. It
+     says nothing about Account, and no requirement states that mobile chrome
+     generally surfaces controls in the drawer. The claim generalised from a single
+     placement note about a different control.
+     
+     What the comments now say instead, all verifiable: Account is text-only at `lg`+;
+     below `lg` it is absent from the header but still reachable via base drawer-menu
+     ("My Account", "Sign In"); no PRD confirms the drawer as HPC-018's intended
+     satisfaction, so that is an open question rather than compliance; and there are
+     two discrepancies against HPC-
+88 7e8f3ccd | fix(utils): make region tie-break independent of Contentful response …
+     …order
+     
+     pickMostSpecificByRegion resolved ties by most-recently-updated, but the warn and
+     the reassignment both sat inside `if (candidateUpdatedAt > bestUpdatedAt)`. Two
+     consequences, both silent:
+     
+     - Equal or absent timestamps failed the strict `>`, so nothing fired and
+       whichever entry the CDA happened to return first won. getEntries is called
+       with no `order`, so that is not stable across requests.
+     - A tie already arriving newest-first never warned, defeating the documented
+       purpose of surfacing the duplicate entry for cleanup.
+     
+     The warn now sits outside the comparison, so it fires on every tie whichever side
+     wins, and `sys.id` breaks a dead heat as a secondary key. Verified stable across
+     every permutation of six candidate shapes.
+     
+     The suite was testing around the bug. `test('order of the tied candidates in the
+     input does not change the outcome')` used only *distinct* timestamps — the one
+     arrangement that was already order-independent — and omitted the warn assertion
+     that would have caught the nesting. Renamed to say what it covers, plus five new
+     cases: identical timestamps, abs
+89 9a09bf36 | refactor(footer): name two design values and the Contentful include d…
+     …epth
+     
+     Restores SIZE_SUB_BODY_MAX and SIZE_SUBSCRIBE_SLOT in
+     zimmSubscribeSection.css.ts. Both were named constants in
+     theme/components/footer.ts until 5ecd515's decomposition inlined them — that
+     commit carried 7 of 9 constants across as named constants and inlined exactly
+     2, both into this one file. 466e62b's own message records the loss: '12.5rem'
+     "had genuinely lost its provisional framing when it was inlined out of a shared
+     block during the footer decomposition". zimmTextInput.css.ts:28 still referred
+     to SIZE_SUBSCRIBE_SLOT by name, a dangling reference that now resolves.
+     
+     The Figma node IDs, pixel derivations and pending-sign-off notes move to the
+     declarations, so the provenance sits with the value rather than only at the use
+     site. audit:tokens status is unchanged — both remain acknowledged exceptions,
+     since the marker words moved with them. Recipe output verified byte-identical by
+     deep-comparing the resolved module against HEAD.
+     
+     footer/index.tsx gains FOOTER_INCLUDE_DEPTH for the bare `include: 3`. The depth
+     is load-bearing and the failure mode is worth recording: the model is exactly
+ 
+90 1afe7dfe | test(storybook): lift useState out of the two modal story render func…
+     …tions
+     
+     Both stories called useState inside `render: () => {...}`, which trips
+     react-hooks/rules-of-hooks: a lowercase `render` is not a component to
+     eslint-plugin-react-hooks. Isolated the operative factor rather than guessing —
+     `render` and `renderFoo` both error, `Render`, `RenderThing` and `useThing` do
+     not. First-character case is what decides it.
+     
+     Lifted each body into a module-scope named component and reduced `render` to
+     `() => <Example />`. Both files now lint clean; they were the only two
+     hook-in-story instances in the repo, so this sets the pattern rather than
+     following one.
+     
+     Behaviour-preserving, proven not assumed. Neither story reads `args` (runtime
+     initialArgs is `{}` for both) and Storybook's enhanceArgTypes destructures only
+     {component, argTypes, parameters} — `render` is never read — so controls cannot
+     differ; runtime argTypes come back as exactly the component's props. Neither
+     story has autodocs, so there is no docs snippet to change either.
+     
+     Verified in a real browser: 83/83 across 16 suites, against a build served on a
+     port confirmed free with the served iframe.h
+91 a3de2889 | fix(contentful): provision locales before cloning, and back-fill exis…
+     …ting environments
+     
+     `en-CA` was missing from LOCALES, so `/en-ca/` Experience pages send a locale the
+     space doesn't have and the CDA returns 400 — degrading to "Page not found" on
+     ZimmermannUSIntl. Adding it alone would not have fixed anything, because the
+     propagation model was broken underneath.
+     
+     Locales were created in `master` *after* §1 cloned master into the five target
+     environments. A clone inherits source locales as they stood at clone time, and
+     `locale.create` was hardcoded to 'master', so nothing back-filled: a locale added
+     later reached exactly one environment, and re-running never helped. The section
+     comment claimed the opposite — "cloned environments inherit them" — which is true
+     only for locales that already existed when the clone was taken.
+     
+     Locale provisioning is now `provisionLocales(client, environmentId)`, run against
+     master before §2 clones, then again across a `provisionable` list afterwards so
+     environments that pre-dated a locale receive it. Idempotent: verified two chained
+     runs issue zero writes on the second.
+     
+     Three defects introduced by the first draft of this chan
+92 2f8c1f9e | fix(contentful): close the validation gate on every unresolved finding
+     The gate read `!(conflictingIds.length && TAKEOVER_IDS.length)` — "is there at
+     least one conflict and at least one takeover?" rather than "is every finding
+     accounted for?". Any single `--takeover` therefore opened it for every *other*
+     finding too: conflicts the flag never named, and findings of unrelated classes.
+     `ValidationFinding.message` is typed as an open string in the SDK, so the class
+     set isn't bounded by the one this code handles.
+     
+     Three reachable holes, all now refused: one conflict plus one unrelated finding
+     with the conflict named; three conflicts with only one named; and a conflict with
+     a typo'd takeover id.
+     
+     Replaced with an explicit unresolved set — a finding is resolved only if it is a
+     `conflictingContentTypes` whose `details.contentTypeId` appears in `--takeover`.
+     Brute-forced across 780 cases (all subsets of a six-finding universe x six
+     takeover sets x FORCE): zero cases where the new gate is looser, 234 stricter,
+     546 identical. An always-proceed mutant was flagged as looser in 138 of those,
+     confirming the comparator detects looseness before the zero is trusted.
+     
+     Two supportin
+93 604ece54 | docs: reconcile the bootstrap docs with the re-runnable locale flow
+     README.md said `setup:contentful` was a "One-time space bootstrap. Never re-run
+     against an already-set-up space." That now contradicts the design: re-running is
+     precisely how a newly-added locale reaches environments that already exist, since
+     a clone only inherits master's locales as they stood at clone time. An operator
+     following the README would never get `en-CA` back-filled; one following the code
+     would be doing something the README forbids. Rewritten to describe the idempotent
+     behaviour, the non-zero exit on locale failure, and the `--dry-run` preview.
+     
+     projectState.md's open-items note said `bootstrapSpace.mjs` "provisions 9 locales
+     without `en-CA`" — true this morning, false as of a3de288. Updated, and it keeps
+     the half that is still open: nothing in the repo confirms whether the *live*
+     space has `en-CA`. Running `setup:contentful` is what would settle it, and until
+     someone does, `/en-ca/` Experience pages still send an unknown locale to the CDA.

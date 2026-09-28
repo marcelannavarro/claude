@@ -1,0 +1,575 @@
+Regenerating Claude Code registry...
+Generating Claude Code registry...
+  components.md  — 126 entries (Override: 9, Custom: 53, Base: 64)
+  hooks.md       — 74 entries (Override: 1, Custom: 17, Base: 56)
+  utils.md       — 36 entries (Override: 0, Custom: 7, Base: 29)
+  pages.md       — 20 entries (Override: 6, Custom: 5, Base: 9)
+  routes.md      — 20 entries (Inherited: 10, Override: 10)
+Done.
+Running Vitest for files related to your staged changes...
+
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmAuthDrawerContent/index.test.tsx (11 tests) 140ms
+ ✓ overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx (12 tests) 176ms
+ ✓ overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx (10 tests) 123ms
+ ✓ overrides/app/components/header/rightBar/index.test.tsx (20 tests) 291ms
+stderr | overrides/app/components/product-view/index.test.tsx > ProductView — Zimmermann additions > renders ZimmSizeSelector when useDerivedProduct returns a size variation attribute
+Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
+
+Check the render method of `ProductView`.
+    at ZimmSizeSelector (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:209:24)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.tsx:179:5
+Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
+
+Check the render method of `ProductView`.
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.tsx:179:5
+
+stderr | overrides/app/components/product-view/index.test.tsx > ProductView — Zimmermann additions > does not render ZimmSizeSelector when variationAttributes has no size entry
+Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
+
+Check the render method of `ProductView`.
+    at Box (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:25:11)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at VStack (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:30:14)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at div
+    at Flex (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.test.tsx:20:12)
+    at /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/product-view/index.tsx:179:5
+
+ ✓ overrides/app/components/product-view/index.test.tsx (18 tests) 136ms
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > renders the given text verbatim
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > calls onClick when the button is clicked and ariaDisabled is not set
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > does not call onClick when ariaDisabled is true — handler is suppressed at the React layer
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > carries aria-live="polite" so a shopper using assistive tech is told about it without a focus move
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity = 1 (min boundary, State 1) > decrement button carries aria-disabled="true"
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > sets aria-disabled="true" on the rendered button when ariaDisabled is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > error and warning variants resolve to genuinely different colours, not just different variant keys
+Could not parse CSS stylesheet
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > omits the aria-disabled attribute entirely when ariaDisabled is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity = 1 (min boundary, State 1) > clicking decrement at quantity 1 does NOT call onDecrement — quantity stays 1
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > header title > renders "BAG • {itemCount}" while there are items
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > variant="warning" renders the info-solid icon
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > overrides type to "button" when ariaDisabled is true, even when type="submit" is passed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > variant="error" never renders the icon
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity = 1 (min boundary, State 1) > increment button is NOT disabled when only the lower bound is hit
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > preserves type="submit" when ariaDisabled is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > variant="success" never renders the icon
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > header title > renders "BAG • {itemCount}" for a single item too (no singular/plural branching)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > dataTestId omitted: root element keeps the existing default "zimm-inline-message" testid
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="icon" aria-describedby > omits aria-describedby entirely when not passed — unchanged from before this prop existed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity > 1, below max (State 2, both enabled) > decrement calls onDecrement with exactly quantity - 1, exactly once
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders a loading spinner while items is undefined
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > dataTestId provided: root element uses the passed testid instead of the default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="icon" aria-describedby > renders aria-describedby with the exact id passed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > id omitted: root element has no id attribute
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity > 1, below max (State 2, both enabled) > increment calls onIncrement with exactly quantity + 1, exactly once
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > header title > renders "YOUR BAG IS EMPTY" when itemCount is 0
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx > ZimmInlineMessage > id provided: root element carries it verbatim
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmInlineMessage/index.test.tsx (10 tests) 299ms
+stderr | overrides/app/components/header/index.test.tsx > Header logo > renders the logo as an accessible, natively-focusable button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > renders the icon passed via the icon prop
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity > 1, below max (State 2, both enabled) > neither button carries aria-disabled
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > renders the visible label text inside the button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > header title > header title uses body2Strong (14px/medium), not heading1 (24px) — titleStyle="small" reaches ZimmDrawer
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > does not wrap the L1/L2 nav content in an atomic live region — regression guard: aria-live/aria-atomic on the whole #drawer-menu-nav wrapper re-announced every link in a freshly drilled-into L2 panel on top of the correct, already-in-place focus-move announcement (this same component's own panelRef effect), which is what produced the reads-everything-at-once bug shared with the desktop nav (list-menu.tsx)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header logo > is reachable via keyboard Tab order
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > icon box defaults to md (16px) when iconSize is not given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity at max (State 3) > increment button carries aria-disabled="true"
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > iconSize picks a different registered box size
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > pressing Escape calls onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity at max (State 3) > clicking increment at max does NOT call onIncrement — quantity stays at max
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > scopes aria-live/aria-atomic to just the loading indicator
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > iconSx overrides the box size for a one-off value outside the four registered sizes
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity at max (State 3) > decrement remains enabled at the max boundary
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > defaults to full width when no fullWidth is given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header logo > invokes onLogoClick when clicked, wiring the homepage-navigation handler
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — isUnavailable (State 4, fully OOS/unavailable) > both buttons carry aria-disabled="true", even mid-range (not just at a quantity bound)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > an explicit fullWidth={false} overrides the social default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > clicking the backdrop calls onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — isUnavailable (State 4, fully OOS/unavailable) > clicking either button calls neither callback — both are inert
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header wishlist state > passes hasWishlistItems=false when the wishlist has no items (including guests, who have no list at all)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > a non-social variant is not full width by default
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmWishlistAuthDrawer/index.test.tsx (7 tests) 108ms
+stderr | overrides/app/components/header/index.test.tsx > Header wishlist state > passes hasWishlistItems=true when the wish_list product list has at least one item
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders a direct-link L1 item as an accessible link, with no drill-down affordance
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > a non-social variant still honours an explicit fullWidth={true}
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — accessible names (State 6) > decrement and increment buttons each resolve a distinct, real accessible name
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx (17 tests) 464ms
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > starts closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image loading strategy > defaults to lazy loading
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — ariaDescribedBy forwarding (AC6) > omitted: neither button carries aria-describedby
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — empty state > renders nothing when media is empty
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image loading strategy > eager skips lazy loading (LCP priority, PRD-064)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > a mega-menu item reporting open swaps RightBar to fullSwap
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — ariaDescribedBy forwarding (AC6) > provided: both buttons carry the exact same id
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > clicking the close button calls onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — quantity announces via a live region (AC3) > the value display carries aria-live="polite"
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders an item with columns as a drill-down button, no chevron affordance
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — keyboard-only operation (AC4) > Tab reaches decrement then increment in order, and Enter/Space activate them — no pointer event involved
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > clicking the fullSwap Close control closes the mega menu
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — video slot > renders play/pause and mute as independently labelled, focusable controls
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — video slot > play/pause toggles its own accessible name without affecting mute
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 3 items — 3 stacked, no grid, plain "Gallery" button (AC 1)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx > ZimmQuantityStepper — keyboard-only operation (AC4) > an inert (aria-disabled) button stays reachable via Tab, but Enter does not call its handler
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > closed by default: both bars start at menuExpanded="closed"
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — mount gating > renders nothing when closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > the close button does not hold focus when the drawer mounts already open
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmQuantityStepper/index.test.tsx (22 tests) 574ms
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > focus returns to finalFocusRef once the drawer finishes closing
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — mount gating > SFCC-731 AC 20 — renders nothing when media is empty, even if open
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > menu-click from closed calls the real onMenuClick (base _app's onOpen) and moves both bars to mobileL1
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image load failure (AC 21) > a failed image is replaced with a neutral fallback, not a broken-image icon
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 4 items — 2 stacked + 2-up grid, plain "Gallery" button (AC 2)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: flattens every column of the active item into one stacked list of headings + links
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > menu-click again from mobileL1 (toggle semantics) calls the registered close handler and resets to closed, without re-calling the real onMenuClick
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image load failure (AC 21) > a new valid source at the same list position after a variation swap is not stuck on the old fallback (CodeRabbit, PR #81)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > renders through DynamicImage (a real <picture>/srcSet) when widths is given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 5 items — 2 stacked + 2-up grid, "Gallery +1" — one held back rather than a lopsided 3-cell row (AC 3)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > forwards a custom quality into the DIS query on every responsive source
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: renders the promo image with its mapped src/alt when the active item has one
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > close-click from RightBar resets both bars to closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > without widths, renders a plain <img> with no <picture> wrapper (unchanged default behaviour)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > a failed image still falls back to the neutral fill when rendered via DynamicImage
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx (10 tests) 370ms
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: renders no image element when the active item has no promoImage
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 6 items — 2 stacked + 4-up grid, plain "Gallery" button (AC 4)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — dialog semantics (AC 22-24) > renders as a labelled dialog, named by the product name
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > drilling in via the shared DrawerMenuStateContext moves both bars to mobileL2, and back-click returns to mobileL1 without closing
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L1: never renders a promo image, even when items in the list carry one
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 7 items — 2 stacked + 4-up grid, "Gallery +1" (AC 5, X = total - 6)
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/header/index.test.tsx (13 tests) 622ms
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — showGalleryButton > false hides the button on both desktop and compact, regardless of media count (AC 7)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > renders the image with an alt, the name uppercase, the price, and one combined colour+size node
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — close (AC 12/13) > the close button fires onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: styles each group's first link as a heading only when twoColumnLayout is set
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > hideStepperAndActions suppresses the stepper and every actions surface, and nothing throws
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — showGalleryButton > true (the default) still renders the button per the layout thresholds (AC 8)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: does not style the first link as a heading for a single-column item
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel gallery button (AC 11) > visible on the first slide, not just the last — a shopper should not have to swipe through the whole carousel to find it
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > every existing caller (hideStepperAndActions omitted) is unaffected — the stepper and actions still render
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > renders one keyboard-focusable thumbnail per media item, labelled with its position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > returning from L2 to L1 (isDrilledIn: false) shows the root list again
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > omitting onItemQuantityChange and actually changing quantity does not throw
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel gallery button (AC 11) > stays visible after swiping to the last slide, with the same total count
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message omitted: nothing renders, and ZimmCartItem resolves hasError=false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — single image > SFCC-731 AC 9 — renders a plain "Gallery" button (no count) even for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > no thumbnail strip for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message with variant="warning": renders the message, but ZimmCartItem still resolves hasError=false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > moves focus onto the L1 panel once loading finishes — regression guard: the panel is not mounted yet while isLoading/items are unsettled, so the focus effect must re-run once it actually mounts, not just on isOpen/isDrilledIn/activeItem
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message with variant="error": renders the message, and ZimmCartItem resolves hasError=true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > drilling from L1 into L2 moves focus onto the new panel — regression guard: L1 and L2 occupy the same subtree, so without this the L1 button that had focus unmounts and focus silently drops to document.body, restarting keyboard tab order from the top
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > renders one keyboard-focusable dot per media item, labelled with its position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message present: the message's id and both stepper buttons' aria-describedby are the exact same value
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > renders no dots for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message omitted: neither stepper button carries aria-describedby
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > a thumbnail click scrolls to the corresponding image — a real, independently operable control
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx > ZimmCartDrawer > scroll position is genuinely restored on close, not merely that scroll-lock is released
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > returning from L2 to L1 moves focus onto the root list panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > discountLabel present but message absent: the discount label has no id, and the stepper has no aria-describedby
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > a dot click is a real, independently operable control (does not throw, stays in the document)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > guest: renders a Sign In link rather than the account accordion
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > message renders in DOM order between the stepper and the actions (secondaryActions)
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.test.tsx (10 tests) 1011ms
+   ✓ ZimmCartDrawer > focus returns to finalFocusRef once the drawer finishes closing  430ms
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > discountLabel omitted: no discount label node renders
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > ArrowRight/ArrowLeft move focus between thumbnails, wrapping at each end
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > Wishlist onAuthSuccess: closes the drawer and navigates to /account/wishlist
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > discountLabel present: renders the exact copy, positioned beneath the stepper and ahead of the message
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > ArrowRight/ArrowLeft move focus between dots, wrapping at each end — Tab-ability is unchanged
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > c_maxOrderQuantity absent: stepper max resolves to the fallback of 3 (increment disabled at quantity 3)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel offscreen slides > only the selected slide is reachable by assistive tech and keyboard — every other slide is inert
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > c_maxOrderQuantity absent: increment is still enabled below the fallback cap (quantity 2)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > wires useHeaderNav() and useDrawerMenuState() through to DrawerMenuView
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — live region > announces the current slide's alt text, not just its position — dots/arrows only ever announce position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — image content (AC 18) > renders the full media array as tiles, first one eager (LCP priority)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > registers its real onClose with the shared drawer state on mount, unregisters on unmount
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > notifies the shared drawer state closed whenever isOpen is false
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/drawer-menu/index.test.tsx (20 tests) 1103ms
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > c_maxOrderQuantity: 5 on the product: increment enabled below 5, disabled and inert at 5
+Could not parse CSS stylesheet
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — click-anywhere trigger > the click-anywhere surface and the visible "Gallery" button both fire onOpenGallery independently
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — live region > announces the current image's alt text and position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > quantity 1: decrement is disabled
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > handleStepperQuantityChange — real-mutation-then-conditional-local-update > increment: calls onItemQuantityChange with quantity + 1, and commits it locally when the mutation resolves true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — live region > scrolling to a new item (IntersectionObserver) updates the announced position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — click-anywhere trigger > each desktop tile has its own position-labelled trigger, in DOM order matching visual order, ending with the Gallery button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > handleStepperQuantityChange — real-mutation-then-conditional-local-update > increment: calls onItemQuantityChange, but does NOT commit locally when the mutation resolves false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.stories.test.tsx > ProductItem — Storybook story render (SFCC-270 round 2) > Default-equivalent: renders through the real, unmocked useDerivedProduct/useSelectedStore chain without throwing
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > the first item loads eagerly by default (LCP priority, PRD-064)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > handleStepperQuantityChange — real-mutation-then-conditional-local-update > decrement: calls onItemQuantityChange with quantity - 1, and commits it locally when the mutation resolves true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.stories.test.tsx > ProductItem — Storybook story render (SFCC-270 round 2) > GiftCard-equivalent: hideStepperAndActions renders through the real chain without throwing, and hides the actions
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/product-item/index.stories.test.tsx (2 tests) 371ms
+   ✓ ProductItem — Storybook story render (SFCC-270 round 2) > Default-equivalent: renders through the real, unmocked useDerivedProduct/useSelectedStore chain without throwing  348ms
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > lazy defers the first item too (set/bundle child context)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > the compact carousel never marks its own first item eager, even when the desktop tile is (CodeRabbit, PR #81 — both trees are always mounted, so both eager would double-fetch the hero image)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > renders "Also available in" + a swatch per colour when there are multiple
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/footer/index.test.tsx (14 tests) 99ms
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > handleStepperQuantityChange — real-mutation-then-conditional-local-update > decrement: calls onItemQuantityChange, but does NOT commit locally when the mutation resolves false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image load failure (AC 21) > a new valid source at the same list position after a variation swap is not stuck on the old fallback (CodeRabbit, PR #81)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > handleStepperQuantityChange — real-mutation-then-conditional-local-update > a synchronous (non-Promise) onItemQuantityChange also works via increment
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — selectedIndex clamps when media shrinks (CodeRabbit, PR #81) > a variation swap that shrinks media does not leave every slide inert or the live region announcing an invalid position
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx (24 tests) 1024ms
+ ✓ overrides/app/components/product-item/index.test.tsx (22 tests) 751ms
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > SFCC-731 fix — renders "Colour: <name>" (no swatch row, no "Also available in") when there is only one colour, matching the PDP
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > renders nothing when no colour values are supplied
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx (14 tests) 996ms
+ ✓ overrides/app/components/_app/index.test.tsx (6 tests) 44ms
+
+ Test Files  19 passed (19)
+      Tests  262 passed (262)
+   Start at  18:05:53
+   Duration  17.18s (transform 3.16s, setup 26.57s, collect 101.67s, tests 8.70s, environment 81.22s, prepare 2.88s)
+
+[feature/SFCC-11_cart 9183524b] fix(a11y): SFCC-795 accessibility sweep
+ 8 files changed, 257 insertions(+), 14 deletions(-)

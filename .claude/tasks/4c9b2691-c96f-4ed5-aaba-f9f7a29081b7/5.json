@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Synthesize comprehensive branch-vs-main report",
+  "description": "Combine all 4 verification agents' findings into one coherent analysis for the user, flagging verified claims, discrepancies, and open risks.",
+  "activeForm": "Synthesizing final report",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": []
+}

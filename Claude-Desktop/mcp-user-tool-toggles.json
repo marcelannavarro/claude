@@ -1,0 +1,10 @@
+{
+  "v": 3,
+  "owners": {
+    "cb50a622-efac-45c7-ada5-dcb34c7771df": [
+      "local:plugins:suggest_plugin_install",
+      "local:plugins:search_plugins",
+      "local:plugins:list_plugins"
+    ]
+  }
+}

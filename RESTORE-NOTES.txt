@@ -1,0 +1,6 @@
+On restore, before launching Claude:
+1. gunzip .claude/projects/*/*.jsonl.gz
+2. Add "cleanupPeriodDays": 365 to .claude/settings.json
+3. Sign in again (credentials were not backed up, by design)
+4. Re-export API keys in ~/.zshrc
+5. Repos must go back to their original paths - see folder names in .claude/projects

@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "Verify narrow residual items via Runtime Admin / account team",
+  "description": "Non-blocking for the recommendation itself (Option A wins regardless — Option B fails on architecture grounds independent of cost/limits). Still worth having for completeness/Tim's awareness: (1) commercial cost of a hypothetical additional MRT project; (2) current org env/production-count usage vs. the 100/10 caps; (3) ARM vs x86 on the existing project; (4) server-side-cookie setting (collateral finding, separate from this TSD).",
+  "activeForm": "Verifying residual Runtime Admin items",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

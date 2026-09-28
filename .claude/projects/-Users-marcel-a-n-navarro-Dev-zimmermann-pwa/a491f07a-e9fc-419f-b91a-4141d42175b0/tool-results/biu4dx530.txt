@@ -1,0 +1,984 @@
+=============== molecules/zimmColourSwatchGroup/index.tsx ===============
+import React, { useEffect, useRef, useState } from 'react';
+import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+import { useHistory } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+import { ZimmColourSwatch } from '../../atoms/zimmColourSwatch';
+import { ChevronLeftIcon, ChevronRightIcon } from '../../../icons';
+import { SWATCHES_PER_PAGE } from './zimmColourSwatchGroupShared';
+
+const messages = defineMessages({
+  groupLabel: { id: 'colour_swatches.group.label', defaultMessage: 'Colour' },
+  label: { id: 'colour_swatches.label', defaultMessage: 'Colour:' },
+  paginationGroupLabel: { id: 'colour_swatches.pagination.group_label', defaultMessage: 'Colour swatch pages' },
+  next: { id: 'colour_swatches.pagination.next', defaultMessage: 'Next colours' },
+  previous: { id: 'colour_swatches.pagination.previous', defaultMessage: 'Previous colours' },
+});
+
+const ZIMM_COLOUR_SWATCH_GROUP_RECIPE = 'ZimmColourSwatchGroup';
+
+/** One selectable colour variation as the molecule expects it — pre-mapped from the raw SFCC shape. */
+export type ZimmColourSwatchValue = {
+  value: string;
+  name: string;
+  /** Resolved swatch fill image URL. Absence means the colour has no swatch image and is withheld. */
+  imageUrl?: string;
+  /** Router destination URL for this colour. Absent on the quick-view modal path. */
+  href?: string;
+  /** Mirrors SFCC's `orderable` flag. Unavailable colours are withheld (not shown as disabled). */
+  orderable?: boolean;
+  /**
+   * When true, clicking navigates via a native anchor (full page reload) rather than a router
+   * Link. Set for related-colour swatches (SFCC-708) that link to a different master product.
+   */
+  forceReload?: boolean;
+};
+
+type ZimmColourSwatchGroupProps = {
+  values: ZimmColourSwatchValue[];
+  /** Currently selected colour value (from URL / variation params). */
+  selectedValue?: string;
+  /**
+   * Display label for the colour group. Defaults to the i18n "Colour" value.
+   * Pass an explicit value when the SFCC attribute display name differs from the default.
+   */
+  label?: string;
+  /**
+   * Selection callback for the linkless path (no `href` on values). Called on click and
+   * arrow-key navigation. Not needed on the PDP, where each value carries an `href` and
+   * selection is handled by router navigation.
+   */
+  onSelect?: (value: string) => void;
+};
+
+/**
+ * Molecule — the full colour-swatch group: label row (name + pagination arrows), and a
+ * `[role=radiogroup]` swatch strip of `ZimmColourSwatch` atoms with roving tabindex and
+ * keyboard navigation.
+ *
+ * When only one offered colour exists, the label and name render but the swatch row is
+ * suppressed (nothing to choose between). Colours without a swatch image or marked
+ * non-orderable are withheld entirely.
+ */
+export const ZimmColourSwatchGroup = ({ values, selectedValue, label, onSelect }: ZimmColourSwatchGroupProps) => {
+  const intl = useIntl();
+  const groupLabel = label ?? intl.formatMessage(messages.groupLabel);
+  const labelText = label != null ? `${label}:` : intl.formatMessage(messages.label);
+
+  // Filter to only offered (orderable + swatch image populated) colours.
+  const offered = values.filter((v) => Boolean(v.imageUrl) && v.orderable !== false);
+
+  const isPaginated = offered.length > SWATCHES_PER_PAGE;
+  const pageCount = Math.ceil(offered.length / SWATCHES_PER_PAGE);
+
+  const [page, setPage] = useState(0);
+
+  // Auto-advance to the page containing the pre-selected value on mount or when selectedValue
+  // changes (e.g. browser back/forward lands on a colour that is off page 0).
+  // When selectedValue is absent or not in the offered set, clamp to the highest valid page so
+  // all remaining swatches stay visible after the offered set shrinks (e.g. a colour becomes
+  // unavailable while the user is on a later page).
+  useEffect(() => {
+    const idx = offered.findIndex((v) => v.value === selectedValue);
+    if (idx >= 0) {
+      setPage(Math.floor(idx / SWATCHES_PER_PAGE));
+    } else {
+      const pc = Math.ceil(offered.length / SWATCHES_PER_PAGE);
+      setPage((p) => Math.min(p, Math.max(0, pc - 1)));
+    }
+    // offered.length captures filter changes; selectedValue tracks URL/prop changes.
+  }, [selectedValue, offered.length]);
+
+  // Roving tabindex: the focused atom is either the selected one or index 0 (no selection).
+  const selectedIndex = offered.findIndex((v) => v.value === selectedValue);
+  const tabFocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
+
+  // True when the globally-selected swatch falls on the current visual page.
+  const isTabFocusOnPage = Math.floor(tabFocusIndex / SWATCHES_PER_PAGE) === page;
+
+  // Focus management after keyboard navigation. After history.push updates the URL and React
+  // re-renders with a new selectedValue, focus the newly-focusable atom imperatively so the
+  // shopper doesn't have to re-tab to continue arrow-key navigation.
+  const radioGroupRef = useRef<HTMLDivElement>(null);
+  const hasNavigated = useRef(false);
+
+  useEffect(() => {
+    if (hasNavigated.current) {
+      const focusable = radioGroupRef.current?.querySelector('[tabindex="0"]') as HTMLElement | null;
+      focusable?.focus();
+      hasNavigated.current = false;
+    }
+  }, [selectedValue]);
+
+  const history = useHistory();
+
+  const handleSwatchesKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+
+    // Derive current index from the focused element's data-swatch-value — a unique value
+    // identity that survives duplicate display names (e.g. two shades both named "Bay Blue").
+    const focusedValue = (document.activeElement as HTMLElement | null)
+      ?.closest('[data-swatch-value]')
+      ?.getAttribute('data-swatch-value');
+    const focusedIndex = focusedValue ? offered.findIndex((v) => v.value === focusedValue) : -1;
+    const currentIndex = focusedIndex >= 0 ? focusedIndex : tabFocusIndex;
+
+    const isForward = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+    const nextIndex = isForward
+      ? (currentIndex + 1) % offered.length
+      : (currentIndex - 1 + offered.length) % offered.length;
+
+    const next = offered[nextIndex];
+    const nextPage = Math.floor(nextIndex / SWATCHES_PER_PAGE);
+
+    setPage(nextPage);
+    hasNavigated.current = true;
+
+    if (next.href) {
+      if (next.forceReload) {
+        window.location.href = next.href;
+      } else {
+        history.push(next.href);
+      }
+    } else {
+      onSelect?.(next.value);
+    }
+  };
+
+  const styles = useMultiStyleConfig(ZIMM_COLOUR_SWATCH_GROUP_RECIPE, { isPaginated });
+
+  const selectedName = offered.find((v) => v.value === selectedValue)?.name ?? offered[0]?.name;
+
+  // No offered colours at all (every value failed the imageUrl/orderable filter) — suppress
+  // the entire group including the label so a bare "Colour:" never appears on the PDP.
+  if (offered.length === 0) return null;
+
+  return (
+    <chakra.div __css={styles.root}>
+      <chakra.div __css={styles.label}>
+        <chakra.span textStyle="caption">{labelText}</chakra.span>
+        {selectedName && (
+          <chakra.span data-testid="pdp-colour-selected-name" __css={styles.labelName}>
+            {selectedName}
+          </chakra.span>
+        )}
+        {isPaginated && (
+          <chakra.div __css={styles.pagination} aria-label={intl.formatMessage(messages.paginationGroupLabel)}>
+            <chakra.button
+              as="button"
+              __css={styles.pageButton}
+              aria-label={intl.formatMessage(messages.previous)}
+              disabled={page === 0}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              <ChevronLeftIcon aria-hidden />
+            </chakra.button>
+            <chakra.button
+              as="button"
+              __css={styles.pageButton}
+              aria-label={intl.formatMessage(messages.next)}
+              disabled={page === pageCount - 1}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              <ChevronRightIcon aria-hidden />
+            </chakra.button>
+          </chakra.div>
+        )}
+      </chakra.div>
+
+      {offered.length > 1 && (
+        <chakra.div
+          role="radiogroup"
+          aria-label={groupLabel}
+          ref={radioGroupRef}
+          __css={styles.swatches}
+          onKeyDown={handleSwatchesKeyDown}
+        >
+          {offered.map((v, i) => {
+            const isOnPage = Math.floor(i / SWATCHES_PER_PAGE) === page;
+            // Off-page swatches are always removed from the tab order (tabIndex="-1"), even
+            // when they're the globally-selected colour, so Tab focus never lands on a
+            // visually-hidden element. When the selected swatch is off-page (the user manually
+            // paged without changing colour), the first on-page swatch becomes the tab stop.
+            const isFocusable = isOnPage && (isTabFocusOnPage ? i === tabFocusIndex : i === page * SWATCHES_PER_PAGE);
+
+            return (
+              // All swatches are always in the DOM so screen readers can navigate the full set
+              // and aria-posinset/aria-setsize reports the correct total count ("N of M" where
+              // M = all offered colours, not just the current page). Off-page swatches are
+              // absolutely positioned — removed from the flex flow so they don't widen the row —
+              // and clip-path'd to a 0×0 visible area so they are invisible on screen while
+              // remaining in the accessibility tree.
+              <chakra.span
+                key={v.value}
+                data-swatch-value={v.value}
+                style={isOnPage ? undefined : { position: 'absolute', clipPath: 'inset(50%)' }}
+              >
+                <ZimmColourSwatch
+                  name={v.name}
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  imageUrl={v.imageUrl!}
+                  href={v.href}
+                  forceReload={v.forceReload}
+                  onClick={onSelect ? () => onSelect(v.value) : undefined}
+                  isSelected={v.value === selectedValue}
+                  isFocusable={isFocusable}
+                  posInSet={i + 1}
+                  setSize={offered.length}
+                />
+              </chakra.span>
+            );
+          })}
+        </chakra.div>
+      )}
+    </chakra.div>
+  );
+};
+
+export default ZimmColourSwatchGroup;
+=============== molecules/zimmContactIconRow/index.tsx ===============
+import React from 'react';
+import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+import { ZimmIcon } from 'app/components/ui-kits/atoms/zimmIcon';
+import { isSafeHref } from 'app/utils/safeHref';
+import { useUiCopy } from 'app/hooks/useUiCopy';
+
+const ZIMM_CONTACT_ICON_ROW_RECIPE = 'ZimmContactIconRow';
+
+// Figma: Icon-list has pt-4px (alias/space/100) above it and 4px internal gap between icons.
+// hrefs are typically sourced from Contentful (FooterConfigEntry, HPC-034) by the caller. Until
+// that integration lands, absent hrefs render each icon as a non-interactive but labelled
+// <span> — visible in the layout and announced by screen readers, but absent from the tab
+// order. See the inline note on the fallback branch below for the full a11y reasoning. When a
+// href arrives it switches to a live <a>, no other changes needed.
+// Fallback labels for a footerConfig entry authored before phoneLabel/whatsAppLabel/
+// emailLabel existed — kept here, not duplicated as a second uiCopy source, since
+// footerConfig is this row's one real content source (see footerConfig.js's field comment).
+const DEFAULT_PHONE_LABEL = 'Call us';
+const DEFAULT_WHATSAPP_LABEL = 'WhatsApp';
+const DEFAULT_EMAIL_LABEL = 'Email us';
+
+type ZimmContactIconRowProps = {
+  phoneHref?: string; // locale-aware tel: href
+  phoneLabel?: string; // Contentful footerConfig.phoneLabel — falls back to DEFAULT_PHONE_LABEL
+  whatsAppHref?: string; // WhatsApp URL
+  whatsAppLabel?: string; // Contentful footerConfig.whatsAppLabel — falls back to DEFAULT_WHATSAPP_LABEL
+  emailHref?: string; // mailto: address
+  emailLabel?: string; // Contentful footerConfig.emailLabel — falls back to DEFAULT_EMAIL_LABEL
+};
+
+type ContactLink = { href?: string; label: string; icon: 'phone' | 'whatsapp' | 'email' };
+
+/**
+ * True when following the href would navigate away from the storefront.
+ *
+ * Takes `string | undefined` rather than `string` so the caller does not need an `as string` to
+ * satisfy it inside an isSafeHref branch. isSafeHref returns a plain boolean, which carries no
+ * narrowing, and a `href is string` predicate would be unsound — an unsafe value like
+ * `javascript:void(0)` is a string that returns false, so the else branch would narrow to
+ * `undefined` incorrectly. An absent href never leaves the site, so `?? ''` is the honest answer.
+ *
+ * Derived from the scheme rather than keyed to a channel name: tel: and mailto: hand off to the
+ * OS dialer or mail client and never navigate, so a target on them does nothing. An http(s)
+ * channel — WhatsApp today — is a real cross-origin navigation and opens in a new tab so a
+ * shopper mid-browse does not lose the site. Any future http(s) channel inherits this without
+ * another edit here.
+ */
+const leavesTheSite = (href: string | undefined): boolean => /^https?:/i.test(href ?? '');
+
+/**
+ * Contact channel icon row (phone / WhatsApp / email). Extracted from the footer so it can be
+ * reused anywhere a storefront needs the same channels — nothing here is footer-specific.
+ *
+ * @param props see ZimmContactIconRowProps
+ */
+export const ZimmContactIconRow = ({
+  phoneHref,
+  phoneLabel,
+  whatsAppHref,
+  whatsAppLabel,
+  emailHref,
+  emailLabel,
+}: ZimmContactIconRowProps) => {
+  const styles = useMultiStyleConfig(ZIMM_CONTACT_ICON_ROW_RECIPE, {});
+  const { t } = useUiCopy();
+  // WCAG 3.2.5 — a link that opens a new tab has to say so in its accessible name.
+  const newTabSuffix = t('contact_icon_row.assistive_msg.opens_in_new_tab', ' — opens in a new tab');
+  const links: ContactLink[] = [
+    { href: phoneHref, label: phoneLabel ?? DEFAULT_PHONE_LABEL, icon: 'phone' },
+    { href: whatsAppHref, label: whatsAppLabel ?? DEFAULT_WHATSAPP_LABEL, icon: 'whatsapp' },
+    { href: emailHref, label: emailLabel ?? DEFAULT_EMAIL_LABEL, icon: 'email' },
+  ];
+  return (
+    <chakra.div __css={styles.row}>
+      {links.map(({ href, label, icon }) =>
+        // isSafeHref, not a truthiness check: these typically arrive from Contentful, so a
+        // javascript:/data:/protocol-relative value would otherwise be rendered straight onto
+        // an anchor. Rejected values fall through to the span below, which is already the
+        // correct treatment for "no usable destination".
+        isSafeHref(href) ? (
+          <chakra.a
+            key={icon}
+            href={href}
+            // rel is explicit rather than relying on target="_blank" implying noopener: that is
+            // browser default behaviour, not a guarantee, and noreferrer also stops the
+            // storefront URL leaking to the third party.
+            {...(leavesTheSite(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            aria-label={leavesTheSite(href) ? `${label}${newTabSuffix}` : label}
+            __css={styles.iconLink}
+          >
+            <ZimmIcon type={icon} size="md" aria-hidden={true} />
+          </chakra.a>
+        ) : (
+          // Fallback for a channel with no usable destination — either the field is absent, or
+          // isSafeHref rejected the value. Both reach here, and both want the same treatment.
+          // NON-INTERACTIVE but PERCEIVABLE:
+          //   - <span>: no href, no tabIndex, so nothing promises an action that cannot be
+          //     performed (avoids the WCAG 2.4.4 / 3.2.4 false affordance).
+          //   - labelled, not aria-hidden: ZimmIcon emits role="img" + aria-label, so screen
+          //     reader users learn the channel exists instead of getting silence (avoids the
+          //     1.1.1 information loss the previous aria-hidden caused).
+          // Not dead code: contact channels are optional per storefront, so a locale that
+          // supplies only e.g. email still renders the other two icons this way.
+          <chakra.span key={icon} __css={styles.iconLink}>
+            <ZimmIcon type={icon} size="md" aria-label={label} />
+          </chakra.span>
+        ),
+      )}
+    </chakra.div>
+  );
+};
+=============== molecules/zimmProductCardContent/index.tsx ===============
+import React from 'react';
+import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+import { Link as RouteLink } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+import { ZimmProductName } from '../../atoms/zimmProductName';
+import { ZimmProductPrice } from '../../atoms/zimmProductPrice';
+import { ZimmIcon } from '../../atoms/zimmIcon';
+import { ZimmSizeChipGroup } from '../zimmSizeChipGroup';
+import type { ZimmSizeChipValue } from '../zimmSizeChipGroup';
+import { CARD_SLOT } from '../../zimmProductCardShared';
+
+/**
+ * Selector contract for a later step (the ZimmProductCard organism, SFCC-236 Step 6): stable
+ * `data-card-slot` values on this component's own DOM so that organism's own recipe can target
+ * these descendants for hover-reveal styling without reaching into implementation details.
+ * Do not rename these values without updating that recipe too — mirrors the same contract
+ * `zimmProductCardMedia/index.tsx` documents for its own slots:
+ *   - "content"   — the outermost element (this component's root).
+ *   - "price"     — the price wrapper. Always rendered regardless of variation; the organism's
+ *                   own CSS is what shows/hides it on hover per variation (see the `showBag`/
+ *                   `showSizeChips` props below), not this component.
+ *   - "sizeChips" — the size-chip-group wrapper (present only when `showSizeChips` is true).
+ *                   Always rendered in the DOM per Figma's `hidden=true` default on the "Size
+ *                   Selector instance" node — the organism's hover-reveal CSS is what handles
+ *                   visibility, not this component's own recipe (see zimmProductCardContent.css.ts).
+ *   - "bag"       — the bag-button wrapper (present only when `showBag` is true). Added later
+ *                   than the three above, for the organism's own mobile-breakpoint hide rule
+ *                   (Figma: PLP/PDP's Mobile Card-content instances have the bag icon's `Icons`
+ *                   frame `hidden="true"`; Desktop and Wishlist's own Mobile instance do not) — a
+ *                   viewport-width concern, not a hover one, but the same
+ *                   "this component always renders it, the organism's CSS decides visibility"
+ *                   division of responsibility as the other slots.
+ */
+
+// Same import base SFCC's own swatch-group/swatch.jsx uses for its `RouteLink`, and the same
+// reasoning zimmColourSwatch/index.tsx already documents: a router `Link` delivers "URL updates
+// without a full page reload" for real. Confirmed directly (no overrides/app/components/link/
+// directory exists on disk) — there is no overrides/.../link equivalent to reuse instead.
+const ProductNameLink = chakra(RouteLink);
+
+const messages = defineMessages({
+  // Deliberately generic, not name-interpolated ("Add {name} to bag") — no such requirement was
+  // given, and the visible product name already sits immediately to this button's left in the
+  // same row, so the accessible name does not need to repeat it.
+  addToBag: { id: 'product_card_content.bag.add_to_bag', defaultMessage: 'Add to bag' },
+  // Figma node 40002163:41468 (Desktop, Hover, PLP/PDP, Unavailable=True) — an instance of the
+  // shared CTA/Link atom (40001908:28374/40001908:28368) with its text swapped to "NOTIFY ME" in
+  // this state. Authored here in sentence case, not literal caps, matching this codebase's
+  // pattern of keeping translatable copy normal-case and letting the textStyle's CSS apply the
+  // visual transform (see ZimmProductName's own normal-cased stories against `productNames`'
+  // textTransform: 'uppercase') — `linkSm` was corrected to `textTransform: 'uppercase'` to
+  // match (2026-09-03, theme/foundation/typography.ts), so this renders "NOTIFY ME" correctly.
+  notifyMe: {
+    id: 'product_card_content.notify_me.label',
+    defaultMessage: 'Notify me',
+  },
+});
+
+const ZIMM_PRODUCT_CARD_CONTENT_RECIPE = 'ZimmProductCardContent';
+
+/**
+ * `ZimmProductName`'s own heading-level prop, read off the atom's real signature via a utility
+ * type rather than a hand-typed duplicate union (typescript.md: "prefer utility types over
+ * hand-rolled duplicate shapes... a hand-copied type silently drifts from its source when the
+ * original changes"). Its type param is `'h1' | 'h2' | 'h3'` — note this is NOT `'h2' | 'h3' |
+ * 'h4'` as an earlier sketch of this component's contract assumed; see `headingLevel` below.
+ */
+type ZimmProductNameHeadingLevel = React.ComponentProps<typeof ZimmProductName>['as'];
+
+export type ZimmProductCardContentProps = {
+  /** The product's display name, rendered as the card's heading and link text. */
+  name: string;
+  /**
+   * Heading level for the composed `ZimmProductName`, forwarded to it as `as`. Named
+   * `headingLevel` here (rather than `as`) because this component is not itself polymorphic —
+   * it always renders the same fixed element tree, it just hands the one real heading a level.
+   * Typed as `ZimmProductNameHeadingLevel` (`'h1' | 'h2' | 'h3'`) to exactly match what that atom
+   * actually accepts — a prior sketch of this contract assumed `'h2' | 'h3' | 'h4'`, which is
+   * wrong on both ends: the atom has no `'h4'` at all, and it does accept `'h1'` (unlikely in
+   * practice for a grid card, but not this component's place to forbid what the atom allows).
+   */
+  headingLevel: ZimmProductNameHeadingLevel;
+  /**
+   * PDP destination for the product name link. Not passed through `isSafeHref` — unlike
+   * `ZimmNavItem`/`ZimmContactIconRow`'s CMS-sourced hrefs, this is an SFCC-generated product URL,
+   * the same trust level `ZimmColourSwatch`'s own `href` prop already assumes.
+   */
+  href: string;
+  /** Passed straight through to the composed `ZimmProductPrice`. */
+  currentPrice?: string;
+  /** Passed straight through to the composed `ZimmProductPrice`. */
+  originalPrice?: string;
+  /** Passed straight through to `ZimmProductPrice`'s own `isLoading`. */
+  isPriceLoading?: boolean;
+
+  /**
+   * Wishlist-only attributes line (colour + size as plain text), per the organism's
+   * VARIATION_CONFIG (Step 6, not built yet) — this component only ever sees the resolved
+   * boolean, never a variation name. When false the row is absent from the DOM entirely, not
+   * merely visually hidden.
+   */
+  showAttributes: boolean;
+  /**
+   * Rendered only when `showAttributes` is true. Pass the plain colour value ("Ivory", not
+   * "Ivory,") — the component itself appends the trailing comma when rendering, matching
+   * Figma's own text-node structure (confirmed via get_design_context on node 40002187:58446:
+   * the colour text node's own content literally includes the trailing comma, e.g. "Lilac
+   * Sand,", not a separate punctuation node). See the `colourWithComma` derivation below.
+   */
+  colour?: string;
+  /** Rendered only when `showAttributes` is true. */
+  size?: string;
+
+  /** Renders the bag button (Figma "Icon_bag" — confirmed a bag action, not a wishlist star). */
+  showBag: boolean;
+  /** Disables the bag button (native `disabled`) when true. `onAddToBag` never fires in that state. */
+  isUnavailable?: boolean;
+  onAddToBag?: () => void;
+
+  /**
+   * PLP-only size-chip picker, per the organism's config. Always rendered in the DOM whenever
+   * true — Figma's `hidden=true` default on this slot is a hover-reveal CSS concern for the
+   * Step 6 organism, not something this component enforces on itself. See the module docblock's
+   * `data-card-slot="sizeChips"` note.
+   */
+  showSizeChips: boolean;
+  sizeChipValues?: ZimmSizeChipValue[];
+  selectedSizeChipValue?: string;
+  onSizeChipSelect?: (value: string) => void;
+
+  /**
+   * True only when the caller has already resolved "unavailable AND a usable notify-me callback
+   * exists" (the organism's job). This component still independently requires `onNotifyMe` to be
+   * present before rendering anything — belt-and-braces, the same defensive shape
+   * `ZimmProductCardMedia`'s own `onRemove` + `removeLabel` co-requirement uses.
+   */
+  showNotifyMe: boolean;
+  onNotifyMe?: () => void;
+};
+
+/**
+ * Molecule — the product-card text-content block: heading/link, bag action, wishlist-only
+ * colour/size attributes, price, PLP-only size-chip picker, and an out-of-stock notify-me CTA.
+ * Figma "Card-content" component set, node 40002109:26908 (Desktop 40002109:26906 / Mobile
+ * 40002163:37103).
+ *
+ * Deliberately has NO remove/close button — that action lives entirely in
+ * `ZimmProductCardMedia`'s own `close` overlay (Step 4), positioned on the image, not here.
+ *
+ * Also deliberately has no badge slot, despite the SFCC-236 AC mentioning one for PLP/Wishlist.
+ * An earlier revision of this paragraph claimed no Figma design existed for it at all — that
+ * was wrong: the badge (Figma "Tag") does exist, confirmed present and identical across every
+ * Size/Type variant checked. It just lives inside "Image Group", which is
+ * `ZimmProductCardMedia`'s domain, not this component's — so it was built there instead. See
+ * that component's own docblock for the confirmed spec, and the organism's own docblock
+ * ("Badge" note) for which variations actually show it.
+ *
+ * Composes `ZimmProductPrice` with `isLive={false}` unconditionally — this is the entire reason
+ * that prop exists (SFCC-236 Step 3): a grid of these on a PLP must not mount dozens of
+ * `aria-live` regions whose price never changes post-mount.
+ */
+export const ZimmProductCardContent = ({
+  name,
+  headingLevel,
+  href,
+  currentPrice,
+  originalPrice,
+  isPriceLoading,
+  showAttributes,
+  colour,
+  size,
+  showBag,
+  isUnavailable,
+  onAddToBag,
+  showSizeChips,
+  sizeChipValues,
+  selectedSizeChipValue,
+  onSizeChipSelect,
+  showNotifyMe,
+  onNotifyMe,
+}: ZimmProductCardContentProps) => {
+  const intl = useIntl();
+  // `disabled`, not `isUnavailable` — matches `recipeGuards.test.ts`'s own `DEFAULT_STYLE_PROPS`
+  // key so that guard's exhaustive prop-combination walk actually exercises both the true and
+  // false branch of `bagButton`'s disabled styling (see zimmProductCardContent.css.ts's own
+  // comment, and `zimmSizeChip.css.ts`'s identical `disabled` naming for the same reason).
+  const styles = useMultiStyleConfig(ZIMM_PRODUCT_CARD_CONTENT_RECIPE, { disabled: isUnavailable });
+
+  // Both conditions required, matching the component contract exactly — not just `showNotifyMe`
+  // alone, so an organism that sets the flag without wiring a real callback silently renders
+  // nothing rather than an inert button.
+  const showNotifyMeButton = showNotifyMe && Boolean(onNotifyMe);
+
+  // Figma renders the colour/size attributes line as ONE continuous phrase, not two independent
+  // labels: the comma is baked into the colour text node's own content ("Lilac Sand,"), not a
+  // separate punctuation element — confirmed via get_design_context on node 40002187:58446 (the
+  // real Wishlist Card-content instance). Reproduced the same way here, on the colour value's own
+  // rendered string (never as a static comma JSX node between the two spans), paired with
+  // attributesRow's 2px gap (zimmProductCardContent.css.ts) for the "Ivory, M" breathing room —
+  // verified by rendering the real Futura Round Medium caption style at actual size: the glyph
+  // ink-to-ink gap the 2px flex gap produces here reads as a genuine (if slightly tighter than
+  // full-prose) space, not as "Ivory,M" touching. Guarded against `colour` being falsy so a
+  // caller omitting it (a contract violation, but not this component's job to enforce) still
+  // renders nothing, rather than the literal string "undefined,".
+  const colourWithComma = colour ? `${colour},` : colour;
+
+  return (
+    <chakra.div __css={styles.root} data-card-slot={CARD_SLOT.content}>
+      <chakra.div __css={styles.nameRow}>
+        <ProductNameLink to={href} __css={styles.nameLink}>
+          <ZimmProductName name={name} as={headingLevel} />
+        </ProductNameLink>
+
+        {showBag && (
+          <chakra.div __css={styles.bagWrapper} data-card-slot={CARD_SLOT.bag}>
+            <chakra.button
+              type="button"
+              __css={styles.bagButton}
+              aria-label={intl.formatMessage(messages.addToBag)}
+              disabled={isUnavailable}
+              onClick={() => {
+                // Belt-and-braces: the native `disabled` attribute already prevents the browser
+                // from ever dispatching this click, but stating the invariant explicitly means a
+                // reader doesn't have to recall that fact to trust onAddToBag can't fire while
+                // unavailable. Same idiom as ZimmSizeChip's own onClick guard.
+                if (isUnavailable) return;
+                onAddToBag?.();
+              }}
+            >
+              <ZimmIcon type="bag" aria-hidden />
+            </chakra.button>
+          </chakra.div>
+        )}
+      </chakra.div>
+
+      {showAttributes && (
+        <chakra.div __css={styles.attributesRow} data-testid="card-content-attributes">
+          <chakra.span __css={styles.colourText}>{colourWithComma}</chakra.span>
+          <chakra.span __css={styles.sizeText}>{size}</chakra.span>
+        </chakra.div>
+      )}
+
+      <chakra.div __css={styles.priceWrapper} data-card-slot={CARD_SLOT.price}>
+        <ZimmProductPrice
+          currentPrice={currentPrice}
+          originalPrice={originalPrice}
+          isLoading={isPriceLoading}
+          isLive={false}
+        />
+      </chakra.div>
+
+      {showSizeChips && (
+        <chakra.div __css={styles.sizeChipWrapper} data-card-slot={CARD_SLOT.sizeChips}>
+          <ZimmSizeChipGroup
+            values={sizeChipValues ?? []}
+            selectedValue={selectedSizeChipValue}
+            onSelect={onSizeChipSelect}
+          />
+        </chakra.div>
+      )}
+
+      {showNotifyMeButton && (
+        <chakra.button
+          type="button"
+          __css={styles.notifyMeButton}
+          onClick={onNotifyMe}
+          data-card-slot={CARD_SLOT.notifyMe}
+        >
+          {intl.formatMessage(messages.notifyMe)}
+        </chakra.button>
+      )}
+    </chakra.div>
+  );
+};
+
+export default ZimmProductCardContent;
+=============== molecules/zimmProductCardMedia/index.tsx ===============
+import React, { useEffect, useRef, useState } from 'react';
+import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
+import { defineMessages, useIntl } from 'react-intl';
+import { ZimmSlideIndicator } from '../zimmSlideIndicator';
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from '../../../icons';
+import { CARD_SLOT } from '../../zimmProductCardShared';
+
+/**
+ * Selector contract for a later step (the ZimmProductCard organism, SFCC-236 Step 6): stable
+ * `data-card-slot` values on this component's own DOM so that organism's own recipe can target
+ * these descendants for hover-reveal styling without reaching into implementation details.
+ * Do not rename these values without updating that recipe too:
+ *   - "media"     — the outermost element (this component's root)
+ *   - "badge"     — the merchandiser badge label, top-left of the image (present only when a
+ *                   non-empty `badge` is supplied)
+ *   - "close"     — the remove-CTA button (present only when `onRemove` + a usable label exist)
+ *   - "carousel"  — the prev/next arrows wrapper (present only when paging is enabled)
+ *   - "indicator" — the touch slide-indicator wrapper (present only when there is >1 image)
+ */
+
+const messages = defineMessages({
+  previousImage: { id: 'product_card_media.pagination.previous', defaultMessage: 'Previous image' },
+  nextImage: { id: 'product_card_media.pagination.next', defaultMessage: 'Next image' },
+  /**
+   * Accessible name for the always-available keyboard-operable scroll container (WCAG 2.1.1) —
+   * distinct from the hover-capable-only `carousel` arrows and the touch-only
+   * `indicatorWrapper`, this is the underlying paging affordance that exists regardless of
+   * pointer capability. See `canNavigateByKeyboard` below.
+   */
+  galleryLabel: { id: 'product_card_media.gallery.label', defaultMessage: 'Product images' },
+});
+
+const ZIMM_PRODUCT_CARD_MEDIA_RECIPE = 'ZimmProductCardMedia';
+
+/** One image the card can show — always a real, non-empty product-photo description. */
+export type ZimmProductCardMediaImage = {
+  src: string;
+  alt: string;
+};
+
+export type ZimmProductCardMediaProps = {
+  /** The image shown when nothing else applies — always required, even when `images` is supplied. */
+  primaryImage: ZimmProductCardMediaImage;
+  /**
+   * The second image revealed on hover (desktop/hover-capable pointers only), crossfading with
+   * `primaryImage`. Ignored while a multi-image `images` gallery is active (>1 entries) — the
+   * arrows/indicator paging affordances already give a shopper a way to browse every image, so
+   * a hover-swap of just the first two would be a second, inconsistent way to see the same
+   * content. Has no effect unless `swapOnHover` is also true.
+   */
+  hoverImage?: ZimmProductCardMediaImage;
+  /**
+   * The full orderable gallery for this card. Only takes over from `primaryImage` when it has
+   * more than one entry — 0 or 1 entries behaves exactly like an absent `images` (see
+   * `hoverImage`'s note above for why the two features don't combine).
+   */
+  images?: ZimmProductCardMediaImage[];
+  /** Enables the primary/hover crossfade described on `hoverImage`. Has no effect without it. */
+  swapOnHover: boolean;
+  /**
+   * Enables the desktop prev/next arrows. The touch slide-indicator is independent of this flag
+   * (per the Figma "Image Group" spec, the touch variant has no separate "controls off" state)
+   * — it renders whenever there is more than one image to page through, regardless of this prop.
+   */
+  showControls: boolean;
+  /**
+   * Merchandiser-configured badge label (e.g. "Runway", "Exclusive") — SFCC-236's Figma "Tag"
+   * overlay, top-left of the image. Renders only when non-empty; a blank/whitespace-only value
+   * behaves identically to omitting the prop, same guard shape as `removeLabel` below. Which
+   * variations actually show a badge (PLP/Wishlist yes, Home no) is the organism's job via its
+   * `VARIATION_CONFIG` — this component only renders what it's given.
+   */
+  badge?: string;
+  /** Wishlist-only remove action. Rendered only when paired with a usable `removeLabel`. */
+  onRemove?: () => void;
+  /**
+   * Accessible name for the remove button — required in practice whenever `onRemove` is passed
+   * (typically the product name, e.g. "Remove {productName} from wishlist"). Modelled as two
+   * independent optional props rather than a discriminated union because this is a simple
+   * co-requirement, not a real variant split: if `onRemove` is supplied without a usable
+   * (non-empty, non-whitespace) `removeLabel`, the remove button silently does not render at
+   * all rather than shipping an unlabelled, inaccessible button — see the component body.
+   */
+  removeLabel?: string;
+  /**
+   * LCP escape hatch for the primary image slot. Defaults to lazy-loading — this component has
+   * no way to know whether it sits above the fold, so the safer default is lazy; a caller that
+   * knows it renders above the fold (AGENTS.md's "LCP ≤2s p75 mobile" priority) should pass
+   * `priority`. Has no effect on any non-primary image, which is always lazy regardless.
+   */
+  priority?: boolean;
+  /**
+   * Optional click handler on this component's own root — forwarded as-is, with no navigation
+   * logic of its own (Media stays navigation-agnostic; the composing organism decides what a
+   * click means and which of Media's own buttons to exclude from it). Added for SFCC-236 Fix I —
+   * see the composing `ZimmProductCard` organism's own docblock for the full narrative.
+   */
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+};
+
+/**
+ * Molecule — the product-card media block: a single image, a hover-swap pair, or a full
+ * scroll-snap gallery with desktop arrows / touch slide-indicator, plus the wishlist-remove
+ * overlay slot. Figma "Image Group" component set, node 40002742:46323.
+ *
+ * Touch paging is native CSS scroll-snap at every breakpoint; arrows are a progressive
+ * enhancement over the same scroll container, never a second, independent mechanism. Arrows and
+ * the slide indicator are mutually exclusive by pointer capability
+ * (`(hover: hover) and (pointer: fine)`) and never both interactively visible at once. Both
+ * exist in the DOM at all times, gated via CSS rather than a JS `window.matchMedia` check —
+ * matching the "keep in DOM, hide via CSS" precedent `ZimmColourSwatchGroup` already uses for its
+ * off-page swatches — so server and client render identically (no hydration mismatch) and
+ * neither affordance depends on `matchMedia`, which jsdom (this component's own Vitest
+ * environment) does not implement. The two affordances differ in *where* that CSS lives, though:
+ * the indicator is fully gated by this recipe's own media query. The arrows are not — this
+ * recipe only ever sets them to `display: none`; the actual reveal (`display: flex`, on
+ * `&:hover`/`&:has(:focus-visible)`) lives in the composing `ZimmProductCard` organism's own recipe,
+ * since the AC and Figma both specify arrows appear on an actual hover/focus interaction with the
+ * whole card, not merely "device supports hover" — the same interaction-gated pattern already
+ * used there for price/size-chips/notify-me. A story rendering this component standalone (see
+ * this file's own `index.stories.tsx`) therefore never shows the arrows, by design.
+ *
+ * A third, always-available operability layer sits underneath both visual affordances: the
+ * scroll container itself is keyboard-focusable and handles ArrowLeft/ArrowRight directly
+ * whenever there is more than one slide, regardless of pointer capability or `showControls` —
+ * a hover-incapable pointer previously had no way to page the gallery via keyboard at all
+ * (WCAG 2.1.1), since the arrows are `display:none` there and the indicator has no focusable
+ * content. See `canNavigateByKeyboard` / `handleScrollContainerKeyDown` below.
+ */
+export const ZimmProductCardMedia = ({
+  primaryImage,
+  hoverImage,
+  images,
+  swapOnHover,
+  showControls,
+  badge,
+  onRemove,
+  removeLabel,
+  priority,
+  onClick,
+}: ZimmProductCardMediaProps) => {
+  const intl = useIntl();
+  const styles = useMultiStyleConfig(ZIMM_PRODUCT_CARD_MEDIA_RECIPE, {});
+
+  // >1 entries takes over as the full slide list; 0 or 1 behaves like no gallery at all (see
+  // the `images` prop's own JSDoc for why hover-swap and the gallery don't combine).
+  const gallery = images && images.length > 1 ? images : undefined;
+  const slideImages = gallery ?? [primaryImage];
+  const totalSlides = slideImages.length;
+  const showHoverSwap = swapOnHover && Boolean(hoverImage) && !gallery;
+  const canPage = totalSlides > 1 && showControls;
+  // Keyboard operability is independent of `showControls` — deliberately not folded into
+  // `canPage` above (WCAG 2.1.1): a hover-incapable pointer (a touchscreen with a physical
+  // keyboard attached, switch access, or a desktop browser reporting `hover:none`) has the
+  // arrows hidden by the recipe's own media query and the indicator has no focusable content,
+  // so this is the only paging affordance such a user has, regardless of `showControls`.
+  const canNavigateByKeyboard = totalSlides > 1;
+
+  // Single piece of state, per this codebase's extract-to-hook threshold
+  // (.claude/rules/components.md). Kept inline — including the scroll-tracking and
+  // index-clamping effects below — rather than pulled into a useProductCardMediaScroll hook,
+  // because this build step's file manifest is limited to this component's own 4 files; a hook
+  // would be a 5th file outside that scope.
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToIndex = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (!container || typeof container.scrollTo !== 'function') return;
+    // clientWidth is 0 under jsdom (no real layout) — the call still fires with a plausible
+    // {left, behavior} shape, which is what this component's own Vitest suite asserts; a real
+    // browser reports a real width so the requested slide scrolls fully into view.
+    container.scrollTo({ left: index * container.clientWidth, behavior: 'smooth' });
+  };
+
+  const goToRelativeSlide = (delta: 1 | -1) => {
+    if (totalSlides <= 1) return;
+    const next = (currentIndex + delta + totalSlides) % totalSlides;
+    setCurrentIndex(next);
+    scrollToIndex(next);
+  };
+
+  // Re-clamps currentIndex whenever the slide count shrinks while this instance stays mounted
+  // (e.g. a colour-variant swap that reduces the gallery from 3 images to 2) — same "clamp to
+  // the highest valid index" precedent as ZimmColourSwatchGroup's own page-clamp effect
+  // (../zimmColourSwatchGroup/index.tsx:75-84). Without this, currentIndex stays at the stale,
+  // out-of-range value: ZimmSlideIndicator's own display-side clamp masks it visually right
+  // after the shrink, but goToRelativeSlide's modulo arithmetic above still computes from the
+  // stale, unclamped state, so the very next Next/Previous click is a silent no-op.
+  useEffect(() => {
+    setCurrentIndex((index) => Math.min(index, totalSlides - 1));
+  }, [totalSlides]);
+
+  // Arrow-key paging on the scroll container itself, reachable regardless of pointer
+  // capability — additive to, and independent of, the hover-capable-only arrows and the
+  // touch-only indicator above (see canNavigateByKeyboard's own comment for why). Same
+  // "check the key, then preventDefault" idiom as ZimmColourSwatchGroup's own
+  // handleSwatchesKeyDown (../zimmColourSwatchGroup/index.tsx:109-111).
+  const handleScrollContainerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    goToRelativeSlide(event.key === 'ArrowRight' ? 1 : -1);
+  };
+
+  // Keeps the touch slide-indicator's active dot following native swipe paging, which never
+  // calls goToRelativeSlide at all. `scrollend` alone is not enough to do this live — that's
+  // true on every browser, not just one lacking `scrollend` support: the event is only fired
+  // once a scroll/snap gesture has fully *settled* (finger lifted, any momentum/snap animation
+  // finished), so a dot driven by `scrollend` alone stays on the old slide for the whole
+  // duration of an active drag and only jumps to the correct one once the gesture ends — a
+  // real, user-visible lag, confirmed live once a related fix made the swipe gesture itself
+  // reachable. `container.scrollLeft`, unlike `scrollend`, genuinely does update live while a
+  // drag is in progress, so a `scroll` listener tracks it in real time — coalesced via
+  // `requestAnimationFrame` so it updates at most once per animation frame, since native
+  // touch-driven scrolling fires many `scroll` events per second and calling setState for
+  // every one of them would be wasted work no frame could ever paint. `scrollend` stays
+  // registered alongside `scroll`, unconditionally, as a final-correctness safety net — in
+  // case the last in-frame scroll position during a fast gesture doesn't get its own
+  // rAF-coalesced update before the browser is ready to fire the next one.
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || totalSlides <= 1) return undefined;
+
+    const updateIndexFromScrollPosition = () => {
+      const slideWidth = container.clientWidth || 1;
+      const nearest = Math.round(container.scrollLeft / slideWidth);
+      setCurrentIndex(Math.min(Math.max(nearest, 0), totalSlides - 1));
+    };
+
+    // `rafId` both throttles (skip scheduling a second frame while one is already pending) and
+    // lets cleanup cancel a frame that hasn't fired yet if the component unmounts/re-runs first.
+    let rafId: number | null = null;
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        updateIndexFromScrollPosition();
+      });
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener('scrollend', updateIndexFromScrollPosition);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('scrollend', updateIndexFromScrollPosition);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, [totalSlides]);
+
+  // Non-primary images are always lazy; only the first slide's own base image can opt into
+  // eager loading via `priority`. See that prop's own JSDoc for the default-to-lazy reasoning.
+  const imageLoadingProps = (isPrimaryPosition: boolean): { loading?: 'lazy'; decoding: 'async' } =>
+    isPrimaryPosition && priority ? { decoding: 'async' } : { loading: 'lazy', decoding: 'async' };
+
+  const hasUsableRemoveLabel = typeof removeLabel === 'string' && removeLabel.trim().length > 0;
+  const showRemove = Boolean(onRemove) && hasUsableRemoveLabel;
+  const hasBadge = typeof badge === 'string' && badge.trim().length > 0;
+
+  return (
+    <chakra.div __css={styles.root} data-card-slot={CARD_SLOT.media} onClick={onClick}>
+      <chakra.div
+        ref={scrollContainerRef}
+        __css={styles.scrollContainer}
+        data-testid="card-media-scroll"
+        role={canNavigateByKeyboard ? 'group' : undefined}
+        aria-label={canNavigateByKeyboard ? intl.formatMessage(messages.galleryLabel) : undefined}
+        tabIndex={canNavigateByKeyboard ? 0 : undefined}
+        onKeyDown={canNavigateByKeyboard ? handleScrollContainerKeyDown : undefined}
+      >
+        {slideImages.map((image, index) => {
+          const isPrimaryPosition = index === 0;
+
+          if (isPrimaryPosition && showHoverSwap && hoverImage) {
+            return (
+              <chakra.div key={`${image.src}-${index}`} __css={styles.slide}>
+                <chakra.img
+                  src={image.src}
+                  alt={image.alt}
+                  data-role="hover-base"
+                  __css={styles.hoverSwapBase}
+                  {...imageLoadingProps(true)}
+                />
+                <chakra.img
+                  src={hoverImage.src}
+                  alt={hoverImage.alt}
+                  data-role="hover-overlay"
+                  __css={styles.hoverSwapOverlay}
+                  {...imageLoadingProps(false)}
+                />
+              </chakra.div>
+            );
+          }
+
+          return (
+            <chakra.div key={`${image.src}-${index}`} __css={styles.slide}>
+              <chakra.img
+                src={image.src}
+                alt={image.alt}
+                __css={styles.image}
+                {...imageLoadingProps(isPrimaryPosition)}
+              />
+            </chakra.div>
+          );
+        })}
+      </chakra.div>
+
+      {hasBadge && (
+        <chakra.div __css={styles.badge} data-card-slot={CARD_SLOT.badge}>
+          <chakra.span __css={styles.badgeLabel}>{badge}</chakra.span>
+        </chakra.div>
+      )}
+
+      {showRemove && (
+        <chakra.button
+          type="button"
+          __css={styles.close}
+          data-card-slot={CARD_SLOT.close}
+          aria-label={removeLabel}
+          onClick={onRemove}
+        >
+          <CloseIcon aria-hidden boxSize="var(--zimm-icon-size-md)" />
+        </chakra.button>
+      )}
+
+      {canPage && (
+        <chakra.div __css={styles.carousel} data-card-slot={CARD_SLOT.carousel}>
+          <chakra.button
+            type="button"
+            __css={styles.arrowButton}
+            aria-label={intl.formatMessage(messages.previousImage)}
+            onClick={() => goToRelativeSlide(-1)}
+          >
+            <ChevronLeftIcon aria-hidden />
+          </chakra.button>
+          <chakra.button
+            type="button"
+            __css={styles.arrowButton}
+            aria-label={intl.formatMessage(messages.nextImage)}
+            onClick={() => goToRelativeSlide(1)}
+          >
+            <ChevronRightIcon aria-hidden />
+          </chakra.button>
+        </chakra.div>
+      )}
+
+      {totalSlides > 1 && (
+        <chakra.div __css={styles.indicatorWrapper} data-card-slot={CARD_SLOT.indicator}>
+          <ZimmSlideIndicator count={totalSlides} activeIndex={currentIndex} />
+        </chakra.div>
+      )}
+    </chakra.div>
+  );
+};
+
+export default ZimmProductCardMedia;

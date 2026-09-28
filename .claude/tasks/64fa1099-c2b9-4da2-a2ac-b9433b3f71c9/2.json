@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Phase 0: build @arche/schema",
+  "description": "Zod ArcheConfig schema + inferred types + defineConfig() identity helper + config loader (jiti/bundle-require). Unit tests for valid/invalid configs and default merging.",
+  "activeForm": "Building @arche/schema",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

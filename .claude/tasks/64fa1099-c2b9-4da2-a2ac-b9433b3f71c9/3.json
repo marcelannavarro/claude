@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Phase 0: build @arche/core engine",
+  "description": "Build @arche/kernel (VFS primitives: VirtualFile, MergePolicy, regions, ActionResult), @arche/pack-sdk + @arche/provider-sdk type contracts, then @arche/core engine (compose→render→plan→apply, Eta rendering, 3-way merge, lockfile). Fixture-pack tests.",
+  "activeForm": "Building @arche/core engine",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

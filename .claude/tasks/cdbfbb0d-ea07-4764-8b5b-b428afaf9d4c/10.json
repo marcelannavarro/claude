@@ -1,0 +1,9 @@
+{
+  "id": "10",
+  "subject": "Apply confirmatory fixes or pass",
+  "description": "Based on confirmatory findings, either correct the TSD (e.g. wrong section citation, changed Jira status) or confirm it passes unchanged.",
+  "activeForm": "Applying confirmatory fixes or passing",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

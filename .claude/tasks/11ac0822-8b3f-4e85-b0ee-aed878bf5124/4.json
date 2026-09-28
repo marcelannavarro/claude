@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Step 3 — ZimmColourSwatchGroup molecule",
+  "description": "Implementer→Tester→Orchestrator→Scorer loop for the molecule, incl. AC 1/3/5 branch logic and chevron pagination. Visual checkpoint against Figma node 40000307:13867. Commit on PASS.",
+  "activeForm": "Building Step 3 — ZimmColourSwatchGroup molecule",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

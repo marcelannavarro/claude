@@ -1,0 +1,9 @@
+{
+  "id": "7",
+  "subject": "Phase 3: pack-node + CI extensions + dogfood",
+  "description": "Generic TS/Node pack (rules, scaffolds, change-scoped test CI partial, registry scanners) + CI primitives. Regenerate Arche's own governance via arche apply and diff vs hand-written (fidelity test). Ship create-arche.",
+  "activeForm": "Building pack-node + CI + dogfood",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

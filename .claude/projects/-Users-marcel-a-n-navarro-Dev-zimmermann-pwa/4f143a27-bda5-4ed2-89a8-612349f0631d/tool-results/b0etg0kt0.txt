@@ -1,0 +1,664 @@
+diff --git a/overrides/app/components/recommended-products/index.test.tsx b/overrides/app/components/recommended-products/index.test.tsx
+index 29d2bcc..3d574c4 100644
+--- a/overrides/app/components/recommended-products/index.test.tsx
++++ b/overrides/app/components/recommended-products/index.test.tsx
+@@ -1,23 +1,19 @@
+ /**
+- * SFCC-83/84 build plan step A6 — asserts only this component's own branch-selection contract
++ * SFCC-83/84 build plan step E1 — asserts only this component's own branch-selection contract
+  * (`.claude/rules/testing.md`'s no-duplicate-coverage rule): given a `recommender` and
+- * `useRecentlyViewedHistory`'s return value, does it render `ZimmRecentlyViewedRail`,
+- * `ProductScroller`, or nothing at all. `ZimmRecentlyViewedRail`, `ProductScroller`,
+- * `useRecentlyViewedHistory`, `useRecentlyViewedProductFetch`, and `selectRecentlyViewedCard` are
+- * all mocked at the smallest surface — their own internals already have their own coverage
+- * elsewhere (`zimmRecentlyViewedRail/index.test.tsx`, `useRecentlyViewedHistory.test.ts`,
+- * `recentlyViewedProductFetch.test.ts`, `recentlyViewedCard.test.ts`; base `ProductScroller` is
+- * untouched vendor code).
++ * `useEinstein()`'s own `recommendations`, does it render `ZimmRecentlyViewedRail`,
++ * `ProductScroller`, or nothing at all. `ZimmRecentlyViewedRail`, `ProductScroller`, and
++ * `selectRecentlyViewedCard` are all mocked at the smallest surface — their own internals already
++ * have their own coverage elsewhere (`zimmRecentlyViewedRail/index.test.tsx`,
++ * `recentlyViewedCard.test.ts`; base `ProductScroller` is untouched vendor code).
+  *
+- * **Revised 2026-09-08, build plan §2 "Interim data source"** — the Recently-Viewed branch no
+- * longer reads `recommendations.recs` (Einstein's own response) at all; it reads
+- * `recentlyViewedIds` off `useRecentlyViewedHistory` and real product data off
+- * `useRecentlyViewedProductFetch` instead. Mocks and fixtures below were rewritten to match:
+- * `useRecentlyViewedGate` is gone, and the Recently-Viewed-branch tests build their product
+- * fixtures with a real `id` field (`ShopperProductsTypes.Product`'s own shape) instead of the old
+- * Einstein-merged `productId`. The "any other recommender" test is otherwise unaffected — it still
+- * feeds `ProductScroller` from a real Einstein-shaped `recommendations` object, since only the
+- * Recently-Viewed branch's data source changed.
++ * **Rewritten for build plan step E1** — the interim mechanism's own hook mocks are gone (both
++ * hooks are deleted in build plan step E4); every Recently-Viewed test case below now drives its
++ * scenario entirely through the already-present `mockUseEinstein`, matching the exact pattern the
++ * "any other recommender" test already used before this rewrite. Product fixtures use a real `id`
++ * field (`RecentlyViewedProduct`, `recentlyViewedCard.ts`'s own alias for
++ * `ShopperProductsTypes.Product`) since that is what a hydrated Einstein rec looks like by the
++ * time this component reads it (see index.tsx's own module docblock, point 2).
+  */
+ import React from 'react';
+ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+@@ -28,8 +24,6 @@ import { IntlProvider } from 'react-intl';
+ import { EINSTEIN_RECOMMENDERS } from '@salesforce/retail-react-app/app/constants';
+ import theme from 'app/theme';
+ import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
+-import { useRecentlyViewedHistory } from '../../hooks/useRecentlyViewedHistory';
+-import { useRecentlyViewedProductFetch } from '../../utils/recentlyViewedProductFetch';
+ import { selectRecentlyViewedCard, type RecentlyViewedProduct } from '../../utils/recentlyViewedCard';
+ import { ZimmRecentlyViewedRail } from '../ui-kits/organisms/zimmRecentlyViewedRail';
+ import RecommendedProducts, { type RecommendedProductsProps } from '.';
+@@ -95,24 +89,17 @@ vi.mock('../ui-kits/organisms/zimmRecentlyViewedRail', () => ({
+   ZimmRecentlyViewedRail: vi.fn(() => <div data-testid="zimm-recently-viewed-rail-stub" />),
+ }));
+ 
+-vi.mock('../../hooks/useRecentlyViewedHistory', () => ({
+-  useRecentlyViewedHistory: vi.fn(),
+-}));
+-
+-vi.mock('../../utils/recentlyViewedProductFetch', () => ({
+-  useRecentlyViewedProductFetch: vi.fn(),
+-}));
+-
+ vi.mock('../../utils/recentlyViewedCard', () => ({
+   selectRecentlyViewedCard: vi.fn(),
+ }));
+ 
+-// jsdom has no matchMedia implementation, and index.tsx's own `useBreakpointValue` call (the
+-// See-Full-History trigger threshold) calls it internally — a per-file polyfill, not a change
+-// to the frozen vitest.setup.ts (Tier 1), matching the identical, already-established precedent
+-// at drawer-menu/index.test.tsx (Chakra Drawer's own useBreakpointValue usage). `matches: false`
+-// unconditionally is what makes useBreakpointValue resolve to its `base` value in this
+-// environment — exactly what the See-Full-History tests below are written against.
++// jsdom has no matchMedia implementation, and index.tsx's own `useRecentlyViewedRailVisibleCount`
++// call (the See-Full-History trigger threshold) uses it internally via `useMediaQuery` — a
++// per-file polyfill, not a change to the frozen vitest.setup.ts (Tier 1), matching the identical,
++// already-established precedent at drawer-menu/index.test.tsx (Chakra Drawer's own
++// useBreakpointValue usage). `matches: false` unconditionally is what makes both underlying
++// `useMediaQuery` checks resolve to their smallest/mobile fallback in this environment — exactly
++// what the See-Full-History tests below are written against.
+ beforeEach(() => {
+   Object.defineProperty(window, 'matchMedia', {
+     writable: true,
+@@ -130,22 +117,33 @@ beforeEach(() => {
+ });
+ 
+ const mockUseEinstein = vi.mocked(useEinstein);
+-const mockUseRecentlyViewedHistory = vi.mocked(useRecentlyViewedHistory);
+-const mockUseRecentlyViewedProductFetch = vi.mocked(useRecentlyViewedProductFetch);
+ const mockSelectRecentlyViewedCard = vi.mocked(selectRecentlyViewedCard);
+ const mockZimmRecentlyViewedRail = vi.mocked(ZimmRecentlyViewedRail);
+ 
+ // Two products, deliberately different `id`s, so a mapping/filtering bug (wrong product picked,
+ // or the null-filter dropping the wrong entry) fails loudly rather than coincidentally matching —
+ // same doctrine recentlyViewedCard.test.ts documents as "G1". Shaped with a real `id` field
+-// (ShopperProductsTypes.Product's own shape), not the old Einstein-merged `productId`.
++// (RecentlyViewedProduct — recentlyViewedCard.ts's own alias for
++// `ShopperProductsTypes.Product`), matching what a hydrated Einstein rec looks like by the time
++// this component reads it.
+ const mockRecentlyViewedProducts: RecentlyViewedProduct[] = [
+   { id: 'rec-1', name: 'Product One' } as RecentlyViewedProduct,
+   { id: 'rec-2', name: 'Product Two' } as RecentlyViewedProduct,
+ ];
+ 
++/** A real Recently-Viewed `useEinstein().recommendations` response shape, for the
++ *  Recently-Viewed-branch tests below — `recommenderName` matches the actual recommender string
++ *  (see index.tsx's own module docblock re: `PDP_RECENTLY_VIEWED`/`CART_RECENTLY_VIEWED`
++ *  resolving identically). */
++const buildRecentlyViewedRecommendations = (recs: RecentlyViewedProduct[]) => ({
++  recommenderName: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED,
++  recoUUID: 'test-rv-reco-uuid',
++  displayMessage: 'Recently Viewed',
++  recs,
++});
++
+ // A real Einstein response shape — still used by the "any other recommender" test below, since
+-// only the Recently-Viewed branch's data source changed (build plan A6, 2026-09-08 revision).
++// only the Recently-Viewed branch's data source changed (build plan step E1).
+ const mockRecommendations = {
+   recommenderName: 'might-also-like-einstein',
+   recoUUID: 'test-reco-uuid',
+@@ -156,7 +154,7 @@ const mockRecommendations = {
+   ],
+ };
+ 
+-// `route` defaults to '/' — the component now calls `useLocation()` unconditionally (Cart
++// `route` defaults to '/' — the component calls `useLocation()` unconditionally (Cart
+ // exclusion, 2026-09-10), so every render needs a Router ancestor regardless of what a given
+ // test actually asserts on. Only the dedicated Cart-exclusion test below passes a real route.
+ const renderRecommendedProducts = (props: Partial<RecommendedProductsProps> = {}, route = '/') =>
+@@ -174,28 +172,17 @@ afterEach(() => {
+   vi.clearAllMocks();
+ });
+ 
+-describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)', () => {
+-  test('recommender=PDP_RECENTLY_VIEWED + hasRecentlyViewed true renders ZimmRecentlyViewedRail, not ProductScroller', () => {
+-    // `recommendations` mirrors useEinstein()'s own real, untouched `useState([])` initial value
+-    // — the actual production state for this branch once bug fix #2 stops it from ever calling
+-    // getRecommendations/getZoneRecommendations (see index.tsx's own module docblock, point 2).
++describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan E1)', () => {
++  test('recommender=PDP_RECENTLY_VIEWED with recs renders ZimmRecentlyViewedRail, not ProductScroller, and fires getRecommendations', () => {
++    const mockGetRecommendations = vi.fn();
+     mockUseEinstein.mockReturnValue({
+       isLoading: false,
+-      recommendations: [],
++      recommendations: buildRecentlyViewedRecommendations(mockRecentlyViewedProducts),
+       getZoneRecommendations: vi.fn(),
+-      getRecommendations: vi.fn(),
++      getRecommendations: mockGetRecommendations,
+       sendClickReco: vi.fn(),
+       sendViewReco: vi.fn(),
+     });
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rec-1', 'rec-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: mockRecentlyViewedProducts,
+-      isLoading: false,
+-    });
+     // rec-2 deliberately maps to `null` (e.g. no usable image/name) — proves the branch's own
+     // `.filter()` drops it instead of forwarding a null card or crashing.
+     mockSelectRecentlyViewedCard.mockImplementation((product) =>
+@@ -215,16 +202,19 @@ describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan
+     expect(screen.getByTestId('zimm-recently-viewed-rail-stub')).toBeInTheDocument();
+     expect(screen.queryByTestId('product-scroller-stub')).not.toBeInTheDocument();
+ 
++    // Build plan E1, edit 1: the fetch-effect early return for this recommender is gone —
++    // getRecommendations now fires for it exactly like the other four recommenders already do.
++    expect(mockGetRecommendations).toHaveBeenCalledWith(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED, undefined);
++
+     // Branch's own mapping contract (not the rail's internals): the null-mapped product is
+     // dropped, the surviving card carries the container-assigned `headingLevel`/`variation`, and
+     // `title` is passed straight through from the caller's own prop — no `recommendations`
+-    // fallback, since `recommendations` is never populated for this branch (build plan A6, bug
+-    // fix #4).
++    // fallback.
+     //
+-    // Renders twice, not once — the See-Full-History trigger's own `useBreakpointValue` call adds
+-    // a second, legitimate render pass (Chakra's own SSR-safe pattern: mount with a fallback, then
+-    // again once the real breakpoint resolves client-side). Not a regression in this branch's own
+-    // logic; asserting both calls agree is what actually matters here, not the raw count.
++    // Renders twice, not once — `useRecentlyViewedRailVisibleCount`'s own `useMediaQuery` calls
++    // add a second, legitimate render pass (matching this environment's SSR-safe
++    // mount-with-fallback-then-resolve pattern). Not a regression in this branch's own logic;
++    // asserting both calls agree is what actually matters here, not the raw count.
+     expect(mockZimmRecentlyViewedRail.mock.calls.length).toBeGreaterThanOrEqual(1);
+     const allCallsAgree = mockZimmRecentlyViewedRail.mock.calls.every(
+       ([callProps]) => JSON.stringify(callProps) === JSON.stringify(mockZimmRecentlyViewedRail.mock.calls[0][0]),
+@@ -238,62 +228,43 @@ describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan
+       headingLevel: 'h3',
+       variation: 'recentlyViewed',
+     });
++  });
+ 
+-    // This branch is fed the real tracked ids, in the order the history hook returned them — the
+-    // "any other recommender" test below covers the mirror-image half (never handed real ids).
+-    expect(mockUseRecentlyViewedProductFetch).toHaveBeenCalledWith(['rec-1', 'rec-2']);
++  test('any other recommender still calls getRecommendations and renders via ProductScroller, not the rail', () => {
++    const mockGetRecommendations = vi.fn();
++    mockUseEinstein.mockReturnValue({
++      isLoading: false,
++      recommendations: mockRecommendations,
++      getZoneRecommendations: vi.fn(),
++      getRecommendations: mockGetRecommendations,
++      sendClickReco: vi.fn(),
++      sendViewReco: vi.fn(),
++    });
++
++    renderRecommendedProducts({ recommender: EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE });
++
++    expect(screen.getByTestId('product-scroller-stub')).toBeInTheDocument();
++    expect(screen.queryByTestId('zimm-recently-viewed-rail-stub')).not.toBeInTheDocument();
++    expect(mockSelectRecentlyViewedCard).not.toHaveBeenCalled();
++    // Proves the RV branch is recommender-gated (would fail if the `if (recommender ===
++    // PDP_RECENTLY_VIEWED)` check were accidentally dropped or widened) and that this sibling
++    // recommender still fetches its own recommendations exactly as before.
++    expect(mockGetRecommendations).toHaveBeenCalledWith(EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE, undefined);
+   });
+ 
+   test.each([
+-    ['hasRecentlyViewed true', true],
+-    ['hasRecentlyViewed false', false],
+-  ])(
+-    'any other recommender renders ProductScroller, not ZimmRecentlyViewedRail, regardless of history state (%s)',
+-    (_label, hasRecentlyViewedValue) => {
+-      mockUseEinstein.mockReturnValue({
+-        isLoading: false,
+-        recommendations: mockRecommendations,
+-        getZoneRecommendations: vi.fn(),
+-        getRecommendations: vi.fn(),
+-        sendClickReco: vi.fn(),
+-        sendViewReco: vi.fn(),
+-      });
+-      mockUseRecentlyViewedHistory.mockReturnValue({
+-        hasRecentlyViewed: hasRecentlyViewedValue,
+-        recentlyViewedIds: hasRecentlyViewedValue ? ['rec-1'] : [],
+-        markProductViewed: vi.fn(),
+-      });
+-      mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
+-
+-      renderRecommendedProducts({ recommender: EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE });
+-
+-      expect(screen.getByTestId('product-scroller-stub')).toBeInTheDocument();
+-      expect(screen.queryByTestId('zimm-recently-viewed-rail-stub')).not.toBeInTheDocument();
+-      expect(mockSelectRecentlyViewedCard).not.toHaveBeenCalled();
+-
+-      // A non-Recently-Viewed instance is never handed this shopper's real tracked ids (see
+-      // index.tsx's own `useRecentlyViewedProductFetch` call) — otherwise every other rail on the
+-      // same page would silently trigger its own redundant getProducts call for data it never
+-      // reads, even when real view history exists (the `hasRecentlyViewedValue` true case here).
+-      expect(mockUseRecentlyViewedProductFetch).toHaveBeenCalledWith([]);
+-    },
+-  );
+-
+-  test('recommender=PDP_RECENTLY_VIEWED + hasRecentlyViewed false renders null (AC 8): no rail, no scroller', () => {
++    ['recs is an empty array (AC 8: a real zero-history response)', buildRecentlyViewedRecommendations([])],
++    ["recommendations has not resolved yet (useEinstein()'s own pre-fetch initial value)", []],
++    ['recs is undefined on the recommendations object', { recommenderName: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED }],
++  ])('renders null — no rail, no scroller — when %s', (_label, recommendationsValue) => {
+     mockUseEinstein.mockReturnValue({
+       isLoading: false,
+-      recommendations: [],
++      recommendations: recommendationsValue,
+       getZoneRecommendations: vi.fn(),
+       getRecommendations: vi.fn(),
+       sendClickReco: vi.fn(),
+       sendViewReco: vi.fn(),
+     });
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
+ 
+     renderRecommendedProducts({ recommender: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED });
+ 
+@@ -307,101 +278,53 @@ describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan
+     expect(mockSelectRecentlyViewedCard).not.toHaveBeenCalled();
+   });
+ 
+-  test('on the Cart route, renders null even when hasRecentlyViewed is true (Marcel, 2026-09-10: "no recently viewed on cart")', () => {
+-    // Deliberately hasRecentlyViewed: true — proves the Cart exclusion wins even when there IS
+-    // history to show, not just the already-covered "nothing to show anyway" case above. Cart has
+-    // no Zimmermann page override of its own; its base page passes
++  test('on the Cart route, renders null even when recs has items (Marcel, 2026-09-10: "no recently viewed on cart")', () => {
++    // Deliberately non-empty recs — proves the Cart exclusion wins even when there IS real
++    // Einstein data to show, not just the already-covered "nothing to show anyway" case above.
++    // Cart has no Zimmermann page override of its own; its base page passes
+     // recommender={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}, which resolves to the exact same
+     // string as PDP_RECENTLY_VIEWED (see index.tsx's own isCartPage comment) — this recommender
+     // value alone cannot distinguish the two, so this test renders at the real recommender value
+     // used everywhere else in this suite and asserts the *route* is what suppresses it.
++    const mockGetRecommendations = vi.fn();
+     mockUseEinstein.mockReturnValue({
+       isLoading: false,
+-      recommendations: [],
++      recommendations: buildRecentlyViewedRecommendations(mockRecentlyViewedProducts),
+       getZoneRecommendations: vi.fn(),
+-      getRecommendations: vi.fn(),
++      getRecommendations: mockGetRecommendations,
+       sendClickReco: vi.fn(),
+       sendViewReco: vi.fn(),
+     });
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rec-1', 'rec-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockRecentlyViewedProducts, isLoading: false });
+ 
+     renderRecommendedProducts({ recommender: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED }, '/cart');
+ 
+     expect(screen.queryByTestId('zimm-recently-viewed-rail-stub')).not.toBeInTheDocument();
+     expect(screen.queryByTestId('product-scroller-stub')).not.toBeInTheDocument();
+-    // The fetch itself must not fire either — real Commerce API data for a card that will never
+-    // render is pure waste, not just an invisible one.
+-    expect(mockUseRecentlyViewedProductFetch).toHaveBeenCalledWith([]);
++    // Accepted "wasted call" (build plan E1's own "Cart wasted-call note"): the fetch-effect now
++    // fires unconditionally for every recommender, Cart included, even though the render branch
++    // above returns null for it — one harmless, unread network call on a descoped surface.
++    // Documented here rather than left as an untested assumption.
++    expect(mockGetRecommendations).toHaveBeenCalledWith(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED, undefined);
+   });
+ 
+-  test('dead-check reordering (bug fix #3): recommendations empty/undefined from useEinstein() + hasRecentlyViewed true still renders the rail', () => {
+-    // This is the exact regression fix #3 exists to catch. Before the reorder, the pre-existing
+-    // dead-check (`!isLoading && (!recommendations || recommendations.length < 1)`) ran BEFORE
+-    // the Recently-Viewed branch below it and would have returned `null` unconditionally here —
+-    // `recommendations` is `undefined` (exercising the check's `!recommendations` clause) and
+-    // never populated for this branch regardless, so this would fire whether `recommendations`
+-    // ends up `undefined` or (as in real production) an unpopulated `[]` — regardless of
+-    // `hasRecentlyViewed`. If the branch is ever moved back below that check, this test fails.
+-    mockUseEinstein.mockReturnValue({
+-      isLoading: false,
+-      recommendations: undefined,
+-      getZoneRecommendations: vi.fn(),
+-      getRecommendations: vi.fn(),
+-      sendClickReco: vi.fn(),
+-      sendViewReco: vi.fn(),
+-    });
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rec-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: [mockRecentlyViewedProducts[0]],
+-      isLoading: false,
+-    });
+-    mockSelectRecentlyViewedCard.mockReturnValue({
+-      id: 'rec-1',
+-      href: '/product/rec-1',
+-      name: 'Product One',
+-      primaryImage: { src: 'https://example.test/image.jpg', alt: 'Product One' },
+-      currentPrice: undefined,
+-    });
+-
+-    renderRecommendedProducts({ recommender: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED });
+-
+-    expect(screen.getByTestId('zimm-recently-viewed-rail-stub')).toBeInTheDocument();
+-    expect(screen.queryByTestId('product-scroller-stub')).not.toBeInTheDocument();
+-  });
+-
+-  // The See-Full-History link. jsdom resolves `useBreakpointValue` to its `base` value (no real
+-  // viewport), so these fixtures are sized against `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base` (2)
+-  // rather than asserting anything about actual breakpoint switching — that's Chakra's own
+-  // concern, not this component's. What this component owns is purely "count vs threshold", which
+-  // is breakpoint-agnostic to test.
++  // The See-Full-History link. jsdom resolves both `useMediaQuery` checks inside
++  // `useRecentlyViewedRailVisibleCount` to `false` (see the `matchMedia` polyfill above), so
++  // these fixtures are sized against `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base` (2) rather than
++  // asserting anything about actual breakpoint switching — that's Chakra's own concern, not this
++  // component's. What this component owns is purely "count vs threshold", which is
++  // breakpoint-agnostic to test.
+   test('See-Full-History link appears when available cards exceed the visible count at this breakpoint', () => {
++    const ids = ['rec-1', 'rec-2', 'rec-3'];
+     mockUseEinstein.mockReturnValue({
+       isLoading: false,
+-      recommendations: [],
++      recommendations: buildRecentlyViewedRecommendations(
++        ids.map((id) => ({ id, name: `Product ${id}` }) as RecentlyViewedProduct),
++      ),
+       getZoneRecommendations: vi.fn(),
+       getRecommendations: vi.fn(),
+       sendClickReco: vi.fn(),
+       sendViewReco: vi.fn(),
+     });
+-    const ids = ['rec-1', 'rec-2', 'rec-3'];
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ids,
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: ids.map((id) => ({ id, name: `Product ${id}` } as RecentlyViewedProduct)),
+-      isLoading: false,
+-    });
+     mockSelectRecentlyViewedCard.mockImplementation((product) => ({
+       id: product?.id ?? '',
+       href: `/product/${product?.id ?? ''}`,
+@@ -420,24 +343,17 @@ describe('RecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan
+   });
+ 
+   test('See-Full-History link is absent when available cards do not exceed the visible count at this breakpoint', () => {
++    const ids = ['rec-1', 'rec-2'];
+     mockUseEinstein.mockReturnValue({
+       isLoading: false,
+-      recommendations: [],
++      recommendations: buildRecentlyViewedRecommendations(
++        ids.map((id) => ({ id, name: `Product ${id}` }) as RecentlyViewedProduct),
++      ),
+       getZoneRecommendations: vi.fn(),
+       getRecommendations: vi.fn(),
+       sendClickReco: vi.fn(),
+       sendViewReco: vi.fn(),
+     });
+-    const ids = ['rec-1', 'rec-2'];
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ids,
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: ids.map((id) => ({ id, name: `Product ${id}` } as RecentlyViewedProduct)),
+-      isLoading: false,
+-    });
+     mockSelectRecentlyViewedCard.mockImplementation((product) => ({
+       id: product?.id ?? '',
+       href: `/product/${product?.id ?? ''}`,
+diff --git a/overrides/app/components/recommended-products/index.tsx b/overrides/app/components/recommended-products/index.tsx
+index 81e267a..91ce4ab 100644
+--- a/overrides/app/components/recommended-products/index.tsx
++++ b/overrides/app/components/recommended-products/index.tsx
+@@ -37,41 +37,43 @@
+  * "toolchain requires a different access shape than the untyped base file used" reasoning as the
+  * annotations above.
+  *
+- * SFCC-83/84 build plan step A6 adds one branch: when `recommender ===
+- * EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED` (`'viewed-recently-einstein'`, the same string
+- * `CART_RECENTLY_VIEWED` resolves to — confirmed identical in
+- * node_modules/@salesforce/retail-react-app/app/constants.js:154-160), this component renders
+- * `ZimmRecentlyViewedRail` instead of `ProductScroller`, gated by `useRecentlyViewedHistory`'s
+- * `hasRecentlyViewed` (overrides/app/hooks/useRecentlyViewedHistory.ts). Every other recommender
++ * SFCC-83/84 — this branch renders `ZimmRecentlyViewedRail` instead of `ProductScroller` when
++ * `recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED` (`'viewed-recently-einstein'`, the
++ * same string `CART_RECENTLY_VIEWED` resolves to — confirmed identical in
++ * node_modules/@salesforce/retail-react-app/app/constants.js:156,160). Every other recommender
+  * keeps the original `ProductScroller` branch below, untouched.
+  *
+- * **Revised 2026-09-08, build plan §2 "Interim data source" (Einstein confirmed "Not Deployed" on
+- * every real Zimmermann site) — supersedes the original 2026-09-07 A6 draft, not merely extends
+- * it.** That draft mapped Einstein's own `recommendations.recs` through `selectRecentlyViewedCard`
+- * directly and gated on `useRecentlyViewedGate`'s plain boolean. This branch now instead reads
+- * `recentlyViewedIds` off `useRecentlyViewedHistory` (renamed from `useRecentlyViewedGate`,
+- * extended to also track ids) and fetches real product data for them via
+- * `useRecentlyViewedProductFetch` (overrides/app/utils/recentlyViewedProductFetch.ts) before
+- * mapping through the same (revised) `selectRecentlyViewedCard` — `recommendations.recs` is never
+- * read for this one branch, at all. Three consequences fall out of that switch, each fixed here
+- * rather than carried forward as a latent bug:
+- * 1. The `getRecommendations`/`getZoneRecommendations` effect below now returns early for this one
+- *    recommender — calling either would fire a real Einstein request whose response this branch
+- *    no longer consumes.
+- * 2. Because that effect never runs for this recommender, `useEinstein()`'s own `recommendations`
+- *    state never leaves its `useState([])` initial value
+- *    (node_modules/@salesforce/retail-react-app/app/hooks/use-einstein.js:462-463) for this
+- *    branch — which would make the pre-existing dead-check below evaluate `true` unconditionally
+- *    (via its `recommendations.length < 1` clause specifically, since `recommendations` itself
+- *    stays a truthy `[]`, never falsy) and return `null` regardless of `hasRecentlyViewed`. Fixed
+- *    by moving this whole branch ahead of that check — see the comment there. Every other
+- *    recommender is unaffected by the reordering.
+- * 3. `sendViewReco`/`sendClickReco`/`dataCloud.sendViewRecommendations` are Einstein's own
+- *    impression/click analytics, keyed by a real `recoUUID` from an actual `getRecommendations`
+- *    response — with none for this branch, the existing `isOnScreen && recommendations?.recs`
+- *    effect below correctly no-ops for it on its own (`recommendations` stays `[]`, so `.recs` is
+- *    `undefined`); no separate code change was needed there, only confirmation. Accepted,
+- *    temporary analytics gap on this one branch, stated in the PR body, not a silent regression.
++ * **Build plan step E1 (2026-09-15) wires this branch to real Einstein data**, replacing an
++ * interim browser-tracked mechanism (shipped as draft PR #107) that existed only because Einstein
++ * was confirmed "Not Deployed" on every real Zimmermann site. That interim build tracked viewed
++ * product ids in local storage and fetched real product data for them via a dedicated utility —
++ * both deleted in build plan step E4 — instead of ever reading `useEinstein()`'s own
++ * `recommendations`. This branch now matches the other four recommenders in this same file
++ * exactly:
++ * 1. The `getRecommendations`/`getZoneRecommendations` effect below fires unconditionally for
++ *    this recommender too — no more early return for it.
++ * 2. Cards are built by mapping `recommendations.recs` through the unchanged
++ *    `selectRecentlyViewedCard`. Einstein's own `fetchRecProductDetails`
++ *    (use-einstein.js:465 onward) already merges each rec with its full hydrated `getProducts`
++ *    record before this component ever sees it (`{...rec, ...product, productId, image}`), so
++ *    every field `selectRecentlyViewedCard` reads (`id`/`name`/`imageGroups`/`variants`/`price`/
++ *    `currency`) is present — a strict superset of the plain `ShopperProductsTypes.Product` shape
++ *    the interim build fed it, confirmed directly against that function's body rather than
++ *    assumed.
++ * 3. The empty-state gate (AC 8) is now `!recommendations?.recs?.length` directly. This one check
++ *    owns both the loading case (`useEinstein()`'s own `useState([])` initial value,
++ *    use-einstein.js:463, means `recs` is `undefined` until the request resolves) and the true
++ *    zero-history case. This branch still sits ahead of the base dead-check below — inherited from
++ *    the interim build's own ordering — though it no longer strictly matters either way, since
++ *    every path inside this `if` returns (null or the rail) and never falls through; there's just
++ *    no reason to move it.
++ *
++ * **Named, intended behaviour change, not a regression:** the `isOnScreen && recommendations?.recs`
++ * impression-tracking effect below previously no-opped for this branch only because
++ * `recommendations` stayed permanently `[]` under the interim bypass. Now that real recs arrive,
++ * `sendViewReco`/`dataCloud.sendViewRecommendations` begin firing for this rail too, closing a
++ * previously-accepted, temporary analytics gap — a direct consequence of point 1 above, not a
++ * separate code change.
+  *
+  * `ref` is still attached on the Recently Viewed branch too, via a plain wrapping `<Box
+  * ref={ref}>` — `isOnScreen` below (the impression-tracking gate for `sendViewReco`/
+@@ -157,10 +159,8 @@ import { useShopperCustomersMutation } from '@salesforce/commerce-sdk-react';
+ import { ZimmRecentlyViewedRail } from '../ui-kits/organisms/zimmRecentlyViewedRail';
+ import type { ZimmProductCardProps } from '../ui-kits/organisms/zimmProductCard';
+ import { selectRecentlyViewedCard } from '../../utils/recentlyViewedCard';
+-import type { RecentlyViewedCard } from '../../utils/recentlyViewedCard';
+-import { useRecentlyViewedHistory } from '../../hooks/useRecentlyViewedHistory';
++import type { RecentlyViewedCard, RecentlyViewedProduct } from '../../utils/recentlyViewedCard';
+ import { useRecentlyViewedRailVisibleCount } from '../../hooks/useRecentlyViewedRailVisibleCount';
+-import { useRecentlyViewedProductFetch } from '../../utils/recentlyViewedProductFetch';
+ 
+ /**
+  * The See-Full-History link's own accessible label. Not in this file's existing message set (it
+@@ -184,17 +184,6 @@ const messages = defineMessages({
+  */
+ type RecommendedProduct = { productId?: string };
+ 
+-/**
+- * Stable empty-id-list reference passed to `useRecentlyViewedProductFetch` for every recommender
+- * except Recently-Viewed itself (see the hook call below) — an inline `[]` literal would behave
+- * identically (`cappedIds.length > 0` is `false` either way, per
+- * recentlyViewedProductFetch.ts's own `enabled` check), but a module-level constant avoids
+- * allocating a fresh array on every render for no reason. Same naming/intent as
+- * `useRecentlyViewedHistory.ts`'s own `EMPTY_IDS`
+- * (overrides/app/hooks/useRecentlyViewedHistory.ts:18).
+- */
+-const NO_RECENTLY_VIEWED_IDS: readonly string[] = [];
+-
+ export type RecommendedProductsProps = {
+   /* The title to appear above the product scroller */
+   title?: ReactNode;
+@@ -261,46 +250,20 @@ const RecommendedProducts = ({
+   // `=== '/cart'` would only ever match the default site.
+   const location = useLocation();
+   const isCartPage = location.pathname.endsWith('/cart');
+-  // Unconditional, alongside the hook calls above — must run on every render, including the
+-  // ones that hit the dead-code early returns further below, per React's rules of hooks.
+-  const { hasRecentlyViewed, recentlyViewedIds } = useRecentlyViewedHistory();
+   // The See-Full-History trigger threshold, resolved for whichever breakpoint is actually
+   // current. Also unconditional per rules of hooks; only meaningful inside the Recently-Viewed
+-  // branch below, same as the two hooks immediately above. Reads the current breakpoint only — no
+-  // ResizeObserver, no runtime DOM measurement, matching the AC's own viewport-relative "exceeds
+-  // the visible rail width" wording (Open Question 1). See the module docblock's own "See-Full-
+-  // History link" section for why this is no longer a plain `useBreakpointValue` call.
++  // branch below, same as `useLocation()` immediately above (whose derived `isCartPage` is also
++  // only meaningful there). Reads the current breakpoint only — no ResizeObserver, no runtime DOM
++  // measurement, matching the AC's own viewport-relative "exceeds the visible rail width" wording
++  // (Open Question 1). See the module docblock's own "See-Full-History link" section for why this
++  // is no longer a plain `useBreakpointValue` call.
+   const visibleCardCount = useRecentlyViewedRailVisibleCount();
+   // `buildUrl` site/locale-prefixes an internal path (e.g. `/en-GB/recently-viewed` on a non-AU
+   // storefront) — AGENTS.md's Multi-site section: never assume routing. The rail itself must not
+   // build this prefix; this container does it once, here.
+   const { buildUrl } = useMultiSite();
+-  // Also unconditional, same rules-of-hooks reason — but only ever given this shopper's real
+-  // tracked ids (and therefore only ever allowed to fire its own `getProducts` request, per its
+-  // own `enabled: cappedIds.length > 0`) when this particular instance is actually the
+-  // Recently-Viewed branch below. Every other recommender rendered on the same page (e.g. PDP's
+-  // own Might-Also-Like rail, mounted right alongside this one) would otherwise silently trigger
+-  // a second, unread product fetch whenever this browser already has tracked view history — the
+-  // same "network call fetching data nothing will ever read" problem fixed for
+-  // getRecommendations/getZoneRecommendations below, applied here to the fetch this branch adds.
+-  // `!isCartPage` too — see that constant's own comment above; Cart never renders this branch's
+-  // output, so fetching real product data for it there would be pure waste.
+-  const { products: recentlyViewedProducts } = useRecentlyViewedProductFetch(
+-    recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED && !isCartPage
+-      ? recentlyViewedIds
+-      : NO_RECENTLY_VIEWED_IDS,
+-  );
+ 
+   useEffect(() => {
+-    // SFCC-83/84 build plan A6, bug fix #2 (2026-09-08 revision) — Recently Viewed no longer
+-    // reads Einstein's `recommendations` at all (see the branch further below), so calling
+-    // `getRecommendations`/`getZoneRecommendations` for it would be a real network request
+-    // fetching a response nothing ever reads. Skip both below for this one recommender; every
+-    // other recommender's fetch is unaffected.
+-    if (recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED) {
+-      return;
+-    }
+-
+     // Check if the component should fetch results or not. This is useful
+     // when you are still waiting on additional data, like `products`.
+     if (typeof shouldFetch === 'function' && !shouldFetch()) {
+@@ -350,16 +313,12 @@ const RecommendedProducts = ({
+   }, [isOnScreen, recommendations]);
+ 
+   // SFCC-83 — Recently Viewed only. Every other recommender falls through to the unchanged
+-  // ProductScroller branch below. Moved ahead of the dead-check below (build plan A6, bug fix #3,
+-  // 2026-09-08 revision) — see this file's own module docblock for the full "why". In short: this
+-  // branch's cards no longer come from `recommendations` at all (see the effect above, bug fix
+-  // #2), so `recommendations`/`isLoading` stay at `useEinstein()`'s own untouched initial state
+-  // (`[]`/`false`) for this recommender, which would make the dead-check below evaluate `true`
+-  // unconditionally (via its `recommendations.length < 1` clause specifically, since
+-  // `recommendations` itself stays a truthy `[]`, never falsy) and return `null` regardless of
+-  // `hasRecentlyViewed` if this branch still ran after it. Every other recommender is unaffected
+-  // by the reordering — they still hit the exact same dead-check + ProductScroller path below,
+-  // unchanged, just after this check now short-circuits past them when it applies.
++  // ProductScroller branch below. This branch sits ahead of the base dead-check below (see this
++  // file's own module docblock, point 3, for why that no longer strictly matters but is kept
++  // anyway) — every path inside this `if` returns on its own, so it never falls through to that
++  // dead-check or the ProductScroller return regardless. Every other recommender is unaffected:
++  // they still hit the exact same dead-check + ProductScroller path below, unchanged, just after
++  // this check now short-circuits past them when it applies.
+   if (recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED) {
+     // Cart exclusion (2026-09-10, Marcel) — see the isCartPage constant's own comment above for
+     // why this can't be expressed as a distinct recommender value. No rail, no title, no
+@@ -368,19 +327,23 @@ const RecommendedProducts = ({
+       return null;
+     }
+ 
+-    // AC 8's empty-state gate — see useRecentlyViewedHistory.ts's own docblock. No rail, no
+-    // title, no placeholder.
+-    if (!hasRecentlyViewed) {
++    // AC 8's empty-state gate, now against Einstein's own recs directly (build plan step E1) —
++    // see this file's own module docblock for why this one check covers both the loading case
++    // (`recs` undefined until `getRecommendations` resolves) and the true zero-history case. No
++    // rail, no title, no placeholder.
++    if (!recommendations?.recs?.length) {
+       return null;
+     }
+ 
+-    // `recentlyViewedProducts` is real, strongly-typed Commerce API data (see
+-    // recentlyViewedProductFetch.ts), unlike the old `recommendations.recs` chain this replaces —
+-    // nothing here is `any`, so (unlike the untouched `.find`/`.some`/`.map` callbacks elsewhere
+-    // in this file, which still read off `useEinstein()`'s untyped `recommendations`) no step of
+-    // this chain needs an explicit parameter-type annotation to satisfy `noImplicitAny`.
+-    const cards: ZimmProductCardProps[] = recentlyViewedProducts
+-      .map((product) => selectRecentlyViewedCard(product, formatPrice))
++    // `recommendations.recs` is `useEinstein()`'s own untyped (`any`) result — like the
++    // `.find`/`.some`/`.map` callbacks elsewhere in this file that already read off it, the
++    // mapping callback below needs an explicit parameter-type annotation to satisfy
++    // `noImplicitAny`. `RecentlyViewedProduct` (recentlyViewedCard.ts's own alias for
++    // `ShopperProductsTypes.Product`) is reused here rather than a hand-rolled inline shape, since
++    // it already names every field `selectRecentlyViewedCard` reads, and this input is a strict
++    // superset of it (see the module docblock above).
++    const cards: ZimmProductCardProps[] = recommendations.recs
++      .map((product: RecentlyViewedProduct) => selectRecentlyViewedCard(product, formatPrice))
+       .filter((card: RecentlyViewedCard | null): card is RecentlyViewedCard => card !== null)
+       .map(
+         (card: RecentlyViewedCard): ZimmProductCardProps => ({
+@@ -411,9 +374,9 @@ const RecommendedProducts = ({
+       // inset inside the page's normal content padding while every sibling rail on the same page
+       // bleeds edge-to-edge, and zimmRecentlyViewedRail.css.ts's own card-width math (e.g.
+       // 201x2=402) assumes the full viewport width is actually available. `title` is passed
+-      // straight through, no `recommendations?.displayMessage` fallback — `recommendations` is
+-      // never populated for this branch (see above), and this component owns no copy of its own
+-      // (build plan A5/A6): the real title always comes from the caller.
++      // straight through with no `recommendations?.displayMessage` fallback — this component owns
++      // no copy of its own for this branch (build plan A5/A6): the real title always comes from
++      // the caller, regardless of whether Einstein's own `displayMessage` is present.
+       <Box ref={ref} {...(props as BoxProps)}>
+         <ZimmRecentlyViewedRail
+           title={title}

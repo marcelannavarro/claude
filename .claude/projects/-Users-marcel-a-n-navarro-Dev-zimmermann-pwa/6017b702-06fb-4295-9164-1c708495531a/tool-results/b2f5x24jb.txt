@@ -1,0 +1,793 @@
+🎭 Playwright Skill - Universal Executor
+
+📄 Executing file: /private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/6017b702-06fb-4295-9164-1c708495531a/scratchpad/playwright-test-authmodal-merge.js
+🚀 Starting automation...
+
+=== PHASE 1: registering throwaway account: zimm-debug-1790172478147@example.com ===
+[reg-console] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[reg-console] Warning: The result of getServerSnapshot should be cached to avoid an infinite loop%s 
+    at App (http://localhost:3000/mobify/bundle/development/main.js:30785:3)
+    at RouteComponent (http://localhost:3000/mobify/bundle/development/vendor.js:23423:7)
+    at C (http://localhost:3000/mobify/bundle/development/vendor.js:100163:37)
+    at WithErrorHandling(withRouter(routeComponent(App)))
+    at AppErrorBoundary (http://localhost:3000/mobify/bundle/development/vendor.js:23063:5)
+    at WrappedComponent (http://localhost:3000/mobify/bundle/development/vendor.js:23916:42)
+    at C (http://localhost:3000/mobify/bundle/development/vendor.js:100163:37)
+    at UIDReset (http://localhost:3000/mobify/bundle/development/vendor.js:101953:23)
+    at Switch (http://localhost:3000/mobify/bundle/development/vendor.js:23808:5)
+    at UiCopyProvider (http://localhost:3000/mobify/bundle/development/main.js:58780:3)
+    at EnvironmentProvider (http://localhost:3000/mobify/bundle/development/vendor.js:127543:11)
+    at ColorModeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:119687:5)
+    at ThemeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:870:50)
+    at ThemeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:130657:11)
+    at ChakraProvider (http://localhost:3000/mobify/bundle/development/vendor.js:126835:5)
+    at ChakraProvider2 (http://localhost:3000/mobify/bundle/development/vendor.js:128256:5)
+    at g (http://localhost:3000/mobify/bundle/development/vendor.js:169221:24)
+    at StoreLocatorProvider (http://localhost:3000/mobify/bundle/development/main.js:12600:3)
+    at MultiSiteProvider (http://localhost:3000/mobify/bundle/development/main.js:14804:9)
+    at CommerceApiProvider (http://localhost:3000/mobify/bundle/development/vendor.js:22437:5)
+    at AppConfig (http://localhost:3000/mobify/bundle/development/main.js:30349:3)
+    at Hydrate (http://localhost:3000/mobify/bundle/development/vendor.js:25281:3)
+    at QueryClientProvider (http://localhost:3000/mobify/bundle/development/vendor.js:25349:3)
+    at WithReactQuery (http://localhost:3000/mobify/bundle/development/vendor.js:24093:3)
+    at CorrelationIdProvider (http://localhost:3000/mobify/bundle/development/vendor.js:24238:3)
+    at Router (http://localhost:3000/mobify/bundle/development/vendor.js:99525:30)
+    at BrowserRouter (http://localhost:3000/mobify/bundle/development/vendor.js:98955:35)
+    at OuterApp (http://localhost:3000/mobify/bundle/development/vendor.js:22897:3)
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: null, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] Warning: %s: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.%s PageDesignerProvider 
+    at PageDesignerProvider (http://localhost:3000/mobify/bundle/development/vendor.js:172122:33)
+    at OfflineBoundary (http://localhost:3000/mobify/bundle/development/main.js:3794:5)
+    at C (http://localhost:3000/mobify/bundle/development/vendor.js:100163:37)
+    at main
+    at http://localhost:3000/mobify/bundle/development/vendor.js:819:66
+    at ChakraComponent (http://localhost:3000/mobify/bundle/development/vendor.js:130826:102)
+    at div
+    at http://localhost:3000/mobify/bundle/development/vendor.js:819:66
+    at ChakraComponent (http://localhost:3000/mobify/bundle/development/vendor.js:130826:102)
+    at SkipNavContent2 (http://localhost:3000/mobify/bundle/development/vendor.js:128729:13)
+    at BonusProductSelectionModalProvider (http://localhost:3000/mobify/bundle/development/main.js:16808:3)
+    at CartDrawerProvider (http://localhost:3000/mobify/bundle/development/main.js:60659:3)
+    at AddToCartModalProvider (http://localhost:3000/mobify/bundle/development/main.js:15190:3)
+    at div
+    at http://localhost:3000/mobify/bundle/development/vendor.js:819:66
+    at ChakraComponent (http://localhost:3000/mobify/bundle/development/vendor.js:130826:102)
+    at CurrencyProvider (http://localhost:3000/mobify/bundle/development/main.js:14855:13)
+    at IntlProvider (http://localhost:3000/mobify/bundle/development/vendor.js:93178:47)
+    at StorefrontPreview (http://localhost:3000/mobify/bundle/development/vendor.js:13472:3)
+    at div
+    at http://localhost:3000/mobify/bundle/development/vendor.js:819:66
+    at ChakraComponent (http://localhost:3000/mobify/bundle/development/vendor.js:130826:102)
+    at App (http://localhost:3000/mobify/bundle/development/main.js:30785:3)
+    at RouteComponent (http://localhost:3000/mobify/bundle/development/vendor.js:23423:7)
+    at C (http://localhost:3000/mobify/bundle/development/vendor.js:100163:37)
+    at WithErrorHandling(withRouter(routeComponent(App)))
+    at AppErrorBoundary (http://localhost:3000/mobify/bundle/development/vendor.js:23063:5)
+    at WrappedComponent (http://localhost:3000/mobify/bundle/development/vendor.js:23916:42)
+    at C (http://localhost:3000/mobify/bundle/development/vendor.js:100163:37)
+    at UIDReset (http://localhost:3000/mobify/bundle/development/vendor.js:101953:23)
+    at Switch (http://localhost:3000/mobify/bundle/development/vendor.js:23808:5)
+    at UiCopyProvider (http://localhost:3000/mobify/bundle/development/main.js:58780:3)
+    at EnvironmentProvider (http://localhost:3000/mobify/bundle/development/vendor.js:127543:11)
+    at ColorModeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:119687:5)
+    at ThemeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:870:50)
+    at ThemeProvider (http://localhost:3000/mobify/bundle/development/vendor.js:130657:11)
+    at ChakraProvider (http://localhost:3000/mobify/bundle/development/vendor.js:126835:5)
+    at ChakraProvider2 (http://localhost:3000/mobify/bundle/development/vendor.js:128256:5)
+    at g (http://localhost:3000/mobify/bundle/development/vendor.js:169221:24)
+    at StoreLocatorProvider (http://localhost:3000/mobify/bundle/development/main.js:12600:3)
+    at MultiSiteProvider (http://localhost:3000/mobify/bundle/development/main.js:14804:9)
+    at CommerceApiProvider (http://localhost:3000/mobify/bundle/development/vendor.js:22437:5)
+    at AppConfig (http://localhost:3000/mobify/bundle/development/main.js:30349:3)
+    at Hydrate (http://localhost:3000/mobify/bundle/development/vendor.js:25281:3)
+    at QueryClientProvider (http://localhost:3000/mobify/bundle/development/vendor.js:25349:3)
+    at WithReactQuery (http://localhost:3000/mobify/bundle/development/vendor.js:24093:3)
+    at CorrelationIdProvider (http://localhost:3000/mobify/bundle/development/vendor.js:24238:3)
+    at Router (http://localhost:3000/mobify/bundle/development/vendor.js:99525:30)
+    at BrowserRouter (http://localhost:3000/mobify/bundle/development/vendor.js:98955:35)
+    at OuterApp (http://localhost:3000/mobify/bundle/development/vendor.js:22897:3)
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] isRegistered effect fired {loggingIn: true, registering: false, isNowRegistered: false, isOpen: false, isOtpAuthOpen: false}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: null, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [HMR] connected
+[reg-console] %c[HMR] bundle 'client' has 26 warnings color: #999933;
+[reg-console] %c./node_modules/@salesforce/retail-react-app/app/pages/home/data.js 27:41-51
+export 'GithubLogo' (imported as 'GithubLogo') was not found in '@salesforce/retail-react-app/app/components/icons' (possible exports: AccountIcon, AlertIcon, AmexIcon, AppleIcon, ArrowDownIcon, ArrowLinkIcon, ArrowUpIcon, BagIcon, BagSelectedIcon, BagSolidIcon, BasketIcon, BrandLogo, CVVIcon, CalendarIcon, CarouselIcon, CarouselSelectedIcon, ChatIcon, CheckCircleIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon, CreditCardIcon, DashboardIcon, DeleteIcon, DiscoverIcon, EditIcon, EmailIcon, ExternalLinkIcon, FavouritesIcon, FavouritesSolidIcon, FileIcon, FilterIcon, FlagCAIcon, FlagCNIcon, FlagFRIcon, FlagGBIcon, FlagITIcon, FlagJPIcon, FlagUSIcon, GoogleIcon, HamburgerIcon, HeartIcon, HeartSolidIcon, InfoIcon, InfoSelectedIcon, InfoSolidIcon, LikeIcon, LocationIcon, LockIcon, MastercardIcon, MenuIcon, MinusIcon, MuteIcon, PasswordHideIcon, PasswordShowIcon, PauseIcon, PaypalIcon, PhoneIcon, PlayIcon, PlugIcon, PlusIcon, ProfileIcon, ReceiptIcon, SearchIcon, ShareIcon, ShareTwoIcon, SignoutIcon, SocialFacebookIcon, SocialInstagramIcon, SocialPinterestIcon, SocialTwitterIcon, SocialYoutubeIcon, SparkleIcon, StoreIcon, UserIcon, VisaIcon, VisibilityIcon, VisibilityOffIcon, WhatsAppIcon, WishlistIcon, WishlistSolidIcon, ZimmAppleSignInIcon, ZimmGoogleSignInIcon)
+./node_modules/@salesforce/retail-react-app/app/pages/home/data.js 57:41-50
+export 'FigmaLogo' (imported as 'FigmaLogo') was not found in '@salesforce/retail-react-app/app/components/icons' (possible exports: AccountIcon, AlertIcon, AmexIcon, AppleIcon, ArrowDownIcon, ArrowLinkIcon, ArrowUpIcon, BagIcon, BagSelectedIcon, BagSolidIcon, BasketIcon, BrandLogo, CVVIcon, CalendarIcon, CarouselIcon, CarouselSelectedIcon, ChatIcon, CheckCircleIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon, CreditCardIcon, DashboardIcon, DeleteIcon, DiscoverIcon, EditIcon, EmailIcon, ExternalLinkIcon, FavouritesIcon, FavouritesSolidIcon, FileIcon, FilterIcon, FlagCAIcon, FlagCNIcon, FlagFRIcon, FlagGBIcon, FlagITIcon, FlagJPIcon, FlagUSIcon, GoogleIcon, HamburgerIcon, HeartIcon, HeartSolidIcon, InfoIcon, InfoSelectedIcon, InfoSolidIcon, LikeIcon, LocationIcon, LockIcon, MastercardIcon, MenuIcon, MinusIcon, MuteIcon, PasswordHideIcon, PasswordShowIcon, PauseIcon, PaypalIcon, PhoneIcon, PlayIcon, PlugIcon, PlusIcon, ProfileIcon, ReceiptIcon, SearchIcon, ShareIcon, ShareTwoIcon, SignoutIcon, SocialFacebookIcon, SocialInstagramIcon, SocialPinterestIcon, SocialTwitterIcon, SocialYoutubeIcon, SparkleIcon, StoreIcon, UserIcon, VisaIcon, VisibilityIcon, VisibilityOffIcon, WhatsAppIcon, WishlistIcon, WishlistSolidIcon, ZimmAppleSignInIcon, ZimmGoogleSignInIcon)
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Assembly/Assembly.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Button/Button.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Button/Button.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Button/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Button/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Carousel/Carousel.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Carousel/Carousel.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Carousel/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Carousel/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/Columns.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/Columns.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/SingleColumn.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/SingleColumn.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Columns/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/ContentfulContainer.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/ContentfulContainer.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/ContentfulContainerAsHyperlink.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/ContentfulContainerAsHyperlink.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/ContentfulContainer/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Divider/ContentfulDivider.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Divider/ContentfulDivider.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Divider/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Divider/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Heading/Heading.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Heading/Heading.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Heading/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Heading/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Image/Image.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Image/Image.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Image/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Image/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Layout/Flex.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Layout/Flex.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/RichText/RichText.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/RichText/RichText.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/RichText/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/RichText/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Text/Text.tsx' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Text/Text.tsx'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Text/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/components/Text/index.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/utils/combineClasses.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/utils/combineClasses.ts'
+./node_modules/@contentful/experiences-components-react/dist/index.js 
+Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/utils/extractRenderProps.ts' file: Error: ENOENT: no such file or directory, open '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@contentful/experiences-components-react/src/utils/extractRenderProps.ts' color: #999933;
+[reg-console] console.groupEnd
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: null, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] Applying inline style violates the following Content Security Policy directive 'style-src-elem 'self' 'nonce-Y1JEjHBrRQ2SGxuJ94s/FQ==' 'unsafe-inline' 'sha256-GNF74DLkXb0fH3ILHgILFjk1ozCF3SNXQ5mQb7WLu/Y=' static.client.measmerize.com'. Note that 'unsafe-inline' is ignored if either a hash or nonce value is present in the source list. The action has been blocked.
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: null, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] Failed to load resource: the server responded with a status of 400 ()
+[reg-console] Failed to load resource: the server responded with a status of 404 (Not Found)
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] Failed to load resource: the server responded with a status of 404 (Not Found)
+[reg-console] pwa-kit-react-sdk.registerServiceWorker INFO ServiceWorker registration successful with scope: http://localhost:3000/
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] Failed to load resource: the server responded with a status of 404 (Not Found)
+[reg-console] r: 404 Not Found
+    at http://localhost:3000/mobify/bundle/development/vendor.js:31215:48391
+    at za (http://localhost:3000/mobify/bundle/development/vendor.js:31215:22073)
+    at Generator._invoke (http://localhost:3000/mobify/bundle/development/vendor.js:31215:21823)
+    at Ta.forEach.e.<computed> [as next] (http://localhost:3000/mobify/bundle/development/vendor.js:31215:22447)
+    at la (http://localhost:3000/mobify/bundle/development/vendor.js:31215:20032)
+    at o (http://localhost:3000/mobify/bundle/development/vendor.js:31215:20236)
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] [TEMP DEBUG merge][:R2naelajklqum:] RENDER {customerType: guest, isRegistered: false}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+[reg-console] retail-react-app.App.IntlProvider WARN Missing translation {"errorMessage":"[@formatjs/intl Error MISSING_TRANSLATION] Missing message: \"wishlist.auth.drawer.title\" for locale \"en\", using default message as fallback. \n"}
+REGISTRATION PHASE FAILED: page.goto: Timeout 30000ms exceeded.
+Call log:
+[2m  - navigating to "http://localhost:3000/", waiting until "networkidle"[22m
+
+--- INTERACTIVE ELEMENTS DUMP (registration-error) ---
+[
+ {
+  "tag": "A",
+  "text": "Skip to Content",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Menu"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "New",
+  "name": null,
+  "id": "popover-trigger-:R53al9lajklqumH1:",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Dresses",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Bags",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Tailoring",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Fall 2026",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "View all",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Clothing",
+  "name": null,
+  "id": "popover-trigger-:R55al9lajklqumH1:",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Dresses",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Tops",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Shorts & Pants",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Denim",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Skirts",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Knitwear",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Jackets & Coats",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Jumpsuits & Playsuits",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Tailoring",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Swimwear",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Kids",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "All Clothing",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Accessories",
+  "name": null,
+  "id": "popover-trigger-:R57al9lajklqumH1:",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Bags",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Shoes",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Jewellery",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Belts",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Sunglasses",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Scarves",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Hats",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Towels & Pareos",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Hair Accessories",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Bag Charms",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "All Accessories",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "Collections",
+  "name": null,
+  "id": "popover-trigger-:R59al9lajklqumH1:",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Ready to Wear",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Volume in Motion",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Set for the Season",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "The New Denim",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Modern Utility",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Cruise RTW 2026",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Swim & Resort",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "The New Wave",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Monochrome Moments",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Summer Pairings",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Resort & Swim Campaign",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Resort Swim 2026",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Z.Immerse",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "INPUT",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Search"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Search"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "My Account"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Wishlist"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "My cart, number of items: 0"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Search"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "My cart, number of items: 0"
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Logo"
+ },
+ {
+  "tag": "LABEL",
+  "text": "Email",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "INPUT",
+  "text": "",
+  "name": "footer-email",
+  "id": ":r0:",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Subscribe"
+ },
+ {
+  "tag": "A",
+  "text": "Our Story",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Sustainability",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Careers",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Brand Protection",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Acknowledgement of Country",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Boutique Locator",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Book an Appointment",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Connect With Us",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Call us on +61280808080"
+ },
+ {
+  "tag": "A",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Chat with us on Whatsapp — opens in a new tab"
+ },
+ {
+  "tag": "A",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Email us on care@zimmermann.com"
+ },
+ {
+  "tag": "A",
+  "text": "Orders & Shipping",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Return Policy",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Submit a Return",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "FAQs",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Size Guide",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "BUTTON",
+  "text": "",
+  "name": null,
+  "id": "",
+  "ariaLabel": "Zimmermann home"
+ },
+ {
+  "tag": "A",
+  "text": "Accessibility",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Terms & Conditions",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Privacy Policy",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Modern Slavery",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ },
+ {
+  "tag": "A",
+  "text": "Cookie Settings",
+  "name": null,
+  "id": "",
+  "ariaLabel": null
+ }
+]

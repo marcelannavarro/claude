@@ -1,0 +1,568 @@
+--- pr81-base/overrides/app/pages/product-detail/index.tsx	2026-09-07 10:26:07
++++ pr81-head/overrides/app/pages/product-detail/index.tsx	2026-09-07 10:26:07
+@@ -27,6 +27,11 @@
+ 
+ // Components
+ import { Box, Button, Skeleton, Stack, Heading } from '@salesforce/retail-react-app/app/components/shared/ui';
++// SFCC-731 — replaces layerStyle="page" (base SFCC theme, symmetric padding + maxWidth on the
++// whole page) so the hero section can bleed full-width per the confirmed Figma spec, while the
++// rest of the page keeps the same containment layerStyle="page" used to provide. See this
++// file's own render for the boxed={false}/boxed={true} split.
++import PageContainer from '../../components/pageContainer';
+ // Imported directly from Chakra, not the shared/ui barrel: that barrel's useBreakpointValue
+ // re-export (shared/ui/useBreakpointValue/index.jsx) is an untyped .jsx passthrough, so a
+ // generic type argument on it fails to compile — same reasoning ui-kits files already use for
+@@ -65,22 +70,13 @@
+  * just in Storybook/Vitest. Base callers (cart, wishlist, bonus-product) still reach our
+  * override, because their issuer is inside node_modules and so is redirected normally.
+  */
+-import ProductView from '../../components/product-view';
++import ProductView, { SFCC_COLOUR_ATTRIBUTE_ID } from '../../components/product-view';
+ import type { ChildProductOrderability, ProductViewRefScope } from '../../components/product-view';
+ // SFCC-89 — static product information.
+ import { ZimmProductMeta } from '../../components/ui-kits/molecules/zimmProductMeta';
+ import { selectPdpProductInfo, buildRelatedSwatches, type RelatedSwatch } from './productInfo';
+ import { selectVariantScopedPriceData } from './variantScopedPrice';
+ import { StaticProductHeader } from './partials/staticProductHeader';
+-
+-// SFCC-91 — colour swatches (rendered inside ProductView via renderVariationAttribute).
+-// Lazy-loaded so the swatch group's chunk is deferred until React renders it, keeping it
+-// off the critical path for LCP.
+-const ZimmColourSwatchGroup = React.lazy(() => import('../../components/ui-kits/molecules/zimmColourSwatchGroup'));
+-
+-/** SFCC variation attribute ID for the colour attribute — local copy, product-view no longer owns this. */
+-const COLOUR_VARIATION_ATTRIBUTE_ID = 'color';
+-
+ // Still used for product-set/bundle child cards below — that flow is out of scope for
+ // SFCC-736/195's Figma review (a plain single-product PDP hero column), so it is left as-is
+ // rather than folded into the new trigger-list/drawer treatment.
+@@ -117,6 +113,11 @@
+ import { useStoreLocatorModal } from '@salesforce/retail-react-app/app/hooks/use-store-locator';
+ import { isPickupMethod } from '@salesforce/retail-react-app/app/utils/shipment-utils';
+ import { useProductInventory } from '@salesforce/retail-react-app/app/hooks/use-product-inventory';
++
++// SFCC-91 — colour swatches (rendered inside ProductView via renderVariationAttribute).
++// Lazy-loaded so the swatch group's chunk is deferred until React renders it, keeping it
++// off the critical path for LCP.
++const ZimmColourSwatchGroup = React.lazy(() => import('../../components/ui-kits/molecules/zimmColourSwatchGroup'));
+ 
+ /*
+  * `@salesforce/retail-react-app` ships no TypeScript types (see
+@@ -292,7 +293,7 @@
+   // urlColour is the query-string colour param, read on every render so it is always current.
+   // It is the only signal the ZimmColourSwatchGroup molecule needs — the atom navigates via
+   // <Link to={href}>, updating the URL, and useDerivedProduct inside ProductView picks it up.
+-  const urlColour = new URLSearchParams(location.search).get(COLOUR_VARIATION_ATTRIBUTE_ID) ?? undefined;
++  const urlColour = new URLSearchParams(location.search).get(SFCC_COLOUR_ATTRIBUTE_ID) ?? undefined;
+ 
+   /****************************** Sets and Bundles *********************************/
+   const [childProductSelection, setChildProductSelection] = useState<Record<string, ChildProductSelection>>({});
+@@ -918,9 +919,11 @@
+   });
+ 
+   return (
+-    <Box className="sf-product-detail-page" layerStyle="page" data-testid="product-details-page">
++    <Box className="sf-product-detail-page" data-testid="product-details-page">
+       <Heading as="h1" srOnly>
+-        <FormattedMessage defaultMessage="Product Details" id="product_detail.title.product_details" />
++        {product?.name ?? (
++          <FormattedMessage defaultMessage="Product Details" id="product_detail.title.product_details" />
++        )}
+       </Heading>
+       <Helmet>
+         <title>{product?.pageTitle}</title>
+@@ -933,248 +936,274 @@
+           product?.pageDescription && <meta name="description" content={product.pageDescription} />}
+       </Helmet>
+ 
+-      <Stack spacing={16}>
+-        {isProductASet || isProductABundle ? (
+-          <Fragment>
+-            <Island hydrateOn={'visible'}>
+-              <ProductView
+-                product={product}
+-                category={primaryCategory?.parentCategoryTree || []}
+-                addToCart={isProductASet ? handleProductSetAddToCart : handleProductBundleAddToCart}
+-                addToWishlist={handleAddToWishlist}
+-                isProductLoading={isProductLoading}
+-                isBasketLoading={isBasketLoading}
+-                isWishlistLoading={isWishlistLoading}
+-                validateOrderability={handleChildProductValidation}
+-                childProductOrderability={childProductOrderability}
+-                setSelectedBundleQuantity={setSelectedBundleQuantity}
+-                selectedBundleParentQuantity={selectedBundleQuantity}
+-                pickupInStore={!!pickupInStoreMap[product?.id]}
+-                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+-                onOpenStoreLocator={onOpenStoreLocator}
+-                showDeliveryOptions={storeLocatorEnabled}
+-              />
+-            </Island>
++      <Stack spacing={0}>
++        {/*
++         * SFCC-731 — full-bleed: no page-level maxWidth/padding from PageContainer itself, so
++         * ProductView's own Flex (gap/pr confirmed against Figma) controls the gallery/content
++         * column layout. `marginX` here additionally cancels the *sitewide* `#app-main`
++         * padding — `theme/globalStyles.ts`'s `zimmAppMain` (Tier 2, applies to every page for
++         * header/footer/main alignment; deliberately not touched here, same
++         * negative-margin-to-opt-out technique `RecommendedProducts`'s `mx` already uses below
++         * for its own edge-to-edge carousels). Matches `zimmAppMain`'s own breakpoint (`xl`,
++         * not this file's `lg`) and its exact --zimm-grid-margin-mobile/-desktop values, so the
++         * cancellation is exact at every width, not just at our own layout breakpoint.
++         */}
++        <PageContainer
++          boxed={false}
++          marginX={{
++            base: 'calc(-1 * var(--zimm-grid-margin-mobile))',
++            xl: 'calc(-1 * var(--zimm-grid-margin-desktop))',
++          }}
++        >
++          {isProductASet || isProductABundle ? (
++            <Fragment>
++              <Island hydrateOn={'visible'}>
++                <ProductView
++                  product={product}
++                  category={primaryCategory?.parentCategoryTree || []}
++                  addToCart={isProductASet ? handleProductSetAddToCart : handleProductBundleAddToCart}
++                  addToWishlist={handleAddToWishlist}
++                  isProductLoading={isProductLoading}
++                  isBasketLoading={isBasketLoading}
++                  isWishlistLoading={isWishlistLoading}
++                  validateOrderability={handleChildProductValidation}
++                  childProductOrderability={childProductOrderability}
++                  setSelectedBundleQuantity={setSelectedBundleQuantity}
++                  selectedBundleParentQuantity={selectedBundleQuantity}
++                  pickupInStore={!!pickupInStoreMap[product?.id]}
++                  setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
++                  onOpenStoreLocator={onOpenStoreLocator}
++                  showDeliveryOptions={storeLocatorEnabled}
++                />
++              </Island>
+ 
+-            <hr />
++              <hr />
+ 
+-            {
+-              // Render the child products
+-              product?.childProducts?.map(
+-                ({ product: childProduct, quantity: childQuantity }: { product: SfccProduct; quantity: number }) => (
+-                  <Box key={childProduct.id} data-testid="child-product">
+-                    <ProductView
+-                      // Do not use an arrow function as we are manipulating the functions scope.
+-                      ref={function (this: ProductViewRefScope, ref: ChildProductRef['ref']) {
+-                        // Assign the "set" scope of the ref, this is how we access the internal
+-                        // validation.
+-                        childProductRefs.current[childProduct.id] = {
+-                          ref,
+-                          validateOrderability: this.validateOrderability,
+-                        };
+-                      }}
+-                      product={childProduct}
+-                      isProductPartOfSet={isProductASet}
+-                      isProductPartOfBundle={isProductABundle}
+-                      childOfBundleQuantity={childQuantity}
+-                      selectedBundleParentQuantity={selectedBundleQuantity}
+-                      addToCart={
+-                        isProductASet
+-                          ? (productSelectionValues: ProductSelectionValue[]) => handleAddToCart(productSelectionValues)
+-                          : null
+-                      }
+-                      addToWishlist={isProductASet ? handleAddToWishlist : null}
+-                      onVariantSelected={(product: SfccProduct, variant: SfccVariant, quantity: number) => {
+-                        if (quantity) {
+-                          setChildProductSelection((previousState) => ({
+-                            ...previousState,
+-                            [product.id]: {
+-                              product,
+-                              variant,
+-                              quantity: isProductABundle ? childQuantity : quantity,
+-                            },
+-                          }));
+-                        } else {
+-                          const selections = {
+-                            ...childProductSelection,
++              {
++                // Render the child products
++                product?.childProducts?.map(
++                  ({ product: childProduct, quantity: childQuantity }: { product: SfccProduct; quantity: number }) => (
++                    <Box key={childProduct.id} data-testid="child-product">
++                      <ProductView
++                        // Do not use an arrow function as we are manipulating the functions scope.
++                        ref={function (this: ProductViewRefScope, ref: ChildProductRef['ref']) {
++                          // Assign the "set" scope of the ref, this is how we access the internal
++                          // validation.
++                          childProductRefs.current[childProduct.id] = {
++                            ref,
++                            validateOrderability: this.validateOrderability,
+                           };
+-                          delete selections[product.id];
+-                          setChildProductSelection(selections);
++                        }}
++                        product={childProduct}
++                        isProductPartOfSet={isProductASet}
++                        isProductPartOfBundle={isProductABundle}
++                        childOfBundleQuantity={childQuantity}
++                        selectedBundleParentQuantity={selectedBundleQuantity}
++                        addToCart={
++                          isProductASet
++                            ? (productSelectionValues: ProductSelectionValue[]) =>
++                                handleAddToCart(productSelectionValues)
++                            : null
+                         }
+-                      }}
+-                      isProductLoading={isProductLoading}
+-                      isBasketLoading={isBasketLoading}
+-                      isWishlistLoading={isWishlistLoading}
+-                      setChildProductOrderability={setChildProductOrderability}
+-                      pickupInStore={!!pickupInStoreMap[childProductSelection[childProduct?.id]?.variant?.productId]}
+-                      setPickupInStore={(checked: boolean) =>
+-                        childProduct &&
+-                        handlePickupInStoreChange(childProductSelection[childProduct?.id]?.variant?.productId, checked)
+-                      }
+-                      onOpenStoreLocator={onOpenStoreLocator}
+-                      showDeliveryOptions={storeLocatorEnabled && !isProductABundle}
+-                    />
+-                    <InformationAccordion product={childProduct} />
++                        addToWishlist={isProductASet ? handleAddToWishlist : null}
++                        onVariantSelected={(product: SfccProduct, variant: SfccVariant, quantity: number) => {
++                          if (quantity) {
++                            setChildProductSelection((previousState) => ({
++                              ...previousState,
++                              [product.id]: {
++                                product,
++                                variant,
++                                quantity: isProductABundle ? childQuantity : quantity,
++                              },
++                            }));
++                          } else {
++                            const selections = {
++                              ...childProductSelection,
++                            };
++                            delete selections[product.id];
++                            setChildProductSelection(selections);
++                          }
++                        }}
++                        isProductLoading={isProductLoading}
++                        isBasketLoading={isBasketLoading}
++                        isWishlistLoading={isWishlistLoading}
++                        setChildProductOrderability={setChildProductOrderability}
++                        pickupInStore={!!pickupInStoreMap[childProductSelection[childProduct?.id]?.variant?.productId]}
++                        setPickupInStore={(checked: boolean) =>
++                          childProduct &&
++                          handlePickupInStoreChange(
++                            childProductSelection[childProduct?.id]?.variant?.productId,
++                            checked,
++                          )
++                        }
++                        onOpenStoreLocator={onOpenStoreLocator}
++                        showDeliveryOptions={storeLocatorEnabled && !isProductABundle}
++                      />
++                      <InformationAccordion product={childProduct} />
+ 
+-                    <Box display={['none', 'none', 'none', 'block']}>
+-                      <hr />
++                      <Box display={['none', 'none', 'none', 'block']}>
++                        <hr />
++                      </Box>
+                     </Box>
+-                  </Box>
+-                ),
+-              )
+-            }
+-          </Fragment>
+-        ) : (
+-          <Fragment>
+-            <Island hydrateOn={'visible'}>
+-              <ProductView
+-                product={product}
+-                category={primaryCategory?.parentCategoryTree || []}
+-                renderVariationAttribute={(attr) => {
+-                  if (attr.id !== COLOUR_VARIATION_ATTRIBUTE_ID) return undefined;
+-                  const values = (attr.values ?? []).map((v: SfccSwatchAttrValue) => ({
+-                    value: v.value ?? '',
+-                    name: v.name ?? v.value ?? '',
+-                    imageUrl: v.image?.disBaseLink || v.image?.link,
+-                    href: v.href ?? undefined,
+-                    orderable: v.orderable ?? true,
+-                  }));
++                  ),
++                )
++              }
++            </Fragment>
++          ) : (
++            <Fragment>
++              <Island hydrateOn={'visible'}>
++                <ProductView
++                  product={product}
++                  category={primaryCategory?.parentCategoryTree || []}
++                  renderVariationAttribute={(attr) => {
++                    if (attr.id !== SFCC_COLOUR_ATTRIBUTE_ID) return undefined;
++                    const values = (attr.values ?? []).map((v: SfccSwatchAttrValue) => ({
++                      value: v.value ?? '',
++                      name: v.name ?? v.value ?? '',
++                      imageUrl: v.image?.disBaseLink || v.image?.link,
++                      href: v.href ?? undefined,
++                      orderable: v.orderable ?? true,
++                    }));
+ 
+-                  // SFCC-708 — append related-colour swatches from the SCAPI-enriched
+-                  // c_relatedSwatches field. The backend already filters out invalid and
+-                  // offline products, so every item here is safe to render. Each swatch
+-                  // links to a different master product via a full page reload (forceReload).
+-                  // `c_relatedSwatches` is a Zimmermann SCAPI attribute absent from the SDK
+-                  // types — the cast is safe because the backend guarantees this shape.
+-                  const relatedSwatches = buildRelatedSwatches(
+-                    (product?.c_relatedSwatches ?? []) as RelatedSwatch[],
+-                    productUrlBuilder,
+-                    COLOUR_VARIATION_ATTRIBUTE_ID,
+-                  );
+-                  const allValues = [...values, ...relatedSwatches];
+-                  // Skeleton height approximates the rendered swatch group:
+-                  // label row (var(--zimm-scale-xl) = 24px) + gap (8px) + swatch row (48px).
+-                  return (
+-                    <Suspense fallback={<Skeleton height="80px" />}>
+-                      <ZimmColourSwatchGroup
+-                        values={allValues}
+-                        selectedValue={urlColour}
+-                        label={attr.name ?? 'Colour'}
+-                      />
+-                    </Suspense>
+-                  );
+-                }}
+-                renderHeader={(headerProps) => (
+-                  <StaticProductHeader
+-                    {...headerProps}
+-                    priceData={isPriceStale ? null : variantScopedPriceData ?? headerProps.priceData}
+-                    isPriceLoading={isPriceStale}
+-                  />
+-                )}
+-                addToCart={handleAddToCart}
+-                addToWishlist={handleAddToWishlist}
+-                isProductLoading={isProductLoading}
+-                isBasketLoading={isBasketLoading}
+-                isWishlistLoading={isWishlistLoading}
+-                childProductOrderability={childProductOrderability}
+-                setChildProductOrderability={setChildProductOrderability}
+-                setSelectedBundleQuantity={setSelectedBundleQuantity}
+-                selectedBundleParentQuantity={selectedBundleQuantity}
+-                pickupInStore={!!pickupInStoreMap[product?.id]}
+-                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+-                onOpenStoreLocator={onOpenStoreLocator}
+-                showDeliveryOptions={storeLocatorEnabled}
+-                footerLinks={
+-                  // `ZimmProductMeta` renders here, not in a separate Box below `<Island>` (where
+-                  // `InformationAccordion` used to share one with it) — that positioned it as a
+-                  // full-width block below the *whole* ProductView (both the image gallery and
+-                  // info columns), so it rendered flush left instead of inside the info column,
+-                  // a real bug Tim caught by comparing the running page against Figma. Its own
+-                  // recipe (`zimmProductMeta.css.ts`'s `SPACE_META_ROW`/`paddingTop`) already
+-                  // supplies the 28px gap from the trigger rows above it — nothing extra needed
+-                  // here for that hop.
+-                  <>
+-                    <PdpFooterLinks
+-                      triggers={pdpDrawerTabs.map(({ id, label }) => ({ id, label }))}
+-                      onTriggerClick={openPdpDrawerAtTab}
+-                      findInBoutiqueLabel={findInBoutiqueLabel}
+-                      onFindInBoutiqueClick={openBoutiqueDrawer}
++                    // SFCC-708 — append related-colour swatches from the SCAPI-enriched
++                    // c_relatedSwatches field. The backend already filters out invalid and
++                    // offline products, so every item here is safe to render. Each swatch
++                    // links to a different master product via a full page reload (forceReload).
++                    // `c_relatedSwatches` is a Zimmermann SCAPI attribute absent from the SDK
++                    // types — the cast is safe because the backend guarantees this shape.
++                    const relatedSwatches = buildRelatedSwatches(
++                      (product?.c_relatedSwatches ?? []) as RelatedSwatch[],
++                      productUrlBuilder,
++                      SFCC_COLOUR_ATTRIBUTE_ID,
++                    );
++                    const allValues = [...values, ...relatedSwatches];
++                    // Skeleton height approximates the rendered swatch group:
++                    // label row (var(--zimm-scale-xl) = 24px) + gap (8px) + swatch row (48px).
++                    return (
++                      <Suspense fallback={<Skeleton height="80px" />}>
++                        <ZimmColourSwatchGroup
++                          values={allValues}
++                          selectedValue={urlColour}
++                          label={attr.name ?? 'Colour'}
++                        />
++                      </Suspense>
++                    );
++                  }}
++                  renderHeader={(headerProps) => (
++                    <StaticProductHeader
++                      {...headerProps}
++                      priceData={isPriceStale ? null : variantScopedPriceData ?? headerProps.priceData}
++                      isPriceLoading={isPriceStale}
+                     />
+-                    <ZimmProductMeta modelInfo={staticInfo?.modelInfo} styleCode={staticInfo?.styleCode} />
+-                  </>
+-                }
+-              />
++                  )}
++                  addToCart={handleAddToCart}
++                  addToWishlist={handleAddToWishlist}
++                  isProductLoading={isProductLoading}
++                  isBasketLoading={isBasketLoading}
++                  isWishlistLoading={isWishlistLoading}
++                  childProductOrderability={childProductOrderability}
++                  setChildProductOrderability={setChildProductOrderability}
++                  setSelectedBundleQuantity={setSelectedBundleQuantity}
++                  selectedBundleParentQuantity={selectedBundleQuantity}
++                  pickupInStore={!!pickupInStoreMap[product?.id]}
++                  setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
++                  onOpenStoreLocator={onOpenStoreLocator}
++                  showDeliveryOptions={storeLocatorEnabled}
++                  footerLinks={
++                    // `ZimmProductMeta` renders here, not in a separate Box below `<Island>` (where
++                    // `InformationAccordion` used to share one with it) — that positioned it as a
++                    // full-width block below the *whole* ProductView (both the image gallery and
++                    // info columns), so it rendered flush left instead of inside the info column,
++                    // a real bug Tim caught by comparing the running page against Figma. Its own
++                    // recipe (`zimmProductMeta.css.ts`'s `SPACE_META_ROW`/`paddingTop`) already
++                    // supplies the 28px gap from the trigger rows above it — nothing extra needed
++                    // here for that hop.
++                    <>
++                      <PdpFooterLinks
++                        triggers={pdpDrawerTabs.map(({ id, label }) => ({ id, label }))}
++                        onTriggerClick={openPdpDrawerAtTab}
++                        findInBoutiqueLabel={findInBoutiqueLabel}
++                        onFindInBoutiqueClick={openBoutiqueDrawer}
++                      />
++                      <ZimmProductMeta modelInfo={staticInfo?.modelInfo} styleCode={staticInfo?.styleCode} />
++                    </>
++                  }
++                />
+ 
+-              <ZimmPdpDrawer
+-                key={activePdpTabId ?? 'closed'}
+-                isOpen={isPdpDrawerOpen}
+-                onClose={closePdpDrawer}
+-                size={pdpDrawerSize}
+-                tabs={pdpDrawerTabs}
+-                initialTabId={activePdpTabId ?? undefined}
+-                ariaLabel={pdpDrawerAriaLabel}
+-              />
+-              <ZimmDrawer
+-                isOpen={isBoutiqueDrawerOpen}
+-                onClose={closeBoutiqueDrawer}
+-                size="small"
+-                aria-label={findInBoutiqueLabel}
+-              >
+-                <Box padding="var(--zimm-scale-xl)">{comingSoon}</Box>
+-              </ZimmDrawer>
+-            </Island>
+-          </Fragment>
+-        )}
++                <ZimmPdpDrawer
++                  key={activePdpTabId ?? 'closed'}
++                  isOpen={isPdpDrawerOpen}
++                  onClose={closePdpDrawer}
++                  size={pdpDrawerSize}
++                  tabs={pdpDrawerTabs}
++                  initialTabId={activePdpTabId ?? undefined}
++                  ariaLabel={pdpDrawerAriaLabel}
++                />
++                <ZimmDrawer
++                  isOpen={isBoutiqueDrawerOpen}
++                  onClose={closeBoutiqueDrawer}
++                  size="small"
++                  aria-label={findInBoutiqueLabel}
++                >
++                  <Box padding="var(--zimm-scale-xl)">{comingSoon}</Box>
++                </ZimmDrawer>
++              </Island>
++            </Fragment>
++          )}
++        </PageContainer>
+ 
+-        {/* Product Recommendations */}
+-        <Stack spacing={16}>
+-          {!isProductASet && (
++        {/* Product Recommendations — stays contained, same padding/maxWidth layerStyle="page"
++            provided before. */}
++        <PageContainer boxed={true}>
++          <Stack spacing={16}>
++            {!isProductASet && (
++              <Island hydrateOn={'visible'}>
++                <RecommendedProducts
++                  title={
++                    <FormattedMessage
++                      defaultMessage="Complete the Set"
++                      id="product_detail.recommended_products.title.complete_set"
++                    />
++                  }
++                  recommender={EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET}
++                  products={[product]}
++                  mx={{ base: -4, md: -8, lg: 0 }}
++                  shouldFetch={() => product?.id}
++                />
++              </Island>
++            )}
+             <Island hydrateOn={'visible'}>
+               <RecommendedProducts
+                 title={
+                   <FormattedMessage
+-                    defaultMessage="Complete the Set"
+-                    id="product_detail.recommended_products.title.complete_set"
++                    defaultMessage="You might also like"
++                    id="product_detail.recommended_products.title.might_also_like"
+                   />
+                 }
+-                recommender={EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET}
++                recommender={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
+                 products={[product]}
+                 mx={{ base: -4, md: -8, lg: 0 }}
+                 shouldFetch={() => product?.id}
+               />
+             </Island>
+-          )}
+-          <Island hydrateOn={'visible'}>
+-            <RecommendedProducts
+-              title={
+-                <FormattedMessage
+-                  defaultMessage="You might also like"
+-                  id="product_detail.recommended_products.title.might_also_like"
+-                />
+-              }
+-              recommender={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
+-              products={[product]}
+-              mx={{ base: -4, md: -8, lg: 0 }}
+-              shouldFetch={() => product?.id}
+-            />
+-          </Island>
+ 
+-          <Island hydrateOn={'visible'}>
+-            <RecommendedProducts
+-              // The Recently Viewed recommender doesn't use `products`, so instead we
+-              // provide a key to update the recommendations on navigation.
+-              key={location.key}
+-              title={
+-                <FormattedMessage
+-                  defaultMessage="Recently Viewed"
+-                  id="product_detail.recommended_products.title.recently_viewed"
+-                />
+-              }
+-              recommender={EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED}
+-              mx={{ base: -4, md: -8, lg: 0 }}
+-            />
+-          </Island>
+-        </Stack>
++            <Island hydrateOn={'visible'}>
++              <RecommendedProducts
++                // The Recently Viewed recommender doesn't use `products`, so instead we
++                // provide a key to update the recommendations on navigation.
++                key={location.key}
++                title={
++                  <FormattedMessage
++                    defaultMessage="Recently Viewed"
++                    id="product_detail.recommended_products.title.recently_viewed"
++                  />
++                }
++                recommender={EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED}
++                mx={{ base: -4, md: -8, lg: 0 }}
++              />
++            </Island>
++          </Stack>
++        </PageContainer>
+       </Stack>
+     </Box>
+   );

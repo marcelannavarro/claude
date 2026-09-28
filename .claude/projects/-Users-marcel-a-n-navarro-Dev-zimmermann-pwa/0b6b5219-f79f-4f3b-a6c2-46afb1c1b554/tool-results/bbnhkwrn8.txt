@@ -1,0 +1,240 @@
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:19:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:119:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:223:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:257:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:302:  test('sizeChipWrapper never sets display:none — visibility belongs to the Step 6 organism, not this recipe', () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.tsx:107:      focusable?.focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/zimmColourSwatchGroup.css.ts:62:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/zimmColourSwatchGroup.css.ts:85:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/zimmColourSwatchGroup.css.ts:111:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/zimmColourSwatchGroup.css.ts:143:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/zimmColourSwatchGroup.css.ts:151:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:86:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:102:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:120:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:129:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:136:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:150:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:182:    // data-card-slot contract comment). Setting `display: 'none'` here would fight whatever the
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:195:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSlideIndicator/zimmSlideIndicator.css.ts:26:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.tsx:113: * (WCAG 2.1.1), since the arrows are `display:none` there and the indicator has no focusable
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:4:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:58:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:116:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:118:    radios()[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:178:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:180:    radios()[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:187:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:189:    radios()[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:196:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:198:    radios()[2].focus(); // 'm'
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:205:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:207:    radios()[2].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:214:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:216:    radios()[3].focus(); // 'l', last
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:223:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:225:    radios()[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:236:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:238:    radios()[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:246:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:248:    radios()[2].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:258:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:266:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:11:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:147:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:167:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:206:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:345:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmContactIconRow/zimmContactIconRow.css.ts:6:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmContactIconRow/zimmContactIconRow.css.ts:18:      display: 'inline-flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:4:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:124:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:150:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:179:    swatches[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:180:    await userEvent.keyboard('{ArrowRight}');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:202:    swatches[1].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.test.tsx:203:    await userEvent.keyboard('{ArrowRight}');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:37: *     `display: flex; align-items: center` to centre the text within that fixed height the same
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:66:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:76:      '&::-webkit-scrollbar': { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:100:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:107:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:118:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:136:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:156:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:178:      display: 'none',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:186:        display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:191:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:215:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductCardMedia/zimmProductCardMedia.css.ts:217:        display: 'none',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:2:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:80:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:83:    await userEvent.click(first);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:84:    await userEvent.keyboard('{ArrowRight}');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:2:import { expect, fn, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:64:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:109:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:118:    await userEvent.click(nextBtn);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:148:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:153:    swatches[0].focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:154:    await userEvent.keyboard('{ArrowRight}');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/index.stories.tsx:158:    await userEvent.keyboard('{ArrowLeft}');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:90:    (el as HTMLElement | null)?.focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:17:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:31:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.stories.tsx:4:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.stories.tsx:62:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.stories.tsx:67:    await userEvent.click(nextButton);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.tsx:86:    tabRefs.current.get(activeTabId)?.focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:10:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:59:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:80:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:84:    screen.getByRole('tab', { name: 'Details & Care' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:96:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:100:    screen.getByRole('tab', { name: 'Details & Care' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:106:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:109:    screen.getByRole('tab', { name: 'Details & Care' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:135:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:139:    screen.getByRole('tab', { name: 'Shipping & Returns' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:146:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/index.test.tsx:150:    screen.getByRole('tab', { name: 'Details & Care' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/zimmTabs.css.ts:13:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/zimmTabs.css.ts:24:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmTabs/zimmTabs.css.ts:46:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmNavItem/index.stories.tsx:3:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmNavItem/index.stories.tsx:62:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmNavItem/index.stories.tsx:108:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmNavItem/index.stories.tsx:110:    await userEvent.tab();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:3:import { expect, fn, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:48:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:90:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:93:    await userEvent.type(input, 'name@example.com');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:95:    await userEvent.click(submit);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:103:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:105:    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:114:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:116:    await userEvent.type(canvas.getByRole('textbox', { name: /email address/i }), 'not-an-email');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.stories.tsx:117:    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmContactIconRow/index.stories.tsx:23:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmContactIconRow/index.stories.tsx:51:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmInputAction/index.tsx:60:    <chakra.form onSubmit={handleSubmit} noValidate __css={{ display: 'block', width: '100%' }} style={style}>
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmLogo/index.stories.tsx:19:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmLogo/index.stories.tsx:37:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductMeta/index.stories.tsx:37:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductMeta/zimmProductMeta.css.ts:40:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductContent/zimmProductContent.css.ts:25:    display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductContent/index.stories.tsx:74:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductContent/index.stories.tsx:97:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductContent/index.stories.tsx:121:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/molecules/zimmProductContent/index.stories.tsx:138:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx:122:  play: PlayIcon,
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmNavItem/zimmNavItem.css.ts:13:  display: 'inline-flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx:46:        display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductPrice/zimmProductPrice.css.ts:47:        display: 'inline-flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSearchInput/zimmSearchInput.css.ts:64:      '&::-webkit-search-cancel-button': { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSearchInput/zimmSearchInput.css.ts:65:      '&::-webkit-search-decoration': { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/zimmDrawer.css.ts:46:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductStyleCode/index.stories.tsx:18:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductStyleCode/index.stories.tsx:30:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/index.stories.tsx:4:import { expect, userEvent, waitForElementToBeRemoved, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/index.stories.tsx:32:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/index.stories.tsx:53:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmDrawer/index.stories.tsx:59:    await userEvent.click(doc.getByRole('button', { name: /close/i }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductStyleCode/zimmProductStyleCode.css.ts:27:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmIcon/index.stories.tsx:128:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductModelInfo/index.stories.tsx:25:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductModelInfo/index.stories.tsx:34:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmColourSwatch/zimmColourSwatch.css.ts:12:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmColourSwatch/zimmColourSwatch.css.ts:33:      display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSearchInput/index.stories.tsx:3:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSearchInput/index.stories.tsx:42:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSearchInput/index.stories.tsx:45:    await userEvent.type(input, 'Silk dress');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:72:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductDescription/index.stories.tsx:35:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductDescription/index.stories.tsx:59:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductDescription/index.stories.tsx:77:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductName/index.stories.tsx:21:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmProductName/index.stories.tsx:52:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:2:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:71:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:74:    await userEvent.tab();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.ts:86:        display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.ts:93:        display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/zimmTextInput.css.ts:146:        display: 'inline-flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmColourSwatch/index.stories.tsx:74:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:3:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:38:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:41:    await userEvent.type(input, 'name@example.com');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:55:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:58:    await userEvent.type(input, 'name@example.com');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:61:    await userEvent.click(clearBtn);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:87:  play: async ({ canvasElement }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmModal/index.stories.tsx:42:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmButton/index.stories.tsx:3:import { expect, fn, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmButton/index.stories.tsx:320:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmButton/index.stories.tsx:323:    await userEvent.click(button);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmButton/index.stories.tsx:337:  play: async ({ canvasElement, args }) => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmButton/index.stories.tsx:340:    await userEvent.click(button);
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:108: *      device, since `display: none` removes the unconditional-state element from the tab order
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:150: *      `DESKTOP_QUERY` up as `display: 'flex'` — not `'block'` — since that is the actual display
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:234:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:241:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:249:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:261:          [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:264:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:266:          // Fix 2 (Scorer rework round 1): `display: none` removes an element from the tab
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:278:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:285:            display: 'none',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:292:            display: 'none',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:298:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:302:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:308:        // all, so it never sees the `display: none` below either, leaving notify-me at its natural
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:312:          [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.notifyMe}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:314:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:317:            display: 'block',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:326:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.bag}"]`]: { display: 'none' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:340:      // `document.styleSheets` in a live browser (price stayed `display: none` at 1280px width
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:349:          [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: { display: 'block' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:353:          // `display: 'flex'` (it centres the icon inside via alignItems/justifyContent) — this
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:359:          [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.bag}"]`]: { display: 'flex' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/zimmSubscribeSection.css.ts:44:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmModal/zimmModal.css.ts:14:      display: 'flex',
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/atoms/zimmModal/zimmModal.css.ts:31:    actions: { display: 'flex', gap: 'var(--zimm-scale-m)', justifyContent: 'flex-end' },
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx:4:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx:142:    await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'shopper@example.com');
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx:143:    await userEvent.click(screen.getByRole('button', { name: /subscribe/i }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx:153:    await userEvent.click(screen.getByRole('button', { name: 'mock-continue' }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx:197:    await userEvent.click(screen.getByRole('button', { name: 'mock-cancel' }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:143: * (2026-09-04): `[data-card-slot="bag"]` computed `display: none`.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:179: * Live-verified at a real 375px viewport (2026-09-04): bag `display: none`, price
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:180: * `display: none`, notify-me `display: block`.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:239: * viewport (2026-09-04): price `display: block`, notify-me `display: block` — both present
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:262: * `[data-card-slot="bag"]` computed `display: flex`.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:304: * Live-verified at a real 375px viewport (2026-09-04): bag `display: none`, price
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:305: * `display: none`, notify-me `display: block` — the same Fix F genuine swap `PLPOutOfStock`
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:19:import userEvent from '@testing-library/user-event';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:326:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:333:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:342:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:350:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:359:    const user = userEvent.setup();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:647:    expect((root[DESKTOP_QUERY] as Record<string, unknown>)[PRICE_KEY]).toEqual({ display: 'block' });
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:706:   * live browser: an unavailable PLP card's price stayed `display: none` at desktop width even
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:727: * resolves to `display: none` once Emotion's cascade runs for real. Composes the real root recipe
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:732:  test('a real [data-card-slot="sizeChips"] element, composed under the real unavailable-PLP root recipe, resolves to display:none', () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:855: * at all (confirmed by direct experiment — a real `.focus()` call correctly updates
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:864: * real `.focus()` call, so it is what actually proves the mechanism here.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:885:    // unconditional (outside-media-query) `display: none` default a touch/no-hover pointer sees
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:889:    // A real `.focus()` call (not `fireEvent.focus`, which only dispatches a synthetic event
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:892:    screen.getByRole('button', { name: 'Add to bag' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:895:    // circular — an element that is display:none is unfocusable and unreachable by Tab) bubbles
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:897:    // — the same live-DOM condition the real recipe's CSS rule keys its `display: block` off.
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:917:    screen.getByRole('button', { name: 'Outside the card' }).focus();
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:4:import { expect, userEvent, within } from 'storybook/test';
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:61:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:82:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:88:    await userEvent.click(doc.getByRole('tab', { name: 'Size Guide' }));
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:117:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.stories.tsx:148:  play: async () => {
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/ui-kits/organisms/zimmSubscribeModal/index.stories.tsx:38:  play: async () => {

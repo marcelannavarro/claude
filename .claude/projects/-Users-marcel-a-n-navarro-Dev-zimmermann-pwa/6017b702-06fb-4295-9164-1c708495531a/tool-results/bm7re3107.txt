@@ -1,0 +1,400 @@
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:208:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:236:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:238:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:249:15)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mElements/ZimmInlineMessage › MaxQuantityReached › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/elements-zimminlinemessage--max-quantity-reached&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('.css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:320:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:348:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:350:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:361:15)[22m[2m[22m
+
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/product-item/[22m[1mindex.stories.tsx[22m
+[1m[31m  [1m● [22m[1mCommerce/ProductItem › WithWarningMessage › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/commerce-productitem--with-warning-message&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('.css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:320:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:348:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:350:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:361:15)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mCommerce/ProductItem › WithDiscountLabel › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/commerce-productitem--with-discount-label&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('#\:rc\: > .css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:376:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:404:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:406:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:417:15)[22m[2m[22m
+
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmButton/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmDrawer/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/header/rightBar/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmNavItem/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmSubscribeModal/[22m[1mindex.stories.tsx[22m ([0m[1m[41m5.179 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmProductStyleCode/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/footer/[22m[1mindex.stories.tsx[22m ([0m[1m[41m5.9 s[49m[22m[0m)
+[1m[31m  [1m● [22m[1mLayout/Footer › SubscribePlaceholder › play-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/layout-footer--subscribe-placeholder&addonPanel=storybook/interactions/panel
+
+    [39mMessage:
+     expected 490 to be 491 // Object.is equality
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:432:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:460:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:462:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:473:15)[22m[2m[22m
+
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmInputAction/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmBadge/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmMediaTile/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmProductCard/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmSizeSelector/[22m[1mindex.stories.tsx[22m ([0m[1m[41m7.327 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/checkout/partials/[22m[1mpayment.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/checkout-redirect/[22m[1mindex.stories.tsx[22m ([0m[1m[41m7.329 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/product-view/[22m[1mindex.stories.tsx[22m ([0m[1m[41m7.488 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmSubscribeSection/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmPdpDrawer/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmWishlistAuthDrawer/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/list-menu/megaMenuContent/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmColourSwatchGroup/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmTextInput/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmLink/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/foundation/[22m[1mspacing.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/product-detail/partials/[22m[1menvironmentalQualitiesContent.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmProductGallery/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmAuthDrawerContent/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmProductModelInfo/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmSlideIndicator/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmProductMeta/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/list-menu/[22m[1mlist-menu.stories.tsx[22m ([0m[1m[41m10.42 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmWishlistBadge/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/header/leftBar/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmProductContent/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/list-menu/[22m[1mlist-menu-trigger.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/checkout-error/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/drawer-menu/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmDropdownItem/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmDropdown/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmCartDrawer/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/foundation/[22m[1mcolour.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmModal/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmSizeChip/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/confirmation/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmProductName/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmProductPrice/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmSocialButton/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmSearchInput/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/foundation/[22m[1mtypography.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmTabs/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmProductCardContent/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmSizeChipGroup/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/product-detail/partials/[22m[1mdetailsAndCareContent.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmLogo/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmProductCardMedia/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/product-detail/partials/[22m[1mpdpFooterLinks.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmContactIconRow/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/pages/product-detail/partials/[22m[1mstaticProductHeader.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/header/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/organisms/zimmGalleryOverlay/[22m[1mindex.stories.tsx[22m ([0m[1m[41m5.151 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmProductDescription/[22m[1mindex.stories.tsx[22m ([0m[1m[41m5.557 s[49m[22m[0m)
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/icons/[22m[1micons.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmIcon/[22m[1mindex.stories.tsx[22m
+[0m[7m[1m[32m PASS [39m[22m[27m[0m [0m[7m[33m browser: chromium [39m[27m[0m [2moverrides/app/components/ui-kits/molecules/zimmQuantityStepper/[22m[1mindex.stories.tsx[22m
+
+[1mSummary of all failing tests[22m
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2moverrides/app/components/ui-kits/atoms/zimmInlineMessage/[22m[1mindex.stories.tsx[22m
+[1m[31m  [1m● [22m[1mElements/ZimmInlineMessage › Warning › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/elements-zimminlinemessage--warning&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('.css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:208:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:236:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:238:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:249:15)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mElements/ZimmInlineMessage › MaxQuantityReached › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/elements-zimminlinemessage--max-quantity-reached&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('.css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:320:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:348:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:350:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/ui-kits/atoms/zimmInlineMessage/index.stories.tsx[39m[0m[2m:361:15)[22m[2m[22m
+
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2moverrides/app/components/product-item/[22m[1mindex.stories.tsx[22m
+[1m[31m  [1m● [22m[1mCommerce/ProductItem › WithWarningMessage › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/commerce-productitem--with-warning-message&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('.css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:320:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:348:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:350:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:361:15)[22m[2m[22m
+
+[1m[31m  [1m● [22m[1mCommerce/ProductItem › WithDiscountLabel › smoke-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/commerce-productitem--with-discount-label&addonPanel=storybook/a11y/panel
+
+    [39mMessage:
+     [31mExpected the HTML found at $('#\:rc\: > .css-ncmq7a') to have no violations:[39m
+
+    [90m<p class="css-ncmq7a">Maximum purchase quantity reached for this size</p>[39m
+
+    [31mReceived:[39m
+
+    [31m"Elements must meet minimum color contrast ratio thresholds (color-contrast)"[39m
+
+    [33mFix any of the following:
+      Element has insufficient color contrast of 2.95 (foreground color: #969696, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1[39m
+
+    [31mYou can find more information on this issue here:[39m
+    [34mhttps://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI[39m
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:376:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:404:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:406:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/product-item/index.stories.tsx[39m[0m[2m:417:15)[22m[2m[22m
+
+[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2moverrides/app/components/footer/[22m[1mindex.stories.tsx[22m ([0m[1m[41m5.9 s[49m[22m[0m)
+[1m[31m  [1m● [22m[1mLayout/Footer › SubscribePlaceholder › play-test[39m[22m
+
+    page.evaluate: StorybookTestRunnerError: [34m
+    Click to debug the error directly in Storybook:
+    http://localhost:6006/?path=/story/layout-footer--subscribe-placeholder&addonPanel=storybook/interactions/panel
+
+    [39mMessage:
+     expected 490 to be 491 // Object.is equality
+[2m[22m
+[2m    [0m[0m[22m
+[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:432:49[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat testFn ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:460:23)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:462:27[22m[2m[22m
+[2m      [2mat asyncGeneratorStep ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:3:28)[22m[2m[22m
+[2m      [2mat _next ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:21:17)[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:26:13[22m[2m[22m
+[2m      [2mat [22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:18:16[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36moverrides/app/components/footer/index.stories.tsx[39m[0m[2m:473:15)[22m[2m[22m
+
+
+[1mTest Suites: [22m[1m[31m3 failed[39m[22m, [1m[32m64 passed[39m[22m, 67 total
+[1mTests:       [22m[1m[31m5 failed[39m[22m, [1m[32m315 passed[39m[22m, 320 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        [1m[33m20.731 s[39m[22m
+[2mRan all test suites[22m[2m.[22m

@@ -1,0 +1,19 @@
+---
+name: feedback-review-verdict-severity
+description: "Marcel's review-verdict severity vs. author seniority: even a confirmed blocking-grade finding, or a scope/premise defect, can get waved through to full APPROVE when the PR author is senior/lateral"
+metadata: 
+  node_type: memory
+  type: feedback
+  originSessionId: a5a28cd1-65fd-4027-ab9f-e0ca692ed4f5
+  modified: 2026-09-01T05:51:41.152Z
+---
+
+When reviewing a colleague's PR (via zimmerMANNReview) and a finding is independently confirmed at must-fix/blocking severity, Marcel does not automatically choose a formal "Request Changes" verdict — he may deliberately choose comment-only, or even full approval, instead, even for a security-grade or scope-defining finding, when the author is senior or lateral (e.g. the project tech lead).
+
+**Example 1:** PR #75 (Tim Lavelle, tech lead) had a confirmed secret-leakage finding (`LHCI_SFDC_ACCESS_CONTROL` persisted in plaintext into a 30-day CI artifact + external LHCI server) — reproduced live, independently verified twice, no ambiguity in the technical claim. Given the choice between "Request changes" and "Comment only, let Tim triage," Marcel chose comment-only.
+
+**Example 2:** PR #79 (TimLavelleACC, same tech lead, SFCC-856 CSP hardening) had a finding I ranked #1 by cost-to-ignore — not just a code-quality issue but a scope/premise defect: the PR's own description claimed to close the Lighthouse `csp-xss` finding, but tracing `csp_evaluator`'s source confirmed `style-src` categorically cannot affect that audit's score (only `script-src`/`object-src`/`base-uri` can). I recommended "request changes" given that a false claim would close SFCC-856 on a wrong premise. Marcel overrode with "nothing but nitpicks, PR APPROVED" — folding even the premise-mismatch finding in with the genuine minor nitpicks (missing test, unshared constant) and approving outright, not just commenting.
+
+**Why:** the technical severity of a finding — and now, per example 2, even whether a finding is "just a nitpick" vs. "a scope/premise defect" — is judged on a separate axis from the *formal* review verdict. Seniority/lateral relationship is a legitimate input to the verdict axis itself, not just to comment phrasing. In both cases the underlying code was safe/correct to ship; the open item was documentation/framing (PR #79) or an already-otherwise-gated risk (PR #75, Tier-1 CODEOWNERS still pending). Marcel appears to weigh "is the code itself safe to merge" far more heavily than "is the PR's narrative 100% accurate" or "is this finding bigger than a nitpick" — a scope/premise issue fixable via a follow-up doc/ticket correction doesn't need to block the merge itself.
+
+**How to apply:** when presenting a PR review's adjudication questions, always ask the verdict question separately from "are the findings correct" — don't assume a confirmed must-fix finding, or a finding you'd personally rank above "nitpick," implies Request Changes. This is consistent with [[project_release_branch_status]]'s PR #75 entry and with zimmerMANNReview's own existing guidance to phrase blockers as questions (not directives) toward senior/lateral owners — this extends that same deference to the formal verdict mechanism itself (COMMENT/APPROVE vs REQUEST_CHANGES), not just comment wording. Calibrate your own recommendation accordingly: still surface a premise/scope defect clearly and rank it honestly, but don't over-weight it toward "should block" when the underlying code is sound and the author is senior/lateral — state it, recommend proportionately, and let Marcel make the actual call. Still ask each time rather than assuming approval is the default — the deciding factor was the author's seniority/relationship, not the finding's severity, so a similar finding against a junior contributor's PR or a lower-trust context might reasonably get the opposite call.

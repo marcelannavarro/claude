@@ -1,0 +1,616 @@
+########## 5ecd515 ##########
+refactor(footer): decompose into atoms/molecules/organisms with co-located styles
+
+What changed:
+- Split footer/index.tsx (561 lines, 5 components in one file) into independently
+  reusable pieces: ZimmModal (atom), ZimmContactIconRow (molecule),
+  ZimmSubscribeSection/ZimmSubscribeModal (organisms), plus footer-local
+  BottomBar/FooterNavColumn. footer/index.tsx is now pure assembly (~140 lines).
+- Extracted the subscribe state machine into useSubscribeSection, and generalized
+  useSubscribeModal -> useZimmModal so its focus/scroll/Tab-trap mechanics aren't
+  form-specific. Both now have direct unit tests they lacked as inline logic.
+- Co-located each component's theme recipe as <name>.css.ts beside it, replacing
+  the single 506-line theme/components/footer.ts (6 recipes + a small
+  footerShared.ts for the two values genuinely needed in more than one file).
+  No runtime change: Chakra resolves a recipe by name, not file path.
+- Fixed two accessibility bugs surfaced by local CodeRabbit review while touching
+  this code: the bottom-bar locale control was a focusable, labelled button with
+  no action (WCAG 3.2.4/4.1.2 — now a non-interactive div, same treatment as the
+  contact-icon fallback); the modal's Tab trap couldn't recover focus once it
+  landed outside the dialog (WCAG 2.1.2).
+- Updated CODEOWNERS, protectedFiles.md, frozenFiles.md, and overrideStyling.md to
+  match: ui-kits/ now has Tier 3 ownership (was previously uncovered by any rule),
+  and co-located *.css.ts files route to squad review instead of the Tier 1/2
+  UI-designer gate theme/components/ carries — documented as a deliberate,
+  narrower exception, not a general loosening. Ran sync:ai-rules to regenerate
+  the Cursor/Copilot mirrors of the changed rule docs.
+
+Why: footer review feedback kept landing on "too much logic in one file, doesn't
+follow our atom/molecule/organism structure." This establishes that pattern —
+co-located styles, organism-level reuse — as the example other component
+overrides should follow.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01AYdnn7QTVDop2pzv1Ni1wE
+
+----- FILES -----
+ .claude/registry/components.md                     |  50 +-
+ .claude/registry/hooks.md                          |  11 +-
+ .claude/rules/frozenFiles.md                       |   6 +-
+ .claude/rules/overrideStyling.md                   |  54 ++-
+ .claude/rules/protectedFiles.md                    |  10 +
+ .cursor/rules/tier1FrozenFiles.mdc                 |   6 +-
+ .cursor/rules/tier2ProtectedFiles.mdc              |  10 +
+ .github/copilot-instructions.md                    |  16 +-
+ CODEOWNERS                                         |  16 +
+ .../components/footer/bottomBar/bottomBar.css.ts   | 122 +++++
+ .../app/components/footer/bottomBar/index.tsx      |  69 +++
+ overrides/app/components/footer/footer.css.ts      | 142 ++++++
+ .../footer/footerNavColumn/footerNavColumn.css.ts  |  71 +++
+ .../components/footer/footerNavColumn/index.tsx    |  89 ++++
+ overrides/app/components/footer/index.stories.tsx  |   4 +-
+ overrides/app/components/footer/index.tsx          | 476 ++-----------------
+ .../ui-kits/atoms/zimmModal/index.stories.tsx      |  43 ++
+ .../components/ui-kits/atoms/zimmModal/index.tsx   |  64 +++
+ .../ui-kits/atoms/zimmModal/zimmModal.css.ts       |  33 ++
+ .../molecules/zimmContactIconRow/index.stories.tsx |  59 +++
+ .../ui-kits/molecules/zimmContactIconRow/index.tsx |  93 ++++
+ .../zimmContactIconRow/zimmContactIconRow.css.ts   |  34 ++
+ .../organisms/zimmSubscribeModal/index.stories.tsx |  38 ++
+ .../ui-kits/organisms/zimmSubscribeModal/index.tsx | 104 +++++
+ .../zimmSubscribeModal/zimmSubscribeModal.css.ts   |  33 ++
+ .../zimmSubscribeSection/index.stories.tsx         |  34 ++
+ .../organisms/zimmSubscribeSection/index.tsx       |  77 ++++
+ .../zimmSubscribeSection.css.ts                    |  48 ++
+ overrides/app/hooks/useSubscribeSection.test.ts    |  50 ++
+ overrides/app/hooks/useSubscribeSection.ts         |  86 ++++
+ ...bscribeModal.test.tsx => useZimmModal.test.tsx} |  35 +-
+ .../{useSubscribeModal.ts => useZimmModal.ts}      |  53 ++-
+ overrides/app/theme/components/footer.ts           | 506 ---------------------
+ overrides/app/theme/components/footerShared.ts     |  25 +
+ overrides/app/theme/components/index.ts            |  14 +-
+ 35 files changed, 1554 insertions(+), 1027 deletions(-)
+########## a063e14 ##########
+refactor(ui-kits): co-locate zimmButton/zimmNavItem/zimmTextInput theme recipes
+
+What changed:
+- Moved theme/components/button.ts, zimmNavItem.ts, and zimmTextInput.ts (+ its
+  test) to sit beside their component as zimmButton.css.ts, zimmNavItem.css.ts,
+  and zimmTextInput.css.ts — same pattern the footer decomposition established.
+  Recipe keys ('Button', 'ZimmNavItem', 'ZimmTextInput') are unchanged, so this
+  is a pure file move: Chakra resolves a recipe by name, not path.
+- Registered the three new locations in theme/components/index.ts and fixed the
+  stale `theme/components/<name>.ts` path mentioned in surrounding comments
+  (zimmButton/index.tsx, the base components/button/index.tsx wrapper,
+  zimmTextInput/index.tsx, and useZimmTextInputState.ts + its test).
+- zimmIcon, zimmLogo, and zimmInputAction are untouched — none of the three
+  have a separate theme file to begin with (they style entirely through inline
+  Chakra props), so the co-location pattern has nothing to move for them.
+- Documented the co-location pattern in .docs/architecture.md's Key Paths
+  section, which still only described the old single-file-per-component
+  location.
+
+Also fixed three loose ends a local CodeRabbit review caught in code from the
+prior footer-decomposition commit:
+- bottomBar.css.ts's localeButton still had cursor:pointer and a focus ring
+  left over from when it was a <button> — a false affordance now that it
+  renders as a non-interactive div (WCAG 3.2.4). Removed both.
+- useZimmModal.test.tsx's afterEach hardcoded body.style.overflow back to '',
+  which could leak a non-empty value into whatever test runs next. Now
+  captures and restores whatever was there before each test.
+- useSubscribeSection's closeModal (Cancel) didn't clear the captured email —
+  only a completed submit did. A shopper backing out of the name-capture
+  modal now gets the same PII clear as a submit.
+
+Why: same reasoning as the footer decomposition — this establishes the
+co-located-styles pattern as the default across the shared ui-kits atoms, not
+just the one component it started on.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01AYdnn7QTVDop2pzv1Ni1wE
+
+----- FILES -----
+ .claude/registry/components.md                     | 38 +++++++++++-----------
+ .claude/registry/hooks.md                          |  6 ++--
+ .claude/registry/utils.md                          |  3 +-
+ .docs/architecture.md                              |  2 +-
+ overrides/app/components/button/index.tsx          |  2 +-
+ .../components/footer/bottomBar/bottomBar.css.ts   | 11 +++----
+ .../components/ui-kits/atoms/zimmButton/index.tsx  |  8 ++---
+ .../ui-kits/atoms/zimmButton/zimmButton.css.ts}    |  0
+ .../ui-kits/atoms/zimmNavItem/zimmNavItem.css.ts}  |  0
+ .../ui-kits/atoms/zimmTextInput/index.tsx          |  2 +-
+ .../atoms/zimmTextInput/zimmTextInput.css.test.ts} |  4 +--
+ .../atoms/zimmTextInput/zimmTextInput.css.ts}      | 15 +++++----
+ overrides/app/hooks/useSubscribeSection.ts         |  8 ++++-
+ overrides/app/hooks/useZimmModal.test.tsx          | 13 ++++++--
+ overrides/app/hooks/useZimmTextInputState.test.ts  |  4 +--
+ overrides/app/hooks/useZimmTextInputState.ts       |  6 ++--
+ overrides/app/theme/components/index.ts            |  6 ++--
+ 17 files changed, 71 insertions(+), 57 deletions(-)
+########## 9d5f89c ##########
+refactor(theme): require var(--zimm-*) over bare Chakra token keys in overrides
+
+What changed:
+- Replaced 24 bare spacing-scale keys (gap/padding*/margin*, e.g. 'xs', '2xs',
+  '3xl') and 5 bare semantic colour tokens ('background.05', 'text.inverse',
+  etc.) with their var(--zimm-*) equivalents, across 9 files. Both forms
+  resolve to the identical value (theme.space/theme.colors ARE registered from
+  the Zimmermann foundations — see theme/index.ts) — this is a house-style
+  change, not a bug fix. Two of the instances were in JSX (footerNavColumn's
+  sx merge), not just recipe files.
+- Caught mid-fix: zimmTextInput.css.ts's `top: floated ? '3xs' : '50%'` had a
+  bare key hiding inside a conditional branch. Fixed, and fixed the guard that
+  should have caught it (see below) — the component's own test asserted the
+  old bare value and needed updating too.
+- Extended theme/components/recipeGuards.test.ts with a new guard: no
+  override-component style may use a bare token key on a registered scale.
+  Runs on every `npm run test`, so this becomes a mechanical PR check rather
+  than something a reviewer re-verifies by eye each time.
+- That new guard initially had the same blind spot as the bug it was built to
+  catch: it resolved a function-form baseStyle (zimmTextInput's) with a single
+  fixed all-false props object, so a value that only appears down a
+  conditional branch — like the '3xs' above — was never walked. Fixed by
+  resolving across all 2^n combinations of the function's boolean props
+  instead of one. Verified this actually works by reintroducing the bare
+  '3xs' and confirming the guard fails on it, then restoring the fix.
+- Fixed one real bug a local CodeRabbit review surfaced while in this code:
+  ZimmSubscribeSection rendered its unavailable/error failure copy with the
+  same `success` style as the success message — a shopper saw failure text
+  styled as a confirmation. Added a dedicated `error` part (inverse-mode
+  error colour, matching the pattern zimmTextInput.css.ts's error state
+  already uses) and role="alert" on the failure message.
+- Updated overrideStyling.md (hierarchy point 2) and css.md (token example)
+  to document var(--zimm-*) as required, not just preferred, and to point at
+  the new mechanical guard.
+
+Why: bare Chakra token keys and var(--zimm-*) both resolve correctly today,
+but a bare key forces a PR reviewer to check theme/index.ts's registered-scale
+list to know whether it's actually correct — a raw zimm var is unambiguous at
+every call site regardless.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01AYdnn7QTVDop2pzv1Ni1wE
+
+----- FILES -----
+ .claude/registry/components.md                     |  10 +-
+ .claude/registry/hooks.md                          |   4 +-
+ .claude/rules/css.md                               |  30 +++-
+ .claude/rules/overrideStyling.md                   |  22 ++-
+ .cursor/rules/tier2ProtectedFiles.mdc              |  25 +++-
+ .github/copilot-instructions.md                    |  25 +++-
+ .../components/footer/bottomBar/bottomBar.css.ts   |  12 +-
+ overrides/app/components/footer/footer.css.ts      |   4 +-
+ .../footer/footerNavColumn/footerNavColumn.css.ts  |   2 +-
+ .../components/footer/footerNavColumn/index.tsx    |   4 +-
+ .../ui-kits/atoms/zimmModal/zimmModal.css.ts       |   6 +-
+ .../atoms/zimmTextInput/zimmTextInput.css.test.ts  |   2 +-
+ .../atoms/zimmTextInput/zimmTextInput.css.ts       |  12 +-
+ .../zimmContactIconRow/zimmContactIconRow.css.ts   |   6 +-
+ .../zimmSubscribeModal/zimmSubscribeModal.css.ts   |  10 +-
+ .../organisms/zimmSubscribeSection/index.tsx       |   4 +-
+ .../zimmSubscribeSection.css.ts                    |  15 +-
+ .../app/theme/components/recipeGuards.test.ts      | 161 +++++++++++++++++++--
+ 18 files changed, 274 insertions(+), 80 deletions(-)
+########## 5b2be3f ##########
+feat(contentful): add region-aware footer/link content model, move tooling to org-level Environment Templates
+
+- Add region, link, footerNavGroup, footerConfig, uiCopy content types.
+  region and link are reusable, referenceable primitives so a footerConfig
+  (or any future content type) can be scoped to one or more storefronts,
+  with a narrower-scoped entry taking precedence over a broader one
+  (resolveByRegion utility implements the precedence/override rules).
+- Replace the per-environment sync.js + migrations/*.mjs pipeline with
+  buildTemplate.js + setup/installTemplate.mjs + setup/seedRegions.mjs,
+  built on Contentful's organization-scoped Environment Template API —
+  content types are now authored once and installed per environment,
+  with install status/versioning tracked natively instead of a hand-rolled
+  migration-history content type and drift-detection script.
+- Decommission the unused shoppableImage content type and its Experience
+  component (0 entries in dev, superseded by no active feature).
+- Update CODEOWNERS, Tier 1 protectedFiles.md, and integration docs to
+  match the new tooling; regenerate derived AI-rule configs.
+
+Verified end-to-end against the real dev Contentful environment: template
+built, installed, region entries seeded, and two stale pre-existing
+content types (an orphaned shoppableImage and a superseded globalFooter)
+cleaned up along the way.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01E54tVwenkd33qoF4azqdxi
+
+----- FILES -----
+ .claude/rules/protectedFiles.md                    |  25 ++-
+ .docs/architecture.md                              |  22 ++-
+ .docs/memory/projectState.md                       |   4 +-
+ .docs/planning/regionalConfigSyncPlan.md           |   2 +-
+ .docs/temp/tsd-architecture.md                     |   9 +-
+ .env.sample                                        |   3 +
+ CODEOWNERS                                         |   6 +-
+ README.md                                          |   6 +-
+ .../contentful/experiences/definitions.ts          |  13 --
+ .../contentful/experiences/hotspotMarker.tsx       |  55 -------
+ .../contentful/experiences/hotspotPopup.tsx        |  64 --------
+ .../contentful/experiences/shoppableImage.tsx      |  66 --------
+ overrides/app/components/contentful/index.ts       |   1 -
+ .../app/components/footer/contentfulFixture.ts     |  49 +++---
+ .../footer/contentfulSchema.placeholder.ts         |  97 ------------
+ overrides/app/config/contentfulMapping.ts          |  14 +-
+ overrides/app/types/contentful.ts                  |  73 ++++++---
+ overrides/app/utils/resolveByRegion.test.ts        |  90 +++++++++++
+ overrides/app/utils/resolveByRegion.ts             |  79 ++++++++++
+ package.json                                       |   6 +-
+ scripts/contentful/README.md                       |  41 ++++-
+ scripts/contentful/buildTemplate.js                | 166 ++++++++++++++++++++
+ scripts/contentful/content-types/footerConfig.js   |  50 ++++++
+ scripts/contentful/content-types/footerNavGroup.js |  27 ++++
+ scripts/contentful/content-types/link.js           |  24 +++
+ scripts/contentful/content-types/region.js         |  40 +++++
+ scripts/contentful/content-types/shoppableImage.js |  37 -----
+ scripts/contentful/content-types/uiCopy.js         |  39 +++++
+ .../migrations/001-initial-content-types.mjs       |  59 --------
+ scripts/contentful/setup/detectDrift.mjs           | 115 --------------
+ scripts/contentful/setup/installTemplate.mjs       | 161 ++++++++++++++++++++
+ scripts/contentful/setup/promoteAlias.mjs          |   2 +-
+ scripts/contentful/setup/runMigrations.mjs         | 167 ---------------------
+ scripts/contentful/setup/seedRegions.mjs           |  93 ++++++++++++
+ scripts/contentful/sync.js                         | 161 --------------------
+ 35 files changed, 946 insertions(+), 920 deletions(-)
+########## 98bd633 ##########
+chore: sync package-lock.json with package.json
+
+node_modules was stale relative to package.json (missing ts-morph, needed
+for npm run generate:contentful, among other drift) — npm install brought
+the lockfile back in sync.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01E54tVwenkd33qoF4azqdxi
+
+----- FILES -----
+ package-lock.json | 511 +++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 485 insertions(+), 26 deletions(-)
+########## 466e62b ##########
+feat(theme): build scripts/auditTokenUsage.mjs, close the missing-audit gap
+
+What changed:
+- Built scripts/auditTokenUsage.mjs (npm run audit:tokens) — documented in
+  overrideStyling.md/css.md as existing for a while, but never actually
+  committed to the repo (confirmed missing at the start of this session, and
+  the same gap was independently flagged on a different branch back on
+  2026-08-17). Scans overrides/app/components/** and
+  overrides/app/theme/components/** (.ts/.tsx/.scss, excluding
+  *.test.ts(x)/*.stories.tsx) for raw hex/px/rem/em literals that should be a
+  var(--zimm-*) token instead.
+- A match is downgraded from a failure to an acknowledged exception (still
+  printed, doesn't affect the exit code) when the surrounding comment block
+  already contains "provisional"/"pending"/"placeholder", or an explicit
+  "audit-allow: <reason>" — reads this codebase's existing explanatory
+  comments as the allow-list, rather than requiring a second list that would
+  drift from the code.
+- Calibrated against the real codebase, not just written and shipped: the
+  first pass used a fixed 2-line context window and missed real exceptions —
+  this codebase's comments are often a shared multi-line block covering
+  several sibling constants, and one marker word ("Pending") was literally
+  split across a line wrap from the word it was qualifying ("Kiera"). Fixed
+  by walking back through the whole contiguous comment block to the nearest
+  blank line instead of a fixed window.
+- That recalibration pass surfaced three real gaps in files from earlier
+  this session, fixed here: zimmSubscribeSection.css.ts's `maxWidth:
+  '12.5rem'` had genuinely lost its "provisional" framing when it was
+  inlined out of a shared block during the footer decomposition;
+  zimmButton.css.ts's BTN_HEIGHT_LG/BTN_HEIGHT_SM/BTN_PADDING_Y — the
+  canonical named exception overrideStyling.md itself points to — never
+  actually said "provisional" in its own comment; footerShared.ts's
+  breakpoint constants needed the explicit audit-allow escape hatch rather
+  than "provisional" wording, since they're deliberately permanent raw
+  values (Units section), not something pending a token.
+- Confirmed clean afterward: 16 legitimate exceptions correctly recognised,
+  14 genuine pre-existing violations correctly surfaced (header.ts,
+  navConstants.ts, header/index.tsx, three Contentful experiences/
+  components) — none touched, since they're pre-existing debt in files
+  outside this session's scope, which is exactly what the tool exists to
+  surface for someone else to triage.
+- Added the `audit:tokens` npm script alongside the repo's other
+  script-wrapping conventions (sync:ai-rules, etc.).
+- Updated overrideStyling.md and css.md, which both said this script didn't
+  exist yet — now describe what it actually does and that CI wiring is the
+  one remaining deliberate gap (someone still needs to own triaging the 14
+  pre-existing findings before it becomes a hard merge gate).
+
+Why: same missing-tool gap flagged twice now (2026-08-17 on a different
+branch, and again this session before being asked to just build it) — the
+CODEOWNERS carve-out a few commits back explicitly named this as the one
+thing standing between "co-located style files get lighter review" and "no
+automated backstop for a hardcoded value landing in one."
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01AYdnn7QTVDop2pzv1Ni1wE
+
+----- FILES -----
+ .claude/registry/components.md                     |   2 +-
+ .claude/registry/utils.md                          |   4 +-
+ .claude/rules/css.md                               |  12 +-
+ .claude/rules/overrideStyling.md                   |  44 +++---
+ .../ui-kits/atoms/zimmButton/zimmButton.css.ts     |  10 +-
+ .../zimmSubscribeSection.css.ts                    |   2 +-
+ overrides/app/theme/components/footerShared.ts     |   3 +
+ package.json                                       |   1 +
+ scripts/auditTokenUsage.mjs                        | 167 +++++++++++++++++++++
+ 9 files changed, 214 insertions(+), 31 deletions(-)
+########## ad4fbc6 ##########
+fix(contentful): render Experience Builder canvas correctly in Contentful Studio
+
+Two independent bugs prevented the /:slug Experience page from ever rendering
+inside Contentful Studio's Experience Builder canvas iframe (blank canvas,
+empty component picker), despite working fine on the live site:
+
+- useFetchBySlug's canvas-mode detection branches on `typeof window !==
+  'undefined'`, which differs between the SSR pass and the client's first
+  hydration pass inside an iframe, causing React hydration errors #418/#423
+  that discarded the whole render. Defer ExperienceFetch's mount until after
+  hydration, scoped only to Contentful's canvas requests (detected via the
+  `expEditorMode` query param, visible server-side) so normal storefront SSR
+  is unaffected.
+- In editor/canvas mode, useFetchBySlug always returns `experience: undefined`
+  by SDK design — the real data arrives via postMessage instead. Our own
+  `!experience` check was treating that as "page not found" and never letting
+  ExperienceRoot mount at all. Now only applies that check outside
+  supervised/editor mode.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01LQ4sChHrst9XP7tawTjAkW
+
+----- FILES -----
+ overrides/app/pages/experience/index.tsx | 53 ++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 6 deletions(-)
+########## 5640c25 ##########
+feat(footer): wire footer container to live Contentful footerConfig content
+
+FooterContainer now fetches footerConfig via the Delivery API (client.getEntries,
+include: 3) instead of a hardcoded fixture, resolving the right entry for the
+current storefront's region via resolveByRegion's pickMostSpecificByRegion/
+filterByRegion utilities. Renders nothing on load/error/no-match rather than
+falling back to placeholder content.
+
+Also:
+- fix(utils): widen resolveByRegion's RegionAwareEntry.sys type past a TS "weak
+  type" false positive — this was its first real consumer against concrete
+  entry types, exposing a latent bug that blocked every content-type generic
+  from satisfying the constraint.
+- rename contentfulFixture.ts -> index.stories.content.ts, since it now only
+  ever feeds index.stories.tsx (Storybook), not the live container.
+- chore(contentful): bootstrapSpace.mjs now creates non-default locales as
+  optional: true, so a required localized field can publish with only 'en'
+  set — translation happens later via a separate app, not as a publish
+  precondition.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ .claude/registry/pages.md                          |  4 +-
+ ...ntentfulFixture.ts => index.stories.content.ts} |  9 +--
+ overrides/app/components/footer/index.stories.tsx  |  2 +-
+ overrides/app/components/footer/index.tsx          | 81 +++++++++++++++++++---
+ overrides/app/types/contentful.ts                  | 13 ++--
+ overrides/app/utils/resolveByRegion.ts             |  6 +-
+ scripts/contentful/setup/bootstrapSpace.mjs        |  5 ++
+ 7 files changed, 95 insertions(+), 25 deletions(-)
+########## c5a8422 ##########
+test(footer): add Vitest coverage for FooterContainer, FooterNavColumn, ZimmSubscribeSection
+
+Each suite is scoped to its own component's contract rather than relying on
+coverage proven transitively elsewhere:
+
+- footer/index.test.tsx: scopeToRegion as pure-function tests (region-scoped
+  link filtering, legalLinks, undefined handling), plus FooterContainer
+  integration tests (pending/resolved/rejected/no-match fetch states, region-
+  priority resolution via pickMostSpecificByRegion, no-client case).
+- footerNavColumn/index.test.tsx: extracted the NBSP width:min-content gate
+  into a named, exported hasIntentionalLineBreak function so it's testable
+  directly rather than asserting on Chakra's sx-generated CSS in jsdom; plus
+  render tests for the showContactChannels structural branch.
+- zimmSubscribeSection/index.test.tsx: mocks useSubscribeSection (own state
+  machine already covered by useSubscribeSection.test.ts) and
+  ZimmSubscribeModal (focus-trap mechanics already covered by
+  useZimmModal.test.tsx + footer/index.stories.tsx's mutation-tested
+  SubscribeModalOpen play), isolating this suite to ZimmSubscribeSection's own
+  render-branch and event-wiring contract.
+
+Also:
+- vendor.d.ts: add MemoryRouter to this repo's hand-maintained react-router-dom
+  v5 type shim (the package ships without types; nothing needed MemoryRouter
+  before FooterContainer's tests).
+- Worked around a previously-undiscovered gap where ZimmIcon's import of the
+  base SFCC icons barrel throws under Vitest (SVG imports resolve to raw path
+  strings, not components) — no test in this repo had rendered an
+  icon-consuming component before. Routed around it with a scoped vi.mock of
+  ZimmIcon per test file rather than touching vitest.config.ts (Tier 1).
+
+243/243 tests pass, tsc --noEmit and eslint clean.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ .../footer/footerNavColumn/index.test.tsx          |  89 +++++++++
+ .../components/footer/footerNavColumn/index.tsx    |  10 +-
+ overrides/app/components/footer/index.test.tsx     | 216 +++++++++++++++++++++
+ overrides/app/components/footer/index.tsx          |   2 +-
+ .../organisms/zimmSubscribeSection/index.test.tsx  | 156 +++++++++++++++
+ overrides/app/types/vendor.d.ts                    |   9 +
+ 6 files changed, 480 insertions(+), 2 deletions(-)
+########## 0b8db3e ##########
+feat(footer): wire footer microcopy to Contentful uiCopy via useUiCopy hook
+
+useUiCopy bulk-fetches every uiCopy entry in one CDA call (reusing
+useContentfulEntries) and exposes t(key, fallback) — creating N entries costs
+one call, not N. Fallback-on-failure by design, unlike FooterContainer's
+fail-closed handling of structural content: losing a button label to a
+Contentful outage shouldn't blank a control.
+
+FooterContainer calls useUiCopy() once and threads the resolved strings down
+through Footer to BottomBar (copyrightLabel) and ZimmSubscribeSection
+(emailLabel, subscribeButtonLabel, successMessage, unavailableMessage) as new
+optional props, each still defaulting to its current hardcoded English text —
+both leaves stay Storybook-testable without live CMS access, and neither
+double-fetches since only the container calls the hook.
+
+Exported SUBSCRIBE_SUCCESS_MESSAGE/SUBSCRIBE_UNAVAILABLE_MESSAGE from
+ZimmSubscribeSection rather than retyping those sentences as FooterContainer's
+t() fallbacks.
+
+Tests: useUiCopy.test.ts (5), extended footer/index.test.tsx with useUiCopy
+mocking + a wiring-proof test, extended zimmSubscribeSection/index.test.tsx
+with the new override-prop cases. 251/251 pass, tsc/eslint clean.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ .claude/registry/components.md                     |  8 +--
+ .claude/registry/hooks.md                          |  3 +-
+ .../app/components/footer/bottomBar/index.tsx      | 13 +++-
+ overrides/app/components/footer/index.test.tsx     | 24 +++++++
+ overrides/app/components/footer/index.tsx          | 51 +++++++++++++-
+ .../organisms/zimmSubscribeSection/index.test.tsx  | 17 +++++
+ .../organisms/zimmSubscribeSection/index.tsx       | 28 ++++++--
+ overrides/app/hooks/useUiCopy.test.ts              | 77 ++++++++++++++++++++++
+ overrides/app/hooks/useUiCopy.ts                   | 40 +++++++++++
+ 9 files changed, 245 insertions(+), 16 deletions(-)
+########## c735478 ##########
+feat(contentful): add editor-facing title field to uiCopy content type
+
+Studio's entry list previously showed the raw dot-path key (e.g.
+footer.subscribe.buttonLabel), which isn't scannable once there are more than
+a handful of entries. title is a required, non-localized Symbol — same role
+as footerConfig's internalTitle — and is now the displayField. Never rendered
+in the app; key stays the code-referenced lookup slug.
+
+Pushed live via sync:contentful + install:contentful --target dev (template
+v3, no validation findings) and backfilled title on the 5 existing dev
+entries so they're not left on a required field with no value.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ overrides/app/types/contentful.ts          |  2 ++
+ scripts/contentful/content-types/uiCopy.js | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+########## 90069b2 ##########
+refactor(footer): make useUiCopy a true app-wide utility via Context
+
+useUiCopy no longer fetches directly — it reads from UiCopyContext, populated
+by the new UiCopyProvider (bulk-fetches every uiCopy entry once, one CDA call)
+mounted in _app-config. Same public API as before ({t, isLoading}), so it's
+now trivially importable from any component, anywhere, the same way useIntl()
+already is in this app: no Storybook/test setup required, since useUiCopy()
+degrades to fallback-only text with no Provider mounted rather than throwing.
+
+This replaces the footer-only container-fetch-and-prop-drill pattern from the
+previous commit, which only worked because FooterContainer was the sole
+consumer. Context sharing removes the redundant-fetch concern that motivated
+that pattern in the first place.
+
+Cleaned up BottomBar and ZimmSubscribeSection to match: both dropped their
+copyrightLabel/emailLabel/subscribeButtonLabel/successMessage/
+unavailableMessage props entirely and call useUiCopy() directly instead.
+Footer/FooterContainer shed all the prop-threading that existed only to plumb
+these through — footer/index.tsx is back to being purely about footerConfig.
+
+Tests migrated to match, not just patched:
+- useUiCopy.test.tsx (renamed from .ts, now has JSX): context passthrough +
+  no-Provider fallback, 2 tests.
+- uiCopyProvider/index.test.tsx (new): the 5 fetch/map-building tests that
+  used to live in useUiCopy.test.ts.
+- zimmSubscribeSection/index.test.tsx: the 2 prop-override tests became
+  useUiCopy-mock-based tests.
+- footer/index.test.tsx: removed the now-inapplicable useUiCopy mock and
+  wiring test.
+
+252/252 tests pass, tsc/eslint clean.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ .claude/registry/components.md                     | 11 ++---
+ .claude/registry/hooks.md                          |  4 +-
+ overrides/app/components/_app-config/index.tsx     |  3 +-
+ .../app/components/footer/bottomBar/index.tsx      | 17 +++-----
+ overrides/app/components/footer/index.test.tsx     | 27 ++----------
+ overrides/app/components/footer/index.tsx          | 51 ++--------------------
+ .../organisms/zimmSubscribeSection/index.test.tsx  | 38 +++++++++++++---
+ .../organisms/zimmSubscribeSection/index.tsx       | 33 +++++++-------
+ .../uiCopyProvider/index.test.tsx}                 | 33 ++++++++------
+ overrides/app/components/uiCopyProvider/index.tsx  | 38 ++++++++++++++++
+ overrides/app/hooks/useUiCopy.test.tsx             | 25 +++++++++++
+ overrides/app/hooks/useUiCopy.ts                   | 50 ++++++++++-----------
+ 12 files changed, 179 insertions(+), 151 deletions(-)
+########## 542ac65 ##########
+docs(rules): align governance docs with this branch's footer/uiCopy patterns
+
+Reviewed .claude/rules/ and .claude/skills/ against what this branch actually
+established over the footer-CDA-wiring and useUiCopy-globalization work.
+Found and fixed concrete gaps, not just drift:
+
+- components.md: the container/presentational rule blocked leaf components
+  from calling data-fetching hooks with no exception, but we deliberately had
+  BottomBar/ZimmSubscribeSection call useUiCopy() directly — app-wide static
+  content read from a Provider mounted once at the root (same pattern as
+  useIntl), not a per-page fetch. Documented the exception so the next
+  session doesn't either avoid a legitimate pattern or misapply it to a real
+  SDK hook.
+- testing.md: "don't duplicate coverage across layers" had no guidance on
+  *how* to resolve that tension, which is exactly what led to two rounds of
+  user correction on ZimmSubscribeSection's test suite. Clarified: scope the
+  assertions (mock what's covered elsewhere), don't skip the component's own
+  file. Also documented the ZimmIcon/Vitest SVG-barrel gap discovered this
+  branch (no test had ever rendered an icon-consuming component before).
+- protectedFiles.md + CODEOWNERS: uiCopyProvider/ is mounted at the app root
+  in _app-config (same blast radius as _app-config itself) but had no
+  CODEOWNERS entry at all — no required review routing, unlike every other
+  Global Shell path. Added it to both.
+- new-component/SKILL.md, code-quality/SKILL.md: same two fixes as
+  components.md/testing.md, applied to the scaffolding flow and the
+  audit checklist (Agent D no longer treats a play function in an unrelated
+  component's story as a substitute for this component's own test file).
+
+Edited under verified tier-1-approvers identity (gh api user + team
+membership check) per AGENTS.md's Tier 1 Approval process.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+----- FILES -----
+ .claude/rules/components.md             | 12 ++++++++++++
+ .claude/rules/protectedFiles.md         |  5 +++++
+ .claude/rules/testing.md                | 28 ++++++++++++++++++++++++++++
+ .claude/skills/code-quality/SKILL.md    | 11 +++++++++--
+ .claude/skills/new-component/SKILL.md   |  4 ++--
+ .cursor/rules/skills/code-quality.mdc   | 11 +++++++++--
+ .cursor/rules/skills/new-component.mdc  |  4 ++--
+ .cursor/rules/testing.mdc               | 28 ++++++++++++++++++++++++++++
+ .cursor/rules/tier2ProtectedFiles.mdc   |  5 +++++
+ .github/copilot-instructions.md         |  5 +++++
+ .vscode/instructions/code-generation.md | 15 +++++++++++----
+ .vscode/instructions/pr-review.md       | 11 +++++++++--
+ CODEOWNERS                              |  1 +
+ 13 files changed, 126 insertions(+), 14 deletions(-)
+########## 7b9b5dc ##########
+fix(storybook): define WEBPACK_TARGET so ssr-config resolves the browser-safe branch
+
+pwa-kit-runtime's ssr-config.js picks ssr-config.server.js (Node-only,
+pulls in cosmiconfig's fs/os/module deps) unless WEBPACK_TARGET === 'web'.
+The real app build sets this via pwa-kit-dev's own DefinePlugin;
+.storybook/main.js never did, so any story importing config/contentful.ts's
+getConfig() (e.g. footer/index.stories.tsx) broke the browser bundle with
+"Module not found: fs/os/module" errors.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01JGufQTc5rhNzFUksUURiM7
+
+----- FILES -----
+ .storybook/main.js | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)

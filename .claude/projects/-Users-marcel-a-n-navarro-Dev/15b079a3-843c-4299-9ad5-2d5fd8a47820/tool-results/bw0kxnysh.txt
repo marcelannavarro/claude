@@ -1,0 +1,910 @@
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/project-init/SKILL.md ############
+     1	---
+     2	name: project-init
+     3	description: One-time project setup walkthrough. Runs the state detection script, fixes automatable items, asks one question at a time for human-input items, and updates the 7.1c CI/CD & Environment Setup Checklist Confluence page as each item is confirmed. Run this once when setting up the project for the first time, or when returning to check setup status.
+     4	---
+     5	
+     6	This skill has five phases. Do not skip ahead — the script output in Phase 1 determines
+     7	which phases are needed and in what order.
+     8	
+     9	---
+    10	
+    11	## Phase 1 — Run the state detector
+    12	
+    13	Run the check script:
+    14	```bash
+    15	bash scripts/projectInitCheck.sh
+    16	```
+    17	
+    18	Read the output carefully. Note every [FAIL], [WARN], and [TODO] item.
+    19	
+    20	Say to the developer:
+    21	> "Here's the current project setup status. I'll work through the issues in order."
+    22	
+    23	---
+    24	
+    25	## Phase 2 — Fix automatable failures
+    26	
+    27	For each [FAIL] item in the script output, in priority order:
+    28	
+    29	**Git hooks missing:**
+    30	Propose both commands together (they're always installed as a pair):
+    31	```bash
+    32	cp scripts/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+    33	cp scripts/hooks/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+    34	```
+    35	Ask for confirmation before running. After running, verify with:
+    36	```bash
+    37	ls -la .git/hooks/ | grep -E 'pre-commit|commit-msg'
+    38	```
+    39	
+    40	**Claude Code not installed:**
+    41	Provide the install command — do not run it yourself:
+    42	> "Run: `npm install -g @anthropic-ai/claude-code` then `claude login`"
+    43	
+    44	**GitHub CLI not installed:**
+    45	> "Install `gh` from https://cli.github.com/ — needed for branch protection setup in Phase 4."
+    46	
+    47	**Other FAIL items:** Provide the fix command, ask for confirmation, run it.
+    48	
+    49	After addressing all [FAIL] items, re-run `scripts/projectInitCheck.sh` and confirm PASS count improved.
+    50	
+    51	---
+    52	
+    53	## Phase 3 — Human-input items
+    54	
+    55	Work through [TODO] and [WARN] items one at a time. Ask one question, wait for the answer, update the relevant files, then ask the next.
+    56	
+    57	**Tracking setup status:** Setup status is tracked on the [7.1c CI/CD & Environment Setup Checklist](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305430530) Confluence page (space `SFCC`, page ID `305430530`), not in a repo file. Use the `confluence_get_page` tool to read current status before marking anything, and `confluence_update_page` to write back — resend the full page content with only the relevant Status cell changed from ⬜ to ✅. Never drop existing rows or other confirmed items when writing back.
+    58	
+    59	**Jira project key prefix**
+    60	> "What is the Jira project key prefix for this project? (e.g. ZIM, ZIM, PWA — shown before the ticket number)"
+    61	
+    62	When answered:
+    63	- Replace the placeholder `ZIM` in `e2e/features/README.md` (the naming section and tag examples)
+    64	- Replace `ZIM-000` in `e2e/features/checkout/ZIM-000_guest-checkout.feature` filename and tags — rename and update content
+    65	- Replace `ZIM-000` in `e2e/tests/zimm/checkout/ZIM-000_guest-checkout.p0.spec.ts` — rename and update
+    66	- Confirm the Jira key format used in the [Guide 4: E2E Testing](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305528833) Confluence page examples (`{JIRA-KEY}`, `@SFCC-NNN`) matches — update the page if the org uses a different prefix format
+    67	- Mark ✅ on the 7.1c Confluence page (see "Tracking setup status" above)
+    68	
+    69	**Upstream baseline (if WARN: UNSET)**
+    70	> "What `@salesforce/retail-react-app` version are we on? Check `package.json`."
+    71	
+    72	When answered: Update [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) with the current version. Mark ✅ in checklist.
+    73	
+    74	**BrowserStack account**
+    75	> "Has a BrowserStack account been set up for this project? Have BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY been added to GitHub Secrets?"
+    76	
+    77	If yes: Mark ✅ in checklist. If no: Note who to contact (DevOps / Delivery Lead) and mark ⬜.
+    78	
+    79	**QA test account credentials**
+    80	> "Have PWA_E2E_USER_EMAIL and PWA_E2E_USER_PASSWORD been added to GitHub Secrets? These are the credentials for the registered test account in the SIT environment."
+    81	
+    82	Mark accordingly.
+    83	
+    84	**E2E product SKUs**
+    85	> "Have the test product SKUs been confirmed in the SIT catalogue and added to GitHub Secrets? (E2E_STANDARD_PRODUCT_SKU, E2E_VARIANT_PRODUCT_SKU, E2E_OOS_PRODUCT_SKU, E2E_SALE_PRODUCT_SKU)"
+    86	
+    87	Mark accordingly.
+    88	
+    89	**Zephyr integration**
+    90	> "Which Zephyr product does the team use — Zephyr Scale (Cloud) or Zephyr Squad? This determines how BrowserStack Test Observability syncs results."
+    91	
+    92	When answered: `browserstack.yml` is Tier 1 — this answer is a product decision, not Tier 1
+    93	approval. Confirm the current `gh` identity is a `tier-1-approvers` member/admin (or get named
+    94	owner approval) before editing, per [AGENTS.md > Tier 1
+    95	Approval](../../../AGENTS.md#tier-1-approval--how-its-actually-enforced), then update the comment
+    96	in `browserstack.yml` to name the correct product. Mark ✅ in checklist.
+    97	
+    98	**LHCI secrets**
+    99	> "Have LHCI_SERVER_BASE_URL, LHCI_TOKEN, and LHCI_TARGET_URL_SIT been added to GitHub Secrets? These power the Lighthouse CI trend server."
+   100	
+   101	Mark accordingly.
+   102	
+   103	**MuleSoft contract endpoint**
+   104	> "Has the MuleSoft team confirmed a contract endpoint or shared OpenAPI spec for the SIT environment? The `test:contracts` script is a placeholder until this is in place."
+   105	
+   106	Mark accordingly.
+   107	
+   108	**GitHub Pages**
+   109	> "Has GitHub Pages been enabled? Settings → Pages → source: GitHub Actions. This is required for Playwright report publishing on develop pushes."
+   110	
+   111	Mark accordingly.
+   112	
+   113	---
+   114	
+   115	## Phase 4 — Branch protection setup
+   116	
+   117	If `gh` is installed and the developer is ready to configure branch protection:
+   118	
+   119	> "Would you like me to set up release/** branch protection now? This requires admin access to the repo."
+   120	
+   121	If yes, propose this command for the developer to confirm and run:
+   122	```bash
+   123	gh api repos/{OWNER}/{REPO}/branches/release%2F*/protection \
+   124	  --method PUT \
+   125	  --field required_status_checks='{"strict":true,"contexts":["Digital SIT Gate"]}' \
+   126	  --field enforce_admins=true \
+   127	  --field required_pull_request_reviews=null \
+   128	  --field restrictions=null
+   129	```
+   130	
+   131	Note: Replace `{OWNER}/{REPO}` with the actual repo. The developer must have admin access.
+   132	Do not run this command yourself — propose it and let the developer confirm.
+   133	
+   134	If `gh` is not installed or the developer is not ready: note it as pending in the checklist.
+   135	
+   136	---
+   137	
+   138	## Phase 5 — Final state and summary
+   139	
+   140	Re-read the [7.1c CI/CD & Environment Setup Checklist](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305430530) Confluence page (via `confluence_get_page`) and confirm the current state of all items.
+   141	
+   142	Produce a final summary:
+   143	```
+   144	✅ [N] items confirmed complete
+   145	⬜ [N] items still pending — owner and channel for each
+   146	```
+   147	
+   148	List each pending item with its owner from the checklist table.
+   149	
+   150	Then say:
+   151	> "Run `/project-init` again after each pending item is resolved to update the checklist.
+   152	> When all items are ✅, the project is ready for the first sprint."
+   153	
+   154	---
+   155	
+   156	## Notes
+   157	
+   158	- Never modify `config/default.js`, `config/sites.js`, `overrides/app/ssr.js`, `worker/main.js`, or `.github/workflows/` during this skill
+   159	- Never push to `develop` or `main`
+   160	- For items that require infrastructure (BrowserStack, LHCI server, MuleSoft), note the owner and move on — do not block the session on them
+   161	- If this is a re-run (some items already ✅), skip confirmed items and focus only on what remains ⬜
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/code-quality/SKILL.md ############
+     1	---
+     2	name: code-quality
+     3	description: Audit recently changed or specified files for code quality issues — naming, circular imports, TypeScript coverage, test/story existence, and structural debt. Read-only. Use after implementing a feature or before opening a PR.
+     4	---
+     5	
+     6	Audit code quality for the specified scope. Do not modify any files — this is a read-only
+     7	diagnostic. Produce a prioritised report with actionable fixes.
+     8	
+     9	---
+    10	
+    11	## Input
+    12	
+    13	The user will provide one of:
+    14	- A file path or directory to audit
+    15	- No argument — default to files changed on the current branch: `git diff --name-only main`
+    16	
+    17	If no argument is given, run: `git diff --name-only main` and audit those files.
+    18	Exclude test files (`*.test.ts`, `*.spec.ts`), stories (`*.stories.tsx`), and any registry files.
+    19	
+    20	---
+    21	
+    22	## Parallel execution
+    23	
+    24	For audits covering more than 5 files, split into four independent checks and run them
+    25	as parallel agents simultaneously. Each agent receives only its own checklist — do not
+    26	bundle all checks into one agent.
+    27	
+    28	- **Agent A — Naming & structure**
+    29	- **Agent B — Import analysis**
+    30	- **Agent C — TypeScript coverage**
+    31	- **Agent D — Test & story coverage**
+    32	
+    33	For 5 files or fewer, run all checks sequentially in a single pass.
+    34	
+    35	---
+    36	
+    37	## Agent A — Naming & structure
+    38	
+    39	Rules are defined once, split across [.claude/rules/conventions.md](../../rules/conventions.md)
+    40	(cross-cutting), [css.md](../../rules/css.md) (Chakra/styling), and
+    41	[components.md](../../rules/components.md) (components/hooks/Storybook) — read the relevant
+    42	ones first, then apply each rule to the files in scope. Do not re-list the rules here;
+    43	that's how the files drift apart.
+    44	
+    45	Walk the file list and audit each file against the relevant section:
+    46	
+    47	- Every file → conventions.md **General** section.
+    48	- Every file with JSX/Chakra props → css.md **Tokens** section (no hardcoded hex/px values).
+    49	- `.tsx` under `overrides/app/components/` or `overrides/app/pages/` → components.md
+    50	  **Components** + **Composition** sections, plus conventions.md **File naming and folder
+    51	  structure**.
+    52	- `.ts` under `overrides/app/hooks/` → components.md **Hooks** section.
+    53	- `.ts` under `overrides/app/utils/` → conventions.md **Utilities** section.
+    54	
+    55	For each violation, record `file:line` and which rule file + bullet failed — the section
+    56	anchor is enough (e.g. "components.md → Components → Props type placement").
+    57	
+    58	---
+    59	
+    60	## Agent B — Import analysis
+    61	
+    62	For each file, read the import statements and check:
+    63	
+    64	- No circular imports: if File A imports from File B, File B must not import from File A
+    65	  (check by reading the imported file's imports in turn — one level deep is sufficient).
+    66	- No imports from a higher tier without justification:
+    67	  - A component must not import directly from internal `commerce-sdk-react` source paths.
+    68	  - A page must not bypass its own hooks to call raw API functions.
+    69	- No imports from a later-sprint feature (reference `.docs/memory/sprintScope.md` when present).
+    70	- No `../../../..` chains longer than 3 levels — flag for path alias review.
+    71	
+    72	---
+    73	
+    74	## Agent C — TypeScript coverage
+    75	
+    76	Check each file against the relevant rule file:
+    77	
+    78	- Every `.ts`/`.tsx` → [typescript.md](../../rules/typescript.md) in full (no `any` without
+    79	  justification, `type` vs `interface`, non-null assertions, discriminated unions, utility
+    80	  types, `import type`, `satisfies`, `readonly`, generic naming).
+    81	- Components → [components.md](../../rules/components.md) **Components** (props type name,
+    82	  placement, optional `?`, callback naming, JSDoc).
+    83	- Hooks → [components.md](../../rules/components.md) **Hooks** (typed params, explicit
+    84	  return type, JSDoc with `@returns`).
+    85	
+    86	Then run `npx tsc --noEmit` **once** for the whole branch (not per file) and report any
+    87	errors. Cross-reference any new errors against the files in scope.
+    88	
+    89	---
+    90	
+    91	## Agent D — Test & story coverage
+    92	
+    93	For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+    94	- A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+    95	- For logic-heavy components or hooks: the component's **own** `*.test.ts`/`*.test.tsx` exists
+    96	  in the same folder. A `play` function elsewhere (this component's own story, or — this is
+    97	  the common miss — a *different* component's assembly-level story) does not substitute for
+    98	  it, even when it happens to exercise the same rendered output; see testing.md's note under
+    99	  "What to test (and what to skip)". A component's own test file may still mock a hook or
+   100	  child component whose internals are covered elsewhere — the point is that the component's
+   101	  own render-branch/event-wiring contract has a test discoverable from its own folder.
+   102	- If a test file exists, verify:
+   103	  - At least one test covers the primary render case.
+   104	  - At least one test covers a user interaction (click, input) if the component has interactive elements.
+   105	  - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+   106	- If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+   107	- If a logic-heavy file has no test file of its own, flag as MISSING TEST — regardless of
+   108	  whether a `play` function exists somewhere else in the codebase.
+   109	
+   110	For each utility file under `overrides/app/utils/`:
+   111	- **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+   112	  transformation (currency, locale, mapping, parsing, etc.). Trivial re-exports and
+   113	  one-liners are exempt.
+   114	- If a test file exists, verify it covers both the happy path and at least one edge case
+   115	  (empty input, null, locale variation — whichever applies).
+   116	
+   117	---
+   118	
+   119	## Output format
+   120	
+   121	Combine all agent results into a single prioritised report:
+   122	
+   123	```
+   124	## Code Quality Report
+   125	**Scope:** [files audited]
+   126	**Branch:** [current branch]
+   127	**Date:** [today]
+   128	
+   129	### 🔴 Must fix before PR merge
+   130	[Issues that would fail review or cause runtime errors — one line per issue with file:line]
+   131	
+   132	### 🟡 Should fix in this PR
+   133	[Issues that affect maintainability or violate conventions — one line per issue with file:line]
+   134	
+   135	### 🔵 Backlog (log, don't block)
+   136	[Minor style issues, missing test cases for edge cases — one line per issue]
+   137	
+   138	### ✅ No issues found
+   139	[List checks that passed cleanly]
+   140	
+   141	### Summary
+   142	X must-fix · Y should-fix · Z backlog items
+   143	```
+   144	
+   145	Do not suggest refactors beyond the scope of the changed files.
+   146	Do not modify any files — report only.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/pr-checklist/SKILL.md ############
+     1	---
+     2	name: pr-checklist
+     3	description: Generate a PR description and merge checklist based on the files changed on the current branch. Pairs with /code-quality.
+     4	---
+     5	
+     6	Generate a PR description and merge checklist based on the files changed in the current branch.
+     7	
+     8	## Steps
+     9	
+    10	1. **Run code quality check first.**
+    11	   Run `git diff --name-only develop` to get all changed files, then invoke the [/code-quality](../code-quality/SKILL.md) skill on those files. Include a summary of any must-fix issues at the top of the PR description. If must-fix issues are found, state them prominently and recommend resolving before opening the PR.
+    12	
+    13	2. Run `git diff --name-only develop` to get all changed files.
+    14	
+    15	3. For each changed file, determine its tier:
+    16	   - Tier 1: check [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md)
+    17	   - Tier 2: check [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md)
+    18	   - Tier 3: check `.claude/rules/squadA.md` and `.claude/rules/squadB.md` *(if added)*
+    19	   - Tier 4: everything else
+    20	
+    21	4. Check for cross-squad changes — files from both Squad A and Squad B territory in the same PR.
+    22	
+    23	5. Output the following, copy-paste ready for a GitHub PR:
+    24	
+    25	---
+    26	
+    27	## PR Description
+    28	
+    29	**Summary**
+    30	[2-3 bullets: what changed and why — be specific, not generic]
+    31	
+    32	**Changed files**
+    33	| File | Tier | Owner | Reviewer required? |
+    34	|------|------|-------|--------------------|
+    35	[one row per file]
+    36	
+    37	**Required actions before merging**
+    38	[Generated from tiers — examples:]
+    39	- Tier 1 change detected in [file] — confirm owner approval before merging
+    40	- Tier 2 change in [component] — a second developer must review this file specifically
+    41	- Cross-squad change — both squad leads must approve
+    42	
+    43	**Notifications sent**
+    44	- [ ] [Squad/owner notified via correct channel]
+    45	
+    46	**CodeRabbit pre-merge gates** (see `coderabbit.yaml` — these block merge in `error` mode)
+    47	- [ ] PR title follows Conventional Commits: `type(scope): description` (valid types: feat,
+    48	      fix, docs, style, refactor, perf, test, build, ci, chore, upstream-sync)
+    49	- [ ] Jira issue URL pasted into this PR description (not auto-detected from branch name —
+    50	      required for `issue_assessment` once the Jira Forge app is connected; recommended now)
+    51	- [ ] Any new/modified shared component (≥2 callers) or exported hook has JSDoc — see
+    52	      [components.md](../../rules/components.md) > Components / Hooks
+    53	
+    54	**Test checklist**
+    55	- [ ] `npx tsc --noEmit` passes
+    56	- [ ] `npm run lint` passes
+    57	- [ ] `npm run test` passes (Vitest)
+    58	- [ ] Affected pages tested in local dev server (ask developer to run `npm start` — Claude must not start the dev server, see [AGENTS.md](../../../AGENTS.md))
+    59	- [ ] No regressions on golden paths for touched features
+    60	- [ ] No console errors
+    61	- [ ] WCAG 2.2 AA verified for any UI change — including `img alt`, `IconButton aria-label`,
+    62	      and `role` on any non-native clickable element (see components.md > Components)
+    63	- [ ] Any `dangerouslySetInnerHTML` wraps its value in a sanitizer (see conventions.md > General)
+    64	[Add specific items based on which pages/components changed]
+    65	
+    66	---
+    67	
+    68	Keep the output practical and tight. Flag any Tier 1 changes prominently at the top.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/qa-generate/SKILL.md ############
+     1	---
+     2	name: qa-generate
+     3	description: Generate a Gherkin .feature file and Playwright test spec from a Jira story. Human-in-the-lead — Lead QA validates the .feature before Playwright is generated. Use for any new storefront user journey that needs E2E test coverage.
+     4	---
+     5	
+     6	QA test generation is a two-step, human-gated process. Do not generate the Playwright spec
+     7	until the `.feature` file has been explicitly confirmed by Lead QA.
+     8	
+     9	> **Three testing layers in this project** (per [AGENTS.md](../../../AGENTS.md)):
+    10	> - Vitest — unit logic
+    11	> - Storybook `play` functions — component interactions
+    12	> - Playwright — E2E user journeys (this skill)
+    13	>
+    14	> The gherkin → Playwright workflow below is the **E2E layer only**. It does not replace
+    15	> the Vitest / Storybook layers — write all three where each applies.
+    16	
+    17	> **Status:** the `e2e/` directory and Playwright harness must be in place before running this skill.
+    18	> If `e2e/` does not yet exist, stop and tell the developer the QA harness must land first.
+    19	
+    20	---
+    21	
+    22	## Phase 1 — Gather story details
+    23	
+    24	Ask these questions one at a time. Wait for the answer before asking the next.
+    25	
+    26	1. What is the Jira story key? (e.g. SFCC-142)
+    27	2. What is the story title?
+    28	3. What are the acceptance criteria? (paste them directly)
+    29	4. Which squad owns this story? (Squad A: checkout/cart/payments — Squad B: PDP/PLP/search/account)
+    30	5. Which sprint is this? (Check `.docs/memory/sprintScope.md` — flag if the story references a later-sprint dependency)
+    31	6. Is this a P0 journey? (P0 = Digital SIT gate critical path: guest checkout, registered checkout, PDP variant selection, ATC, auth)
+    32	
+    33	---
+    34	
+    35	## Phase 2 — Draft the .feature file
+    36	
+    37	Write the Gherkin file to:
+    38	`e2e/features/{area}/{JIRA-KEY}_{short-description}.feature`
+    39	
+    40	Follow the standard in `e2e/features/README.md`:
+    41	- Tags: `@{JIRA-KEY} @{area}` — add `@p0` if confirmed in Phase 1
+    42	- Feature block with persona, goal, and value
+    43	- Background block for shared preconditions
+    44	- At least one happy path scenario and one failure/edge scenario
+    45	- Plain English only — no selectors, URLs, or implementation detail
+    46	- Under 150 lines — split by scenario group if longer
+    47	
+    48	**Stop here. Do not generate the Playwright test yet.**
+    49	
+    50	Present the draft and say:
+    51	> "This is the draft `.feature` file. Please share it with Lead QA for validation.
+    52	> When QA has approved or annotated it, reply with their feedback and I will proceed."
+    53	
+    54	---
+    55	
+    56	## Phase 3 — Apply QA annotations (if any)
+    57	
+    58	If Lead QA returns annotations in this format:
+    59	```
+    60	# QA ANNOTATION: [correction]
+    61	```
+    62	
+    63	Update the `.feature` file to reflect the correction. Confirm the change explicitly:
+    64	> "Updated [what changed]. No other changes made."
+    65	
+    66	Repeat until Lead QA confirms the file is correct.
+    67	
+    68	---
+    69	
+    70	## Phase 4 — Generate the Playwright spec
+    71	
+    72	Only proceed when Lead QA has confirmed the `.feature` file.
+    73	
+    74	Write the Playwright test to:
+    75	- `e2e/tests/zimm/{area}/{JIRA-KEY}_{description}.spec.ts` — for standard tests
+    76	- `e2e/tests/zimm/{area}/{JIRA-KEY}_{description}.p0.spec.ts` — for P0 tests
+    77	
+    78	Rules:
+    79	- Files are TypeScript (`.spec.ts`) — the TS-only convention applies to E2E too.
+    80	- Import Page Objects from `e2e/support/pages/` — never use raw selectors in the test file.
+    81	- Selector priority in POMs: accessible selectors (role + accessible name, label, text) > semantic HTML attributes (alt, title) > `data-testid` (only when no semantics apply). See [.claude/rules/testing.md](../../rules/testing.md).
+    82	- Import fixtures from `e2e/fixtures/` — never hardcode test data. Fixtures must be keyed by `SITE_ID` (Zimmermann has 8 storefronts across 11 active locales).
+    83	- Test description must match the Scenario name in the `.feature` file exactly.
+    84	- Use `waitForSelector` or `waitForResponse` — never `waitForTimeout`.
+    85	- Under 200 lines — extract shared logic to `e2e/support/helpers/` if needed.
+    86	- **Every `test()` call must carry two Playwright tags: the `.feature` file's `@area` tag AND
+    87	  its `@{JIRA-KEY}` tag** from Phase 2, e.g. `test('...', {tag: ['@checkout', '@SFCC-142']},
+    88	  async ({page}) => {...})`. The `@area` tag is what `develop`-targeted PRs use to run only the
+    89	  specs relevant to a diff — see [.claude/rules/testing.md > Change-scoped
+    90	  E2E](../../rules/testing.md#change-scoped-e2e-develop-targeted-prs-only). The `@{JIRA-KEY}`
+    91	  tag is what lets `e2e-browserstack` scope a Zephyr-linked BrowserStack run to just this
+    92	  story when its key is referenced on a PR — see [.claude/rules/testing.md > BrowserStack story
+    93	  scoping](../../rules/testing.md#browserstack-story-scoping). A missing or mismatched `@area`
+    94	  tag doesn't lose coverage (the full-suite fallback still catches it) but a missing
+    95	  `@{JIRA-KEY}` tag means BrowserStack has nothing to run for this story at all — get both right.
+    96	- **If a Zephyr Scale test case already exists for this scenario, also add `@zephyr:KEY`**
+    97	  (e.g. `@zephyr:SFCC-T285`) so `.github/workflows/zephyr-results-sync.yml` posts a Pass/Fail
+    98	  execution to it after the BrowserStack run — see [.claude/rules/testing.md > BrowserStack
+    99	  story scoping](../../rules/testing.md#browserstack-story-scoping). No Zephyr test case yet →
+   100	  omit the tag; that's the correct default, not something to invent a key for.
+   101	- **If this spec has assertions that would only make sense on one platform** (e.g. a desktop-only
+   102	  nav check, or a mobile-only interaction), do not branch on `testInfo.project.name` with
+   103	  `test.skip()` inside one file — write genuinely separate files under sibling `desktop/`/
+   104	  `mobile/` folders instead (`playwright.config.js`'s existing per-project `testIgnore` already
+   105	  routes each folder to only the matching project). A shared test title running on both
+   106	  projects, even with one side skipped, collapses to one row in BrowserStack's dashboard and
+   107	  silently hides whichever result didn't win — see [.claude/rules/testing.md > BrowserStack
+   108	  story scoping](../../rules/testing.md#browserstack-story-scoping) for the full explanation.
+   109	- **If `{area}` doesn't already have an allow-list group in `.github/workflows/qa.yml`'s
+   110	  `detect-changes` job** (check the `Get changed files` step — only `e2e_homepage` exists
+   111	  today; verify current state rather than trusting this list, it will drift), flag this to the
+   112	  developer: a new area needs its own allow-list group added there before scoping will work for
+   113	  it. Propose the group (the paths this spec's Page Objects and the component/page folders it
+   114	  exercises live under) rather than adding it yourself, since it's a Tier 1 CI/CD file — see
+   115	  [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md).
+   116	
+   117	---
+   118	
+   119	## Phase 5 — Check for new Page Object needs
+   120	
+   121	Read the generated test. If it references an element not yet in any Page Object:
+   122	- Propose the addition to the relevant `e2e/support/pages/*.ts` file.
+   123	- Do not create a new Page Object file without confirming the path first.
+   124	- Page Object files stay under 150 lines — propose a split if exceeded.
+   125	
+   126	---
+   127	
+   128	## Phase 6 — Summary
+   129	
+   130	List every file created or modified:
+   131	- `.feature` file path
+   132	- `.spec.ts` file path
+   133	- Any Page Object additions
+   134	
+   135	Then say:
+   136	> "The `.feature` file requires Lead QA sign-off before this test is considered complete.
+   137	> If QA annotates further changes, run `/qa-generate` again with the updated story key."
+   138	
+   139	---
+   140	
+   141	## Notes
+   142	
+   143	- Never generate tests on `develop` or `main` — check `git branch --show-current` first.
+   144	- If the story references a component or hook from a later sprint (per `.docs/memory/sprintScope.md`),
+   145	  stop and flag it: the test may need to be deferred or the spec written with a placeholder.
+   146	- For Magento baseline regression tests, write to `e2e/features/regression/BASELINE-{area}-{behaviour}.feature`
+   147	  and note that these files use a `@baseline @regression` tag set, not a Jira key tag.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/feature-spec/SKILL.md ############
+     1	---
+     2	name: feature-spec
+     3	description: Turn a plain-English feature request into a scoped implementation plan before any code is written. Asks one clarifying question at a time, then produces a spec Claude Code can execute safely. Use this before starting any non-trivial implementation session.
+     4	---
+     5	
+     6	Produce a scoped implementation spec for a feature before any code is written.
+     7	Follow each phase in order. Do not write code — this skill produces a plan only.
+     8	
+     9	---
+    10	
+    11	## Phase 1 — Clarification (one question at a time)
+    12	
+    13	Read the feature description the user has provided.
+    14	
+    15	Identify what is unclear or under-specified. Then ask ONE clarifying question — the most
+    16	important one. Wait for the answer. Ask the next question only after receiving a response.
+    17	
+    18	Continue until you have answers to all of these (stop earlier if the feature is simple):
+    19	
+    20	- Which sprint does this belong to? (reference `.docs/memory/sprintScope.md` when present)
+    21	- Which PRD in [.docs/prd/](../../../.docs/prd/) is the source of truth for this feature? Cite section + requirement ID.
+    22	- Is this Zimmermann-specific or an enhancement to an existing PWA Kit pattern?
+    23	- Which squad owns the primary files involved? (A: checkout/cart/payments — B: PDP/PLP/search/account)
+    24	- Are there any Tier 1 or Tier 2 files that will need to change?
+    25	- Does this touch any third-party integration (Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps)?
+    26	- What does "done" look like — what is the acceptance criterion?
+    27	- Are there any consent / Didomi gating requirements for scripts the feature loads?
+    28	
+    29	Do not ask about things the feature description already makes clear.
+    30	
+    31	---
+    32	
+    33	## Phase 2 — Parallel research
+    34	
+    35	Once clarification is complete, spawn three agents in parallel to research the codebase.
+    36	Each agent is independent and self-contained.
+    37	
+    38	**Agent A — Registry / file scan:**
+    39	_If `.claude/registry/` exists_, read `.claude/registry/components.md`,
+    40	`hooks.md`, and `utils.md`. _Otherwise_, do a direct scan: `find overrides/app/components overrides/app/hooks overrides/app/utils -type f` and grep for anything relevant.
+    41	Return: a list of relevant existing assets with their file paths.
+    42	
+    43	**Agent B — Pattern scan:**
+    44	Find the most similar existing feature in the codebase under `overrides/app/`.
+    45	Look for a component or page that has a similar interaction pattern or data shape.
+    46	Read its implementation to understand the conventions used (how it calls hooks, how it
+    47	handles loading/error states, how it structures its JSX, which Chakra components it uses).
+    48	Return: the path of the most similar existing implementation and a brief description of
+    49	the pattern it uses.
+    50	
+    51	**Agent C — Upstream check:**
+    52	Search `node_modules/@salesforce/retail-react-app/app/` for any existing upstream implementation
+    53	of this feature or a related one. If found, assess whether the copy-first override workflow
+    54	(see [AGENTS.md](../../../AGENTS.md) — "Copy-first rule") should be applied.
+    55	Return: upstream file path if found, and a Take / Override / Skip recommendation.
+    56	
+    57	Wait for all three agents to return before proceeding to Phase 3.
+    58	
+    59	---
+    60	
+    61	## Phase 3 — Sprint check
+    62	
+    63	Reference `.docs/memory/sprintScope.md` (when present) and [.docs/memory/projectState.md](../../../.docs/memory/projectState.md).
+    64	
+    65	State which sprint this feature belongs to and confirm all its dependencies exist.
+    66	If the feature requires something from a later sprint, say so explicitly:
+    67	
+    68	> "This feature depends on [X] which is Sprint [N] work and does not exist yet."
+    69	
+    70	Ask the developer whether to proceed with a placeholder or wait.
+    71	
+    72	---
+    73	
+    74	## Phase 4 — Spec output
+    75	
+    76	Produce the implementation spec in this format:
+    77	
+    78	---
+    79	
+    80	```markdown
+    81	## Feature Spec: [Feature Name]
+    82	
+    83	**PRD source:** [.docs/prd/<file>.md § <section> — <REQ-ID>]
+    84	**Sprint:** [N]
+    85	**Squad:** [A / B / Both]
+    86	**Estimated scope:** [S / M / L — S = 1 file, M = 2-5 files, L = 6+ files]
+    87	
+    88	### New files to create
+    89	
+    90	| File path         | What it is                               |
+    91	| ----------------- | ---------------------------------------- |
+    92	| overrides/app/... | [component / hook / util / test / story] |
+    93	
+    94	### Existing files to modify
+    95	
+    96	| File path | Tier      | Change needed |
+    97	| --------- | --------- | ------------- |
+    98	| [path]    | [1/2/3/4] | [description] |
+    99	
+   100	### Copy-first overrides required
+   101	
+   102	| Base file (node_modules) | Target path under overrides/ | TS conversion needed? |
+   103	| ------------------------ | ---------------------------- | --------------------- |
+   104	
+   105	### Hooks involved
+   106	
+   107	| Hook        | Status                 | Notes             |
+   108	| ----------- | ---------------------- | ----------------- |
+   109	| [hook name] | [reuse / new / modify] | [any constraints] |
+   110	
+   111	### API / data shape
+   112	
+   113	[What SCAPI endpoint or `@salesforce/commerce-sdk-react` hook provides the data? What does the response shape look like?]
+   114	
+   115	### Third-party integration touchpoints
+   116	
+   117	[Any Global-e, Adyen, Contentful, Searchspring/Einstein, Didomi, Omneo, Emarsys, AP21, Narvar, Google Maps interaction — or "None". Include graceful-degradation behaviour per AGENTS.md.]
+   118	
+   119	### Acceptance criteria
+   120	
+   121	[Bullet list from the developer's answer in Phase 1]
+   122	
+   123	### Suggested Claude Code prompt
+   124	
+   125	[A ready-to-use, scoped prompt the developer can paste directly into Claude Code.
+   126	It must: name every file explicitly under overrides/app/..., state what to build,
+   127	end with "Do not modify any other files."]
+   128	
+   129	### PR checklist
+   130	
+   131	- [ ] New files created at the paths above (TypeScript only inside `overrides/`)
+   132	- [ ] `*.stories.tsx` exists for every new UI component
+   133	- [ ] `*.test.ts` exists for every logic-heavy hook/util
+   134	- [ ] Tier 2 files (if any) flagged for second-developer review
+   135	- [ ] `npx tsc --noEmit` clean
+   136	- [ ] `npm run test` passes locally
+   137	- [ ] [/code-quality](../code-quality/SKILL.md) run on changed files before PR opened
+   138	```
+   139	
+   140	---
+   141	
+   142	## Notes
+   143	
+   144	- If the feature is genuinely simple (one file, no shared dependencies), skip Phase 2 and say so.
+   145	- If the developer cannot answer a clarifying question, treat it as a blocker and note it in the spec.
+   146	- The suggested prompt at the end is the primary deliverable — it is what gets pasted into the next Claude Code session.
+############ FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/onboarding/SKILL.md ############
+     1	---
+     2	name: onboarding
+     3	description: Interactive onboarding for new developers and QA engineers joining the Zimmermann PWA Kit project. Asks role at the start, checks the mechanical setup items, then orients the person to the rules and tools relevant to their role and squad. Run this in the first Claude Code session on a new machine or a first day on the project.
+     4	---
+     5	
+     6	Welcome the developer or QA engineer and explain what this skill does in one sentence.
+     7	Then proceed through the phases below. Ask one question at a time. Do not front-load.
+     8	
+     9	---
+    10	
+    11	## Phase 1 — Role and context
+    12	
+    13	Ask:
+    14	> "Are you joining as a developer or a QA engineer?"
+    15	
+    16	Wait for the answer. Then:
+    17	
+    18	**If developer:** Ask:
+    19	> "Which squad are you on — Squad A (checkout, cart, payments, order management, tax, GivX) or Squad B (Homepage, PDP, PLP, search, account, Brochureware Content)?"
+    20	
+    21	**If QA:** No squad question needed — QA covers both squads.
+    22	
+    23	Ask (both roles):
+    24	> "Is this your first time working on this project, or are you returning on a new machine?"
+    25	
+    26	New = full walkthrough. Returning on new machine = focus on mechanical setup, skip orientation.
+    27	
+    28	---
+    29	
+    30	## Phase 2 — Mechanical setup checks
+    31	
+    32	Run these checks inline using the Bash tool. Report results as you go.
+    33	
+    34	```bash
+    35	node --version
+    36	npm --version
+    37	claude --version 2>/dev/null || echo "NOT FOUND"
+    38	command -v coderabbit &>/dev/null && { coderabbit --version; coderabbit auth status; } || echo "NOT FOUND (required)"
+    39	git branch --show-current
+    40	ls -la .git/hooks/ | grep -E 'pre-commit|commit-msg' || echo "hooks missing"
+    41	[ -f .env.shared ] || echo ".env.shared missing"
+    42	for t in dev test sit uat staging prod; do
+    43	  [ -f ".env.$t" ] || echo ".env.$t missing"
+    44	done
+    45	[ -f .env ] || echo ".env missing"
+    46	```
+    47	
+    48	For each issue found:
+    49	
+    50	**Hooks missing:**
+    51	> "The git hooks aren't installed on this machine. Run both of these now:"
+    52	```bash
+    53	cp scripts/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+    54	cp scripts/hooks/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+    55	```
+    56	Verify after: `ls -la .git/hooks/ | grep -E 'pre-commit|commit-msg'`
+    57	
+    58	**On develop or main:**
+    59	> "You're on the `{branch}` branch. You must always work on a feature branch. Create one now:"
+    60	```bash
+    61	git checkout -b feature/your-ticket-onboarding-setup
+    62	```
+    63	
+    64	**Not fully initialized yet** (`.env.shared` missing, or any `.env.<tier>` file missing):
+    65	> "Environment config isn't fully set up on this machine yet. Run:"
+    66	```bash
+    67	npm run env -- init
+    68	```
+    69	> "This scaffolds `.env.shared` (values shared across every tier) and one `.env.<tier>` file per
+    70	> deployment tier (dev/test/sit/uat/staging/prod), pulls in whatever's already been published to
+    71	> this repo's GitHub Environments (Settings > Environments), and auto-fetches your Contentful
+    72	> Delivery/Preview tokens once you've filled in a personal `CONTENTFUL_MANAGEMENT_TOKEN`.
+    73	> Fill in any values it reports as still blank — `npm run env -- validate` shows what's missing —
+    74	> then activate a tier with `npm run env -- dev` (or whichever tier you're working against).
+    75	> Full command reference is in `.env.sample`'s header comment."
+    76	> `init` skips any file that already exists and only scaffolds what's missing, so it's always
+    77	> safe to rerun on a partially-initialized machine.
+    78	
+    79	**Fully initialized but no tier activated yet** (`.env.shared` and every `.env.<tier>` file present, but root `.env` missing):
+    80	> "Environment config is initialized but no tier is active yet. Activate one:"
+    81	```bash
+    82	npm run env -- dev
+    83	```
+    84	> "(or whichever tier you're working against)."
+    85	
+    86	**Node too old:** Point to the project's node requirement (24 LTS) and ask them to update before continuing.
+    87	
+    88	**Claude Code not found:** `npm install -g @anthropic-ai/claude-code` then `claude login`.
+    89	
+    90	**CodeRabbit CLI not found or not authenticated:** Required, not optional — AGENTS.md's workflow
+    91	step 4 treats a missing or unauthenticated CLI as a blocker before a non-trivial commit, not
+    92	something to silently skip past. Install from https://www.coderabbit.ai/cli, then authenticate
+    93	with `coderabbit auth login --api-key "$CODERABBIT_API_KEY"` — the shared key is already pulled
+    94	into `.env.shared` by `npm run env -- init` (see `.env.sample`). Don't let the developer move on
+    95	with this unresolved.
+    96	
+    97	Once all checks pass, say: "Setup is confirmed. Let's cover the rules and tools."
+    98	
+    99	---
+   100	
+   101	## Phase 3 — Developer orientation
+   102	
+   103	*Skip this phase for QA — go to Phase 4.*
+   104	
+   105	### Rules overview
+   106	
+   107	Walk through these in order — brief, one at a time, confirm understanding before continuing.
+   108	
+   109	**Branch rule (non-negotiable):**
+   110	> "Never work directly on `develop` or `main`. Every task gets a feature branch.
+   111	> Before each session: `git branch --show-current`. If it says develop, stop."
+   112	
+   113	**Protection tiers:**
+   114	> "Every file in this repo has a tier. Tier 1 = frozen, you cannot touch it without explicit
+   115	> owner approval. Tier 2 = protected, requires a second reviewer on the PR.
+   116	> The Tier 1 list is in [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md). Read it before your first task."
+   117	
+   118	Point them to the full tier map: [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md) and [.claude/rules/protectedFiles.md](../../rules/protectedFiles.md).
+   119	
+   120	**TypeScript-only rule:**
+   121	> "Every file you create or modify under `overrides/` must be `.ts` or `.tsx`.
+   122	> `.js`/`.jsx` are not acceptable in that folder — including theme files, stories, and config modules.
+   123	> Run `npx tsc --noEmit` before finishing any task that touches `overrides/`."
+   124	
+   125	**Hard Rule #12:**
+   126	> "If requirements are unclear, Claude will ask one clarifying question at a time and wait.
+   127	> If you're prompting Claude and it asks a question, answer it before sending the next instruction."
+   128	
+   129	**Contact map:**
+   130	Read [AGENTS.md](../../../AGENTS.md) contact map section. Tell them:
+   131	> "Design tokens → UI Designer (#design-system). Commerce hooks → Integration Lead (#integration).
+   132	> Checkout / cart → Squad A Lead. PDP / search / account → Squad B Lead."
+   133	
+   134	### Sprint order
+   135	
+   136	Read `.docs/memory/sprintScope.md` and [.docs/memory/projectState.md](../../../.docs/memory/projectState.md). Tell them which sprint the project is currently in.
+   137	
+   138	> "We're in Sprint [N]. That means [what exists]. Code from Sprint [N+1] doesn't exist yet —
+   139	> don't reference it in your tasks."
+   140	
+   141	### Squad-specific orientation
+   142	
+   143	**Squad A (checkout, cart, payments):**
+   144	> "Your squad owns `overrides/app/pages/checkout/`, `overrides/app/components/order-summary/`,
+   145	> `overrides/app/components/promo-code/`, and `overrides/app/components/pickup-or-delivery/`.
+   146	> Before touching the header, footer, or shared product components, message Squad B Lead."
+   147	
+   148	**Squad B (PDP, PLP, search, account):**
+   149	> "Your squad owns `overrides/app/pages/product-detail/`, `overrides/app/pages/product-list/`,
+   150	> `overrides/app/pages/account/`, and `overrides/app/components/product-tile/`.
+   151	> Before touching checkout or cart components, message Squad A Lead."
+   152	
+   153	### Key skills
+   154	
+   155	Tell them which skills to reach for first:
+   156	- [/session-start](../session-start/SKILL.md) — run at the start of every session (mandatory)
+   157	- [/feature-spec](../feature-spec/SKILL.md) — before starting any non-trivial implementation
+   158	- [/code-quality](../code-quality/SKILL.md) — before opening a PR
+   159	- [/pr-checklist](../pr-checklist/SKILL.md) — to generate PR description
+   160	- [/qa-generate](../qa-generate/SKILL.md) — when you need E2E test coverage for a user journey
+   161	
+   162	### First task
+   163	
+   164	> "Your first task: read [AGENTS.md](../../../AGENTS.md) and [.claude/rules/frozenFiles.md](../../rules/frozenFiles.md) end to end.
+   165	> Then run `/session-start` to see the current project state.
+   166	> When you have a ticket to work on, start with `/feature-spec` before writing any code."
+   167	
+   168	---
+   169	
+   170	## Phase 4 — QA orientation
+   171	
+   172	*Skip this phase for developers — they went through Phase 3.*
+   173	
+   174	### The QA model
+   175	
+   176	> "This project uses a human-in-the-lead QA model. Claude generates tests — you validate them.
+   177	> A test is not complete until you have approved the Gherkin `.feature` file.
+   178	> Never accept a Playwright spec without reading and confirming the `.feature` file first."
+   179	
+   180	### Testing layers
+   181	
+   182	Three layers, three purposes (per [AGENTS.md](../../../AGENTS.md) > Testing):
+   183	1. **Vitest** — unit logic.
+   184	2. **Storybook `play` functions** — component interactions.
+   185	3. **Playwright** — E2E user journeys (this is where Gherkin lives).
+   186	
+   187	### Feature file workflow
+   188	
+   189	Walk through the workflow:
+   190	1. Developer creates a Jira story.
+   191	2. Developer runs [/qa-generate](../qa-generate/SKILL.md) in Claude Code.
+   192	3. Claude drafts a Gherkin `.feature` file and **stops**.
+   193	4. QA reads the `.feature` file — it's in `e2e/features/{area}/`.
+   194	5. QA annotates corrections in the file with `# QA ANNOTATION: [correction]`.
+   195	6. Developer runs `/qa-generate` again with the annotation.
+   196	7. Claude updates the feature file (confirm), then generates the Playwright spec.
+   197	
+   198	Point them to `e2e/features/README.md` and the [Guide 4: E2E Testing — Playwright & Gherkin Repo Conventions](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305528833) Confluence page.
+   199	
+   200	### Tags they must verify
+   201	
+   202	Every `.feature` file needs:
+   203	- `@{JIRA-KEY}` — Jira traceability for Zephyr. **If missing, results won't sync.**
+   204	- `@{area}` — functional area tag
+   205	- `@p0` — only on confirmed critical paths (checkout, ATC, auth, PDP variant selection)
+   206	
+   207	> "If a feature file is missing the Jira tag, flag it to the developer before the test is generated."
+   208	
+   209	### Magento baseline regression
+   210	
+   211	> "Files in `e2e/features/regression/` document Magento 2 expected behaviour.
+   212	> When a baseline test fails against SFCC, do NOT update it to pass.
+   213	> Add `# DELTA:` and bring it to the next standup for classification."
+   214	
+   215	### BrowserStack and Zephyr
+   216	
+   217	> "BrowserStack cross-browser runs trigger automatically on PRs to `release/**`.
+   218	> Results link to your Zephyr stories via BrowserStack Test Observability.
+   219	> Check with the delivery lead that your Jira account has access to the BrowserStack project."
+   220	
+   221	### First task
+   222	
+   223	> "Your first task: read the [Guide 4: E2E Testing — Playwright & Gherkin Repo Conventions](https://zimmermannworkboard.atlassian.net/wiki/spaces/SFCC/pages/305528833) Confluence page end to end.
+   224	> Then review the reference `.feature` file under `e2e/features/checkout/`. If you spot anything that reads like a technical implementation detail rather than plain English, that's exactly the kind of thing to flag in an annotation."
+   225	
+   226	---
+   227	
+   228	## Phase 5 — Confirm and close
+   229	
+   230	Ask:
+   231	> "Any questions before you start?"
+   232	
+   233	Answer questions, one at a time. Then close with:
+   234	> "You're set up. Run `/session-start` at the start of every session — it reads the tracking
+   235	> docs and confirms where the project is before any code is written.
+   236	> If something is unclear mid-task, ask in #dev-team before running Claude Code on it."

@@ -1,0 +1,345 @@
+Salesforce logo
+Privacy Policy
+
+Contact Us
+
+
+PROJECT SETTINGS:
+Project Settings
+Name & ID
+Name
+A descriptive name for this project.
+
+Zimmermann
+
+Project ID
+You can't edit the project ID after the project is created.
+
+zimmermann
+Environment Defaults
+Default settings for new environments in this project.
+Server-Side Cookie Access
+Access and manage cookies from server-side code. Required for personalization and integrations, such as Shopping Agent. Learn more
+
+Enabled
+
+
+Proxy User Agent
+Control how much your backend can see about the shoppers making requests. Learn more
+
+Infrastructure
+Delete Project
+Delete `Zimmermann`
+Deleting this project is permanent and cannot be undone.
+
+Delete
+Salesforce logo
+Privacy Policy
+
+Contact Us
+
+--- turn 43 | ZIMM - SFCC-237 | 2026-08-13 ---
+create another .md in dev: composable-storefront-api-specs.md: "# Composable Storefront API Specifications
+
+You are currently viewing the Composable Storefront documentation. To view the full Composable Storefront reference specifications in the left navigation, select the **Reference** tab (if you are currently in the **Guides** tab).
+
+To view additional API specifications:
+
+- <a href="https://developer.salesforce.com/docs/commerce/commerce-api/references/" target="_blank" class="external-link-guide">B2C Commerce API (also known as Salesforce Commerce API or SCAPI)</a>
+- [OCAPI](https://developer.salesforce.com/docs/commerce/b2c-commerce/references/)
+- [B2C Commerce Developer Resources (Script API)](https://salesforcecommercecloud.github.io/b2c-dev-doc/)
+- <a href="https://developer.salesforce.com/docs/commerce/einstein-api/references/" target="_blank" class="external-link-guide">B2C Commerce Einstein API</a>
+"
+
+and consume it as knowledge as well
+
+--- turn 44 | ZIMM - SFCC-237 | 2026-08-13 ---
+prior to drafting - execute a refresh by reviewing the JIRA ticket for this spike task TSD and the confluence TSD template
+
+--- turn 45 | ZIMM - SFCC-237 | 2026-08-13 ---
+decision on the single-modular app being option A properly implemented is approved - execute the local draft
+
+--- turn 46 | ZIMM - SFCC-237 | 2026-08-13 ---
+move it to /Desktop
+
+--- turn 47 | ZIMM - SFCC-237 | 2026-08-13 ---
+notes:
+
+* remove Gids from this: Gideon R. Linsangan — SFCC Squad (collaborator per ticket)
+* understatement: Today that layer serves a small number of integrations.
+* remove all em-dashes
+* remove from the decision record: 12 Aug	Manikandan Ramachandran (former Integration Lead)	Multiple independent Node processes cannot be run inside a single MRT environment.	Corroborated by MRT platform documentation, by Salesforce's ISV integration guidance, and firsthand in Runtime Admin. Basis for Option B being marked not viable.
+* remove Appendix A — Findings raised separately (not part of this TSD)
+* if there are any occurrences that will be affected by these changes, flag them to me and i will decide
+
+--- turn 48 | ZIMM - SFCC-237 | 2026-08-13 ---
+1. remove former integration lead
+2. keep
+3. hold off on this - what are the 4 findings?
+
+--- turn 49 | ZIMM - SFCC-237 | 2026-08-13 ---
+not to be included in the TSD
+
+--- turn 50 | ZIMM - SFCC-237 | 2026-08-13 ---
+run an in-depth v&v of the spike task TSD against:  /Users/marcel.a.n.navarro/Dev/TSD-PLAYBOOK-TIM-LAVELLE.md
+
+--- turn 51 | ZIMM - SFCC-237 | 2026-08-13 ---
+disregard:
+Blocker — Principle 10 (bring the right people in)
+
+hold-off:
+Owners are roles, not people (Principle 5 — "who is responsible for this scope?"). §7 lists "Technical Lead / Squad A", "Integration / Platform", and — worst — "PWA TSD owner", which names nobody. Split ownership on the top risk ("Technical Lead / Squad A") is also weak; one name closes an item, two share the assumption someone else has it.
+§2.2 assumptions have no owner or next action (Principles 5 and 11). "Unconfirmed with the account team" — who asks, by when?
+ssr.js line numbers are slightly off. TSD says ~150 and ~168; the actual sendMagicLinkEmail( calls are at 154 and 171 (148/166 are the preceding comments). The tilde softens it, but his checklist explicitly says claims were "checked against the actual working branch," and this is the one place the document is checkably imprecise.
+
+execute the fix on the rest
+
+--- turn 52 | ZIMM - SFCC-237 | 2026-08-13 ---
+upon review, i believe these parts are not needed in the TSD, execute an in-depth v&v into this claim of mine and report back with judgement:
+
+* Today that layer serves just three integration touchpoints: SLAS token
+validation, payment method metadata, and Marketing Cloud email. Only two proxy origins are
+configured, SCAPI and OCAPI. Approximately 18 external systems are in scope for the programme
+(.docs/integration/), and nearly all of them have no code written yet. Integration build-out
+begins in the coming sprints.
+   * this is too "conclusional" - "just three integration touchpoints..." -> it's only the beginning of build, can't it be "currently, the layer serves three existing integratin touchpoints..."
+   * this is too conclusional as well - "and nearly all of them have no code written yet" -> again, it's only to be built, so paraphrase this as well
+* Option B stays unsupported regardless of integration count.
+   * the verdict is introduced to early, and i don't see why this even needs to be part of the risk if wrong column
+* Zimmermann's MRT agreement permits additional projects at no additional licence cost.	Affects only Option B's cost line. Option B is already non-viable on architectural grounds, so the recommendation does not change either way. Unconfirmed with the account team.
+   * i don't see the relevance of this
+   * if relevant, this is what i don't think needs to be mentioned "Option B is already non-viable on architectural grounds, so the recommendation does not change either way. Unconfirmed with the account team."
+* The recommendation is therefore
+Option A implemented as a modular single application: one bundle, with integration code in
+clearly separated modules, each with its own connection pool, timeout budget, and error boundary.
+This is the "middle option" the originating ticket asked to be considered; it is not a third topology
+but the correct implementation shape of Option A, and it is specified in §5. Adopting Option A
+without that work would leave success criterion 1.4.3 unmet.
+   * as agreed, option a when implemented properly is the middle-ground or option c that the ticket's description describes, however there is no need to specify is verbatim
+   * and so, rewrite the recommendation to be option a but with the needed safeguards for the integrations in implementation
+* and MRT project roles are all-or-nothing: everyone
+  who needs deploy or variable access for any integration has it for all of them. Currently four
+  people, all Admin. Accepted for now; revisit if the team grows materially.
+   *  the 4 people are the leads of the project, does this even need mentioning?
+* 12 Aug	Marcel Angelo Navarro (author)	Keep environment-configuration findings out of this TSD.	They exist identically under either topology, so they are not topology decisions. Routed separately. Per the "one TSD = one problem" rule.
+   * irrelevant decision, consider the removal
+
+--- turn 53 | ZIMM - SFCC-237 | 2026-08-13 ---
+fine to keep 8 row 1; with these settled, what's next for us?
+
+--- turn 54 | ZIMM - SFCC-237 | 2026-08-13 ---
+what's the state of the blast radius branch
+
+--- turn 55 | ZIMM - SFCC-237 | 2026-08-13 ---
+move these to /Desktop: componentStoryReview.md, meeting2Analysis.md, meeting2Prep.md
+
+there are also 5 translation related changes - what are these?
+
+--- turn 56 | ZIMM - SFCC-237 | 2026-08-13 ---
+avoid these 5 translation related changes - they're out of scope; with this in mind, what our approach to committing the mrt-blast-radius-tests? just push to github for visibility? or am i looking to actually implement these to develop via PR?
+
+--- turn 57 | ZIMM - SFCC-237 | 2026-08-13 ---
+if the destination is for PR - then let's step back and execute an in-depth v&v / check / audit to the test(s) we made to ensure that, while staying in the scope of this spike task TSD, the test(s) are serving their intended purpose for the integrations
+
+this is apart from the local CodeRabbit run we'll eventually do
+
+--- turn 58 | ZIMM - SFCC-237 | 2026-08-13 ---
+this is concerning - let's pivot focus to test 3 for now - when we initially ran this test, what were the findings and conclusions for it?
+
+--- turn 59 | ZIMM - SFCC-237 | 2026-08-13 ---
+the findings attributed to test 3 - are they real?
+
+--- turn 60 | ZIMM - SFCC-237 | 2026-08-13 ---
+prior to changing anything, my question is that can't test 3 be tweaked to actually test for what it should cover?
+
+--- turn 61 | ZIMM - SFCC-237 | 2026-08-13 ---
+it's getting confusing - recap me on everything since the V&V on the tests
+
+--- turn 62 | ZIMM - SFCC-237 | 2026-08-13 ---
+remind me of test 3's test-case again?
+
+--- turn 63 | ZIMM - SFCC-237 | 2026-08-13 ---
+with the findings - what are the needed changes for both the test and TSD?
+
+--- turn 64 | ZIMM - SFCC-237 | 2026-08-13 ---
+verify the undici default
+
+--- turn 65 | ZIMM - SFCC-237 | 2026-08-13 ---
+tsd-architecture.md and architecture.md - where are these files?
+
+--- turn 66 | ZIMM - SFCC-237 | 2026-08-13 ---
+outside scope - do not touch - what matters is this TSD
+
+--- turn 67 | ZIMM - SFCC-237 | 2026-08-13 ---
+yes, execute the test file fixes
+
+--- turn 68 | ZIMM - SFCC-237 | 2026-08-13 ---
+run an in-depth, intensive, exhaustive, and recursive analysis/audit/check/v&v of everything that was executed since the v&v executed on the test that led to the findings and adjustments
+
+--- turn 69 | ZIMM - SFCC-237 | 2026-08-13 ---
+recap me on everything that happened - findings, fixes, result of fixes, etc. - since the v&v was executed on the tests - in ELI5 but i'm the FED Lead format
+
+--- turn 70 | ZIMM - SFCC-237 | 2026-08-13 ---
+run another in-depth, intensive, exhaustive, and recursive analysis/audit/check/v&v of everything that was executed since the v&v executed on the test that led to the findings and adjustments on both the TSD draft and tests
+
+--- turn 71 | ZIMM - SFCC-237 | 2026-08-13 ---
+run a final in-depth, intensive, exhaustive,  recursive, and complete/full analysis/audit/check/v&v of everything that was executed since the v&v executed on the test that led to the findings and adjustments on both the TSD draft and tests
+
+--- turn 72 | ZIMM - SFCC-237 | 2026-08-13 ---
+hey claude - let's take a step back, we've been going back and forth with executing V&Vs, fixing findings, and then on confirmatory V&Vs we discover more findings, and so on - it's not only costly in terms of time and effort, but also triggers a sense of uncertainty and mistrust with the findings and overall results/outputs
+
+as we take a step back, let's revisit starting from the result of the V&V that was done for the TSD which declared it as good for publishing and asked for the code to be pushed and PRed prior to the V&V on the tests and go onward from there
+
+--- turn 73 | ZIMM - SFCC-237 | 2026-08-13 ---
+37 findings meaning 37 edits to be made?
+
+--- turn 74 | ZIMM - SFCC-237 | 2026-08-13 ---
+run it - recursively, checking everything as each change is applied to act against regression
+
+--- turn 75 | ZIMM - SFCC-237 | 2026-08-13 ---
+run an in-depth, intensive, exhaustive,  recursive, and complete/full analysis/audit/check/v&v of everything on both the TSD draft and tests
+
+
+==========================================================================================
+### SESSION: ZIMM - US Intl  [2026-08-10]   (79 unique turns)
+==========================================================================================
+
+--- turn 1 | ZIMM - US Intl | 2026-08-10   [also in: ZIMM - US Intl(2026-08-10)] ---
+execute an in-depth analysis into the codebase, confluence, and JIRA - look for anything regarding the US-INTL site
+
+--- turn 2 | ZIMM - US Intl | 2026-08-10   [also in: ZIMM - US Intl(2026-08-10)] ---
+<task-notification>
+<task-id>a3dfaf437a092d0f1</task-id>
+<tool-use-id>toolu_01Sz4h31RjXQ8GXeCHs2RzXj</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/7062b387-5870-4357-9e90-04f9cfcb858a/tasks/a3dfaf437a092d0f1.output</output-file>
+<status>completed</status>
+<summary>Agent "Explore US-INTL in codebase" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>I have completed an exhaustive sweep. Here is the full picture of everything US-INTL in this codebase.
+
+## Executive summary
+
+US-INTL ("US international") is a **planned-but-not-yet-wired** storefront. It is fully documented across the PRDs and integration docs and has a hand-maintained business-logic stub in code, but it is **deliberately absent from the runtime site list** because its real SFCC site ID (`ZimmermannUSIntl`) is still unconfirmed in Business Manager (BM). The working identifiers are:
+
+- **Site ID:** `ZimmermannUSIntl` _(TBC — working name, pending BM confirmation)_
+- **URL prefix / slug:** `/en-ca/` (the routing key used everywhere in code, not "us-intl")
+- **Locale:** `en-US` _(to be confirmed in BM)_ — note this collides with US domestic's locale
+- **Currency:** USD
+- **Checkout owner:** Global-e (with `globalEPricing: true`)
+- **Distinguished from US domestic** (`ZimmermannUS`, `/us/`, `en-US`, USD, SFCC checkout) purely by the URL slug and checkout owner — REG-005 split the single US site into two.
+
+Note: no source uses the literal strings "US-INTL", "usintl", "USI", or "us_intl" — the canonical code identifier is the slug `en-ca` and the site name `ZimmermannUSIntl`. (The many `locale_text.message.en-CA` hits in `translations/*.json` and `overrides/app/static/translations/compiled/*.json` are unrelated Canada country-name label strings, not storefront config.)
+
+---
+
+## 1. Site configuration
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/sites.overlay.js` (the runtime routing overlay — hand-maintained)
+US-INTL is **NOT present**. The US block has only the single domestic site (lines 32-33):
+```js
+// US — single site; domestic (/us/) via SFCC
+{ id: 'ZimmermannUS', locales: [{ id: 'en-US', alias: 'us' }] },
+```
+The 8 entries are: `ZimmermannAU`, `ZimmermannUS`, `ZimmermannUK`, `ZimmermannEUen`, `ZimmermannEUfr`, `ZimmermannEUit`, `ZimmermannEUes`, `ZimmermannEUIntl`, `ZimmermannHK`, `ZimmermannME` (10 PWA sites; EU-Intl is present but US-Intl is not). The header comment (lines 14-28) documents the exact steps needed to add a site like US-Intl.
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/sites.generated.js` (SCAPI-sourced, auto-generated)
+No `ZimmermannUSIntl` key — it holds only the **7 real SFCC sites**: `ZimmermannAU`, `ZimmermannUS` (line 26: `defaultLocale: 'en-US'`, `defaultCurrency: 'USD'`), `ZimmermannUK`, `ZimmermannEU`, `ZimmermannEUIntl`, `ZimmermannHK`, `ZimmermannME`. Because `sites.js` merges overlay against this generated data, US-Intl could not be added to the overlay yet even if desired (the merge at `config/sites.js` lines 20-28 throws if the referenced SFCC site has no generated data).
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/sites.js`
+Pure merge logic (overlay × generated). US-Intl would flow through automatically once added to both, but currently produces no US-Intl site. Note line 42 sets `defaultLocale: locales[0].id` (the per-PWA-site locale), which is the fix that matters for the eventual US-Intl `en-US`/`en-US` collision handling.
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/config/default.js`
+- `defaultSite: 'ZimmermannAU'` (line 112).
+- `siteAliases` (lines 115-126) has **no `ZimmermannUSIntl: 'en-ch'`-style entry** — only `ZimmermannUS: 'us'` (line 117) and `ZimmermannEUIntl: 'en-ch'` (line 123). This is the one remaining hand edit blocked by governance (see §3 below).
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/config/countries.ts` — the one place US-INTL exists in code
+This is the most important code finding. The `COUNTRY_OVERLAY` map has a ready `en-ca` entry (line 78):
+```js
+'en-ca': { shippingCountry: 'CA', checkoutOwner: 'global-e', globalEPricing: true, boutiqueRegion: 'usa' }, // TBC — pending ZimmermannUSIntl
+```
+The docblock (lines 68-73) explains it is intentionally excluded from the live export:
+&gt; `'en-ca' (US international) is defined here ready to go, but has no matching entry in countries.generated.ts yet — it's excluded from the final COUNTRIES export below until the ZimmermannUSIntl site is added to config/sites.overlay.js (pending BM confirmation of the real site ID...)`
+
+Mechanism: `COUNTRIES` (lines 109-120) is built by `.filter(([slug]) =&gt; slug in GENERATED_COUNTRIES)`. The comment at lines 98-100 confirms the `en-ca` case is the deliberately-tolerated "overlay entry with no generated data yet". Distinctions from US domestic in this entry: `shippingCountry: 'CA'` (vs US domestic `us` → `'US'`, line 77), `checkoutOwner: 'global-e'` (vs `'hybrid'` for US domestic), `globalEPricing: true` (vs `false`), same `boutiqueRegion: 'usa'`.
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/config/countries.generated.ts`
+Confirms exclusion: `GENERATED_COUNTRIES` has **no `en-ca` key** (only au, us, uk, en-eu, fr-eu, it-eu, es-eu, en-ch, hk, en-ae). So US-Intl is filtered out of the runtime `COUNTRIES` object today.
+
+### `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/config/contentfulMapping.ts` / `contentfulMapping.generated.ts`
+No US-Intl / `en-ca` reference (grep returned nothing) — consistent with the site not existing yet.
+
+---
+
+## 2. Regional PRD — `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/regional.md`
+
+Everything the PRD says about US-INTL:
+
+- **Line 9-11 (REG-005 status):** The US is now **two separate SFCC sites** — US domestic (`/us/`, SFCC checkout only) and US international (`/en-ca/`, Global-e checkout only), superseding the 2026-06-11 single-site decision. Rationale quoted: managing Global-e complexity is simpler with a dedicated site boundary; inventory pooling/reporting handled at the SFCC realm level. "`ZimmermannUSIntl` is the working name for the international site."
+- **Line 24 (storefront table):** `| US international | ZimmermannUSIntl (TBC) | en-US (confirm locale in BM) | /en-ca/ | USD | Global-e (REG-005) |`
+- **Line 33:** ROW traffic also routes via `/en-ch/` and `/en-ca/` prefixes (DMU-013).
+- **Line 48 (country→storefront routing):** `/en-ca/` international (Global-e) serves **Canada, Mexico, and all other Americas** — full Caribbean/Central/South America list (Argentina, Aruba, Bahamas … Venezuela). US domestic `/us/` serves only US + Puerto Rico (line 47).
+- **Line 56 (geographic anomalies):** Falkland Is., French Guiana, Guadeloupe, Martinique, Mayotte, St Barthélemy, St Helena, St Martin, Suriname route to **EU International** (`/en-ch/`), NOT US-Intl, despite Americas geography — "follows fulfilment territory, not landmass."
+- **Line 69 (REG-028):** Global-e checkout locks the shipping country (chosen pre-checkout, immutable inside Global-e).
+- **Line 86 (checkout ownership §3):** "Global-e owns checkout for … US international (REG-005 — now a separate SFCC site) …" and for any domestic storefront shipping outside its domestic market.
+- **Line 89 (REG-041):** Global-e pricing via SFCC price books; SFCC does not independently calculate shipping/duties/tax for Global-e paths (applies to US-Intl).
+- **Consent / Didomi defaults — line 132 (REG-054 table):** `| AU, US international, HK, ME | Opted-in by default |`. This is the opposite of US **domestic**, which requires an explicit choice (line 131, no action = opted-out). EU storefronts opted-out (line 130).
+- **Marketing opt-in — line 142 (REG-057):** Marketing opt-in checkbox is unchecked by default on all storefronts **except US (pre-checked)**. (Note: the PRD says "US" without disambiguating domestic vs international here; the Didomi integration doc §7 clarifies pre-checked is US **domestic** only — see §3, a potential ambiguity worth flagging.)
+- **Line 187 (Open Items / Resolved):** Restates REG-005 two-site split; "New site ID `ZimmermannUSIntl` pending BM confirmation."
+
+No US-Intl-specific mention in the EU-language-mismatch, tax (§4), or GDPR sections. US-Intl is English-only (only EU domestic is multi-language, line 112).
+
+---
+
+## 3. Other `.docs/` references (each summarized)
+
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/01-sfcc.md` line 106** — Multi-region table row: `ZimmermannUSIntl (TBC) | en-US (TBC) | /en-ca/ | USD | Global-e (US international)`. Line 116: site ID resolved from URL prefix on every request.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/08-global-e.md` line 23** — Checkout-ownership matrix: `US (/en-ca/, same SFCC site) | Canada, Mexico, all other Americas | Global-e (REG-005, branched by shipping address)`. (Note the "same SFCC site" phrasing here lags the REG-005 two-site update in regional.md — a doc inconsistency.) §1 lists PWA responsibilities on Global-e paths (target-currency price reads on PDP/PLP/cart/mini-cart, DDP/DDU duties messaging, cart handoff, iframe embed, order-return path).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/09-google-maps.md` line 102** — `includedRegionCodes` for `US international (/en-ca/)` = "All Americas excluding US (pre-handoff capture; Global-e takes over inside its iframe)." Line 108 notes the Americas list exceeds the 15-region-code Places API cap, so it must be truncated to top-15 traffic or use locationBias.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/11-narvar.md` line 85** — EDD source for `US international (/en-ca/)` = "Global-e (Narvar not used)." Narvar EDD is domestic-only; US-Intl uses Global-e.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/12-didomi.md`** — Line 93: per-region default consent — "AU, US international, HK, and ME are opted-in by default"; fail-closed only on SDK load failure. Line 94: marketing opt-in checkbox "pre-checked on US **domestic** only, unchecked everywhere else" (this scopes the REG-057 "US pre-checked" to domestic — so US-Intl marketing opt-in is **unchecked** by default). Line 95: banner language English for US-Intl. Line 96 (Open/TBD): Didomi consent propagation into the Global-e checkout iframe origin is unsettled (affects US-Intl).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/integration/index.md` line 36** — Global-e = "International checkout (HK, ME, EU international, US international)."
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/account.md` lines 106, 114, 134, 150** — CRM-065 (track), CRM-070 (return action), CRM-086 (returns link on order detail), CRM-096 (view returns): all route **international → Global-e** for `[US international, EU international, HK, ME]` (vs domestic → Narvar for US domestic). CRM-*a variants: international floor-to-door descoped 2026-05-25. Also CRM-077: tax excluded for US (and HK) on order detail.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prd/checkout.md` line 90 (CFD-026)** — "Global-e owns delivery address capture and validation for international storefronts (US international, ME, EU international, HK)."
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/planning/regionalConfigSyncPlan.md`** — The design/status record. Line 14: the 7-vs-8 count drift from the US split is "a separate, smaller fix … picked up on its own later." Lines 211-217 ("Open item carried over from the original US-split design"): `en-ca` overlay is defined but excluded because `ZimmermannUSIntl`'s site ID is unconfirmed. Lines 272-281 ("Where this leaves the earlier US-split remediation"): adding US-Intl now only needs an entry in `config/sites.overlay.js` + its `countries.ts` overlay, **but** `config/default.js`'s `siteAliases` still needs a manual `ZimmermannUSIntl: 'en-ca'` entry that "remains absolutely off-limits regardless of approver status … per AGENTS.md Hard Rule #4" (must be hand-edited by a human).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/memory/projectState.md` line 63** — Records the REG-005 US split (US domestic `/us/` SFCC; US international `/en-ca/` Global-e; new site ID `ZimmermannUSIntl` pending BM).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/temp/tsd-architecture.md`** — Line 189: storefront table row `US international | /en-ca/ | USD | Global-e (REG-005)`. Line 195: ROW routes via `/en-ch/` and `/en-ca/`. Line 341: per-prefix `WebSite` JSON-LD nodes including `/en-ca/`. (Note §5.1 line 182 says "US/EU domestic and international are configured as separate SFCC sites (REG-006)" — cites REG-006 instead of REG-005 for the US, a minor doc slip.)
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/vendor/sparroSchema.md` lines 93, 95, 507, 510** — SEO schema: `/en-ca/` gets a standalone `WebSite` JSON-LD node named "ZIMMERMANN Canada" (`/en-ca/#website`, country CA), for SEO clustering; notes it shares inventory/checkout with its parent SFCC site (this doc predates the REG-005 two-site split and treats `/en-ca/` as a prefix within the US site).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.docs/prompts/omsIntClaudeCodePrompt.md` line 16** — Lists "US international (Global-e)" among the seven storefronts in the OMS-integration prompt scope.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/README.md`** — Line 5: lists "US international" among the 8 storefronts. Line 169 (Storefronts table): `United States | /us/ (domestic) · /en-ca/ (international) | USD | SFCC domestic · Global-e international`.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/testing.md` line 200** — Lists "US international" among the 8 storefronts as rationale for SITE_ID-keyed fixtures.
+
+No hits in `.docs/prd/pricing-currency-globale.md`, `.docs/prd/dataMigrationSeo.md`, `.docs/architecture.md`, or `.docs/agents-proposals/` for US-Intl/`en-ca` specifically.
+
+---
+
+## 4. Code references (components / hooks / utils / routes / tests)
+
+The **only** code that models US-INTL is the `en-ca` overlay in `countries.ts` (§1 above). Consumption:
+
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/hooks/useCountryConfig.ts`** — The hook that resolves the active `CountryConfig` by matching `sfccSiteId` **and** `locale` (line 20), falling back to `COUNTRIES[DEFAULT_COUNTRY_SLUG]` (= `au`). Because `en-ca` is filtered out of `COUNTRIES` and there is no `ZimmermannUSIntl` site, **US-Intl is currently unresolvable at runtime** — a request would fall through to the AU default. The docblock (lines 9-16) explains the `en-GB` UK-vs-EU collision handling; the same dual-key matching is what will later disambiguate the US-domestic-vs-US-Intl `en-US` collision once US-Intl exists.
+- **Consumers of `useCountryConfig`:** **none** — grep found no component/route importing it yet. The hook and the `en-ca` config are staged infrastructure, not yet wired into UI/checkout/routing. (The `countries.ts` docblock lists intended consumers — "URL routing, IP-detection prompt, checkout redirect logic, boutique location filtering, hreflang generation" — but none are implemented yet.)
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/hooks/useCountryConfig.test.ts`** — Covers AU, UK, en-eu, fr-eu, it-eu, es-eu, HK, ME, and two fallback cases. There is **no US-Intl / `en-ca` test case** (and no US-domestic case either) — consistent with US-Intl being excluded from `COUNTRIES`.
+
+No component, util, or route branches on `en-ca`, `ZimmermannUSIntl`, `checkoutOwner`, `globalEPricing`, `boutiqueRegion`, or `COUNTRY_BY_SHIPPING_CODE` anywhere else (verified by grep across `overrides/`).
+
+---
+
+## 5. E2E fixtures
+
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/e2e/fixtures/site.overlay.js`** (SITE_ID-keyed map) — **No US-Intl key.** The 10 keys are `au, us, uk, enEu, frEu, itEu, esEu, euIntl, hk, me` (lines 14-24). `us` → `ZimmermannUS` only. There is an `euIntl` key but **no `usIntl`**.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/e2e/fixtures/site.generated.js`** — Same 10 keys, no US-Intl (line 10: `us: { locale: 'en-US', currency: 'USD', currencySymbol: '$', siteId: 'ZimmermannUS' }`).
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/e2e/fixtures/site.js`** — Loader; `SITE_ID` env var selects the fixture key, defaults to `au`. No US-Intl.
+- **`/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/e2e/fixtures/customers.js`** — Address personas include `euIntl` (Zurich, line 19) but **no US-Intl persona**.
+- No `e2e/features/` or `e2e/tests/` reference `en-ca`, `usintl`, or "US international" (grep returned nothing).
+
+---
+
+## Cross-cutting notes / discrepancies worth flagging
+
+1. **US-Intl is a documented-but-unimplemented storefront** — present in every doc/table, staged in `countries.ts` as `en-ca`, but excluded from all four generated/runtime configs and all e2e fixtures until BM confirms the `ZimmermannUSIntl` site ID and locale.
+2. **The single remaining hand edit** to activate it (beyond re-running `npm run sync:regional-config`) is adding `ZimmermannUSIntl: 'en-ca'` to `config/default.js` `siteAliases`, which is governance-blocked (AGENTS.md Hard Rule #4) per `regionalConfigSyncPlan.md` lines 278-281.
+3. **`en-US` locale collision:** both US domestic (`ZimmermannUS`) and the planned US-Intl (`ZimmermannUSIntl`) use `en-US`; `regional.md` line 24 and `01-sfcc.md` line 106 both mark the US-Intl locale "(TBC / confirm in BM)". Disambiguation would rely on `useCountryConfig`'s dual site-ID+locale match — but since both share `en-US`, that match alone can't distinguish them; only the distinct `sfccSiteId` will.
+4. **Marketing opt-in ambiguity:** `regional.md` REG-057 (line 142) says "US (pre-checked)" without qualifying domestic vs international, while `12-didomi.md` line 94 explicitly scopes pre-checked to "US **domestic** only." If US-Intl behaviour matters, `12-didomi.md` is the more specific source (US-Intl = unchecked), but the PRD wording is looser.
+5. **Stale "same SFCC site" phrasing** in `08-global-e.md` line 23 and `sparroSchema.md` (treating `/en-ca/` as a prefix inside the US site) predates the REG-005 two-site decision now recorded in `regional.md`.</result>
+<usage><subagent_tokens>89649</subagent_tokens><tool_uses>21</tool_uses><duration_ms>203976</duration_ms></usage>
+</task-notification>

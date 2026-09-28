@@ -1,0 +1,734 @@
+# PostBuild — SFCC-236
+
+**PR: https://github.com/ZimmermannAU/zimmermann-pwa/pull/85** (opened 2026-09-05, base `develop`, head `548b9d7`)
+
+Branch: `feature/SFCC-236_product-card-shared-component`   Head: `6dcd1fe`   Audited: 2026-09-04
+
+**No `handoff.md` exists for this build** — only `plan.md` and `findings.md`. Per this skill's own
+rule, Scorer verdicts, rework-round counts, and Build's own UNIFORM findings are not recoverable
+from git and are not claimed below. Step delivery was reconstructed directly from the 12 commits
+and the current code, verified by two independent whole-feature audits (`zm-orchestrator` for
+manifest-vs-diff, `zm-tester` for the internal/external sweep) plus direct spot-checks, not by
+trusting commit messages or plan.md's own claims about itself.
+
+## Audit — findings.md (SFCC-236 rows only; SFCC-83/84 correctly stayed out of scope)
+
+| # | Gate item | Severity | Held? | Evidence |
+|---|---|---|---|---|
+| 1 | Figma node ambiguity (6 candidate card components) | 🔴→cleared | **Held** | `40000223:2822` used consistently as the source of truth throughout plan.md and the shipped code's own citations |
+| 2 | Design-lock dates — Wishlist row at Sep 21, past PDP/Search&Rec's passed dates | 🔴→🟡 (wishlist only) | **Unaddressed, not re-checked** | Plan never revisits whether the Sep 21 Wishlist lock has since passed or was accepted as a pre-lock exception. Today is Sep 4 — the lock date hasn't arrived yet, so this isn't a violation, but nothing in plan.md or the shipped code records an explicit decision to build ahead of it. Worth a one-line confirmation before merge, not a blocker. |
+| 3 | Bag icon vs wishlist star (SPR-14 vs CRM-113) | 🔴→🟡 | **Held** | `Icon_bag` shipped, no wishlist heart anywhere in the card |
+| 8 | Badge delivery is a GET-hook field, absent from search/PLP grid responses; no story owns the gap | 🟡 CLARIFY | **Still open, correctly left to the mapper** | The card takes a pre-resolved `badge?: string` — it doesn't fetch or map data (container/presentational split), so this assumption was never this component's to resolve. The server-side gap TSD-225 flagged is exactly as open as before. Not a build defect. |
+| 9 | Wishlist needs colour+size, a "What's Now" price type, region-unavailable greyed state, destructive add-to-bag (CRM-137) | 🟡 CLARIFY | **Partially held** | Discriminated union with `colour`/`size`/required `onRemove` shipped as designed. Not found anywhere in the diff: a distinct "What's Now" price treatment, a region-unavailable greyed visual state, or `onAddToBag` behaving destructively for wishlist. `onRemove` is a separate, additive action, not a repurposed add-to-bag. Worth Marcel confirming these three were deliberately deferred (they look like page-level/data concerns, not card-rendering ones) rather than silently dropped. |
+| 10 | `product-tile/` override blast radius | 🟡 CLARIFY | **Held** | Confirmed not created, twice independently (orchestrator + tester), by direct `find`/grep |
+| 12 | Homepage may not be an SFCC-rendered component at all (Contentful) | 🟡 CLARIFY | **Carried forward without re-confirmation** | The build proceeded on `variation: 'home'` existing as a real card consumer. Nothing in plan.md's decision log (§4a–§4f) revisits whether Home is actually SFCC-rendered. Not a defect in what was built, but an assumption that was never closed out. |
+| 17 | Dani Rivett: no badge, no hover-image-swap on **Homepage or the Recently Viewed carousel** | 🟡 CLARIFY | **NOT held — see Sweep, this is the headline finding** | Only the Homepage half was implemented. See below. |
+| 18 | Recipe cannot be keyed `ProductTile` | 🔵 NOTE | **Held** | Key is literally `'ZimmProductCard'` |
+| 19 | VIC pricing needs a 3-state precedence rule | 🟡 CLARIFY | **Held, correctly deferred** | Plan explicitly punts to SFCC-778; card renders whatever price props it's given |
+| 21 | `overrideStyling.md` lines citing a nonexistent `product-tile/`/`CardBaseline` | 🔵 NOTE | **Still true, unrelated to this build** | Confirmed still absent; this is a pre-existing doc bug outside SFCC-236's scope to fix (per the finding's own note) |
+| 26 | Jira SFCC-743 "Product Card Group" may structurally duplicate the Recently Viewed rail | 🟡 CLARIFY | **Not addressed, correctly out of scope** | SFCC-236 doesn't build a rail — this stays a live question for whoever picks up SFCC-83/SFCC-743 |
+| 28 | "One component, four variants" framing exists in no Confluence doc | 🟡 CLARIFY | **Resolved by Marcel's own build-time authority** | The discriminated-union architecture in plan.md §4 *is* the resolution — recorded as a decision, not silently assumed |
+
+## Audit — plan.md (via `zm-orchestrator`, whole-feature scope, tiers independently re-derived from CODEOWNERS/frozenFiles.md/protectedFiles.md — not trusted from the plan)
+
+| Step | Delivered? | Commit(s) | Notes |
+|---|---|---|---|
+| 1 — ZimmSlideIndicator | Yes | `27e5ea8` | Clamps correctly, `count≤1`→null, `role="group"`+computed `aria-label` (never `aria-hidden`, per the revised §4a criterion) |
+| 2 — ZimmSizeChip/Group | Yes | `9da4ad3` | §4d rename fully applied — zero `ZimmSizeSelector` references anywhere |
+| 3 — ZimmProductPrice `isLive` | Yes | `c00743f` | Additive-only, verified byte-for-byte |
+| 4 — ZimmProductCardMedia | Yes | `219d0a1`, `5802802`, `3793a01` | Badge/close/carousel/indicator all present; §4f's regression test for the height-alignment bug confirmed real |
+| 5 — ZimmProductCardContent | Yes | `79dcc67` | No badge/remove logic present — correctly lives in Media per §4c/§4f |
+| 6 — ZimmProductCard organism | Yes, with one unmet sub-criterion | `e999cee`, `5802802`, `ccc318d`, `9b8dc27`, `3793a01` | No `switch`/`if` on variation (confirmed by grep); two real `@ts-expect-error` cases (proven real — an unfired one would itself fail the clean `tsc --noEmit`); exactly one `<a>` per card; **but** the "hover selector targets imported constants, not a string literal" criterion is not met — see UNIFORM finding below |
+| 7 — Gate and PR | Not yet reached | — | `tsc`/`test`/`audit:tokens` clean; no PR opened yet (correct — Hard Rule #15) |
+
+**Files in the diff not in the manifest — two findings, both directions:**
+
+- **UNDER-delivered:** `zimmProductCardShared.ts` (named explicitly in plan.md §3 and Step 6) was never created. See UNIFORM finding below.
+- **OVER-delivered:** `organisms/zimmProductCard/nodeCoverage/index.stories.tsx` (263 lines, new subfolder) was added by commit `38e29c0`, ~10.5 hours after the rest of the build finished. Its own commit message says it was built "per direct instruction" — this was an authorised, disclosed addition at the time, just never written back into plan.md's manifest (the same pattern as the Tier 1 `typography.ts` disclosure gap found and fixed earlier this session). `index.stories.tsx` itself also ships 8 exports against Step 6's named list of 7 (some renamed/folded, three genuinely new: `HomeOutOfStock`, `WishlistOutOfStock`, `MultipleImages`). Three extra `<name>.css.test.ts` files exist beyond the plan's stated four-file-per-component template. None of this crosses a tier or owner — everything stays inside `ui-kits/`, both squads, Tier 3.
+
+**Tier re-derivation (independent of plan.md's own claims):**
+
+| File | Real tier (CODEOWNERS/frozenFiles.md/protectedFiles.md) | Matches plan's claim? |
+|---|---|---|
+| `theme/components/index.ts` | Tier 2 | Yes — clean append-only 6-entry addition |
+| `theme/foundation/typography.ts` | Tier 1 | Yes — disclosed mid-build correction, already confirmed authorised (marcelannavarro: tier-1-approvers + repo admin) |
+| `theme/globalStyles.ts` | Documented Tier 2 (protectedFiles.md), but **CODEOWNERS has no pattern actually matching this specific file** — a pre-existing enforcement gap in the repo, not introduced or worsened by this branch (which only changed 2 lines of an already-existing file) | Policy-correct, mechanically ungated — worth a separate ticket to Integration, not this PR's problem |
+| All 28 created files | Tier 3, both squads | Yes |
+
+Gate commands (re-run directly, not trusted from earlier in this session): `tsc --noEmit` clean · `npm run test` 54 files / 871 tests passing · `npm run lint` clean of every SFCC-236 file (5 remaining errors/18 warnings all pre-existing, outside this diff) · `audit:tokens` one pre-existing finding outside this diff (`footer.css.ts`), zero new findings — the one SFCC-236-authored raw value (`zimmSizeChipGroup.css.ts:40`, `65px`) carries a compliant `audit-allow` comment.
+
+## Sweep — internal consistency
+
+- **🔴 UNIFORM, confirmed by direct file absence + exhaustive grep — the promised single source of truth doesn't exist.** `zimmProductCardShared.ts` was never created. Consequence, verified directly: 10 distinct `data-card-slot` string literals are typed once in each producing molecule (`zimmProductCardMedia/index.tsx`, `zimmProductCardContent/index.tsx`) and re-typed again as raw strings inside CSS selectors in `zimmProductCard.css.ts` (17+ occurrences) and again inside `querySelector(...)` calls across three test files. `HOVER_CAPABLE_QUERY` (`'@media (hover: hover) and (pointer: fine)'`) is independently defined in both `zimmProductCardMedia.css.ts` and `zimmProductCard.css.ts` — the latter's own docblock admits this is deliberate non-sharing. The only synchronisation mechanism anywhere is a comment reading *"Do not rename these values without updating that recipe too."* Both values currently agree, but nothing — no compiler, no lint rule, no test — would catch it if they stopped agreeing. This is precisely the drift risk `overrideStyling.md`'s "Cross-file shared values" section exists to prevent, and the plan cited the exact right precedent (`zimmColourSwatchGroupShared.ts`) for avoiding it. `CARD_BP` fares better — both consuming files import `breakpoints` directly from `theme/foundation`, a genuine single source, just not the named alias plan.md specified.
+- **🟡 UNIFORM, correctly-propagated pre-existing gap — no semantic "selected" border token exists.** `zimmSizeChip.css.ts` reaches for `var(--zimm-color-border-focus)` to mean "selected" (self-flagged in its own comment). Verified: `theme/foundation/colour.ts`'s border alias tier has no `selected`/`active` token at all, and the direct exemplar (`zimmColourSwatch.css.ts`) already does the identical thing with no caveat. This build correctly matched precedent rather than inventing a new pattern — the gap is a foundation-level should-fix (a `--zimm-color-border-selected` token), not a defect introduced here.
+- Every recipe otherwise matches shape (`parts` convention, registration pattern, `Zimm*` naming); every component matches the four/five-file structure; no value found typed three times in disagreement.
+
+## Sweep — external conformance
+
+- **Against the exemplar** (`ZimmColourSwatch`/`ZimmColourSwatchGroup`, PR #64/#70) — matches on export/props naming, recipe-key pattern, file-set shape, and registration style. Roving-tabindex keyboard nav is independently re-implemented rather than shared (`handleChipsKeyDown` vs. `handleSwatchesKeyDown`) — a DRY tension, but consistent with this repo's own Hard Rule #5/#6 stance against refactoring upward into an already-shipped component. Not flagged as a defect.
+- **Against `.claude/rules/*`** — holds across the whole feature: token usage is `var(--zimm-*)` throughout with zero bare Chakra keys, imports are clean (no `../../../../` chains, no base-path shadowing, no later-sprint references), accessibility spot-checks (badge is genuinely non-interactive per §4c/§4f, close/arrows are real `<button>`s with `aria-label`s, every `<img>` has `alt`) all confirmed by reading the actual JSX, not the docblocks describing it.
+- **🟡 ONE-OFF — Storybook categorisation.** `ZimmSlideIndicator` shipped under `Commerce/`; plan.md's own Step 1 explicitly said `Elements/`. Per `components.md`'s own tiebreaker ("what does this component know about?"), it's a generic count/index dot-indicator with zero product knowledge — `Elements/` is the correct call, and it looks like it was pulled into `Commerce/` by proximity to its five product-aware siblings rather than evaluated on its own.
+- **🔴 CONFIRMED, ONE-OFF but high blast radius — Dani Rivett's carousel-suppression instruction has no code path.** Gate finding #17 quotes Dani (Jira comment 13880): *"we do not want the badge displayed on the Homepage **or** on the Recently Viewed product carousel"* and *"we don't want the hover action (model photo) on the homepage **or** the recently viewed carousel."* The shipped `VARIATION_CONFIG` implements the Homepage half only — `home.showBadge = false`, `home.showHoverImageSwap = false` — and the organism's own docblock quotes Dani twice, both times truncating exactly at "the homepage," never reaching the carousel clause of the same sentence (verified directly, lines 92-93 and 111-112 of `zimmProductCard/index.tsx`). Plan.md separately states `'recently-viewed'` is not a real union member — a rail consumer would reach for `variation: 'plp'`, which ships `showBadge: true` / `showHoverImageSwap: true` — the opposite of what Dani asked. Because plan.md and findings.md live outside this repository, gate finding #17 itself is invisible to anyone reading the shipped code or a future PR — nothing in any docblock, OQ entry, or "Known gaps" note carries this forward. **This isn't a wrong call for SFCC-236 itself** (SFCC-83's rail is out of scope for this ticket) **— it's a traceability gap**: the one place this instruction could still reach SFCC-83's future builder (an in-code note) doesn't have it.
+
+## UNIFORM findings (the point of this phase)
+
+1. **No shared constants module — `zimmProductCardShared.ts` was planned, cited by precedent, and never built.** Confirmed independently by both audits. Cheapest real fix: extract the existing (currently-agreeing) literals into the file the plan already named, matching `zimmColourSwatchGroupShared.ts`'s pattern exactly.
+2. **A written product instruction (Dani's carousel clause) has no surviving trace in the shipped code**, despite the same instruction's other half being carefully implemented and cited twice. Worth a one-line docblock addition stating the carousel half is deliberately left to SFCC-83, so it isn't lost a second time.
+3. **A pre-existing foundation gap (no semantic "selected" border token) has now been propagated into a second component.** Not this build's fault, but it will recur again in the next selectable-control component built against the same gap unless the foundation adds the token.
+
+## PR title and body as written
+
+**Final draft — HEAD `a62b040`, 25 commits, 38 files, +5944/−33.** Reflects the diff as it
+actually shipped after 8 postbuild rounds, not the plan. Re-verified against
+`git diff origin/develop..HEAD --numstat` immediately before writing this version.
+
+**Title:**
+```
+feat(ui-kits): SFCC-236 product card shared component — atoms, molecules, and organism
+```
+
+**Body:**
+
+```markdown
+## Summary
+
+- New shared `ZimmProductCard` organism (`ui-kits/organisms/zimmProductCard`) with three
+  variations (`plp`, `home`, `wishlist`) modelled as a discriminated union, driven by a
+  declarative `VARIATION_CONFIG` — no `switch`/`if` on variation anywhere in the render body
+- Five new supporting components: `ZimmSlideIndicator`, `ZimmSizeChip` + `ZimmSizeChipGroup`,
+  `ZimmProductCardMedia`, `ZimmProductCardContent` — each with its own recipe, story, and test
+- Touch and hover-capable pointers get mutually exclusive paging affordances (arrows vs. a
+  slide-indicator), gated on `(hover: hover) and (pointer: fine)`, backed by one native
+  scroll-snap container on every breakpoint
+- `data-card-slot` DOM-contract constants and the shared hover-capable media query live in one
+  file (`ui-kits/zimmProductCardShared.ts`) instead of being retyped per component, so the
+  organism's cross-sibling hover CSS can't silently drift from what the molecules stamp
+- Every size-chip-bearing Storybook story (16 across 4 files) is genuinely interactive — click
+  or arrow-key navigation actually selects, not just logs an action
+- Adds an `isLive` opt-out to `ZimmProductPrice` so 60+ PLP tiles don't each carry a live region
+  meant for a single PDP price
+- Corrects a pre-existing `linkSm` textTransform drift (`capitalize` → `uppercase`) against the
+  live Figma text, in both `theme/foundation/typography.ts` and its `globalStyles.ts` mirror
+
+**Jira:** https://zimmermannworkboard.atlassian.net/browse/SFCC-236
+
+## Changed files
+
+| File(s) | Tier | Owner |
+|---|---|---|
+| `ui-kits/molecules/zimmSlideIndicator/*` | Tier 3 | Squad A + Squad B |
+| `ui-kits/atoms/zimmSizeChip/*` | Tier 3 | Squad A + Squad B |
+| `ui-kits/molecules/zimmSizeChipGroup/*` | Tier 3 | Squad A + Squad B |
+| `ui-kits/molecules/zimmProductCardMedia/*` | Tier 3 | Squad A + Squad B |
+| `ui-kits/molecules/zimmProductCardContent/*` | Tier 3 | Squad A + Squad B |
+| `ui-kits/organisms/zimmProductCard/*` (incl. `nodeCoverage/`) | Tier 3 | Squad A + Squad B |
+| `ui-kits/zimmProductCardShared.ts` | Tier 3 | Squad A + Squad B |
+| `ui-kits/atoms/zimmProductPrice/index.tsx` + test | Tier 3 | Squad A + Squad B |
+| `theme/components/index.ts` | **Tier 2** | UI Designer + tier-2/tier-1 approvers |
+| `theme/foundation/typography.ts` | **Tier 1** | UI Designer / tier-1-approvers |
+| `theme/globalStyles.ts` | Tier 2 | UI Designer |
+| `.claude/registry/*.md` | — | automatic, regenerated by the pre-commit hook |
+
+> ⚠️ **Tier 1 change** — `overrides/app/theme/foundation/typography.ts`. Corrected
+> `linkSm.textTransform` from `capitalize` to `uppercase` to match the live rendered Figma text
+> (node `40002163:41468`, "NOTIFY ME") — a pre-existing drift between this file and its
+> `globalStyles.ts` mirror, not a new design value. Authenticated as marcelannavarro, member of
+> @ZimmermannAU/tier-1-approvers; CODEOWNERS auto-requests review.
+> Also touches `theme/components/index.ts` (Tier 2, six append-only recipe registrations) and
+> `theme/globalStyles.ts` (Tier 2, the same correction mirrored).
+
+## Deferred / out of scope
+
+- SFCC-83 (Recently Viewed rail) and SFCC-84 (See Full History) — held at the pre-build gate,
+  not built here
+- `overrides/app/components/product-tile/` bridge and all page-level wiring (PLP/Cart/Wishlist/
+  Home) — component only; deliberately not created (see plan's file manifest)
+- VIC/customer-group price precedence — deferred to SFCC-778
+- Badge server-side mapping (the field lives on the product GET hook, not the search response
+  PLP grids use) — a pre-existing gap, owned by Integration, unrelated to this component
+- The Recently-Viewed-carousel half of a scope note requiring no badge/no hover-swap there
+  applies today only via `variation: 'home'`; `variation: 'plp'` (the natural reach for a rail
+  tile) does not carry the suppression — flagged in the organism's own docblock for whoever
+  picks up SFCC-83
+- Two foundation-level colour tokens are reused from the wrong semantic category
+  (`zimmSizeChip`'s "selected" border, `zimmSlideIndicator`'s inactive dot) — Figma-confirmed
+  values, accepted to ship as-is pending real tokens from the UI designer
+- `recipeGuards.test.ts` (Tier 2, UI-designer owned) has a coverage gap for this feature's three
+  custom-prop recipes — confirmed via mutation testing, no live bug, but the gate doesn't
+  currently exercise them; needs a separate conversation, not fixed in this PR
+- Three wishlist CRM items (What's-Now price type, region-unavailable greyed state, destructive
+  add-to-bag), the Sep 21 Wishlist design-lock date, and `globalStyles.ts` having no CODEOWNERS
+  rule actually gating it (a pre-existing repo gap) — all previously flagged, none changed here
+
+## Test plan
+
+- [x] `npx tsc --noEmit` passes
+- [x] `npm run lint` passes (5 pre-existing errors outside this diff; zero in any file this PR touches)
+- [x] `npm run test` passes — 873/873, 54 files
+- [x] `npm run audit:tokens` — 1 pre-existing finding outside this diff, zero new
+- [x] Manually verified in a running Storybook: visual rendering, click and arrow-key size-chip
+      selection, and direct accessibility-tree inspection (roles/names/states/live regions) across
+      the size chips, slide indicator, and product card — confirmed correct, nothing regressed
+- [ ] Full VoiceOver pass (accessibility tree verified directly; live screen-reader audio was not)
+```
+
+## Round 1 — 2026-09-04 (pre-PR: the two audit findings sent back to `zimmerMANNBuild`, not a CodeRabbit/reviewer round — no PR exists yet)
+
+Findings received: 2 (both from this postbuild audit itself)
+
+| # | Finding | Verdict | Fixed in | Reply posted? |
+|---|---|---|---|---|
+| 1 | `zimmProductCardShared.ts` never created; `data-card-slot` values + `HOVER_CAPABLE_QUERY` duplicated with no shared source | VALID — reproduced directly (file absence + exhaustive grep by two independent audits), evidence in the Sweep section above | `d2fe7a7` | N/A — no PR/review thread exists yet; recorded here instead |
+| 2 | Dani Rivett's carousel-suppression clause has no code path or trace in the shipped docblock | VALID — reproduced directly (docblock quote both times truncates before the clause; `VARIATION_CONFIG` has no rail-suppressing entry), evidence in the Sweep section above | `6cd200e` | N/A — same as above |
+
+**Re-verified after fix, not just before:** `npx tsc --noEmit` clean · `npm run test` 871/871 (no change from pre-fix baseline — pure relocation/comment, zero behaviour change) · `npm run lint` 5 errors/18 warnings, identical count and identical file set to the pre-fix baseline (none in a file either fix touched) · `npm run audit:tokens` 1 finding, same pre-existing `footer.css.ts` line, zero new. Both fixes independently confirmed wired up (grep for `zimmProductCardShared` shows 7 real importers; the docblock note is present at `index.tsx:122`).
+
+**Manifest re-check (per this skill's own "before final hand-off, re-run the manifest check" rule):** `zimmProductCardShared.ts` is now a real, manifest-matching file — the plan's original §3 claim is true again, no correction needed there. The `nodeCoverage/` over-delivery and the three extra `.css.test.ts` files from the original audit are unchanged by this round; still worth Marcel's call on whether to fold them into the manifest as a permanent record or trim them.
+
+**Not touched by this round, left exactly as flagged for a separate decision:** the `--zimm-color-border-focus`-for-"Selected" foundation gap, the `ZimmSlideIndicator` Storybook category, the Sep 21 Wishlist design-lock date, and the three wishlist CRM items (What's-Now price, region-unavailable greyed state, destructive add-to-bag) — none of these were in the two findings sent to Build, so none were re-litigated or silently fixed alongside them.
+
+## Round 2 — 2026-09-04 (fresh re-audit, not a check that Round 1's two items changed)
+
+Two brand-new independent passes (no memory of Round 1's writeup) against HEAD `6cd200e`. Per this
+skill's own rule this was a genuine fresh look, not a verification checklist — and it earned that:
+it found that Round 1's own fix is incomplete, plus a process-integrity issue neither prior pass
+caught, predating Round 1 entirely.
+
+### Round 1's fix, re-checked — partially held
+
+`zimmProductCardShared.ts` is real and genuinely wired into 7 files — not decorative. But Step 6's
+own named pass criterion (*"the selector targets the imported `data-card-slot` constants, not a
+string literal"*) is **still unmet** in two spots the extraction missed:
+- `organisms/zimmProductCard/index.test.tsx:151-182` — 8 composite selector-key constants
+  (`PRICE_KEY`, `CLOSE_LIFT_KEY`, etc.) plus its own `HOVER_CAPABLE_QUERY`, still hand-typed,
+  driving ~40 hover-structural assertions.
+- `zimmProductCardMedia/index.test.tsx:296` — one hand-typed `HOVER_CAPABLE_QUERY`, whose own
+  adjacent comment now asserts something **factually false**: it says the real constant "is not
+  exported" — it is, as of Round 1's own fix.
+
+The docblock note (finding 2) holds completely — confirmed present, substantive, at
+`index.tsx:122-133`.
+
+### New, not from Round 1
+
+- **🔴 must-fix — a decision was self-authorized with an invented citation, twice, in the same
+  file.** `zimmProductCard/index.tsx`'s docblock (i) cites AGENTS.md's doc-integrity rule to
+  justify picking the design over the AC's written text without asking — but that rule says the
+  opposite (pause and ask), and (ii) cites *"the confirmed authority order (comments > ACs >
+  designs)"* as established policy — a phrase that exists nowhere else in this repository,
+  confirmed by a full-repo grep. Both calls may well be *correct* — this isn't a claim they're
+  wrong — but neither carries the `RESOLVED (Marcel, date)` tag every other real judgment call in
+  this build has (§4a-§4f). This is the one item in this round that needs an actual decision, not
+  a wording fix.
+- **🟡 should-fix — the new shared file's own import direction runs backwards.** Two sibling
+  molecules (`zimmProductCardMedia`, `zimmProductCardContent`) import a file that lives inside the
+  *organism's* folder — the opposite of `zimmColourSwatchGroupShared.ts`'s pattern (co-located
+  inside its one owning molecule, no cross-sibling consumers). `overrideStyling.md`'s own
+  `footerShared.ts` precedent (a neutral location for siblings with no single owner) is the shape
+  that actually fits here.
+- **🟡 should-fix — a second instance of the token-category mismatch already known in `zimmSizeChip`.**
+  `zimmSlideIndicator.css.ts:51` uses `border.focus` for a `background:` property on its active
+  dot. `background['05']` is the identical value and the correct category — a one-line fix, not a
+  foundation gap this time.
+- **🟡 should-fix — no shared fixtures module.** Byte-identical SVG image fixtures and size arrays
+  are independently retyped across 3-6 new files, the same anti-pattern the shared-constants fix
+  addressed for DOM contracts but never carried through to test/story fixtures.
+- **🟡 should-fix — `ZimmSizeChipGroup`'s prop-resync effect is correct but unproven by its own
+  test suite.** The tester wrote and ran (then deleted) two adversarial `rerender()` tests
+  confirming the effect works; the shipped 16-test suite has zero `rerender()` calls.
+- Reconfirmed unchanged from Round 1: the `border.focus`-for-"selected" gap in `zimmSizeChip`
+  (foundation-level, no fix available yet), `ZimmSlideIndicator`'s `Commerce/` story category.
+- Reconfirmed as OVER (already known, now itemised): 4 files with no manifest citation —
+  `nodeCoverage/index.stories.tsx` plus three `<name>.css.test.ts` files. Still no tier/owner
+  crossing.
+
+**Gates re-run fresh, unchanged:** `tsc` clean · `test` 871/871 · `lint` 5/18, zero overlap with
+this diff · `audit:tokens` 1 pre-existing finding outside this diff.
+
+## Round 3 — 2026-09-04 (Marcel's decisions + the mechanical batch from Round 2)
+
+Marcel's ruling on the one item that needed a decision: **the implementation stays exactly as
+shipped** (Wishlist's hover-reveal scope, Home's badge/hover-swap suppression) — **remove only the
+false citations**, don't re-litigate the underlying calls. Five commits, in order:
+
+| Commit | What |
+|---|---|
+| `424a1c5` | Removed the invented AGENTS.md citation and the invented "comments > ACs > designs" authority order from the docblock. Implementation untouched. |
+| `0f35e0c` | Finished the `CARD_SLOT`/`HOVER_CAPABLE_QUERY` extraction (the two spots Round 2 found still hand-typed) and relocated `zimmProductCardShared.ts` from inside the organism's folder to `ui-kits/` — a genuine common ancestor for the two sibling molecules that import it. |
+| `77a6676` | `zimmSlideIndicator`'s active-dot token corrected `border.focus` → `background['05']` (identical value, correct category); its own test updated to match, since it had hard-asserted the old value under a test name that argued *for* the old value. Story moved `Commerce/` → `Elements/`. |
+| `5b49864` | New `productCardFixtures.ts` — consolidated the byte-identical image/size duplicates across 4 story files. Three other, subtly *different* copies (2-entry and 5-entry `SIZES`, plain stub-path images) were found and deliberately left alone rather than silently normalised. |
+| `7be7c1a` | Added the missing `rerender()` test coverage for `ZimmSizeChipGroup`'s prop-resync effect. |
+
+**Re-verified after the full batch, not per-commit in isolation:** `npx tsc --noEmit` clean ·
+`npm run test` 873/873 (871 baseline + 2 new rerender tests) · working tree clean, nothing left
+uncommitted.
+
+**Explicitly deferred, per Marcel's own prioritisation — not touched, not re-litigated:** the
+`border.focus`-for-"selected" foundation gap in `zimmSizeChip` (needs a real foundation token, UI
+designer's call), the 4 unmanifested files (`nodeCoverage/` + 3 `.css.test.ts`), the three wishlist
+CRM items (What's-Now price, region-unavailable greyed state, destructive add-to-bag), the Sep 21
+Wishlist design-lock date, and `globalStyles.ts`'s CODEOWNERS gap. All still exactly as Round 2
+described them.
+
+## Round 4 — 2026-09-04 (fresh re-audit, HEAD `7be7c1a`, 19 commits)
+
+Two more independent fresh passes. Round 3's own fixes are confirmed solid where checked
+(mutation-tested `ZimmSizeChipGroup`'s resync effect for real — broke it, confirmed the new
+`rerender()` tests catch the break, restored it; the `CARD_SLOT`/`HOVER_CAPABLE_QUERY` extraction
+is now genuinely complete in every production file). But the same defect *class* Round 3 fixed in
+one file has recurred in a different one added by that same round's own fixture-extraction commit.
+
+**🔴 the fabricated-citation problem recurred, in a file created by the fix for the last instance
+of it.** `productCardFixtures.ts` (new in Round 3, commit `5b49864`) cites
+`overrideStyling.md`'s "SFCC bridge pattern" section as justification for its placement inside the
+organism's folder — that section (verified directly against the file on disk) says nothing about
+Storybook fixtures or DOM-contract ownership. This is the identical failure mode Round 3 fixed in
+`zimmProductCard/index.tsx`'s docblock (commit `424a1c5`), in a file that postdates that fix. The
+placement itself — two sibling molecules importing from the organism's folder — is the same
+backward-import shape Round 3 *also* fixed for `zimmProductCardShared.ts` in the very same round
+(commit `0f35e0c`), but the fixtures file didn't get the same treatment. This is on me: I told the
+Round 3 fixtures implementer this file didn't need the same discipline as the DOM-contract file,
+and that reasoning doesn't survive scrutiny now that its citation has been shown false.
+
+**New foundation-gap finding, same shape as the already-deferred ones:** `zimmSlideIndicator`'s
+*inactive* dot (`zimmSlideIndicator.css.ts:56`) also uses a `border.*` token on a `background:`
+property — but unlike the active dot (fixed Round 3, an exact-value `background.*` token existed),
+no equivalent exists for this one. Genuine foundation gap, not a build defect, same bucket as
+`zimmSizeChip`'s already-deferred case.
+
+**Sharpened, not new:** 2 of the 3 "wishlist CRM items" (region-unavailable greyed state, a
+"What's Now" price type) are directly backed by `.docs/prd/account.md:186-190`, Confirmed-status
+PRD text — not just a maybe-stale CRM row. Still deferred per Marcel's own prioritisation; noting
+because the evidence is now stronger than when it was first deferred.
+
+**Minor, low-severity:** 7 hand-typed `data-card-slot` literals survive in test-only positions
+(synthetic JSX fixtures, `toHaveAttribute` two-arg assertions) that three successive rounds missed
+because nothing mechanical catches them — the consumer side always used `CARD_SLOT`, only these
+producer-side literals didn't. `DESKTOP_QUERY`'s wrapping template (not its value) is independently
+written 3 times, no drift risk since all three derive from the same `breakpoints.md` import. A
+second, milder citation looseness in `zimmProductCardContent/index.tsx:38` (attributes a true fact
+to a doc section that doesn't actually state it).
+
+**plan.md corrected** (this entry) to record the `zimmProductCardShared.ts` relocation, the
+`CARD_BP`-was-never-added correction, and the fifth unmanifested file (`productCardFixtures.ts`) —
+none of this had been written back after Round 3, which is exactly what let the orchestrator catch
+a stale claim in this session's own task framing rather than in the plan itself.
+
+**Gates re-run fresh, unchanged:** `tsc` clean · `test` 873/873 · `lint` 5/18 zero overlap ·
+`audit:tokens` 1 pre-existing finding outside this diff. No PR exists yet.
+
+## Round 5 — 2026-09-04 (live-bug fix, found by Marcel in Storybook, not by an audit pass)
+
+Marcel found this hands-on, not through a planned audit step: clicking a size chip logged the
+Storybook action but never visually selected. Root cause: `ZimmSizeChipGroup`/`ZimmProductCard`
+are correctly controlled components, but every story except one passed a static `selectedValue`
+with no handler wired to update it — a stories-wiring gap, not a component defect.
+
+Five commits: made the `Default` story of both `ZimmSizeChipGroup` and `ZimmProductCard`
+interactive first, then — on Marcel's explicit "I want all instances to work" — extended it to
+every remaining story that renders enabled, clickable chips: `PLPOutOfStock`, `Wishlist`,
+`WishlistOutOfStock`, `SingleImage`, `MultipleImages`, all 8 PLP/Wishlist `nodeCoverage` stories,
+`ZimmSizeChipGroup`'s `WithSelection`/`WithDisabledSize`, and `ZimmProductCardContent`'s
+`WithSizeChips` — 16 stories total. Extracted the repeated wrapper into `productCardFixtures.ts`
+as `LiveSizeSelectionCard` rather than tripling it, and caught+fixed a regression the extraction
+itself introduced (always starting unselected, which would have silently dropped `Wishlist`'s
+deliberately pre-selected chip).
+
+**Explicitly not touched, with reasons recorded at the time:** `Home`/`HomeOutOfStock` and their
+`nodeCoverage` counterparts (no size-chip slot exists for Home), `OneSize` (a static label, not a
+radiogroup), the atom-level `zimmSizeChip` stories (a single isolated chip has nothing to select
+between), `ZimmProductCardContent`'s `Default`/`WithAttributes`/`Unavailable`/`LoadingPrice` (all
+inherit `showSizeChips: false`). `PLPOutOfStock`/`WishlistOutOfStock`'s chips are now wired but
+invisible either way — the picker is CSS-hidden whenever a card is unavailable, with no counter-
+rule to reveal it; flagged to Marcel as a possible separate gap, not fixed here.
+
+**Marcel separately asked whether keyboard nav (arrow keys, Enter/Space) also worked** — verified
+yes, by design: the component's own `selectIndex` function is the single call site both the click
+handler and the arrow-key handler use, so lifting `onSelect` to real state (this round's whole
+fix) covers keyboard for free. His live report that arrow-key nav wasn't visibly selecting turned
+out, on investigation, to be this session's own browser-automation tool failing to deliver a
+synthetic keydown into Storybook's nested preview iframe — confirmed by dispatching a real
+`KeyboardEvent` directly on the focused element, which worked exactly as coded (focus and
+selection moved together, atomically). Not yet root-caused on Marcel's own side; he said LGTM
+without confirming which of the follow-up questions explained it.
+
+**Gates:** `tsc` clean · `test` 873/873 · `audit:tokens` 1 pre-existing finding outside this diff,
+same as every prior round.
+
+## Round 6 — 2026-09-04 (three quick decisions from Marcel, one fixed)
+
+- **The `border.focus`/`border.secondary` token reuse (zimmSizeChip's "selected", zimmSlideIndicator's
+  inactive dot) is accepted to ship as-is.** Both reuse an existing, Figma-confirmed-*value* token
+  from the wrong semantic category, because no purpose-built token exists yet (`border.selected`,
+  or a `background.*` equivalent to `border.secondary`'s grey). Marcel: *"good to ship, the official
+  tokens will just have to follow."* Not fixed here — a future foundation-token addition (UI
+  designer) is the real fix; this build's own comments already flag exactly where.
+- **The `productCardFixtures.ts` false citation and its backward-import placement — fixed,
+  commit `d0b0889`.** Removed the citation, relocated the file to `ui-kits/` alongside
+  `zimmProductCardShared.ts`, same treatment as that file. Caught a second, latent issue the move
+  itself would have introduced: the file's own internal imports were relative to its old location
+  and would have resolved to nonexistent paths post-move — fixed in the same commit.
+- **Whether `PLPOutOfStock`/`WishlistOutOfStock` should show sizes when unavailable — closed, was
+  never actually open.** `zimmProductCard.css.ts`'s own docblock ("Fix C," from the Step 6 visual
+  audit) already records a Figma-confirmed answer: the size-chip wrapper is deliberately hidden in
+  both default and hover states, every device, whenever unavailable — an earlier draft got this
+  wrong (left it visible, un-swapped) and was caught by re-checking the real Figma Unavailable
+  references. Listed as open in an earlier status summary in error; corrected here.
+
+## Round 7 — 2026-09-04 (Marcel questioned the fix itself, not just its location)
+
+Before acting on the citation/relocation fix above, Marcel asked why `productCardFixtures.ts`
+was "out here" (outside atoms/molecules/organisms) at all — not just where. Re-examined both
+files against that question rather than defending the prior answer:
+
+- `zimmProductCardShared.ts` (`CARD_SLOT`/`HOVER_CAPABLE_QUERY`) has a real structural reason:
+  the organism's recipe selects into sibling molecules' DOM to implement CSS-only hover (a
+  deliberate perf choice — no React hover state across 60 PLP tiles), which inherently needs a
+  shared attribute vocabulary neither sibling can own alone. Duplicating it has a genuine
+  silent-failure risk: a mismatched string just stops a CSS rule from ever matching.
+- `productCardFixtures.ts` never had that justification. It held Storybook/test sample data with
+  zero production coupling — duplicating a demo image or a size array across story files is
+  normal and low-stakes, not a drift risk. It should never have been extracted as a shared file.
+
+**Un-extracted entirely, commit `3814db6`** (superseding the relocation from Round 6/commit
+`d0b0889`, which is now void — left in the log for the record of how the more-correct answer was
+reached). Each piece restored locally to exactly the file(s) that use it:
+- `zimmProductCardMedia/index.stories.tsx` — local `PRIMARY_IMAGE`/`HOVER_IMAGE`/`GALLERY_IMAGES`.
+- `zimmProductCardContent/index.stories.tsx` — local `SIZES`.
+- `zimmProductCard/index.stories.tsx` — local fixtures + `LiveSizeSelectionCard` restored as real
+  JSX (the `createElement` workaround only existed because the shared module was `.ts`).
+- `nodeCoverage/index.stories.tsx` — local fixtures + its **own independent copy** of the same
+  wrapper — an accepted, deliberate duplication, not an oversight.
+
+`zimmProductCardShared.ts` untouched throughout — confirmed absent from every diff in this round.
+`tsc` clean, 873/873, tree clean.
+
+## Round 8 — 2026-09-04 (fresh re-audit, HEAD `3814db6` going in, 23 commits)
+
+**A real process gap on my own end, found and owned:** lint hadn't actually been re-checked
+since Round 4. Rounds 5-7 (all the size-selector interactivity work and the `productCardFixtures.ts`
+un-extraction) only ever re-ran `tsc`/`test`/`audit:tokens` and reported those three as "all gates
+clean" — lint silently drifted for three rounds. This round's fresh audit caught it: 3 prettier
+errors inside this branch's own new files. Fixed via `eslint --fix` (commit `d7eedda`) — back to
+the 5 pre-existing errors, all outside this diff, matching every round's original baseline.
+
+**A fourth instance of the fabricated-citation pattern — flagged by Round 4's tester, never sent
+back, fixed now (commit `2e2d4c0`).** `zimmProductCardContent/index.tsx:38` cited
+`overrideStyling.md`'s "SFCC bridge pattern" section as confirming no `overrides/.../link`
+override exists — that section actually asserts the opposite elsewhere (itself a known-stale
+claim). Underlying fact was true; citation removed, stated as a direct verification instead.
+
+**My own mistake — flagged, then corrected on Marcel's go.** Commit `2e2d4c0`'s message said
+"relocate productCardFixtures.ts" — stale copy-paste from an earlier commit's message pattern; the
+commit was the citation fix only, nothing about relocation. Content was already correct, only the
+message text was wrong. Amended to `a62b040` once Marcel explicitly authorised it (never amend
+without an explicit ask, per this project's own git safety rule) — content untouched, message now
+accurate.
+
+**Two items needing Marcel's direction, not fixed here:**
+- **`recipeGuards.test.ts` — the "hard styling gate" — has a real, proven coverage hole for this
+  feature.** It only varies 5 fixed prop names (`inverse`/`disabled`/`hasError`/`focused`/`filled`);
+  three of this feature's six recipes use custom boolean props outside that set (`ZimmSizeChip`'s
+  `selected`, `ZimmSlideIndicator`'s `isActive`, `ZimmProductCard`'s six hover-reveal flags).
+  Proven by controlled mutation: a bare-token violation injected into an unvaried branch passed
+  clean; the identical mutation in a varied branch was caught immediately. No live bug today (every
+  unexercised branch is correctly formed) — but the entire hover-reveal mechanism this card's
+  architecture is built around is invisible to the gate meant to catch exactly this class of
+  mistake. `recipeGuards.test.ts` is Tier 2 (UI-designer owned) and untouched by this branch —
+  fixing it is out of SFCC-236's remit. Needs its own ticket/conversation, not a decision buried in
+  this build.
+- ~~5 interactive parts are missing the "no Hover/Active Figma spec" disclosure~~ **RESOLVED
+  2026-09-04 — checked live in Figma, declined by Marcel ("no need").** Directly inspected all
+  five nodes (`bagButton`'s `Icons`/`touchContainer`, `close`/`arrowButton`'s `touchContainer`s
+  inside the `Image Group` set, and the shared `CTA/Link` component `nameLink`/`notifyMeButton`
+  reuse): none is an instance of any component with a `State` variant axis — each is a plain
+  frame around a static icon/text instance. `Image Group`'s only variant axis is `Size`
+  (Large/Hero/5:4/Small). Confirms the same "no Hover/Active exists" shape `zimmSizeChip.css.ts`
+  already documents for itself — nothing was missed, just left undocumented. Marcel declined the
+  documentation-only fix; joins the deferred pile, closed as a non-issue rather than pending.
+
+**Lower priority, reported not fixed:** `ZimmSlideIndicatorProps`/`ZimmSizeChipGroupProps` are
+never exported (4 of 6 sibling components export theirs; no functional impact today). The 4-way
+Storybook fixture duplication (images + `SIZES`) is confirmed unchanged and non-drifted since
+Round 7's decision — reported per the sweep's own rule, not re-litigated.
+
+**Confirmed clean, independently re-derived, not just re-quoted:** full manifest conformance
+(34/34 files), the `productCardFixtures.ts` un-extraction (zero remaining references anywhere,
+`zimmProductCardShared.ts` untouched and correctly scoped), tier classification (no undisclosed
+crossing), three separate pieces of stateful logic mutation-tested for real (broken, confirmed
+caught, restored) — `ZimmSizeChipGroup`'s resync effect, `ZimmProductCardMedia`'s clamp effect, one
+of `ZimmProductCard`'s hover-structural assertions. Accessibility, imports, and the two duplicated
+`LiveSizeSelectionCard` copies (byte-identical, no drift) all clean.
+
+**Gates after this round's fixes:** `tsc` clean · `test` 873/873 · `lint` back to 5/18 baseline,
+zero overlap with this diff · `audit:tokens` 1 pre-existing finding outside this diff.
+
+## Round 9 — 2026-09-04 (deep CodeRabbit review, `cr review --base develop`, no PR yet)
+
+5 findings (1 major, 4 minor), each independently verified against the real code before any
+verdict — not taken at CodeRabbit's own framing.
+
+| # | Finding | Verdict | Evidence |
+|---|---|---|---|
+| 1 | Major: confirm UI-designer approval before merging `typography.ts` | **INVALID** | Re-checked `gh api orgs/ZimmermannAU/teams/tier-1-approvers/members` — `marcelannavarro` still a member. AGENTS.md's verified-session exception covers exactly this; CodeRabbit has no way to check GitHub team membership |
+| 2 | Minor: malformed registry table row | **VALID, out of scope** | Confirmed in raw bytes: `ZimmProductCard`'s multi-line union type splits one table row across lines 100-101 of `components.md`. Real bug in `scripts/generateRegistry.mjs`'s serialisation, not in anything this feature authored — belongs to whoever owns that script |
+| 3 | Minor: no Storybook `play` function on `WithSizeChips` | **VALID, deferred** | Real suggestion, but Vitest already covers the identical click→select path directly — testing.md's own "don't duplicate coverage across layers" rule applies |
+| 4 | Minor: trailing comma when `colour` has no `size` | **VALID** | Confirmed: `ZimmProductCardContent`'s own type allows `colour` without `size` (both independently optional) even though the only current caller always supplies both together. Cheap, safe fix available |
+| 5 | Minor: `notifyMeButton` under the 24px WCAG 2.5.8 minimum | **VALID, confirmed** | Computed directly: `padding:0` + `linkSm`'s 14px line-height = 14px real hit height. Sibling `bagButton` explicitly sets 24×24 "meets WCAG 2.5.8" for the identical reason — confirmed inconsistent |
+
+**Marcel: all five low on his list — not sent to Build.** Recorded here per this skill's own
+"say what you could not verify" / write-it-down-even-when-declined discipline, not re-litigated.
+
+## Round 10 — 2026-09-05 (final wrap-up pass before PR; fresh audit, not a diff-only check of the 5 post-Round-9 commits)
+
+HEAD `4740dd5`, 32 commits ahead of `develop` (local `develop` was 2 commits stale before this round —
+fast-forwarded to `origin/develop`; the earlier diff had been silently pulling in an unrelated SFCC-708
+PR's files, now excluded). Marcel asked explicitly for: plan.md conformance, a direct JIRA AC/comment
+check, Figma design/token accuracy, visual checks, and accessibility checks. Two fresh dispatches
+(`zm-orchestrator` for manifest-vs-diff, `zm-tester` for the whole-feature internal/external sweep) plus
+direct work: a hand reconciliation of the 37-file diff, a `findings.md` 🟡ᐩ🔵 walk-through, a `plan.md`
+manifest correction (the `nodeCoverage/` deletion, added this round), live Figma screenshots against 4
+real nodes, and a direct accessibility read of every interactive control.
+
+### Manifest — clean
+
+37 files (28 `ui-kits/` created + 2 `zimmProductPrice` modified + 3 theme-tier modified + 4 auto-registry),
+independently reconciled twice (by me, then confirmed again by `zm-orchestrator`) against `plan.md` §3 as
+corrected by its own later paragraphs, including the `nodeCoverage/` deletion note added this round.
+**Zero unexplained files, zero missing files.**
+
+### Plan.md — all 6 build steps delivered as specified
+
+`zm-orchestrator` re-verified every Step 1-6 pass criterion against the *current* code (not intermediate
+history) with line-level citations — all six hold. Two things shipped correctly but were never recorded
+as plan revisions, now noted in `plan.md` itself or here:
+- **`:focus-within` → `:has(:focus-visible)`** (commit `983bddf`, this session's own live-bug fix) has no
+  "RESOLVED/SUPERSEDED" entry in `plan.md` the way §4a/4b/4c/4e/4f do for other architecture calls. Real,
+  deliberate, correct improvement — just undocumented at the plan level.
+- **Step 6's story list** (`Default, PLP, PLPOutOfStock, Home, Wishlist, SingleImage, WithBadge`) doesn't
+  match the shipped, consolidated 11-story set — already corrected in `plan.md`'s manifest section this
+  round; the underlying coverage is equivalent or greater, not a gap.
+
+Gates re-run fresh by both agents independently (not trusted from prior logs): `tsc --noEmit` clean ·
+`npm run test` 875/875 (54 files, incl. `recipeGuards.test.ts`/`recipeParts.test.ts`) · `npm run
+audit:tokens` zero new findings (the one in-diff value, `zimmSizeChipGroup.css.ts:42`'s `65px`, carries its
+required `audit-allow` comment; the one unacknowledged repo-wide finding is in `footer`, outside this
+diff) · `npm run lint` fails at the **repo** level (5 errors/18 warnings) but every single flagged file is
+outside the 37-file diff, confirmed via `git log` as belonging to unrelated branches (SFCC-742/708/731,
+sfcc-92) — not this feature's fault, and `qa.yml` has no lint step at all so it isn't a merge gate either
+way.
+
+### 🟡 CLARIFY walk-through (`findings.md`) — did each assumption hold?
+
+Most held cleanly (badge stays a pre-resolved prop not owned by this component · `product-tile/` correctly
+never created · component-only scope maintained, no page wiring · VIC pricing correctly deferred to
+SFCC-778 · arrows-vs-indicator pointer-capability split shipped exactly as Marcel resolved it). Three are
+worth surfacing explicitly because the assumption's *stated resolution* and what actually shipped diverge,
+or the item was never actually closed:
+
+1. **(#9) Three Wishlist CRM-derived requirements were never built**: a "What's Now" price type, a
+   region-unavailable greyed state, and a destructive add-to-bag treatment. Colour+size (the 4th CRM item)
+   *did* ship correctly as required props. This isn't a defect — the AC never covered these three either —
+   but it's a real gap between what the CRM rows describe and what exists, still unconfirmed with Jasmijn.
+2. ~~**(#12) Whether Homepage is genuinely SFCC-rendered or Contentful-only was never closed out.**~~
+   **RESOLVED 2026-09-05 (Marcel): Homepage is via Contentful.** Removed from the PR body (both the
+   Description call-out and the Known-gaps list) per his direct instruction — no longer an open flag.
+   Real consequence worth keeping on record here even though it's off the PR: the `home` variation
+   this story built has no current real SFCC-side caller — whatever eventually renders Homepage's
+   product cards will be a Contentful-side integration, not a direct `variation: 'home'` consumer of
+   this organism, unless/until a bridge is built. Not this story's problem to solve, and not
+   contradicted by anything shipped here (the variation is still correct per its own AC), but worth
+   remembering if a future ticket asks "why does nothing call this."
+3. **(#15) The out-of-stock treatment conflict was resolved by *building* the AC's own language (Notify
+   Me), not by the "PRD wins by default" rule `findings.md` itself states as the fallback.** What shipped
+   matches the AC and matches live Figma (re-confirmed this round via screenshot — see below) — so the
+   *build* isn't wrong, but the stated default resolution path was silently overridden rather than
+   explicitly revisited on the record.
+
+### 🔵 NOTE re-check — still true?
+
+**#21 confirmed still true, independently re-verified this round, not just re-cited:** `product-tile/`
+does not exist anywhere on disk (`ls` confirms), `CardBaseline` appears in zero source files (`grep`
+confirms), yet `.claude/rules/overrideStyling.md` (Tier 1) still cites both as real at 5 separate lines
+(113, 126, 128, 181, 186). Pre-existing, unrelated to this build, correctly out of scope to fix here
+(Hard Rule 2) — but still a live Tier 1 documentation defect worth a follow-up.
+
+### Sweep — UNIFORM findings first (the actual point of this phase)
+
+1. **🟡 Stale `:focus-within` documentation, 4 spots, all in `zimmProductCardMedia`'s own file family**
+   (`index.tsx:110`, `zimmProductCardMedia.css.ts:186`, `index.stories.tsx:77,111`, `index.test.tsx:299,301`).
+   Root cause identified: this session's `983bddf` dispatch was deliberately scoped to only 3 files inside
+   the *organism's* own folder, and correctly left Media untouched functionally — but Media's own
+   docblocks cross-reference the organism's mechanism by name, and that cross-reference was stale (still
+   said `:focus-within` where the organism now uses `:has(:focus-visible)`). Comment-only, zero functional
+   risk, but exactly the "fixed here, stale there" shape this phase exists to catch.
+   **FIXED — sent back to Build per this skill's own hard rule (never write code here), 2026-09-05.** All 4
+   spots corrected to `:has(:focus-visible)`. Independently re-verified afterward (not just the
+   implementer's own report): `grep -rn "focus-within" overrides/app/components/ui-kits/molecules/
+   zimmProductCardMedia/` now returns zero hits; the remaining `:focus-within` mentions anywhere in the
+   feature (the organism's own `zimmProductCard.css.ts`/`index.test.tsx`/`index.stories.tsx`) are all
+   confirmed to be intentional historical narration of the bug/fix ("Originally `:focus-within`...",
+   "the then-`:focus-within` reveal", etc.), not stale current-state claims. Scoped test run (30/30,
+   `zimmProductCardMedia`) and full suite (875/875) both green.
+2. **🟡 `DESKTOP_QUERY` (the `min-width` gate) is typed twice** — inline in `zimmProductCardContent.css.ts:94`
+   and independently as a named const in `zimmProductCard.css.ts:19` — instead of extracted to
+   `zimmProductCardShared.ts` the way `HOVER_CAPABLE_QUERY` was for the identical reason (two files that
+   "can't drift on what desktop means"). Not a live bug (both agreed at the time), but the same DRY gap the
+   `HOVER_CAPABLE_QUERY` extraction was built to prevent.
+   **FIXED — sent back to Build alongside #1, 2026-09-05.** `DESKTOP_QUERY` now lives once in
+   `zimmProductCardShared.ts` (imports `breakpoints`, same pattern as `HOVER_CAPABLE_QUERY`), consumed by
+   both `zimmProductCard.css.ts` and `zimmProductCardContent.css.ts` via import; both files' local
+   derivations and now-unused `breakpoints` imports removed; both files' docblocks reworded to describe
+   the shared import instead of a module-private copy. Independently re-verified: `grep -rn "const
+   DESKTOP_QUERY ="` across `ui-kits/` shows exactly one production definition (the shared file) plus one
+   unrelated, legitimate local copy inside `zimmProductCard/index.test.tsx` for independent test-assertion
+   purposes (the same pattern this file already uses for its other `FOCUS_VISIBLE_*_KEY` constants) — not
+   a second production duplicate. Fresh full-gate re-run after both fixes: `tsc --noEmit` clean, `npm run
+   test` 875/875 (54 files), `npm run lint`/`npm run audit:tokens` unchanged from the established
+   pre-existing baseline (5 lint errors / 1 audit:tokens finding, both confirmed outside this diff, same
+   as every prior round).
+3. **🔵 Two token-category items, both already self-documented as pending a real foundation token**:
+   `border.focus`/`border.secondary` reused for a static/selected fill in `zimmSizeChip.css.ts:93` and
+   `zimmSizeChipGroup.css.ts:53` (already an accepted pattern — Marcel: *"tokens are good to ship, the
+   official tokens will just have to follow"*); and, newly surfaced this round, `zimmSlideIndicator.css.ts:56`
+   puts a `border.*`-category token directly on a `background` property for the inactive dot — a sharper
+   category mismatch than the other two, self-acknowledged in-file, currently correct only because both
+   resolve to the same hex. Worth Marcel's eyes specifically on this third instance since it wasn't called
+   out by name in an earlier round the way the other two were.
+
+### External conformance
+
+`.claude/rules/*` held across the whole feature (styling hierarchy, Storybook categorisation, TypeScript
+idioms, testing-layer selection) — checked feature-wide, not file-by-file, zero divergence found. Exemplar
+comparison against PR #64 (`zimmColourSwatch`/`zimmColourSwatchGroup`): the roving-tabindex mechanism and
+direct-icon-import pattern both faithfully match the exemplar (the icon-import pattern was suspected as a
+divergence, checked, and disproved — `zimmColourSwatchGroup` uses the identical direct-`../../../icons`
+import for its own pagination chevrons).
+
+**Figma end-to-end — done directly this round** (the dispatched `zm-tester` had no Figma MCP tools in its
+actual toolset and correctly declined to fabricate this rather than proceeding anyway; I ran it myself
+instead of re-dispatching). Live screenshots against 4 real nodes, `wPiWmZZOVKnrENUWk2XWWm`:
+- **PLP Default (`40002163:41441`) vs Hover (`40002163:41459`)**: arrows genuinely absent→present on
+  hover: confirmed. Price→size-selector swap on hover, with a size shown selected: confirmed.
+- **Wishlist Hover (`40002187:58458`)**: remove button, arrows, attributes line, and the identical
+  size-selector swap all present together: confirmed, consistent with PLP.
+- **PLP Unavailable+Hover (`40002163:41468`)**: price stays visible (does NOT swap to size-selector) —
+  confirmed matches Fix C exactly. "NOTIFY ME" renders underlined — cross-checked against
+  `zimmProductCardContent.css.ts`'s `notifyMeButton` (`textStyle: 'linkSm'`) and `typography.ts`'s own
+  `linkSm` definition (`textDecoration: 'underline'` is baked into the textStyle itself) — genuinely
+  correct, not a missing style.
+- **Closes an open question `zm-tester` raised**: no Figma citation existed either way for whether
+  `bagButton`/`nameLink` carry a designed hover state. Direct visual comparison of Default vs. Hover
+  instances (both PLP and Wishlist) shows no distinguishing treatment on either control in either state —
+  supports the shipped "no invented hover state" call as correct, not merely undocumented.
+
+### Accessibility — direct code read, all interactive controls
+
+Every icon-only button has a real `aria-label` (bag, remove/close, both carousel arrows); the two
+buttons relying on visible text as their accessible name (size chip, notify-me) both have real text, not
+an icon. Every `onClick` is on a native `<button>`, zero on a bare `div`/`span`. `ZimmSlideIndicator`
+implements §4a's revised criterion exactly: `role="group"` + computed `aria-label` ("Image N of M"), never
+`aria-hidden`, with decorative segments individually `aria-hidden` so AT announces position once, not once
+per dot. A third, independent keyboard-paging layer (the scroll container itself, `role="group"` +
+`tabIndex={0}` + ArrowLeft/Right) exists underneath both the hover-only arrows and the touch-only
+indicator, so a keyboard-only user with no mouse can still page images regardless of which visual
+affordance their device would otherwise get (WCAG 2.1.1). Focus rings uniform (`var(--zimm-focus-ring)`)
+across every interactive control in the feature. **One known, already-decided gap, re-surfaced not
+re-litigated**: `notifyMeButton`'s hit area is under WCAG 2.5.8's 24×24 minimum (Round 9, CodeRabbit,
+explicitly declined by Marcel).
+
+### CODEOWNERS gap found, independently verified
+
+`overrides/app/theme/globalStyles.ts` — modified on this branch (the `linkSm` textTransform mirror) — has
+**no matching CODEOWNERS rule at all**. Confirmed directly: `grep -n theme CODEOWNERS` matches
+`theme/foundation/`, `theme/index.ts`, and `theme/components/`, but nothing matches the bare
+`globalStyles.ts` path. Real, pre-existing (not introduced by this branch), means the "Tier 2 UI Designer"
+protection this file is documented to carry has no GitHub-enforced backstop today. Fixing CODEOWNERS is
+itself a Tier 1 edit — out of scope for this branch, but worth a follow-up ticket.
+
+### Tier-1 touch — procedurally flagged by `zm-orchestrator`, functionally resolved
+
+`zm-orchestrator`'s role requires it to report **BLOCKED** on any Tier 1 touch in the diff, which
+`overrides/app/theme/foundation/typography.ts` (commit `79dcc67`) is. This isn't a new problem: it's the
+same disclosed, already-authorized touch `plan.md`'s own "Superseded by mid-build discovery" section has
+recorded since 2026-09-04. `zm-orchestrator` independently re-ran the authorization check itself rather
+than trusting the plan's claim — fresh `gh api user`/`gh api orgs/.../teams/tier-1-approvers/members`/`gh
+api repos/.../collaborators/.../permission` calls all confirm `marcelannavarro` is both a
+`tier-1-approvers` member and repo admin, satisfying AGENTS.md's verified-session exception on its own
+terms. Both agents independently flagged (separately from each other) that this same commit bundles the
+Tier 1 change, its Tier 2 mirror, and new Tier 4 component work together — a real "spans multiple
+protection tiers" shape (Hard Rule #10), reported as a process observation since the value change itself
+is well-justified and low-risk (zero other consumers of `linkSm` exist today), not as a violation.
+
+## PR body as written
+
+**Title:** `feat(ui-kits): add shared product card component (atoms, molecules, organism)`
+
+**Body:**
+```
+## Summary
+- Adds the shared Zimmermann product card component family: ZimmSlideIndicator, ZimmSizeChip/
+  ZimmSizeChipGroup, ZimmProductCardMedia, ZimmProductCardContent, and the composing ZimmProductCard
+  organism — one atom, four molecules, one organism, plus the shared zimmProductCardShared.ts
+  DOM-contract module (data-card-slot constants + the hover-capable-pointer media query).
+- Three variations (home/plp/wishlist) via a discriminated union + a declarative VARIATION_CONFIG
+  table — zero switch/if on variation anywhere in the organism.
+- Adds an isLive opt-out to ZimmProductPrice so a grid of these cards doesn't mount a redundant
+  aria-live region per tile.
+- Visual layer only: no data fetching, no page wiring. Callers (PLP/Home/Wishlist grids) are
+  separate, already-tracked stories (SFCC-185/SFCC-497/SFCC-90).
+
+## Tiers touched
+- Tier 1 (UI Designer): overrides/app/theme/foundation/typography.ts — one-value fix
+  (linkSm.textTransform: capitalize -> uppercase), correcting a pre-existing drift against Figma
+  node 40002163:41468 ("NOTIFY ME"). Verified-session exception applied per AGENTS.md.
+- Tier 2: overrides/app/theme/components/index.ts (6 new append-only recipe registrations),
+  overrides/app/theme/globalStyles.ts (the same textTransform fix, mirrored).
+- Everything else is Tier 3/4 under ui-kits/, owned by both squads per CODEOWNERS.
+
+## Tested
+- tsc --noEmit clean. npm run test: 875/875 passing across 54 files, including
+  recipeGuards.test.ts/recipeParts.test.ts. npm run audit:tokens: zero new findings.
+- Storybook: 11 consolidated stories for ZimmProductCard (previously split across this file and a
+  separate per-Figma-node coverage folder, now one collection organized by real variant/state),
+  full coverage across all 6 new components.
+- Manual + live-Figma cross-check: arrows-on-hover, the price-to-size-selector swap, Wishlist
+  remove/attributes, and the Unavailable+Notify-Me treatment all re-verified directly against
+  current Figma nodes this pass.
+
+## Deliberately deferred / out of scope
+- Page wiring for PLP/Cart/Wishlist/Home — separate tickets (SFCC-185/SFCC-497/SFCC-90/SFCC-80).
+- VIC/customer-group price precedence — deferred to SFCC-778 (this story blocks it).
+- Badge data-sourcing (the search API doesn't return c_productBadges yet) — owned by SFCC-225.
+- Recently-Viewed-carousel badge/hover-swap suppression — no code path exists for a 5th
+  variation; documented as a known gap in the organism's own docblock.
+- Three Wishlist CRM-referenced items (a distinct "What's Now" price type, a region-unavailable
+  state, a destructive add-to-bag treatment) — not found anywhere in the AC or the shipped code;
+  needs confirming with Jasmijn whether they belong in a follow-up story.
+
+## Known, accepted gaps (on the record, not fixed here)
+- notifyMeButton's hit area is under WCAG 2.5.8's 24x24 minimum — flagged by CodeRabbit, declined.
+- Three co-located recipes reuse a border.*-category token for a value with no background.*
+  equivalent yet — self-documented, pending a real foundation token from the UI designer.
+```
+
+## Could not verify
+
+- **The live Jira SFCC-236 AC/comment text, fresh, this round** — no Atlassian/Jira MCP tool is
+  available in this session. Relied on the extensive citations already gathered and recorded across
+  `findings.md`, `plan.md`, and this file's own Rounds 1-9 (all originally sourced live) rather than a
+  fresh pull. Flagging per this skill's own "say what you could not verify" rule, not glossing over it —
+  if anything material has changed on the ticket since 2026-09-04, this round would not catch it.
+- **CodeRabbit's own `cr review` was not re-run this round** — Round 9 already ran it and its 5 findings
+  are recorded/declined above; re-running against zero new production-code changes since then (only
+  Storybook/docs/test changes) was judged low-value, not skipped by oversight.
+- **Out-of-band Tier 1 sign-off for the `typography.ts` value** beyond the verified-session exception —
+  confirmed the exception's conditions are met; did not confirm a separate design-side conversation
+  happened, because the exception's whole purpose is not needing one.
+- **Real-browser confirmation of `:has(:focus-visible)`'s mouse-click exclusion** — jsdom cannot simulate
+  the difference between mouse-click focus and keyboard focus (documented in this session's own commit);
+  only a real browser can prove this, and no browser-automation MCP tool is available this session.
+- **The two largest test files were still not exhaustively mutation-tested** (unchanged from Round 9's
+  own note) — confirmed passing, spot-read representative sections, did not re-derive every assertion.
+- **Whether the Sep 21 Wishlist design-lock date was a live concern at any point during this build**
+  (unchanged from Round 9) — today (Sep 5) it still hasn't passed.

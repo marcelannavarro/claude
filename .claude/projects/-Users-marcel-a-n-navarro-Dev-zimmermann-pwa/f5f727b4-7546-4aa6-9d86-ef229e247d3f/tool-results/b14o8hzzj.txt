@@ -1,0 +1,361 @@
+[2026-08-21T16:17:20]
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. **Primary Request and Intent:**
+
+The user is **Marcel Navarro, FED Lead** on the Zimmermann PWA Kit project (luxury Australian fashion storefront on Salesforce Commerce Cloud), working on **SFCC-55, the global footer**, branch `feature/SFCC-55_global-footer-ui`, PR #59. Explicit requests in order:
+
+- Answer why I'd said "10 of 14 findings addressed" when the list showed 9
+- Run the full phase 0–6 test suite on the 6 pushed commits
+- Ensure lint and prettier are good
+- Split changes into logical commits, propose the plan first, **no `Co-Authored-By` line**, then push
+- Run the `code-quality` skill; confirm whether `code-review` is local CodeRabbit and run it
+- Discuss the must-fix items "ELI5 but I'm the FED Lead"
+- Execute should-fix #3–#12 via feasibility → implement → test
+- Given the SFCC-55 ticket text: *"why is it that we're shipping a modal with the footer? there aren't even designs for the modal?"*
+- Investigate/fix the footer layout jump on subscribe submit, against Figma node 4019-46044
+- Run a comprehensive multi-agent audit of the whole diff against the ticket, playbook, build manual, Figma, tests, and styling
+- Run a 4-stage pipeline (validate → implement → regress → commit-check) on the 13 must/should-fix items
+- Step back and assess whether the work is overengineering or out of scope — "in-depth, intensive, recursive via loop engineering with multi-agent approach"
+- Provide the full result organized, "do not decide for me, i'll make the calls"
+- Decisions: keep fonts (drop layers 1 and 2), fix the prohibition contradictions; apply 24px to the subscribe submit using the established components/tokens/CSS approach; locale label as-is; `/checkout` — explain and scope; drop the overengineering from the 13 fixes
+- Remove all Monotype entitlement / licence open-item text; replace "Han's branch" with the branch name
+- Pull all CodeRabbit comments; apply 13 replies (10 fixed + 3 governance)
+- Correct the reply citing the FED Lead playbook — *"it's wrong to mention the fed lead playbook here, because that file is only local to me"*
+- For the 4 remaining: fix safeHref, decline locale button, decline fontFace.test.tsx, fix magic 10
+- **"do not commit and push until my approval"** (sent mid-turn)
+- Then: commit, push, reply to CodeRabbit
+- For the 2 new findings: apply both, test the fixes, commit, push, and reply to CodeRabbit
+
+2. **Key Technical Concepts:**
+- Salesforce PWA Kit v10 `ccExtensibility` overrides pattern — webpack-only resolver; Storybook aliases the package to `node_modules`, Vitest has no alias, so base-path imports of overridden components silently render the base version in both
+- `extendTheme` deep-merges — a recipe named `Footer` inherits SFCC's; hence `ZimmFooter`
+- **The sizing-vs-spacing trap**: `width`/`height`/`boxSize`/`min|maxWidth|Height` resolve through `theme.sizes`; `margin`/`padding`/`gap` through `theme.space`. Zimmermann scale registered as `space` only. Blow-up measured 8×–112×; `s`/`m`/`l` absent from `sizes` so declarations are silently dropped
+- **The typography twin**: `theme.fontSizes`/`lineHeights`/`letterSpacings` never registered — `fontSize: '2xs'` emits 0.625rem where 0.875rem intended; `'4xs'` emits nothing
+- Chakra `IconButton` hard-sets `padding: "0"` as a **style prop**, merged after `__css`, so `p:` in a theme size is silently discarded
+- WHATWG URL parser strips leading/trailing C0-or-space and removes tab/LF/CR **before** parsing; browsers treat `/\host` as `//host`
+- Figma text boxes are cap-height; browser line boxes are not (8/22 vs 18/36) — transfer the rule, not the numbers (BM-72)
+- `test-storybook` requires a **built** Storybook; `addon-a11y` needs `.storybook/test-runner.js` to run under it (absent — a11y is NOT gated in CI despite the job name)
+- `extendTheme` does not populate `theme.__cssMap` — only `ChakraProvider` does via `toCSSVar`, so direct `css()(theme)` assertions pass vacuously
+- Tier system: Tier 1 (`foundation/`, `.claude/rules/`, `.storybook/`, `config/`), Tier 2 (`theme/components/`, `components/footer|header`, `_app-config/`); verified-session exception via `gh api user` + team membership
+- GraphQL `reviewThreads.isResolved` is the only way to see thread resolution; REST "has no reply" is not equivalent
+- CodeRabbit `request_changes_workflow: true` in `coderabbit.yaml:32`; a `COMMENTED` review cannot clear an earlier `CHANGES_REQUESTED`
+
+3. **Files and Code Sections:**
+
+- **`overrides/app/utils/safeHref.ts`** — the XSS/off-site-redirect boundary. Final state after `1ed34ea`:
+```ts
+/* eslint-disable no-control-regex */
+const C0_OR_SPACE = /^[\u0000-\u0020]+|[\u0000-\u0020]+$/g;
+const TAB_LF_CR = /[\u0009\u000a\u000d]/g;
+/* eslint-enable no-control-regex */
+const normalise = (href: string): string => href.replace(C0_OR_SPACE, '').replace(TAB_LF_CR, '');
+const SAFE_HREF_RE = /^(https?:|tel:|mailto:|#|\/(?![/\\]))/i;
+export const isSafeHref = (href: string | undefined): boolean => (href ? SAFE_HREF_RE.test(normalise(href)) : false);
+```
+- **`overrides/app/theme/components/button.ts`** — `sizes.icon` after the 24×24 fix (`c6fda36`); dead `p: 'xs'` removed:
+```ts
+icon: { h: 'auto', minW: 'var(--zimm-scale-xl)', minH: 'var(--zimm-scale-xl)' },
+```
+- **`overrides/app/components/footer/index.tsx`** — currently modified with the new `handleModalClose` (uncommitted) **plus a temporary `__PII_PROBE` instrumentation line that must be reverted**:
+```ts
+  const handleModalClose = () => {
+    setModalOpen(false);
+    pendingSignupRef.current = { email: '', firstName: '', lastName: '' };
+  };
+```
+  `onClose={handleModalClose}` at ~line 266. Ref writes now at 198 (init), 203 (capture), 216 (descoped path), 225 (abandon), 229/238 (submit).
+- **`overrides/app/components/footer/__piiprobe.test.tsx`** — temporary probe file, **must be deleted**
+- **`.docs/architecture.md:136`** — `composed from them` → `derived from them` (uncommitted)
+- **`overrides/app/theme/components/zimmTextInput.ts`** — `FIELD_CONTENT_HEIGHT = '2.25rem'` (S11, kept); `clearButton` carries the 24px SC 2.5.8 floor on a control with no consumers
+- **`overrides/app/theme/components/recipeGuards.test.ts`** — S1 non-empty precondition, S3 `isResponsiveContainer`/`BREAKPOINT_KEYS` derived from `foundation/gridSystem`, S4 `TYPOGRAPHY_PROPS` (fontWeight deliberately excluded)
+- **`scripts/generateRegistry.mjs`** — `extractDescription(content, preferredName)` two-pass; `escapeCell` code-span-aware `<`/`>` escaping; `extractTsProps` regex `[^{\n]*`
+- **`.claude/rules/frozenFiles.md`**, **`overrides/app/theme/foundation/fonts.ts`**, **`.docs/memory/projectState.md`**, **`overrides/app/components/foundation/typography.stories.tsx`** — font statements corrected then licence text removed
+
+4. **Errors and fixes:**
+
+- **Said 10 of 14 findings addressed; it was 9.** User caught the arithmetic. Corrected plainly.
+- **Phase 2 had a hand-maintained inventory** (same trap as Phase 1's 13 hand-listed files) plus two filter bugs — JSX `{/* */}` comments not excluded and `.rem`/`.em` matching inside `removeEventListener`/`email`. 41→19 literals, 15→3 mirrors.
+- **Phase 3's two failures were my assertions**: programmatic `.focus()` never matches `:focus-visible`; `/phone|whatsapp|email/` missed `tel:`'s label "Call us".
+- **Stash comparison was imprecise** — stash reverts to HEAD, not develop. Re-verified by diffing the two lint-error files directly against `origin/develop`.
+- **Stale wordmark comment** claimed `useNavigation` and `variant="unstyled"`; neither was true.
+- **Registry Footer description hijacked twice** — demoting one JSDoc handed the row to the next. Fixed `extractDescription` properly.
+- **Stashed the generator fix before commit 2**, which would have made pre-commit regenerate the registry with the old generator. Caught before committing.
+- **CodeRabbit's blanket `<`/`>` escaping would have broken 4 of 8 real cases** (backticked ones render as visible entities). Built a code-span-aware version; verified with `marked`.
+- **Parity check false-alarmed three times** — `Header`/`ZimmTextInput` have **function** `baseStyle`; naive `Object.keys` reports every part missing.
+- **Claimed the Figma slot is 59px in both states** — wrong. `footer/textfield` has `Subscribed=False` 320×44 and `Subscribed=True` 308×59; the design repositions (gap 40→24) rather than reserving.
+- **Used the dev server for `test-storybook` mutation testing** — invalid per BM-05, produced a failing baseline and four uninterpretable results. Redone with full rebuilds.
+- **Misread `:417` as a source line** — the file is 206 lines; it was a bundle offset. And a probe timed out on `input[type=email]` because `test-storybook` had already run the play and submitted the form.
+- **Cited the FED Lead playbook in a PR reply.** User: *"it's wrong to mention the fed lead playbook here, because that file is only local to me"*. Patched the reply to rest on AGENTS.md Hard Rule #4 alone, which grants the exception to `.github/workflows/` — another Tier 1 path — proving Tier 1 membership isn't disqualifying.
+- **Said 5 threads open; it was 4.** REST "has no reply" ≠ unresolved. `.claude/registry/hooks.md:62` had been bot-resolved.
+- **Reported `safeHref` as "well covered, 3 layers"** while it had a live bypass; my 13 test cases contained zero backslashes.
+- **Reported "Storybook interaction & a11y" as gated** — a11y is not, no `test-runner.js`.
+- **Dismissed `header/index.tsx:302` `fontSize="l"`** as "pre-existing, not ours" without checking it resolves — it emits nothing.
+- **Passed along "20-30× blow-up"** from the manual — actual range 8×–112×.
+- **Two commit SHAs wrong before posting replies** — #10 is `7e1c081` not `0269957`; #11 is `fce5af1` (my first check sampled only the 6 oldest of 12 footer.ts commits).
+- **PII probe failed twice**: SVG loader (`Cannot create property 'viewBox' on string`) — mocked the icons barrel; then `contexts/index.js:49` JSX parse error under Vite. Unresolved at cutoff.
+
+5. **Problem Solving:**
+
+Solved: descoped the HPC-035 modal behind `enableNameCapture` (mutation-tested); eliminated the +22px submit layout shift (Δ0 at 1440/768/375/320); 24×24 on the AC-named control (16×16→24×24 measured); closed 5 safeHref bypass vectors (21/21 cases, orthogonal mutations); reconciled 6 font-documentation contradictions then removed the licence open-item per instruction; posted 17 CodeRabbit replies taking threads from 18-unresolved/0-replies to 0-unresolved.
+
+Established but deferred by the user: locale label wrong on all 11 PWA sites; live AU `tel:`/`wa.me` on 8 storefronts; zero `react-intl` (fr/it/es); AC7 schema per-locale vs per-storefront; `/checkout` demo footer (`homepage.md:8` puts cart/checkout in its own PRD); font licence entitlement; `header/index.tsx:302`.
+
+6. **All user messages:**
+- "how are 10 of the findings addressed? if there are only 9 address locally and the 5 to be replied to?"
+- "run the Full phase suite - phase 0-6"
+- "ensure lint and prettier are good"
+- "let's split into logical commits and push - but first plan it out and propose the plan to me"
+- "no authored by claude in the commit messages, aside from that this lgtm"
+- "for our latest 6 commits, run the full test suite, run local coderabbit, ensure alignment with the fed lead playbook and fed manual build, and run the storybook"
+- "how's it going claude? all good?"
+- "codequality skill wise - all good?"
+- "code-review skill wise - this is local coderabbit right? are we all good as well? if not, run it"
+- "what are the findings of the latest coderabbit run?"
+- "show me what changes B and E fixes are, in diff format and why there are being flagged in ELI5 but i'm the FED Lead of this project format"
+- "commit these and push"
+- "changes for our branch/PR/work -> remove: [Monotype entitlement blocks] ... instead of this 'F2R component work continues separately on Han's branch' mention the branch instead ... these changes are focused on our working branch/PR and is not meant to touch other branches"
+- "execute the fixes #3-#12 as well, but approach it via a feasibility check via applying the changes, then v&v and testing - report back with the findings"
+- "here's the ticket for the footer: [full SFCC-55 ticket] ... my question is, why are we shipping a modal with the footer? there aren't even designs for the modal?"
+- "i like the descope, implement it via a feasibility check by implementing it to see its effect and run tests against it, and then run storybook and i'll run local dev serve to test it out"
+- "add the height assertion and run the storybook gate"
+- "let's commit the changes we have and push"
+- "on the current implementation, why is it that after a user submits their email and then the input field is replaced by a success state, the footer's layout jumps/shifts/changes, particularly it increases in height, here's the design node for that state: [Figma 4019-46044]"
+- "as a feasibility check, implement it at 45px now"
+- "let's launch a multi-agent task - for the entire diff of this branch/PR against develop: let's run the code-quality and code-review skill, let's run the full phase 0-6 test suite, let's run the code against the jira ticket details, let's run the code against the fed lead playbook and fed manual build, let's ensure and check that the components, tokens, and css structure is up to spec, let's check against figma and ensure pixel-perfect accuracy..."
+- "let's take a step back, honestly - the work that we've been doing has been a nonstop audit and fix loop ... identify if we're still building as we need or are we overengineering ... plan the approach, i need it in-depth, intensive, recursive via loop engineering with multi-agent approach"
+- "go for launch"
+- "wave 2 when they're done"
+- "provide me the full result in an organized and easy to grasp format - fully complete, do not decide for me, i'll make the calls based on the findings"
+- "keep the fonts, we're only using them in development and address the contradictions in the repo regarding font prohibition; for the subscribe submit we set it to 24px but is not what's applied? should we apply it?; locale label is good for now, it's just the shell is the focus; for the /checkout, why is it not applied like the rest of the current pages? does it belong to this user story or not?; for the 13 fixes, what's the verdict on them?"
+- "for the fonts, layer 1 and 2 - drop it, it's good; for the files asserting prohibition, adjust them as needed"
+- "for the subscribe submit, chevron-right, apply the 24x24 proper styling, apply it using the established approach for components, tokens, and css structure"
+- "for the 13 fixes, drop the overengineering work and make sure nothing breaks or regresses on removal of it"
+- "commit these and push"
+- "pull all coderabbit comments, report back when you have them"
+- "let's first apply the 13 replies, 10 to the fixes and repliy owed and open governance reply owed"
+- "it's wrong to mention the fed lead playbook here, because that file is only local to me, what should we do about this? [.storybook/main.js thread]"
+- "what remains? you state 5 more, but i only see 4 open?"
+- "what to do with these 4 items?"
+- "show me the changes for these 4 items in diff format so i see the changes while also explaining the rationale behind each change in ELI5 format"
+- "go for safeHref, decline locale button, decline fontFrace.test.tsx, and go for magic 10"
+- "do not commit and push until my approval"
+- "the 3 files changed, are any of these to be tested via visual?"
+- "go for commit and push, then reply to coderabbit threads"
+- "any new coderabbit findings? anything unresolved?"
+- "why hasn't coderabbit approved the changes?"
+- "2 new comments - what are they"
+- "what's the verdict on these 2?"
+- "apply both, test the fixes, commit, push, and reply to coderabbit"
+
+7. **Pending Tasks:**
+- **Revert the temporary `__PII_PROBE` instrumentation** in `overrides/app/components/footer/index.tsx` (backup at `$CLAUDE_JOB_DIR/tmp/footer-pii.bak`) and **delete `overrides/app/components/footer/__piiprobe.test.tsx`**
+- Test the 2 fixes, commit, push, reply to the 2 CodeRabbit threads (ids `3831718327` for PII, `3831718323` for grammar)
+- `CHANGES_REQUESTED` still set; needs an `APPROVED` review — and human code-owner review is the real gate (two Tier 1 owner groups: Governance for `frozenFiles.md`, UI Designer for `foundation/fonts.ts`)
+- BrowserStack `Config file does not exist` — Integration
+- Deferred by user: locale label, `/checkout` (AC1 wording + separate ticket for the demo-store string), i18n, AC7 schema shape, font licence entitlement, `header/index.tsx:302`
+
+8. **Current Work:**
+
+Applying the 2 new CodeRabbit findings per *"apply both, test the fixes, commit, push, and reply to coderabbit"*.
+
+Both edits are applied and verified (`tsc` 0, prettier clean): `handleModalClose` added clearing `pendingSignupRef` on Cancel/Escape/backdrop with `onClose={handleModalClose}`, and `.docs/architecture.md:136` changed `composed from` → `derived from` (rejecting CodeRabbit's `composed of` because the repo describes this relationship as derivation — `zimmTokens.ts:2` "derived from the other foundation/* files").
+
+I then tried to **prove** the PII clear rather than just assert the wiring, since `pendingSignupRef` is not DOM-observable. I temporarily instrumented `footer/index.tsx` with `;(globalThis as any).__PII_PROBE = pendingSignupRef;` and created `__piiprobe.test.tsx`. It failed twice:
+1. `TypeError: Cannot create property 'viewBox' on string '.../cc-amex.svg'` at `node_modules/@salesforce/retail-react-app/app/components/icons/index.jsx:79` — Vitest has no SVG loader
+2. After mocking the icons barrel: `Failed to parse source for import analysis... invalid JS syntax` at `node_modules/@salesforce/retail-react-app/app/contexts/index.js:49` — base `.js` file containing JSX
+
+The working tree currently contains both real fixes **plus** the instrumentation line and the probe file, both of which must be removed before committing.
+
+9. **Optional Next Step:**
+
+Revert the instrumentation and delete the probe, then fall back to verifying the PII fix through the existing Storybook coverage (which proves `handleModalClose` is invoked, since `SubscribeModalOpen`'s play asserts Escape closes the modal and focus restores), state honestly that the ref clearing itself is not DOM-observable, then commit and push the two fixes and reply to threads `3831718327` and `3831718323`.
+
+Direct quotes anchoring this: the user's instruction was *"apply both, test the fixes, commit, push, and reply to coderabbit"*, and I had said I would *"apply both, verify, and reply to the two threads — including an explanation on #1 for why `derived` rather than `of`, so the bot has the reasoning rather than seeing its suggestion silently altered."* Also standing: *"do not commit and push until my approval"* was superseded for this batch by the explicit *"commit, push"* in the latest instruction, but the general rule that commits require an explicit ask remains in force.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/652997c6-662c-4608-bb47-e37b77ba106b.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
+
+=====
+
+[2026-08-21T16:40:36]
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. **Primary Request and Intent:**
+
+The user is **Marcel Navarro, FED Lead** on the Zimmermann PWA Kit project (luxury Australian fashion storefront on Salesforce Commerce Cloud), working on **SFCC-55 global footer**, branch `feature/SFCC-55_global-footer-ui`, PR #59. Requests in order:
+
+- Answer PR #59 / CodeRabbit status
+- Run the full phase 0–6 test suite; ensure lint and prettier are good
+- Split changes into logical commits and push (no `Co-Authored-By`)
+- Re-run the full suite on the 6 commits, run local CodeRabbit, check alignment with the FED lead playbook and build manual, run Storybook
+- Confirm the `code-review` skill is local CodeRabbit; run it
+- Explain B and E generator findings in diff form, ELI5-but-FED-Lead
+- Execute fixes #3–#12 via feasibility→implement→V&V→test
+- Run `/code-quality`
+- Launch a multi-agent audit of the entire diff against the Jira ticket, FED docs, Figma, tests, and styling
+- Run a 4-stage multi-agent pipeline (validate → implement → regress → commit-check) on the 13 must/should-fix items
+- **Step back:** honestly assess whether the work is overengineering, via in-depth recursive multi-agent analysis. "do not decide for me, i'll make the calls based on the findings"
+- Decisions: keep fonts (dev-only, drop layers 1 and 2), fix font doc contradictions, apply 24px to the subscribe submit, drop the overengineering fixes
+- Remove all Monotype licence open-item text; replace "Han's branch" with the branch name
+- Pull all CodeRabbit comments; apply 13 replies
+- Fix safeHref, decline locale button, decline fontFace.test.tsx, fix magic 10
+- Commit and push, then reply to threads
+- Defer/decline the grammar and PII findings
+- **Current:** 7 new findings — "see what's actually needed, defer/decline the overengineering stuff - report back with your findings"
+
+2. **Key Technical Concepts:**
+- `extendTheme` deep-merges — a recipe named `Footer` inherits SFCC's; hence `ZimmFooter`
+- **Sizing-vs-spacing trap**: Zimmermann scale registered as `theme.space` ONLY. Bare key on `width`/`height`/`boxSize`/`min|maxWidth|Height` falls through to Chakra's `sizes`. Measured range **8×–112×** (`2xs` = 64×), and `s`/`m`/`l` are ABSENT so declarations are dropped entirely
+- **Undocumented typography twin**: `theme.fontSizes`/`lineHeights`/`letterSpacings` never registered. `fontSize: '2xs'` → 0.625rem not 0.875rem; `'4xs'` emits nothing. Live instance at `header/index.tsx:302` (`fontSize="l"` emits nothing) — outside recipe-walker scope
+- **`extendTheme` does NOT populate `theme.__cssMap`** — only `ChakraProvider` does via `toCSSVar`. Direct `css()(theme)` in tests passes vacuously
+- Chakra `IconButton` hard-sets `padding: "0"` as a **style prop**, merged after `__css`, so `p:` in a recipe is silently discarded
+- WHATWG URL parser strips leading/trailing C0-or-space and removes tab/LF/CR **before** parsing; a browser treats `/\host` as `//host`
+- Figma text boxes are cap-height; browser line boxes aren't (8/22 vs 18/36, +10 each)
+- `footer/textfield` has two variants: `Subscribed=False` 320×44, `Subscribed=True` 308×59, with a compensating gap change (40→24)
+- `test-storybook` requires a BUILT Storybook; dev-server runs are invalid (BM-05)
+- `addon-a11y` is NOT gated in CI — no `.storybook/test-runner.js`
+- CodeRabbit `request_changes_workflow: true` at `coderabbit.yaml:32`; a `COMMENTED` review cannot clear `CHANGES_REQUESTED`
+- Tier system: Tier 1 = `foundation/`, `.claude/rules/`, `.storybook/`, `config/`; Tier 2 = `theme/components/`, `components/footer|header`, `_app-config/`
+- AGENTS.md Hard Rule #4 names four absolutes and grants the exception to `.github/workflows/` — proving Tier 1 membership alone isn't disqualifying
+
+3. **Files and Code Sections:**
+
+- **`overrides/app/utils/safeHref.ts`** — the security guard, fixed in `1ed34ea`:
+```ts
+/* eslint-disable no-control-regex */
+const C0_OR_SPACE = /^[\u0000-\u0020]+|[\u0000-\u0020]+$/g;
+const TAB_LF_CR = /[\u0009\u000a\u000d]/g;
+/* eslint-enable no-control-regex */
+const normalise = (href: string): string => href.replace(C0_OR_SPACE, '').replace(TAB_LF_CR, '');
+const SAFE_HREF_RE = /^(https?:|tel:|mailto:|#|\/(?![/\\]))/i;
+export const isSafeHref = (href: string | undefined): boolean =>
+  href ? SAFE_HREF_RE.test(normalise(href)) : false;
+```
+Closed `/\example.com`, `/\/evil.com`, `/\t/`, `/\n/`, `/\r/`. `/ /evil.com` correctly still allowed (space is percent-encoded).
+
+- **`overrides/app/theme/components/button.ts`** — 24×24 fix in `c6fda36`:
+```ts
+icon: { h: 'auto', minW: 'var(--zimm-scale-xl)', minH: 'var(--zimm-scale-xl)' },
+```
+Removed dead `p: 'xs'`.
+
+- **`overrides/app/theme/components/zimmTextInput.ts`** — `FIELD_CONTENT_HEIGHT = '2.25rem'` (was `'36px'`), commit `31b35fb`. S8 (textStyle body2) was REVERTED.
+
+- **`overrides/app/components/footer/index.stories.tsx`** — `LAYOUT_PRECISION_DP = 1` with `toFixed`, commit `1bc0a9d`.
+
+- **`overrides/app/theme/components/recipeGuards.test.ts`** — commit `e686bd3`: non-empty precondition, responsive-container walker (`BREAKPOINT_KEYS` derived from `foundation/gridSystem`), TYPOGRAPHY_PROPS. `fontWeight` deliberately excluded.
+
+- **`overrides/app/hooks/useSubscribeModal.test.tsx`** (NEW, 123 lines) — commit `4f4b97f`.
+
+- **Font doc sites corrected then licence text removed** (`af87b5b`, `f8d2f75`): `.claude/rules/frozenFiles.md` (T1), `overrides/app/theme/foundation/fonts.ts` (T1), `.docs/architecture.md`, `.docs/memory/projectState.md`, `overrides/app/theme/components/footer.ts`, `overrides/app/components/foundation/typography.stories.tsx`.
+
+4. **Errors and fixes:**
+
+- **Said "10 of 14 addressed" when 9 fixed + 5 replies = 14.** Corrected to 9.
+- **Phase 2's inventory was hand-maintained**; my regex counted JSX-comment prose and matched `.rem` inside `removeEventListener`. Inflated 19→41 literals. Fixed both filters.
+- **Wordmark comment claimed `useNavigation` and `variant="unstyled"`** — neither true. `FooterContainer` deliberately uses `history.push(buildUrl(HOME_HREF))`.
+- **Demoting a JSDoc to fix the registry row was whack-a-mole** — the row went to `NEW_TAB_SUFFIX`. Fixed `extractDescription` properly.
+- **Stashing pulled the generator fix out of the working tree**, and the pre-commit hook reads the working tree — commit 2 would have reverted commit 1's registry fix. Caught before committing.
+- **Parity check false-alarmed 3× on function `baseStyle`.** Real state: ZimmFooter 38/38 (now 35/35), ZimmTextInput 8/8, Header 17/8 (pre-existing).
+- **Pointed `test-storybook` at the dev server** — invalid per BM-05, made mutation results uninterpretable (baseline itself failed).
+- **Misread a bundle offset as a source line** (`index.stories.tsx:417` in a 206-line file).
+- **Cited the FED Lead playbook in a PR reply** — a local Desktop file. User: "it's wrong to mention the fed lead playbook here, because that file is only local to me". Patched to rest on AGENTS.md Hard Rule #4.
+- **Said 5 threads unresolved; user said 4.** I'd used "has no reply" as a proxy. GraphQL confirmed 4.
+- **Reported `safeHref` as "well covered, 3 layers"** — 13 tests, zero backslashes, live bypass CodeRabbit had already named at 06:17.
+- **Reported "Storybook interaction & a11y" as CI-gated** — a11y isn't; no `test-runner.js`.
+- **Reported scope as 38% deferred/unmentioned** — actually 17–25%; I'd counted 1,181 lines of mandated stories as discretionary.
+- **Claimed the "all variants upfront" mandate** — doesn't exist on this branch; no `f2r/` directory.
+- **Said `ZimmButton`/`ZimmTextInput` have zero live render sites** — true only of *direct* sites; both render via `ZimmInputAction`.
+- **Passed along "modal test is 48% of suite runtime"** — arithmetically right, meaningless (2.19s suite, parallel).
+- **Said 11 `<path fill>` elements; actually 10.** Said modal is 633 lines; actually 371.
+- **Said chevron-left/up unused** — mandatory; 16 base SFCC files consume them.
+- **Common cause identified:** the verification instrument was built from the same belief as the thing verified, and never made to fail on purpose.
+
+5. **Problem Solving:**
+
+Solved: the descope (`enableNameCapture`, mutation-tested); the 22px layout shift (Δ0 at 1440/768/375/320, `minHeight` load-bearing only on mobile); the 16×16 WCAG failure (now 24×24, all 7 controls pass); the safeHref bypass (21 cases, 0 mismatches, orthogonal mutations); the font documentation contradictions (6 sites, then licence text removed per user); 20 CodeRabbit threads answered with 19 replies.
+
+Root-caused but not fixed: the hydration warning (header's `<BrandLogo>`, server `"0 0 631 74"` vs client `"0 0 46 32"` — `svg-sprite-loader` vs `ignore-loader`).
+
+Deferred with reasoning recorded in threads: locale `aria-disabled`, `pendingSignupRef` clear on modal close.
+
+6. **All user messages:**
+- "how are 10 of the findings addressed? if there are only 9 address locally and the 5 to be replied to?"
+- "run the Full phase suite - phase 0-6"
+- "ensure lint and prettier are good"
+- "let's split into logical commits and push - but first plan it out and propose the plan to me"
+- "no authored by claude in the commit messages, aside from that this lgtm"
+- "for our latest 6 commits, run the full test suite, run local coderabbit, ensure alignment with the fed lead playbook and fed manual build, and run the storybook"
+- "code-review skill wise - this is local coderabbit right? are we all good as well? if not, run it"
+- "what are the findings of the latest coderabbit run?"
+- "show me what changes B and E fixes are, in diff form, and why there are being flagged in ELI5 but i'm the FED Lead of this project format"
+- "execute the fixes #3-#12 as well, but approach it via a feasibility check via applying the changes, then v&v and testing - report back with the findings"
+- "codequality skill wise - all good?"
+- "run the codequality skill"
+- "let's launch a multi-agent task - for the entire diff of this branch/PR against develop: let's run the code-quality and code-review skill, let's run the full phase 0-6 test suite, let's run the code against the jira ticket details, let's run the code against the fed lead playbook and fed manual build, let's ensure and check that the components, tokens, and css structure is up to spec, let's check against figma and ensure pixel-perfect accuracy, let's ensure that we have the needed tests built, let's ensure that there are no inline/hardcoded/callsite-implemented styles, and other checks, audits, v&vs for this footer build branch/pr"
+- "for the 13 fixes, run a multi-agent workflow where the first agent independently validates the claim by doing actual testing as proof on the claim then another agent takes that for feasibility and viability checking by implementing the solution and testing it to make sure that it solves the flagged concern, next an agent to make sure nothing regresses or break something else while fixing the flagged item, and finally an agent that does a final full-scale check on the changes and ensure each are good for commit"
+- "how's it going claude? all good?"
+- "let's take a step back, honestly - the work that we've been doing has been a nonstop audit and fix loop... identify if we're still building as we need or are we overengineering and doing work that's outside of the scope of this user story that's doing more harm than good - plan the approach, i need it in-depth, intensive, recursive via loop engineering with multi-agent approach"
+- "go for launch"
+- "wave 2 when they're done"
+- "provide me the full result in an organized and easy to grasp format - fully complete, do not decide for me, i'll make the calls based on the findings"
+- "keep the fonts, we're only using them in development and address the contradictions in the repo regarding font prohibition; for the subscribe submit we set it to 24px but is not what's applied? should we apply it?; locale label is good for now, it's just the shell is the focus; for the /checkout, why is it not applied like the rest of the current pages? does it belong to this user story or not?; for the 13 fixes, what's the verdict on them? applicable? or overengineering? - here are the items i have chosen to address, the rest are to be their current state as is"
+- "for the fonts, layer 1 and 2 - drop it, it's good; for the files asserting prohibition, adjust them as needed"
+- "for the subscribe submit, chevron-right, apply the 24x24 proper styling, apply it using the established approach for components, tokens, and css structure"
+- "for the 13 fixes, drop the overengineering work and make sure nothing breaks or regresses on removal of it"
+- "commit these and push"
+- "changes for our branch/PR/work -> remove: [the Monotype entitlement blocks, quoted multiple times]; instead of this "F2R component work continues separately on Han's branch" mention the branch instead of "han's branch"; remove: [further entitlement mentions]; remove other unspecified declarations of the open item on the fonts for the licence - these changes are focused on our working branch/PR and is not meant to touch other branches"
+- "pull all coderabbit comments, report back when you have them"
+- "let's first apply the 13 replies, 10 to the fixes and repliy owed and open governance reply owed"
+- "it's wrong to mention the fed lead playbook here, because that file is only local to me, what should we do about this?" [+ the full quoted thread]
+- "what remains? you state 5 more, but i only see 4 open?"
+- "what to do with these 4 items?"
+- "show me the changes for these 4 items in diff format so i see the changes while also explaining the rationale behind each change in ELI5 format"
+- "go for safeHref, decline locale button, decline fontFrace.test.tsx, and go for magic 10"
+- "the 3 files changed, are any of these to be tested via visual?"
+- "go for commit and push, then reply to coderabbit threads"
+- "do not commit and push until my approval" (sent mid-turn)
+- "any new coderabbit findings? anything unresolved?"
+- "why hasn't coderabbit approved the changes?"
+- "2 new comments - what are they"
+- "what's the verdict on these 2?"
+- "defer/decline both, first the grammar issue is such a nitpick and 2nd the PII is to be deferred when the modal is actually addressed and built"
+- "7 new findings, see what's actually needed, defer/decline the overengineering stuff - report back with your findings"
+
+**Standing constraints (verbatim):** "avoid commiting without my go signal" · "no authored by claude in the commit messages" · "do not commit and push until my approval" · the FED Lead playbook and build manual are local-only Desktop files and must NOT be cited in PR threads, commits, or code comments — everything must stand on `AGENTS.md`, `.claude/rules/`, or `.docs/`.
+
+7. **Pending Tasks:**
+- **Current:** triage the 7 new unresolved CodeRabbit threads — identify what's actually needed, defer/decline overengineering, report findings
+- Deferred to HPC-035 (recorded in threads): `pendingSignupRef` clear on modal close; `aria-disabled` on the locale control
+- Untouched per user instruction: locale label, `/checkout` demo footer (own PRD per `homepage.md:8`), i18n, AC7 schema shape
+
+8. **Current Work:**
+
+Immediately before this summary I had queried the unresolved threads and found **7 new findings**, all created 2026-08-21 16:34:
+
+```
+.storybook/main.js:11                              id=3831972367
+overrides/app/components/footer/contentfulFixture.ts:25   id=3831972371
+overrides/app/hooks/useSubscribeModal.ts:94        id=3831972382
+overrides/app/theme/components/recipeGuards.test.ts:33    id=3831972401
+overrides/app/theme/components/zimmTextInput.test.ts:11   id=3831972405
+overrides/app/theme/foundation/fonts.ts:3          id=3831972413
+scripts/generateRegistry.mjs:482                   id=3831972417
+```
+
+Thread state: **27 total, 20 resolved, 7 unresolved.** I had not yet pulled the content of the 7.
+
+Branch state: HEAD `1bc0a9d`, in sync with remote, **64 commits** ahead of develop, working tree clean, `tsc` 0, vitest 197/197, Storybook 76/76, CI 10/11 green (BrowserStack `Config file does not exist` is pre-existing infrastructure). `reviewDecision: CHANGES_REQUESTED`, `mergeState: BLOCKED`, `mergeable: MERGEABLE`.
+
+Note `.storybook/main.js:11` and `foundation/fonts.ts:3` are **re-raises** of findings already answered — I previously replied to `.storybook/main.js:11` (patched to rest on AGENTS.md Hard Rule #4) and edited `fonts.ts` in `af87b5b`/`f8d2f75`.
+
+9. **Optional Next Step:**
+
+Pull the full content of the 7 findings (IDs above) via `gh api repos/ZimmermannAU/zimmermann-pwa/pulls/59/comments`, verify each claim against current code rather than accepting it at face value, then classify as fix / defer / decline and report — per the user's request: *"7 new findings, see what's actually needed, defer/decline the overengineering stuff - report back with your findings"*.
+
+No code changes or commits without explicit approval, per the standing instruction *"do not commit and push until my approval"*.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/652997c6-662c-4608-bb47-e37b77ba106b.jsonl

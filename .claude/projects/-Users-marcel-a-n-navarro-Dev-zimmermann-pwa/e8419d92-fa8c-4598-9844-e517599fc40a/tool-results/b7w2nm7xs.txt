@@ -1,0 +1,564 @@
+     1	--- /tmp/base_normalised.tsx	2026-08-26 01:49:52
+     2	+++ overrides/app/pages/product-detail/index.tsx	2026-08-26 01:37:58
+     3	@@ -5,8 +5,17 @@
+     4	  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+     5	  */
+     6	 
+     7	+/*
+     8	+ * Copy-first port of
+     9	+ * node_modules/@salesforce/retail-react-app/app/pages/product-detail/index.jsx
+    10	+ * (retail-react-app 10.0.0), converted to TypeScript per AGENTS.md's copy-first rule.
+    11	+ *
+    12	+ * Behaviour is deliberately unchanged from the base file. The only differences are
+    13	+ * the TypeScript annotations below, house formatting, and the temporary override
+    14	+ * marker log, which is removed once the override is confirmed to be rendering.
+    15	+ */
+    16	+
+    17	 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+    18	-import PropTypes from 'prop-types';
+    19	 import { Helmet } from 'react-helmet';
+    20	 import { FormattedMessage, useIntl } from 'react-intl';
+    21	 import { getUpdateBundleChildArray } from '@salesforce/retail-react-app/app/utils/product-utils';
+    22	@@ -38,7 +47,16 @@
+    23	 import { getConfig } from '@salesforce/pwa-kit-runtime/utils/ssr-config';
+    24	 // Project Components
+    25	 import RecommendedProducts from '@salesforce/retail-react-app/app/components/recommended-products';
+    26	-import ProductView from '@salesforce/retail-react-app/app/components/product-view';
+    27	+/*
+    28	+ * Relative, not `@salesforce/retail-react-app/app/components/product-view`. The overrides
+    29	+ * resolver (pwa-kit-dev's OverridesResolverPlugin) deliberately skips any request whose
+    30	+ * issuer already lives in `overrides/` — see its `isFromExtends` guard — so a base-path
+    31	+ * import from this file resolves to the *base* component even in the real app build, not
+    32	+ * just in Storybook/Vitest. Base callers (cart, wishlist, bonus-product) still reach our
+    33	+ * override, because their issuer is inside node_modules and so is redirected normally.
+    34	+ */
+    35	+import ProductView from '../../components/product-view';
+    36	+import type { ChildProductOrderability, ProductViewRefScope } from '../../components/product-view';
+    37	 import InformationAccordion from '@salesforce/retail-react-app/app/pages/product-detail/partials/information-accordion';
+    38	 import Island from '@salesforce/retail-react-app/app/components/island';
+    39	 
+    40	@@ -63,7 +81,67 @@
+    41	 import { isPickupMethod } from '@salesforce/retail-react-app/app/utils/shipment-utils';
+    42	 import { useProductInventory } from '@salesforce/retail-react-app/app/hooks/use-product-inventory';
+    43	 
+    44	+/*
+    45	+ * `@salesforce/retail-react-app` ships no TypeScript types (see
+    46	+ * overrides/app/types/vendor.d.ts, which falls back to an untyped catch-all for its
+    47	+ * subpaths), so the product / variant / category values this page threads between base
+    48	+ * hooks and base components have no compile-time shape. The aliases below name that gap
+    49	+ * once, in one place, instead of spreading bare `any` through the file — narrow them as
+    50	+ * the real shapes are confirmed.
+    51	+ */
+    52	+type SfccProduct = any;
+    53	+type SfccVariant = any;
+    54	+type SfccCategory = any;
+    55	+
+    56	+/*
+    57	+ * `@salesforce/commerce-sdk-react` types its query/mutation `parameters` more narrowly than
+    58	+ * the base JS page satisfies (it types several always-present values as optional, and takes
+    59	+ * `ids` as an array where the base joins them itself). The casts marked "SDK param widening"
+    60	+ * below exist only to reconcile that; each passes exactly the value the base file passes, so
+    61	+ * none of them changes runtime behaviour.
+    62	+ */
+    63	+
+    64	+/** A basket line item as this page assembles it before handing it to the baskets API. */
+    65	+type BasketLineItem = {
+    66	+  productId?: string;
+    67	+  id?: string;
+    68	+  price?: number;
+    69	+  quantity?: number;
+    70	+  inventoryId?: string;
+    71	+  shipmentId?: string;
+    72	+  bundledProductItems?: Array<{ productId?: string; quantity?: number }>;
+    73	+};
+    74	+
+    75	+/** A child product selection within a product set or bundle. */
+    76	+type ChildProductSelection = {
+    77	+  product?: SfccProduct;
+    78	+  variant?: SfccVariant;
+    79	+  quantity?: number;
+    80	+};
+    81	+
+    82	+/** The imperative handle ProductView exposes for set/bundle child validation. */
+    83	+type ChildProductRef = {
+    84	+  ref: HTMLDivElement | null;
+    85	+  validateOrderability: ProductViewRefScope['validateOrderability'];
+    86	+};
+    87	+
+    88	+/** One row of the array the base ProductView passes to `addToCart`. */
+    89	+type ProductSelectionValue = {
+    90	+  product?: SfccProduct;
+    91	+  variant?: SfccVariant;
+    92	+  quantity?: number;
+    93	+};
+    94	+
+    95	+/**
+    96	+ * Errors thrown by the commerce SDK carry the originating `Response`, which the base
+    97	+ * page reads to map an API status onto an SSR-visible HTTP error.
+    98	+ */
+    99	+type CommerceApiError = Error & { response?: { status?: number } };
+   100	+
+   101	 const ProductDetail = () => {
+   102	+  // react-intl returns an already-bound `formatMessage`, and this destructuring is the base
+   103	+  // file's own shape — the rule cannot see either.
+   104	+  // eslint-disable-next-line @typescript-eslint/unbound-method
+   105	   const { formatMessage } = useIntl();
+   106	   const history = useHistory();
+   107	   const location = useLocation();
+   108	@@ -96,8 +174,12 @@
+   109	   const { getShipmentIdForItems } = useMultiship(basket);
+   110	 
+   111	   /*************************** Product Detail and Category ********************/
+   112	-  const { productId } = useParams();
+   113	+  const { productId } = useParams<{ productId?: string }>();
+   114	   const urlParams = new URLSearchParams(location.search);
+   115	+  // SDK param widening: this component only mounts on `/product/:productId`, so one of the
+   116	+  // two is always present. `useParams` types every segment optional by design — see the
+   117	+  // comment on the react-router-dom shim in overrides/app/types/vendor.d.ts.
+   118	+  const requestedProductId = (urlParams.get('pid') || productId) as string;
+   119	   const {
+   120	     data: productResponse,
+   121	     isLoading: isProductLoading,
+   122	@@ -106,7 +188,7 @@
+   123	   } = useProduct(
+   124	     {
+   125	       parameters: {
+   126	-        id: urlParams.get('pid') || productId,
+   127	+        id: requestedProductId,
+   128	         perPricebook: true,
+   129	         expand: [
+   130	           'availability',
+   131	@@ -138,18 +220,25 @@
+   132	     error: categoryError,
+   133	   } = useCategory({
+   134	     parameters: {
+   135	-      id: productResponse?.primaryCategoryId,
+   136	+      // SDK param widening — `useCategory` is a no-op until the product resolves, exactly as
+   137	+      // in the base file.
+   138	+      id: productResponse?.primaryCategoryId as string,
+   139	       levels: 1,
+   140	     },
+   141	   });
+   142	 
+   143	   /****************************** Sets and Bundles *********************************/
+   144	-  const [childProductSelection, setChildProductSelection] = useState({});
+   145	-  const [childProductOrderability, setChildProductOrderability] = useState({});
+   146	+  const [childProductSelection, setChildProductSelection] = useState<Record<string, ChildProductSelection>>({});
+   147	+  const [childProductOrderability, setChildProductOrderability] = useState<Record<string, ChildProductOrderability>>(
+   148	+    {},
+   149	+  );
+   150	   const [selectedBundleQuantity, setSelectedBundleQuantity] = useState(1);
+   151	-  const childProductRefs = React.useRef({});
+   152	-  const isProductASet = productResponse?.type.set;
+   153	-  const isProductABundle = productResponse?.type.bundle;
+   154	+  const childProductRefs = React.useRef<Record<string, ChildProductRef>>({});
+   155	+  // Deviation from the base file: `?.` on `type`. The base reads `productResponse?.type.set`,
+   156	+  // which throws if the API ever returns a product without `type` (the SDK types it optional).
+   157	+  // The two only differ in that already-broken case.
+   158	+  const isProductASet = productResponse?.type?.set;
+   159	+  const isProductABundle = productResponse?.type?.bundle;
+   160	 
+   161	   const childVariantIds =
+   162	     isProductABundle || isProductASet
+   163	@@ -161,7 +250,9 @@
+   164	   const { data: variantProductData } = useProducts(
+   165	     {
+   166	       parameters: {
+   167	-        ids: childVariantIds.join(','),
+   168	+        // SDK param widening — the base file joins the ids itself and the SDK forwards the
+   169	+        // value verbatim into the query string.
+   170	+        ids: childVariantIds.join(',') as unknown as string[],
+   171	         allImages: false,
+   172	         ...(selectedInventoryId ? { inventoryIds: selectedInventoryId } : {}),
+   173	         expand: ['availability', 'variations'],
+   174	@@ -174,7 +265,7 @@
+   175	     },
+   176	   );
+   177	 
+   178	-  const product = useProductInventory(
+   179	+  const product: SfccProduct = useProductInventory(
+   180	     productResponse,
+   181	     variantProductData,
+   182	     selectedInventoryId,
+   183	@@ -185,7 +276,7 @@
+   184	   /**************** Error Handling ****************/
+   185	 
+   186	   if (isProductError) {
+   187	-    const errorStatus = productError?.response?.status;
+   188	+    const errorStatus = (productError as CommerceApiError | null)?.response?.status;
+   189	     switch (errorStatus) {
+   190	       case 404:
+   191	         throw new HTTPNotFound('Product Not Found.');
+   192	@@ -194,7 +285,7 @@
+   193	     }
+   194	   }
+   195	   if (isCategoryError) {
+   196	-    const errorStatus = categoryError?.response?.status;
+   197	+    const errorStatus = (categoryError as CommerceApiError | null)?.response?.status;
+   198	     switch (errorStatus) {
+   199	       case 404:
+   200	         throw new HTTPNotFound('Category Not Found.');
+   201	@@ -203,7 +294,7 @@
+   202	     }
+   203	   }
+   204	 
+   205	-  const [primaryCategory, setPrimaryCategory] = useState(category);
+   206	+  const [primaryCategory, setPrimaryCategory] = useState<SfccCategory>(category);
+   207	   const variant = useVariant(product);
+   208	   // This page uses the `primaryCategoryId` to retrieve the category data. This attribute
+   209	   // is only available on `master` products. Since a variation will be loaded once all the
+   210	@@ -233,9 +324,9 @@
+   211	   const { data: wishlist, isLoading: isWishlistLoading } = useWishList();
+   212	   const createCustomerProductListItem = useShopperCustomersMutation('createCustomerProductListItem');
+   213	 
+   214	-  const handleAddToWishlist = (product, variant, quantity) => {
+   215	+  const handleAddToWishlist = (product: SfccProduct, variant: SfccVariant, quantity: number) => {
+   216	     const isItemInWishlist = wishlist?.customerProductListItems?.find(
+   217	-      (i) => i.productId === variant?.productId || i.productId === product?.id,
+   218	+      (i: { productId?: string }) => i.productId === variant?.productId || i.productId === product?.id,
+   219	     );
+   220	 
+   221	     if (!isItemInWishlist) {
+   222	@@ -243,7 +334,9 @@
+   223	         {
+   224	           parameters: {
+   225	             listId: wishlist.id,
+   226	-            customerId,
+   227	+            // SDK param widening — `useCustomerId` returns `string | null`; this branch is
+   228	+            // only reachable once a wishlist has loaded, which requires a customer.
+   229	+            customerId: customerId as string,
+   230	           },
+   231	           body: {
+   232	             // NOTE: API does not respect quantity, it always adds 1
+   233	@@ -291,7 +384,7 @@
+   234	 
+   235	   /**************** Add To Cart ****************/
+   236	   const showToast = useToast();
+   237	-  const showError = (errorMessage) => {
+   238	+  const showError = (errorMessage?: unknown) => {
+   239	     const errorText = typeof errorMessage === 'string' ? errorMessage : formatMessage(API_ERROR_MESSAGE);
+   240	 
+   241	     showToast({
+   242	@@ -300,18 +393,18 @@
+   243	     });
+   244	   };
+   245	 
+   246	-  const [pickupInStoreMap, setPickupInStoreMap] = useState({});
+   247	+  const [pickupInStoreMap, setPickupInStoreMap] = useState<Record<string, boolean>>({});
+   248	 
+   249	-  const handlePickupInStoreChange = (productId, checked) => {
+   250	+  const handlePickupInStoreChange = (productId: string, checked: boolean) => {
+   251	     setPickupInStoreMap((prev) => ({
+   252	       ...prev,
+   253	       [productId]: checked,
+   254	     }));
+   255	   };
+   256	 
+   257	-  const handleAddToCart = async (productSelectionValues = []) => {
+   258	+  const handleAddToCart = async (productSelectionValues: ProductSelectionValue[] = []) => {
+   259	     try {
+   260	-      let productItems = productSelectionValues.map((item) => {
+   261	+      let productItems: BasketLineItem[] = productSelectionValues.map((item) => {
+   262	         const { variant, quantity } = item;
+   263	         // Use variant if present, otherwise use the main product
+   264	         const prod = variant || item.product || product;
+   265	@@ -325,7 +418,11 @@
+   266	       productItems = addInventoryIdsToPickupItems(productItems, pickupInStoreMap, selectedStore);
+   267	       // Defensive check: This block ensures that if, for any reason, pickup is selected for a product but no store (inventoryId) is set,
+   268	       // we show an error. With the current UI logic, this should never be reached, but it guards against unexpected state.
+   269	-      if (productItems.some((item) => item.inventoryId === undefined && pickupInStoreMap[item.productId || item.id])) {
+   270	+      if (
+   271	+        productItems.some(
+   272	+          (item) => item.inventoryId === undefined && pickupInStoreMap[(item.productId || item.id) as string],
+   273	+        )
+   274	+      ) {
+   275	         showError(
+   276	           formatMessage({
+   277	             id: 'product_view.error.no_store_selected_for_pickup',
+   278	@@ -384,7 +481,7 @@
+   279	 
+   280	       return productSelectionValues;
+   281	     } catch (error) {
+   282	-      showError(error.message);
+   283	+      showError((error as Error).message);
+   284	     }
+   285	   };
+   286	 
+   287	@@ -399,19 +496,21 @@
+   288	     // Using ot state for which child products are selected, scroll to the first
+   289	     // one that isn't selected and requires a variant selection.
+   290	     const selectedProductIds = Object.keys(childProductSelection);
+   291	-    const firstUnselectedProduct = product?.childProducts?.find(({ product: childProduct }) => {
+   292	-      // Skip validation for standard products (no variations)
+   293	-      if (childProduct.type?.item) {
+   294	-        return false;
+   295	-      }
+   296	-      return !selectedProductIds.includes(childProduct.id);
+   297	-    })?.product;
+   298	+    const firstUnselectedProduct = product?.childProducts?.find(
+   299	+      ({ product: childProduct }: { product: SfccProduct }) => {
+   300	+        // Skip validation for standard products (no variations)
+   301	+        if (childProduct.type?.item) {
+   302	+          return false;
+   303	+        }
+   304	+        return !selectedProductIds.includes(childProduct.id);
+   305	+      },
+   306	+    )?.product;
+   307	 
+   308	     if (firstUnselectedProduct) {
+   309	       // Get the reference to the product view and scroll to it.
+   310	       const { ref } = childProductRefs.current[firstUnselectedProduct.id];
+   311	 
+   312	-      if (ref.scrollIntoView) {
+   313	+      if (ref?.scrollIntoView) {
+   314	         ref.scrollIntoView({
+   315	           behavior: 'smooth',
+   316	           block: 'end',
+   317	@@ -437,7 +536,7 @@
+   318	 
+   319	   /**************** Product Bundle Handlers ****************/
+   320	   // Top level bundle does not have variants
+   321	-  const handleProductBundleAddToCart = async ([{ quantity: selectedQuantity }]) => {
+   322	+  const handleProductBundleAddToCart = async ([{ quantity: selectedQuantity }]: Array<{ quantity?: number }>) => {
+   323	     try {
+   324	       const childProductSelections = Object.values(childProductSelection);
+   325	       // Check if any products have pickup selected (including main product and bundle items)
+   326	@@ -467,7 +566,7 @@
+   327	         }
+   328	       }
+   329	 
+   330	-      let productItems = [
+   331	+      let productItems: BasketLineItem[] = [
+   332	         {
+   333	           productId: product.id,
+   334	           price: product.price,
+   335	@@ -506,13 +605,15 @@
+   336	       // since the returned data includes all products in basket
+   337	       // here we compare list of productIds in bundleProductItems of each productItem to filter out the
+   338	       // current bundle that was last added into cart
+   339	-      const currentBundle = res.productItems.find((productItem) => {
+   340	+      // Deviation from the base file: `?.` on `productItems`. The SDK types it optional; the
+   341	+      // base file assumes the just-created basket always has line items.
+   342	+      const currentBundle = res.productItems?.find((productItem: SfccProduct) => {
+   343	         if (!productItem.bundledProductItems?.length) return;
+   344	-        const bundleChildIds = productItem.bundledProductItems?.map((item) => {
+   345	+        const bundleChildIds = productItem.bundledProductItems?.map((item: { productId?: string }) => {
+   346	           // seek out the bundle child that still uses masterId as product id
+   347	           return item.productId;
+   348	         });
+   349	-        return bundleChildIds.every((id) => bundleChildMasterIds.includes(id));
+   350	+        return bundleChildIds.every((id: string) => bundleChildMasterIds.includes(id));
+   351	       });
+   352	 
+   353	       const itemsToBeUpdated = getUpdateBundleChildArray(currentBundle, childProductSelections);
+   354	@@ -521,12 +622,17 @@
+   355	         // make a follow up call to update child variant selection for product bundle
+   356	         // since add item endpoint doesn't currently consider product bundle child variants
+   357	         await updateItemsInBasketMutation.mutateAsync({
+   358	+          // SDK param widening — `method` is a real, honoured option on the v2 baskets
+   359	+          // mutation (the base file relies on it to send PATCH rather than the default), but
+   360	+          // it is absent from the published mutation-parameter type. Dropping it would change
+   361	+          // the HTTP verb, so the argument is asserted instead.
+   362	           method: 'PATCH',
+   363	           parameters: {
+   364	-            basketId: res.basketId,
+   365	+            // `res` is the basket this call just wrote to.
+   366	+            basketId: res.basketId as string,
+   367	           },
+   368	           body: itemsToBeUpdated,
+   369	-        });
+   370	+        } as Parameters<typeof updateItemsInBasketMutation.mutateAsync>[0]);
+   371	       }
+   372	 
+   373	       // Configure shipping method based on pickup selection
+   374	@@ -546,7 +652,7 @@
+   375	       einstein.sendViewProduct(product);
+   376	       dataCloud.sendViewProduct(product);
+   377	       const childrenProducts = product.setProducts;
+   378	-      childrenProducts.map((child) => {
+   379	+      childrenProducts.map((child: SfccProduct) => {
+   380	         try {
+   381	           einstein.sendViewProduct(child);
+   382	         } catch (err) {
+   383	@@ -580,11 +686,12 @@
+   384	       <Helmet>
+   385	         <title>{product?.pageTitle}</title>
+   386	         {product?.pageMetaTags?.length > 0 &&
+   387	-          product.pageMetaTags.map(({ id, value }) => <meta name={id} content={value} key={id} />)}
+   388	+          product.pageMetaTags.map(({ id, value }: { id: string; value: string }) => (
+   389	+            <meta name={id} content={value} key={id} />
+   390	+          ))}
+   391	         {/* Fallback for description if not included in pageMetaTags */}
+   392	-        {!product?.pageMetaTags?.some((tag) => tag.id === 'description') && product?.pageDescription && (
+   393	-          <meta name="description" content={product.pageDescription} />
+   394	-        )}
+   395	+        {!product?.pageMetaTags?.some((tag: { id: string }) => tag.id === 'description') &&
+   396	+          product?.pageDescription && <meta name="description" content={product.pageDescription} />}
+   397	       </Helmet>
+   398	 
+   399	       <Stack spacing={16}>
+   400	@@ -604,7 +711,7 @@
+   401	                 setSelectedBundleQuantity={setSelectedBundleQuantity}
+   402	                 selectedBundleParentQuantity={selectedBundleQuantity}
+   403	                 pickupInStore={!!pickupInStoreMap[product?.id]}
+   404	-                setPickupInStore={(checked) => product && handlePickupInStoreChange(product.id, checked)}
+   405	+                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+   406	                 onOpenStoreLocator={onOpenStoreLocator}
+   407	                 showDeliveryOptions={storeLocatorEnabled}
+   408	               />
+   409	@@ -614,64 +721,72 @@
+   410	 
+   411	             {
+   412	               // Render the child products
+   413	-              product?.childProducts?.map(({ product: childProduct, quantity: childQuantity }) => (
+   414	-                <Box key={childProduct.id} data-testid="child-product">
+   415	-                  <ProductView
+   416	-                    // Do not use an arrow function as we are manipulating the functions scope.
+   417	-                    ref={function (ref) {
+   418	-                      // Assign the "set" scope of the ref, this is how we access the internal
+   419	-                      // validation.
+   420	-                      childProductRefs.current[childProduct.id] = {
+   421	-                        ref,
+   422	-                        validateOrderability: this.validateOrderability,
+   423	-                      };
+   424	-                    }}
+   425	-                    product={childProduct}
+   426	-                    isProductPartOfSet={isProductASet}
+   427	-                    isProductPartOfBundle={isProductABundle}
+   428	-                    childOfBundleQuantity={childQuantity}
+   429	-                    selectedBundleParentQuantity={selectedBundleQuantity}
+   430	-                    addToCart={
+   431	-                      isProductASet ? (productSelectionValues) => handleAddToCart(productSelectionValues) : null
+   432	-                    }
+   433	-                    addToWishlist={isProductASet ? handleAddToWishlist : null}
+   434	-                    onVariantSelected={(product, variant, quantity) => {
+   435	-                      if (quantity) {
+   436	-                        setChildProductSelection((previousState) => ({
+   437	-                          ...previousState,
+   438	-                          [product.id]: {
+   439	-                            product,
+   440	-                            variant,
+   441	-                            quantity: isProductABundle ? childQuantity : quantity,
+   442	-                          },
+   443	-                        }));
+   444	-                      } else {
+   445	-                        const selections = {
+   446	-                          ...childProductSelection,
+   447	-                        };
+   448	-                        delete selections[product.id];
+   449	-                        setChildProductSelection(selections);
+   450	-                      }
+   451	-                    }}
+   452	-                    isProductLoading={isProductLoading}
+   453	-                    isBasketLoading={isBasketLoading}
+   454	-                    isWishlistLoading={isWishlistLoading}
+   455	-                    setChildProductOrderability={setChildProductOrderability}
+   456	-                    pickupInStore={!!pickupInStoreMap[childProductSelection[childProduct?.id]?.variant?.productId]}
+   457	-                    setPickupInStore={(checked) =>
+   458	-                      childProduct &&
+   459	-                      handlePickupInStoreChange(childProductSelection[childProduct?.id]?.variant?.productId, checked)
+   460	-                    }
+   461	-                    onOpenStoreLocator={onOpenStoreLocator}
+   462	-                    showDeliveryOptions={storeLocatorEnabled && !isProductABundle}
+   463	-                  />
+   464	-                  <InformationAccordion product={childProduct} />
+   465	+              product?.childProducts?.map(
+   466	+                ({ product: childProduct, quantity: childQuantity }: { product: SfccProduct; quantity: number }) => (
+   467	+                  <Box key={childProduct.id} data-testid="child-product">
+   468	+                    <ProductView
+   469	+                      // Do not use an arrow function as we are manipulating the functions scope.
+   470	+                      // The assertion is unavoidable: ProductView rebinds `this` on a callback ref
+   471	+                      // (see ProductViewRefScope) and React's own `Ref<T>` cannot express that.
+   472	+                      ref={
+   473	+                        function (this: ProductViewRefScope, ref: ChildProductRef['ref']) {
+   474	+                          // Assign the "set" scope of the ref, this is how we access the internal
+   475	+                          // validation.
+   476	+                          childProductRefs.current[childProduct.id] = {
+   477	+                            ref,
+   478	+                            validateOrderability: this.validateOrderability,
+   479	+                          };
+   480	+                        } as unknown as React.Ref<HTMLDivElement>
+   481	+                      }
+   482	+                      product={childProduct}
+   483	+                      isProductPartOfSet={isProductASet}
+   484	+                      isProductPartOfBundle={isProductABundle}
+   485	+                      childOfBundleQuantity={childQuantity}
+   486	+                      selectedBundleParentQuantity={selectedBundleQuantity}
+   487	+                      addToCart={
+   488	+                        isProductASet
+   489	+                          ? (productSelectionValues: ProductSelectionValue[]) => handleAddToCart(productSelectionValues)
+   490	+                          : null
+   491	+                      }
+   492	+                      addToWishlist={isProductASet ? handleAddToWishlist : null}
+   493	+                      onVariantSelected={(product: SfccProduct, variant: SfccVariant, quantity: number) => {
+   494	+                        if (quantity) {
+   495	+                          setChildProductSelection((previousState) => ({
+   496	+                            ...previousState,
+   497	+                            [product.id]: {
+   498	+                              product,
+   499	+                              variant,
+   500	+                              quantity: isProductABundle ? childQuantity : quantity,
+   501	+                            },
+   502	+                          }));
+   503	+                        } else {
+   504	+                          const selections = {
+   505	+                            ...childProductSelection,
+   506	+                          };
+   507	+                          delete selections[product.id];
+   508	+                          setChildProductSelection(selections);
+   509	+                        }
+   510	+                      }}
+   511	+                      isProductLoading={isProductLoading}
+   512	+                      isBasketLoading={isBasketLoading}
+   513	+                      isWishlistLoading={isWishlistLoading}
+   514	+                      setChildProductOrderability={setChildProductOrderability}
+   515	+                      pickupInStore={!!pickupInStoreMap[childProductSelection[childProduct?.id]?.variant?.productId]}
+   516	+                      setPickupInStore={(checked: boolean) =>
+   517	+                        childProduct &&
+   518	+                        handlePickupInStoreChange(childProductSelection[childProduct?.id]?.variant?.productId, checked)
+   519	+                      }
+   520	+                      onOpenStoreLocator={onOpenStoreLocator}
+   521	+                      showDeliveryOptions={storeLocatorEnabled && !isProductABundle}
+   522	+                    />
+   523	+                    <InformationAccordion product={childProduct} />
+   524	 
+   525	-                  <Box display={['none', 'none', 'none', 'block']}>
+   526	-                    <hr />
+   527	+                    <Box display={['none', 'none', 'none', 'block']}>
+   528	+                      <hr />
+   529	+                    </Box>
+   530	                   </Box>
+   531	-                </Box>
+   532	-              ))
+   533	+                ),
+   534	+              )
+   535	             }
+   536	           </Fragment>
+   537	         ) : (
+   538	@@ -690,7 +805,7 @@
+   539	                 setSelectedBundleQuantity={setSelectedBundleQuantity}
+   540	                 selectedBundleParentQuantity={selectedBundleQuantity}
+   541	                 pickupInStore={!!pickupInStoreMap[product?.id]}
+   542	-                setPickupInStore={(checked) => product && handlePickupInStoreChange(product.id, checked)}
+   543	+                setPickupInStore={(checked: boolean) => product && handlePickupInStoreChange(product.id, checked)}
+   544	                 onOpenStoreLocator={onOpenStoreLocator}
+   545	                 showDeliveryOptions={storeLocatorEnabled}
+   546	               />
+   547	@@ -755,11 +870,11 @@
+   548	 
+   549	 ProductDetail.getTemplateName = () => 'product-detail';
+   550	 
+   551	-ProductDetail.propTypes = {
+   552	-  /**
+   553	-   * The current react router match object. (Provided internally)
+   554	-   */
+   555	-  match: PropTypes.object,
+   556	-};
+   557	+/*
+   558	+ * The base file declares `ProductDetail.propTypes = {match: PropTypes.object}` purely as
+   559	+ * documentation — the component takes no props and never reads `match`. The TypeScript
+   560	+ * signature above expresses the same thing at compile time, so the runtime `prop-types`
+   561	+ * declaration is not carried over.
+   562	+ */
+   563	 
+   564	 export default ProductDetail;

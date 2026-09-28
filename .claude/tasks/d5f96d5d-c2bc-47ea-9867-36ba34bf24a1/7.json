@@ -1,0 +1,9 @@
+{
+  "id": "7",
+  "subject": "SFCC-123: Publish TSD to Confluence + update Dependencies row",
+  "description": "Publish the finished Contentful Integration TSD to Confluence (alongside the other TSD: Product/Price/Inventory/Orders pages) and fill in the blank T1 row on the Dependencies page (310050860).",
+  "activeForm": "Publishing Contentful TSD to Confluence",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Gather Contentful code, config & PWA TSD",
+  "description": "Read the Contentful integration code (useContentful hook, config/mapping, Studio experience definitions, shoppableImage content-type schema, components index), the canonical locale source (config/sites.overlay.js + sites.generated.js), verify CSP + experience route exist, and pull Confluence \"Technical Solution Design – PWA\" §7.3 (256835585).",
+  "activeForm": "Gathering Contentful code, config & PWA TSD",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

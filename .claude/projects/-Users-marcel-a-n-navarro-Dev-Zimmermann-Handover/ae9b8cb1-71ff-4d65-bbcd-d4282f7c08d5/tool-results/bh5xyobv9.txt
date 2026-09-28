@@ -1,0 +1,396 @@
+=== FULL COMMENTS ===
+--- 13363 | 2026-07-07T09:14:03.842+1000 | Tim Lavelle ---
+Hey User:5cc71886cbbec211ec62929d - Just reviewing this and some clear ACs, very well written!
+
+Also a few questions for technical implementation:
+
+1. For the 3 seconds between messages
+  1. This may need to be revisited given Screen Readers will need to time to get to this and read it out loud. 
+  1. if on auto-rotation, the developers need to consider aria labels to notify screen readers of new content
+1. Are there controls to see multiple pages and to pause/play the auto-rotation? 
+  1. This is generally an accessibility issue with auto playing of carousels - we can likely introduce CSS to stop animations for people with assisted browsers, but also would mean they would need controls and keyboard navigation.
+1. If there are multiple messages, does clicking the x icon close all messages, or just the visible one?
+1. When a user clicks the x icon, and the next time they load the page, do these messages come back or is there a cookie/session the devs need to add to ensure the message is not persisted?
+1. For this being a Contenful managed element, the team needs to do a **Technical Solution Design** and POC on how we integrate the Business Manager properties to Contenful and call those on the component rendering
+1. As this will be a component in the Contenful Studio builder, users can drag-n-drop where this lives on specific pages, but if this is going to live on a PLP and/or PDP or Global across all but Zimmerse, then will likely need a configuration to target specific SFCC Category IDs and Product IDs.
+
+--- 13385 | 2026-07-09T12:07:49.830+1000 | Jasmijn Tsang ---
+User:557058:1a7fb05a-783b-4241-a0f1-9a7b046da3a8 Thanks for this review! 
+I’ve asked Dani for some input, and we’ve come to these conclusions: 
+
+1. Rotation time should be configurable and depends on the length of the message. The duration needs to be adjusted to cover the message. So 3 seconds is definitely not fixed, I’ll update that in the AC. 
+1. With regards to Pause, does the 'x' as Close button not cover the ability that one must be able to stop this rotating element from happening?
+1. Can confirm ‘x' will close all messages in the banner, not just the one currently displayed. I’ll update AC. 
+1. If that banner is displayed in any other pages, it will remain closed if the user has used ‘x' to close it already in that session, so we do need to find a way to ensure it’s not persisted. I’ll update AC.
+1. Yes, created spike for that in sprint 1.
+1. User:712020:08a6f120-c836-4f71-92db-c97999401c49 think this one is relevant for the TSD as well. This banner is def currently available on PLP and PDP pages.
+
+--- 13386 | 2026-07-09T12:26:28.280+1000 | Jasmijn Tsang ---
+Changed the AC after sign off - good to check once more on Tuesday with Emma/Rebecca.
+
+--- 13387 | 2026-07-09T12:56:37.971+1000 | Tim Lavelle ---
+Following up from the thread above — proposing AC updates so this is ready to automate (Gherkin/Zephyr). Rotation timing is now a configurable per-message duration rather than a calculated value, and persistence is cookie-based, so updating 2 and 6 accordingly, plus adding new ACs for category/product targeting and accessibility.
+
+**Proposed AC updates:**
+
+1. Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for a configurable duration (in seconds, set per message in Contentful) before automatically rotating to the next message in the configured sequence.
+
+1. Given a shopper closes the banner by clicking 'x', when they navigate to another page or reload within the same browser session, then a cookie records the closed state and the banner remains hidden site-wide until the cookie expires or is cleared.
+
+1. *(new)* Given the promotional banner is placed on a PDP or PLP via Contentful Studio, when it is configured with one or more SFCC Category IDs and/or Product IDs, then the banner is only displayed when the shopper is viewing a matching category or product page.
+
+1. *(new, draft)* Given a shopper is navigating via keyboard, when they tab through the page, then the banner's CTA link and close ('x') control each receive visible focus in a logical order and are operable via Enter/Space.
+
+1. *(new, draft — pending the open question below)* Given the banner auto-rotates between messages, when a new message displays, then the change is announced to assistive technology via an `aria-live="polite"` region, without interrupting the user's current screen reader focus.
+
+**Open question — play/pause:**
+
+Closing the banner removes it entirely for the session, but WCAG 2.2 SC 2.2.2 (Pause, Stop, Hide) requires auto-updating content running longer than 5 seconds to be pausable without being dismissed outright. Do we want a distinct pause-on-hover/focus (a common accessible pattern) or a dedicated pause control, separate from close? This also determines whether AC 9 needs a "pause on focus/hover" clause added.
+
+Squad ownership for test tagging will be confirmed at sprint planning — not blocking on that here.
+
+--- 13388 | 2026-07-09T15:00:39.269+1000 | Jasmijn Tsang ---
+**Questions for next week’s refinement:**
+
+- Showing the banner on PDP/PLP - would it ever be a specific category / product and others not? Or is it: it either shows on all PLPs / all PDPs or none?
+- Is the banner global, except on Zimmerse? Can we get some information on the rules - where to show and where not to show, even though we understand it must be flexible - it may impact the way we design it if we can get a bit more info on this
+- Get thoughts on having a distinct pause-on-hover or dedicated pause control separate from close for accessibility - see Tim’s comment below.
+
+--- 13400 | 2026-07-14T10:39:18.209+1000 | Jasmijn Tsang ---
+- Design team needs to show:
+      - Pause on hover (not yet designed - motion design) / Stop / Hide
+      - Position on the page - above and below the header
+- Showing the banner on PDP/PLP - would it ever be a specific category / product and others not? Or is it: it either shows on all PLPs / all PDPs or none?
+      - If we can have it, yes. Specific SKUs or collections
+
+=== CHANGELOG ===
+2026-07-16T16:34:47.654000+10:00 | Jasmijn Tsang | status: In Refinement -> Blocked
+2026-07-14T12:38:27.647000+10:00 | Hazel Marie Cacalda | Rank:  -> Ranked higher
+2026-07-14T12:38:27.204000+10:00 | Hazel Marie Cacalda | Sprint: SFCC Sprint 1 -> 
+2026-07-14T10:40:30.388000+10:00 | Jasmijn Tsang | status: Ready For Review -> In Refinement
+2026-07-14T10:40:25.392000+10:00 | Jasmijn Tsang | Definition of Ready Checklist: Business requirements clear,Acceptance criteria defined,PO approved -> Acceptance criteria defined,Business requirements clear
+2026-07-13T16:26:25.822000+10:00 | Hazel Marie Cacalda | RemoteWorkItemLink:  -> This work item links to "Page (Confluence)"
+2026-07-09T12:30:34.574000+10:00 | Jasmijn Tsang | Design/Technical Notes: *Link to Figma design:*[https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1800-58807|https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1800-58807|smart-link]  -> *Link to Figma design:* [https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1863-7980|https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1863-7980|smart-link] 
+2026-07-09T12:28:30.334000+10:00 | Jasmijn Tsang | Dependency: 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin.
+* [~accountid:5cc71886cbbec211ec62929d] create and link Contentful user story for the banner + include the site merchandiser setup acceptance criteria -> 
+2026-07-09T12:22:56.769000+10:00 | Jasmijn Tsang | Acceptance Criteria: *Shopper:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+
+*Component should handle the following flexibility, Site Merchandiser persona to be covered in separate user story:*
+
+* configurable per storefront
+* configurable per customer group
+* configurable per logged in status
+* configurable time of rotation
+* configurable pages
+* configurable position
+* configurable message
+* configurable CTA
+* configurable enablement on/off
+* configurable content - content scheduling (start/end time) -> *Shopper:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *X seconds* before automatically rotating to the next message in the configured sequence. (Note for content team: The duration must be set to cover the length of the message so that screen readers can read it).
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+# Given a shopper closes by the banner by click on 'x', then the entire banner (including all messages in that banner) are closed.
+# Given a shopper closes by the banner by click on 'x' anywhere on the site, then the banner will remain closed even on other pages for the duration of that session.
+
+*Component should handle the following flexibility, Site Merchandiser persona to be covered in separate user story:*
+
+* configurable per storefront
+* configurable per customer group
+* configurable per logged in status
+* configurable time of rotation (consideration for screen readers)
+* configurable pages
+* configurable position
+* configurable message
+* configurable CTA
+* configurable enablement on/off
+* configurable content - content scheduling (start/end time)
+2026-07-09T12:08:04.373000+10:00 | Jasmijn Tsang | status: Tech design -> Ready For Review
+2026-07-09T12:07:58.219000+10:00 | Jasmijn Tsang | assignee: Hardi Sempuno -> Jasmijn Tsang
+2026-07-07T16:09:22.945000+10:00 | Jasmijn Tsang | Link: This work item is blocked by SFCC-111 -> 
+2026-07-07T13:32:03.776000+10:00 | Jasmijn Tsang | Link:  -> This work item blocks SFCC-111
+2026-07-07T13:31:57.336000+10:00 | Jasmijn Tsang | Link:  -> This work item is blocked by SFCC-111
+2026-07-07T12:23:18.513000+10:00 | Hazel Marie Cacalda | Story point estimate:  -> 5
+2026-07-07T12:21:46.931000+10:00 | Jasmijn Tsang | Dependency: 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin.
+* [~accountid:5cc71886cbbec211ec62929d] create and link Contentful user story for the banner -> 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin.
+* [~accountid:5cc71886cbbec211ec62929d] create and link Contentful user story for the banner + include the site merchandiser setup acceptance criteria
+2026-07-07T12:21:19.950000+10:00 | Jasmijn Tsang | Acceptance Criteria: *Shopper:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+
+*Site Merchandiser:* 
+
+* configurable per storefront
+* configurable per customer group
+* configurable per logged in status
+* configurable time of rotation
+* configurable pages
+* configurable position
+* configurable message
+* configurable CTA
+* configurable enablement on/off
+* configurable content - content scheduling (start/end time) -> *Shopper:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+
+*Component should handle the following flexibility, Site Merchandiser persona to be covered in separate user story:*
+
+* configurable per storefront
+* configurable per customer group
+* configurable per logged in status
+* configurable time of rotation
+* configurable pages
+* configurable position
+* configurable message
+* configurable CTA
+* configurable enablement on/off
+* configurable content - content scheduling (start/end time)
+2026-07-07T12:09:22.211000+10:00 | Jasmijn Tsang | Design/Technical Notes: *Link to Figma design:* [https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954]
+
+*Link to overall Home Page for placement*: [Design Workspace – Figma|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=1863-7980&p=f&t=TS3e4U74AmxsxtMJ-0] -> *Link to Figma design:*[https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1800-58807|https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=1800-58807|smart-link] 
+2026-07-07T12:05:48.304000+10:00 | Jasmijn Tsang | Dependency: 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin. -> 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin.
+* [~accountid:5cc71886cbbec211ec62929d] create and link Contentful user story for the banner
+2026-07-06T16:43:01.654000+10:00 | Jasmijn Tsang | Rollout Scope: AU,AE,EU - Domestic,EU - International,HK,UK,US - Domestic -> EU - Domestic,AE,US - Domestic,HK,EU - International,AU,US - International,UK
+2026-07-03T10:28:08.547000+10:00 | Jasmijn Tsang | status: Ready For Review -> Tech design
+2026-07-03T10:28:04.223000+10:00 | Jasmijn Tsang | assignee: Rebecca Jourdan -> Hardi Sempuno
+2026-07-03T10:23:00.197000+10:00 | Jasmijn Tsang | labels: DesignDependent HPC-017 -> Contentful DesignDependent HPC-017
+2026-07-03T10:21:19.631000+10:00 | Jasmijn Tsang | description: *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+Reference image (Figma is leading):
+
+!image-20260618-040246.png|width=922,alt="image-20260618-040246.png"!
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all devices but select pages as per configuration.
+
+* *Page configuration:* The banner needs to be configurable per page (e.g. it may display on Home / PDP / PLP, but it does not on Z.immerse).
+* *Position flexibility:* The banner needs to be configurable per page on what position it needs to appear (e.g. Top of page on home page or below navigation).
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised (contentful out of scope) -> *As a* Shopper, 
+*I want* to see a promotional announcement banner, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+Reference image (Figma is leading):
+
+!image-20260618-040246.png|width=922,alt="image-20260618-040246.png"!
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all devices but select pages as per configuration.
+
+* *Page configuration:* The banner needs to be configurable per page (e.g. it may display on Home / PDP / PLP, but it does not on Z.immerse).
+* *Position flexibility:* The banner needs to be configurable per page on what position it needs to appear (e.g. Top of page on home page or below navigation).
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised (contentful out of scope)
+2026-07-02T11:49:56.110000+10:00 | Rebecca Jourdan | Definition of Ready Checklist: Business requirements clear,Acceptance criteria defined -> PO approved,Acceptance criteria defined,Business requirements clear
+2026-07-02T11:48:11.402000+10:00 | Jasmijn Tsang | assignee: Jasmijn Tsang -> Rebecca Jourdan
+2026-07-02T11:45:43.689000+10:00 | Jasmijn Tsang | Acceptance Criteria: # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence. 
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+#  -> *Shopper:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+
+*Site Merchandiser:* 
+
+* configurable per storefront
+* configurable per customer group
+* configurable per logged in status
+* configurable time of rotation
+* configurable pages
+* configurable position
+* configurable message
+* configurable CTA
+* configurable enablement on/off
+* configurable content - content scheduling (start/end time)
+2026-07-02T11:42:03.755000+10:00 | Jasmijn Tsang | Dependency: 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. -> 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. This is currently is a plugin.
+2026-07-02T11:41:48.447000+10:00 | Jasmijn Tsang | Acceptance Criteria: # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation. -> # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above or below the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence. 
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+# 
+2026-07-02T11:40:20.366000+10:00 | Jasmijn Tsang | description: *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+Reference image (Figma is leading):
+
+!image-20260618-040246.png|width=922,alt="image-20260618-040246.png"!
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised. -> *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+Reference image (Figma is leading):
+
+!image-20260618-040246.png|width=922,alt="image-20260618-040246.png"!
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all devices but select pages as per configuration.
+
+* *Page configuration:* The banner needs to be configurable per page (e.g. it may display on Home / PDP / PLP, but it does not on Z.immerse).
+* *Position flexibility:* The banner needs to be configurable per page on what position it needs to appear (e.g. Top of page on home page or below navigation).
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised (contentful out of scope)
+2026-07-02T11:34:19.611000+10:00 | Jasmijn Tsang | Squad: Squad B -> Squad A
+2026-07-01T21:56:27.804000+10:00 | Jasmijn Tsang | status: In Refinement -> Ready For Review
+2026-06-26T14:27:09.024000+10:00 | Jasmijn Tsang | labels: HPC-017 -> DesignDependent HPC-017
+2026-06-26T14:15:52.111000+10:00 | Jasmijn Tsang | status: Ready For Review -> In Refinement
+2026-06-26T14:15:47.998000+10:00 | Jasmijn Tsang | assignee:  -> Jasmijn Tsang
+2026-06-26T14:15:41.967000+10:00 | Jasmijn Tsang | Assumptions: * We assume that the banner will be CMS-managed via Contentful, allowing business users to update copy without a code deployment. -> * We assume that the banner will be CMS-managed via Contentful, allowing business users to update copy without a code deployment.
+*  Contentful wiring is a dependency for full end-to-end testing.
+2026-06-26T14:15:35.388000+10:00 | Jasmijn Tsang | Dependency: *  Contentful wiring is a dependency for full end-to-end testing.
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner. -> 
+
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner.
+2026-06-22T14:10:07.449000+10:00 | Jasmijn Tsang | Link: This work item is cloned by SFCC-80 -> 
+2026-06-22T10:11:31.609000+10:00 | Jasmijn Tsang | Link:  -> This work item is cloned by SFCC-80
+2026-06-19T15:15:25.574000+10:00 | Jasmijn Tsang | summary: Promotional Announcement Banner -> Promotional Announcement Banner UI
+2026-06-19T14:37:23.039000+10:00 | Jasmijn Tsang | Design/Technical Notes: *Link to Figma design:* [https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954] -> *Link to Figma design:* [https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954]
+
+*Link to overall Home Page for placement*: [Design Workspace – Figma|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=1863-7980&p=f&t=TS3e4U74AmxsxtMJ-0]
+2026-06-18T14:55:17.242000+10:00 | Jasmijn Tsang | Rollout Scope:  -> EU - Domestic,AE,US,HK,EU - International,AU,UK
+2026-06-18T14:15:44.503000+10:00 | Jasmijn Tsang | Link: This work item is cloned by SFCC-52 -> 
+2026-06-18T14:02:57.893000+10:00 | Jasmijn Tsang | Attachment:  -> image-20260618-040246.png
+2026-06-18T14:02:57+10:00 | Jasmijn Tsang | description: *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised. -> *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+Reference image (Figma is leading):
+
+!image-20260618-040246.png|width=922,alt="image-20260618-040246.png"!
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised.
+2026-06-18T11:45:14.750000+10:00 | Jasmijn Tsang | Link:  -> This work item is cloned by SFCC-52
+2026-06-18T11:43:53.760000+10:00 | Jasmijn Tsang | assignee: Jasmijn Tsang -> 
+2026-06-18T11:43:42.642000+10:00 | Jasmijn Tsang | Sprint:  -> SFCC Sprint 1
+2026-06-18T11:43:32.140000+10:00 | Jasmijn Tsang | Definition of Ready Checklist:  -> Acceptance criteria defined,Business requirements clear
+2026-06-18T11:43:21.903000+10:00 | Jasmijn Tsang | status: In Refinement -> Ready For Review
+2026-06-18T11:43:06.015000+10:00 | Jasmijn Tsang | Functional Area:  -> Home Page
+2026-06-18T11:42:58.633000+10:00 | Jasmijn Tsang | Dependency: *  Contentful wiring is a dependency for full end-to-end testing. -> *  Contentful wiring is a dependency for full end-to-end testing.
+* Zimmermann to confirm the rotation frequency - 3 seconds is based on manually observing the current banner.
+2026-06-18T11:42:31.899000+10:00 | Jasmijn Tsang | Acceptance Criteria: # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above the global header on both desktop and mobile.
+# Given multiple banner messages are configured in Contentful, when the page loads, then the messages rotate automatically through the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation. -> # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above the global header on both desktop and mobile.
+# Given the promotional banner is configured with multiple messages, when the page loads, then each message is displayed for *3 seconds* before automatically rotating to the next message in the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+2026-06-18T11:36:03.318000+10:00 | Jasmijn Tsang | Design/Technical Notes:  -> *Link to Figma design:* [https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954|https://www.figma.com/design/XWz3ItpkSqL45P5IFOnQgB/Design-Workspace?node-id=2086-52954]
+2026-06-18T11:35:41.987000+10:00 | Jasmijn Tsang | labels:  -> HPC-017
+2026-06-18T11:35:21.104000+10:00 | Jasmijn Tsang | Squad:  -> Squad B
+2026-06-18T11:35:18.634000+10:00 | Jasmijn Tsang | assignee:  -> Jasmijn Tsang
+2026-06-18T11:35:17.058000+10:00 | Jasmijn Tsang | status: To Do -> In Refinement
+2026-06-18T11:35:14.474000+10:00 | Jasmijn Tsang | Templates ➤:  -> Story
+2026-06-18T11:35:07.933000+10:00 | Jasmijn Tsang | Acceptance Criteria:  -> # Given a shopper visits any page on the storefront, when the page loads, then the promotional announcement banner is displayed at the top of the page above the global header on both desktop and mobile.
+# Given multiple banner messages are configured in Contentful, when the page loads, then the messages rotate automatically through the configured sequence.
+# Given a banner message includes a CTA link, when a shopper clicks the message, then they are navigated to the configured destination.
+# Given the banner is configured with a single message, when the page loads, then the single message is displayed without rotation.
+2026-06-18T11:33:52.123000+10:00 | Jasmijn Tsang | Dependency:  -> *  Contentful wiring is a dependency for full end-to-end testing.
+2026-06-18T11:33:45.937000+10:00 | Jasmijn Tsang | description: *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised — Contentful wiring is a dependency for full end-to-end testing. -> *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised.
+2026-06-18T11:33:25.449000+10:00 | Jasmijn Tsang | description: *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices.  -> *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+
+* *Rotating behaviour:* The banner supports multiple messages that rotate automatically. Each message can include text and an optional CTA link.
+* *Responsive behaviour:* The banner is displayed on both desktop and mobile at the top of the page above the header.
+* *Content dependency:* Banner copy and rotation configuration is managed in Contentful. The component can be built with mock content prior to Contentful content model being finalised — Contentful wiring is a dependency for full end-to-end testing.
+2026-06-18T11:32:24.910000+10:00 | Jasmijn Tsang | Assumptions:  -> * We assume that the banner will be CMS-managed via Contentful, allowing business users to update copy without a code deployment.
+2026-06-18T11:31:59.885000+10:00 | Jasmijn Tsang | description:  -> *As a* Shopper, 
+*I want* to see a promotional announcement banner at the top of every page, 
+*so that* I am informed of current promotions, offers, or announcements as I browse the site.
+
+----
+
+The promotional announcement banner is a thin full-width bar displayed above the global header on all pages and all devices. 
+2026-06-18T11:30:19.261000+10:00 | Jasmijn Tsang | IssueParentAssociation:  -> SFCC-3

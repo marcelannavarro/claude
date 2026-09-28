@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Build @arche/pack-next (Next.js stack pack)",
+  "description": "Second stack pack proving the ecosystem: Next/React conventions + components rule doc + new-component skill + ast-grep a11y (lint primitive) + build-based CI + .tsx component scanner + detect. Wire into CLI + tsconfig paths. Add a pack-swap audit step asserting the governance base stays byte-identical across node/next.",
+  "activeForm": "Building pack-next",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

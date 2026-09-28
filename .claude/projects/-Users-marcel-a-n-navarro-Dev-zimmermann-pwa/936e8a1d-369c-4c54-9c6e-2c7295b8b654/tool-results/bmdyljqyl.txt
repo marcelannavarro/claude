@@ -1,0 +1,512 @@
+### [2026-08-20T01:29:46 assistant] # Found and fixed the broken layout
+
+Your instinct was right, and the cause was mechanical rather than visual.
+
+## Root cause: `width`/`height` read a different scale than `padding`/`margin`
+
+```
+Chakra sizes.xl  =  36rem  (576px)
+Chakra space.xl  =  undefined
+```
+
+Chakra resolves `width`/`height`/`minW`/`minH` through **`theme.sizes`**, not `theme.space`. So `width: 'xl'` was never 24px — it was **576px**. Valid CSS, wrong value, no error anywhere: `tsc`, `eslint` and all 164 tests pass either way.
+
+This is exactly the collision your manual documents in §3 (*"`theme.sizes.lg` is 32rem and backs `w`/`h`/`boxSize` everywhere"*) — the same trap as `fontSize="md"`, on a different scale.
+
+## Five instances, all fixed
+
+| Location | Was | Resolved to | Now |
+|---|---|---|---|
+| `footer.ts` contact icons | `width/height: 'xl'` | **576 × 576px** each | `var(--zimm-scale-xl)` → 24px |
+| `zimmText
+
+### [2026-08-20T01:40:21 user] keep in touch + subtext is not up to spec with the design particularly with spacing, copyright text is different from the rest of the text group it's a part of
+
+### [2026-08-20T01:40:49 assistant] Let me get both sides — the resolved local values and the Figma spec.
+
+### [2026-08-20T01:40:51 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== ZimmNavItem recipe (legal links go through this) ===\"; sed -n '/baseStyle/,/^};/p' overrides/app/theme/components/zimmNavItem.ts | head -40", "des>>
+
+### [2026-08-20T01:40:53 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== subscribe column: heading/body/subscribe parts ===\"; sed -n 105,140p overrides/app/theme/components/footer.ts\necho \"=== bottomRight + legalGrid >>
+
+### [2026-08-20T01:41:22 assistant] <<TOOL Bash: {"command": "node -e \"\nconst F=require(process.env.CLAUDE_JOB_DIR+'/tmp/foundation.cjs');\nconsole.log('textStyles.footer     :', JSON.stringify(F.textStyles.footer,null,1));\nconsole.log('--zimm-font-family-body =', F>>
+
+### [2026-08-20T01:41:23 assistant] <<TOOL ToolSearch: {"query": "select:mcp__claude_ai_Figma__get_design_context,mcp__claude_ai_Figma__get_variable_defs,mcp__claude_ai_Figma__get_metadata", "max_results": 3}>>
+
+### [2026-08-20T01:41:48 assistant] Useful local finding first: **all three font families resolve identically** (`heading`, `body`, `mono` are the same stack, since Futura Round isn't self-hosted). So font family is *not* the copyright difference — I can rule that out.
+
+Now the authoritative side.
+
+### [2026-08-20T01:41:49 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1892-59261"}>>
+
+### [2026-08-20T01:43:08 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1266-46388"}>>
+
+### [2026-08-20T01:45:06 assistant] Figma structure is very informative. Let me pull the actual token values for both areas.
+
+### [2026-08-20T01:45:06 assistant] <<TOOL mcp__claude_ai_Figma__get_variable_defs: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1892-50533"}>>
+
+### [2026-08-20T01:46:55 assistant] Figma tokens for the Subscribe block are decisive. Let me get the Legal frame too.
+
+### [2026-08-20T01:46:56 assistant] <<TOOL mcp__claude_ai_Figma__get_variable_defs: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000407-14252"}>>
+
+### [2026-08-20T01:47:50 assistant] The Legal group tokens are uniform — `Default/Footer` (10px/500/14/0.4) and `#969696` for **both** copyright and links. So they should match. Let me compare the two nodes directly.
+
+### [2026-08-20T01:47:50 assistant] <<TOOL mcp__claude_ai_Figma__get_variable_defs: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000407-23123"}>>
+
+### [2026-08-20T01:48:56 assistant] Figma confirms copyright and the legal links use **identical** tokens — `Default/Footer` 10/500/14/0.4, `#969696`. So the difference you're seeing is a build defect, not a design one. Let me find where the merge breaks.
+
+### [2026-08-20T01:49:05 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nnpx esbuild overrides/app/theme/components/zimmNavItem.ts --bundle --format=cjs --platform=node --outfile=\"$CLAUDE_JOB_DIR/tmp/navItem.cjs\" --log-level=erro>>
+
+### [2026-08-20T01:49:42 assistant] Definitive result: **copyright and legal links are typographically identical locally** — same size, weight, line-height, letter-spacing, transform, colour. The only deltas are box-model (`display`, `alignItems`, `height`). And Figma says they should be identical too.
+
+So that one needs eyes. But the Subscribe block is a provable mismatch. Let me confirm the last detail with a screenshot.
+
+### [2026-08-20T01:49:43 assistant] <<TOOL ToolSearch: {"query": "select:mcp__claude_ai_Figma__get_screenshot", "max_results": 1}>>
+
+### [2026-08-20T01:49:48 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1892-50533", "maxDimension": 900, "enableBase64Response": true}>>
+
+### [2026-08-20T01:50:17 assistant] Figma screenshot settles it. Now the Legal row.
+
+### [2026-08-20T01:50:17 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000407-14252", "maxDimension": 1400, "enableBase64Response": true}>>
+
+### [2026-08-20T01:51:05 assistant] Figma's Legal row: everything one size, one colour, one baseline — copyright included. Two real findings there. Let me check the locale control's colour too, since it's in that same row.
+
+### [2026-08-20T01:51:05 assistant] <<TOOL mcp__claude_ai_Figma__get_variable_defs: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000407-14372"}>>
+
+### [2026-08-20T01:51:47 assistant] Locale control is `#ffffff`, Legal group is `#969696` — our implementation matches Figma exactly there. Applying the two confirmed fixes.
+
+### [2026-08-20T01:51:48 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== fixture legalLinks order ===\"; sed -n '/legalLinks/,/^  },/p' overrides/app/components/footer/contentfulFixture.ts | grep -n \"label:\"\necho; ech>>
+
+### [2026-08-20T01:51:57 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nperl -0pi -e \"s|    // Subscribe body paragraph \u2014 caption: 12px / 500 / 18px / no uppercase\\.\\n    subscribeBody: \\{\\n      textStyle: 'caption',|  >>
+
+### [2026-08-20T01:52:05 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\npython3 - <<'PY'\nimport re\np='overrides/app/components/footer/contentfulFixture.ts'\ns=open(p).read()\n# Swap the Privacy Policy and Terms & Conditions entr>>
+
+### [2026-08-20T01:52:14 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\npython3 - <<'PY'\np='overrides/app/components/footer/contentfulFixture.ts'\ns=open(p).read()\npriv = \"\"\"      {\n        sys: { id: 'legal-privacy', conten>>
+
+### [2026-08-20T01:52:23 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== tsc ===\"; npx tsc --noEmit 2>&1 | tail -3; echo \"exit:$?\"\necho \"=== prettier ===\"; npx prettier --check overrides/app/theme/components/footer>>
+
+### [2026-08-20T01:53:26 assistant] # Figma comparison — two confirmed defects fixed, one open
+
+## ✅ 1 · "Keep in Touch" subtext was the wrong text style
+
+Figma node `1892:50533` binds the body copy to **`Default/body2`**:
+
+```
+Default/body2 = family body · size 350 (14px) · weight 400 · lineHeight 450 (18px) · letterSpacing 0
+```
+
+We were rendering it as **`caption`** — 12px at weight **500**. Two steps off: too small *and* too heavy.
+
+```diff
+- // Subscribe body paragraph — caption: 12px / 500 / 18px / no uppercase.
+- textStyle: 'caption',
++ // Figma binds Default/body2 (14px / 400 / 18px / ls 0), NOT caption.
++ textStyle: 'body2',
+```
+
+**This is your spacing complaint.** At 200px max-width, 14px text wraps as Figma shows — *"Sign up to stay up to date on the latest / news from Zimmermann."* At 12px it wraps differently, so the block height and the rhythm down to the email field were both wrong even though both gaps (24p
+
+### [2026-08-20T01:55:53 user] keep in touch and the subtext "Sign up..." is not up to spec with the design particularly with spacing as the figma design shows a much bigger spacing/gap between the 2 than the implementation: <div><p class="css-vxwocs">Keep in Touch</p><p class="css-16kn3n4">Sign up to stay up to date on the latest news from Zimmermann.</p><div aria-live="polite"><form novalidate="" class="css-7wh13m"><div class="css-qyh1qc"><div class="css-1x0ywl1"><div class="css-1cdpxlr"><label for=":ro:" class="css-1je5g1k">Email</label><input id=":ro:" type="email" name="footer-email" autocomplete="email" aria-invalid="false" class="css-tohjxk" value=""></div><button type="submit" class="chakra-button css-eyh16a" aria-label="Subscribe"><svg viewBox="0 0 24 24" focusable="false" class="chakra-icon css-1o2ugda" aria-hidden="true"><use role="presentation" xlink:href="#chevron-right"></use></svg></button></div></div><
+
+### [2026-08-20T01:56:28 assistant] Let me diagnose both — the second one from the theme, the first against Figma directly.
+
+### [2026-08-20T01:56:39 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nnpx esbuild overrides/app/theme/components/zimmNavItem.ts --bundle --format=cjs --platform=node --outfile=\"$CLAUDE_JOB_DIR/tmp/navItem.cjs\" --log-level=erro>>
+
+### [2026-08-20T01:56:40 assistant] <<TOOL ToolSearch: {"query": "select:mcp__claude_ai_Figma__get_design_context,mcp__claude_ai_Figma__get_metadata", "max_results": 2}>>
+
+### [2026-08-20T01:57:05 assistant] Copyright and legal link resolve to **byte-identical typography** — so the difference isn't in the recipe. Checking whether the colour token actually exists, and pulling the Figma measurements.
+
+### [2026-08-20T01:57:08 assistant] <<TOOL Bash: {"command": "node -e \"\nconst F=require(process.env.CLAUDE_JOB_DIR+'/tmp/foundation.cjs');\nconst want=['--zimm-color-text-muted','--zimm-color-text-inverse','--zimm-color-text-inverse-grey','--zimm-scale-xl','--zimm-sc>>
+
+### [2026-08-20T01:57:08 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1892-59261"}>>
+
+### [2026-08-20T01:57:31 assistant] Colour tokens all resolve correctly (`#969696` for both). Drilling into the Figma desktop frame for the actual measurements.
+
+### [2026-08-20T01:57:32 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1266-46388"}>>
+
+### [2026-08-20T01:59:00 assistant] Figma metadata gives me issue 2 outright. For issue 1 the text-node heights are cap-height bounds, not line boxes, so I need the real autolayout values.
+
+### [2026-08-20T01:59:00 assistant] <<TOOL ToolSearch: {"query": "select:ReadMcpResourceTool", "max_results": 1}>>
+
+### [2026-08-20T01:59:03 assistant] <<TOOL ReadMcpResourceTool: {"server": "claude.ai Figma", "uri": "skill://figma/figma-design-to-code/SKILL.md"}>>
+
+### [2026-08-20T01:59:18 assistant] <<TOOL mcp__claude_ai_Figma__get_design_context: {"nodeId": "1892-50533", "fileKey": "wPiWmZZOVKnrENUWk2XWWm", "clientFrameworks": "react", "clientLanguages": "typescript", "skillNames": "resource:figma-design-to-code"}>>
+
+### [2026-08-20T02:01:07 assistant] Got the authoritative spec. Here's what Figma actually says, and where I've landed on each.
+
+## Issue 2 — Copyright vs legal row: **confirmed, and I know the cause**
+
+The typography is *identical* — I resolved both through Chakra and every property matches byte-for-byte (12px→10px, 500, 14px line-height, 0.4px tracking, uppercase, `#969696`). So it isn't a type problem.
+
+It's the **box model**:
+
+| | Copyright | Legal links |
+|---|---|---|
+| Element | `<span>` — **inline** | `<a>` — **`display: inline-flex`** (from `ZimmNavItem`) |
+| `alignItems` | none | `center` |
+| `paddingY: xs` (8px) | applies visually but **doesn't affect layout height** | contributes to a 30px box |
+
+An inline element's vertical padding doesn't push layout; an inline-flex element's does. So in the flex row they sit on different baselines with different effective heights — which reads as "the copyright looks differe
+
+### [2026-08-20T02:01:48 user] apply the copyright fix
+
+### [2026-08-20T02:01:56 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nsed -n 300,312p overrides/app/theme/components/footer.ts", "description": "Read current copyright part"}>>
+
+### [2026-08-20T02:02:05 assistant] <<TOOL Edit: {"replace_all": false, "file_path": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/components/footer.ts", "old_string": "    // Copyright + legal links share the footer text style; py-8px matches Figma>>
+
+### [2026-08-20T02:02:10 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nnpx esbuild overrides/app/theme/components/footer.ts --bundle --format=cjs --platform=node --outfile=\"$CLAUDE_JOB_DIR/tmp/footerRecipe.cjs\" --log-level=erro>>
+
+### [2026-08-20T02:02:21 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nnode \"$CLAUDE_JOB_DIR/tmp/resolve.cjs\" 2>/dev/null | grep -A12 \"### copyright\"\necho \"=== tsc / prettier / eslint / vitest ===\"\nnpx tsc --noEmit 2>&1 |>>
+
+### [2026-08-20T02:02:48 assistant] **Copyright fix applied.**
+
+```ts
+copyright: {
+  textStyle: 'footer',
+  color: 'var(--zimm-color-text-muted)',
+  display: 'inline-flex',      // ← added
+  alignItems: 'center',        // ← added
+  whiteSpace: 'nowrap',
+  paddingY: 'xs',
+  paddingX: 0,
+},
+```
+
+Resolved output now matches the legal links on every property that matters — same font stack, 10px, weight 500, 14px line-height, 0.4px tracking, uppercase, `#969696`, `inline-flex`, `center`, 8px vertical padding.
+
+The one remaining difference in my comparison table (`padding: 0px` on the link) is a script artefact, not a real one: `ZimmNavItem` sets the `padding` shorthand to 0 and `legalLink` then overrides the vertical sides, while `copyright` sets `paddingY`/`paddingX` directly. Both land on 0 horizontal / 8px vertical.
+
+Verified: `tsc` 0 · `prettier` clean · `eslint` 0/0 · `vitest` 164 passed.
+
+---
+
+Reload and check the legal 
+
+### [2026-08-20T02:03:53 user] copyright still does not align with the legal row: <span class="css-1cwy5p4">Copyright © <!-- -->2026<!-- --> <!-- -->Zimmermann</span>
+
+### [2026-08-20T02:04:05 assistant] The class changed, so the fix landed — which means the misalignment is in the **container**, not the copyright itself. Let me look at the row that holds them.
+
+### [2026-08-20T02:04:07 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nsed -n '/bottomBar: {/,/^  },$/p' overrides/app/theme/components/footer.ts | head -70", "description": "Read bottom bar container styles"}>>
+
+### [2026-08-20T02:04:31 user] [Request interrupted by user]
+
+### [2026-08-20T02:04:36 user] copyright still does not align with the legal row: <span class="css-1cwy5p4">Copyright © <!-- -->2026<!-- --> <!-- -->Zimmermann</span> -> <div class="css-hqqfqk"><button type="button" aria-label="Change locale" class="css-1a1wgco"><span class="css-mmrgv7">United States (USD) / ENG</span><svg viewBox="0 0 24 24" focusable="false" class="chakra-icon css-u28ue8" aria-hidden="true"><use role="presentation" xlink:href="#chevron-right"></use></svg></button><div class="css-1w3ixz4"><span class="css-1cwy5p4">Copyright © <!-- -->2026<!-- --> <!-- -->Zimmermann</span><div class="css-hnqijs"><a href="#" class="css-tttjpp"><span>Accessibility</span></a><a href="#" class="css-tttjpp"><span>Terms &amp; Conditions</span></a><a href="#" class="css-tttjpp"><span>Privacy Policy</span></a><a href="#" class="css-tttjpp"><span>Modern Slavery</span></a><a href="#" class="css-tttjpp"><span>Cookie Settings</sp
+
+### [2026-08-20T02:04:56 assistant] The class changed (`css-1vpho6t` → `css-1cwy5p4`) so the fix landed — but the cause is structural, not in the copyright itself. Let me look at the containers.
+
+### [2026-08-20T02:04:59 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== bottomBar / bottomInner / bottomRight / legalGrid ===\"\nsed -n '/bottomBar: {/,/^    localeText/p' overrides/app/theme/components/footer.ts", "des>>
+
+### [2026-08-20T02:05:00 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== BottomBar JSX structure ===\"\nsed -n '/const BottomBar = /,/^};/p' overrides/app/components/footer/index.tsx | grep -nE \"chakra\\.|ZimmNavItem|st>>
+
+### [2026-08-20T02:05:43 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== zimmNavItem recipe (full) ===\"; cat overrides/app/theme/components/zimmNavItem.ts", "description": "Read the ZimmNavItem recipe in full"}>>
+
+### [2026-08-20T02:06:30 assistant] Found a concrete discrepancy. `ZimmNavItem`'s recipe puts a **1px transparent bottom border** on the inner span (it's the hover-underline, kept transparent so the colour can transition):
+
+```ts
+'& > span': {
+  borderBottom: 'var(--zimm-border-width-default) solid transparent',
+  ...
+}
+```
+
+So the boxes don't match:
+
+| | line-height | border | padding | **total** |
+|---|---|---|---|---|
+| Legal link `<a>` | 14px | **+1px** | 16px | **31px** |
+| Copyright `<span>` | 14px | — | 16px | **30px** |
+
+`bottomRight` has `alignItems: center`, so it centres the two *boxes* — a 1px height difference offsets the copyright by 0.5px, and any sub-pixel rounding makes that visible as a half-line shift.
+
+There's a second thing worth knowing: `legalLink` sets `height: 'auto'`, which **overrides `ZimmNavItem`'s designed `height: var(--zimm-scale-xl)` (24px)**. So the legal links aren't the 24px the atom int
+
+### [2026-08-20T02:16:17 user] <local-command-caveat>Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.</local-command-caveat>
+
+### [2026-08-20T02:16:17 user] <command-name>/model</command-name>
+            <command-message>model</command-message>
+            <command-args></command-args>
+
+### [2026-08-20T02:16:17 user] <local-command-stdout>Set model to [1mOpus 5[22m and saved as your default for new sessions[2m[22m
+[2m     Managed settings pins [1mSonnet 4.6[22m[2m — that applies on restart[22m</local-command-stdout>
+
+### [2026-08-20T02:16:19 user] <local-command-caveat>Caveat: The messages below were generated by the user while running local commands. DO NOT respond to these messages or otherwise consider them in your response unless the user explicitly asks you to.</local-command-caveat>
+
+### [2026-08-20T02:16:19 user] <command-name>/effort</command-name>
+            <command-message>effort</command-message>
+            <command-args></command-args>
+
+### [2026-08-20T02:16:19 user] <local-command-stdout>Set effort level to max (this session only): Maximum capability with deepest reasoning. May use excessive tokens resulting in long response times or overthinking. Use sparingly for the hardest tasks.</local-command-stdout>
+
+### [2026-08-20T02:19:13 user] hey claude, before we commit - i should run local testing first via storybook and local server and compare it against the figma file so i could run an in-depth visual check on the output -> local is running at http://localhost:3000/, figma is at https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-54023&m=dev, and then run the storybook as well
+
+### [2026-08-20T02:19:33 assistant] Good — and that Figma URL unblocks #13. Let me get everything running and pull the design.
+
+### [2026-08-20T02:19:35 assistant] <<TOOL Bash: {"command": "curl -s -o /dev/null -w \"localhost:3000 \u2192 HTTP %{http_code} (%{time_total}s)\\n\" --max-time 15 http://localhost:3000/ 2>&1; echo \"--- is storybook already up? ---\"; curl -s -o /dev/null -w \"localho>>
+
+### [2026-08-20T02:19:36 assistant] <<TOOL ToolSearch: {"query": "select:mcp__claude_ai_Figma__get_design_context,mcp__claude_ai_Figma__get_screenshot,mcp__claude_ai_Figma__get_metadata,mcp__claude_ai_Figma__get_variable_defs", "max_results": 5}>>
+
+### [2026-08-20T02:19:57 assistant] Both servers are already up — **localhost:3000 → 200** and **Storybook on :6006 → 200**. No need to start anything.
+
+Now pulling the Figma node you linked.
+
+### [2026-08-20T02:19:57 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "2083:54023"}>>
+
+### [2026-08-20T02:20:34 assistant] This is the footer page — and the structure is immediately useful:
+
+| Variant | Node | Size |
+|---|---|---|
+| **Desktop** (your current selection) | `1266:46388` | 1440 × 606 |
+| **Tablet** | `2834:28813` | **1023** × 606 |
+| **Mobile** | `1274:37829` | 402 × 1121 |
+| `footer-item` atom | `40000407:9854` | Large/Small × Default/Hover |
+| `footer/textfield` | `40000461:9679` | Subscribed False/True |
+
+Note tablet is drawn at **1023**, not 1024 — which independently confirms `BP.desktop = 64em` (1024px) is a real design decision, not a guess.
+
+### [2026-08-20T02:20:36 assistant] <<TOOL mcp__claude_ai_Figma__get_variable_defs: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1266:46388"}>>
+
+### [2026-08-20T02:20:36 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1266:46388", "maxDimension": 1600}>>
+
+### [2026-08-20T02:21:11 assistant] The variable defs are the real prize here. Downloading the render and cross-checking every token.
+
+### [2026-08-20T02:21:12 assistant] <<TOOL Bash: {"command": "curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma-footer-desktop.png\" \"https://www.figma.com/api/mcp/asset/1f9bc971-b913-4aa8-96d7-108b6df05606.png\" && ls -la \"$CLAUDE_JOB_DIR/tmp/figma-footer-desktop.png\"", "des>>
+
+### [2026-08-20T02:21:18 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nnode -e \"\nconst F=require(process.env.CLAUDE_JOB_DIR+'/tmp/foundation.cjs');\nconst want = {\n 'footer bg #191919': F.colors.background['05'],\n 'subfooter >>
+
+### [2026-08-20T02:22:53 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma-footer-desktop.png"}>>
+
+### [2026-08-20T02:23:20 assistant] Design is clear. Several things to verify — let me check the sharpest one first.
+
+### [2026-08-20T02:23:22 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000461:9679", "maxDimension": 900}>>
+
+### [2026-08-20T02:23:25 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== bottomBar colour (Figma subfooter = #282828) ===\"; sed -n '/bottomBar: {/,/},/p' overrides/app/theme/components/footer.ts\necho \"=== our subscrib>>
+
+### [2026-08-20T02:23:37 assistant] <<TOOL Bash: {"command": "curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma-textfield.png\" \"https://www.figma.com/api/mcp/asset/bae3fcb5-43d8-4901-b698-3dbe6d8d4be7.png\" && echo downloaded", "description": "Download the footer textfield com>>
+
+### [2026-08-20T02:23:44 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma-textfield.png"}>>
+
+### [2026-08-20T02:24:02 assistant] Confirmed a real parity finding. Now let me check what our build actually renders.
+
+### [2026-08-20T02:24:06 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\ncurl -s --max-time 30 http://localhost:3000/ -o \"$CLAUDE_JOB_DIR/tmp/local.html\" && wc -c \"$CLAUDE_JOB_DIR/tmp/local.html\"\necho \"=== footer present in S>>
+
+### [2026-08-20T02:24:24 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\npython3 - <<'EOF'\nimport re,html\nsrc=open('/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/local.html',encoding='utf-8').read()\ni=src.find('role=\"cont>>
+
+### [2026-08-20T02:24:53 assistant] Rendered output matches the predicted shape exactly. Now checking the emitted CSS — which also tells me whether the dev server picked up tonight's theme edits.
+
+### [2026-08-20T02:24:58 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\npython3 - <<'EOF'\nimport re\nsrc=open('/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/local.html',encoding='utf-8').read()\ncss=' '.join(re.findall(r'<s>>
+
+### [2026-08-20T02:25:21 assistant] The fixes are **live and verified in the rendered CSS** — `padding-top:var(--chakra-space-xs)` is emitted, and the broken `padding:xs 0` / `margin:2xs 0 0` are gone.
+
+But one of those two rules has a font-size that shouldn't be there. Chasing it.
+
+### [2026-08-20T02:25:28 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\npython3 - <<'EOF'\nimport re\nsrc=open('/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/local.html',encoding='utf-8').read()\nfoot=open('/Users/marcel.a.n>>
+
+### [2026-08-20T02:25:56 assistant] `css-1vpho6t` on the copyright span emits **`font-size: var(--chakra-fontSizes-sm)`** (14px) where the `footer` textStyle specifies **0.625rem** (10px) — and the legal links right beside it correctly emit 0.625rem. Let me confirm the cause.
+
+### [2026-08-20T02:26:01 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\ncat > \"$CLAUDE_JOB_DIR/tmp/ts.cjs\" <<'EOF'\nconst P='/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/';\nconst {css, toCSSVar} = require(P+'@chakr>>
+
+### [2026-08-20T02:26:12 assistant] Theme resolves correctly (`0.625rem`) — so the `sm` is coming from the call site. Checking the JSX.
+
+### [2026-08-20T02:26:13 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\nsed -n '/const BottomBar/,/^};/p' overrides/app/components/footer/index.tsx", "description": "Read current BottomBar JSX"}>>
+
+### [2026-08-20T02:26:19 user] [Request interrupted by user]
+
+### [2026-08-20T02:26:38 user] hey claude, before we commit - i should run local testing first via storybook and local server and compare it against the figma file so i could run an in-depth visual check on the output -> local is running at http://localhost:3000/, figma is at https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-54023&m=dev, and then run the storybook as well - report back when everything's up and running
+
+### [2026-08-20T02:26:55 assistant] On it. Kicking off Storybook now so it's building while I check the other two.
+
+### [2026-08-20T02:26:56 assistant] <<TOOL Bash: {"command": "npm run storybook 2>&1", "description": "Start Storybook dev server", "run_in_background": true}>>
+
+### [2026-08-20T02:26:58 assistant] <<TOOL Bash: {"command": "echo \"=== localhost:3000 ===\"; curl -s -o /dev/null -w \"HTTP %{http_code} | %{time_total}s | %{size_download} bytes\\n\" --max-time 20 http://localhost:3000/ 2>&1 || echo \"  NOT REACHABLE\"", "descriptio>>
+
+### [2026-08-20T02:26:58 assistant] <<TOOL ToolSearch: {"query": "select:mcp__claude_ai_Figma__get_design_context,mcp__claude_ai_Figma__get_screenshot,mcp__claude_ai_Figma__get_metadata,mcp__claude_ai_Figma__get_variable_defs", "max_results": 5}>>
+
+### [2026-08-20T02:28:24 assistant] <<TOOL Bash: {"command": "echo \"=== storybook output (last 30 lines) ===\"; tail -30 \"/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/652997c6-662c-4608-bb47-e37b77ba106b/tasks/both7xl4l.output\" 2>/dev/null | >>
+
+### [2026-08-20T02:28:24 assistant] <<TOOL mcp__claude_ai_Figma__get_metadata: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "2083:54023"}>>
+
+### [2026-08-20T02:29:03 assistant] Storybook hit a port conflict — but something's already on 6006. Checking what.
+
+### [2026-08-20T02:29:05 assistant] <<TOOL Bash: {"command": "echo \"=== what is on 6006? ===\"; curl -s --max-time 10 http://localhost:6006/ | head -c 400; echo; echo \"---\"; curl -s -o /dev/null -w \"HTTP %{http_code}\\n\" --max-time 10 http://localhost:6006/index.j>>
+
+### [2026-08-20T02:32:22 assistant] Storybook was **already running** — 8h38m uptime, PID 72403. My command just hit the port conflict and exited. Now pulling the Figma frames.
+
+### [2026-08-20T02:32:24 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1266:46388", "maxDimension": 1440}>>
+
+### [2026-08-20T02:32:38 assistant] <<TOOL Bash: {"command": "mkdir -p \"$CLAUDE_JOB_DIR/tmp/figma\" && curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma/footer-desktop.png\" \"https://www.figma.com/api/mcp/asset/69397496-6f01-482f-9227-7fbf0d62c0b9.png\" && file \"$CLAUDE_JOB_D>>
+
+### [2026-08-20T02:32:59 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma/footer-desktop.png"}>>
+
+### [2026-08-20T02:33:34 assistant] Figma resolved. One check on the local server before I report.
+
+### [2026-08-20T02:33:37 assistant] <<TOOL Bash: {"command": "echo \"=== does localhost:3000 SSR our footer? ===\"; curl -s --max-time 20 http://localhost:3000/ > \"$CLAUDE_JOB_DIR/tmp/local.html\"\nfor s in \"Keep in Touch\" \"Our Story\" \"Acknowledgement of Country\>>
+
+### [2026-08-20T02:33:57 assistant] <<TOOL Bash: {"command": "echo \"=== staleness test: is the BROKEN 'padding:xs 0' still in the served CSS? ===\"; grep -o \"padding:xs 0\" \"$CLAUDE_JOB_DIR/tmp/local.html\" | wc -l | tr -d ' '\necho \"=== and the broken margin form?>>
+
+### [2026-08-20T02:34:16 assistant] Local server confirmed **current** — the broken CSS forms are gone and the fixed ones are present. Now testing whether Storybook is equally current.
+
+### [2026-08-20T02:34:20 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"\ncurl -s --max-time 20 \"http://localhost:6006/iframe.html\" -o sb-iframe.html\necho \"=== bundles referenced ===\"; grep -oE 'src=\"[^\"]*\\.js\"' sb-iframe.html | head -8\necho \>>
+
+### [2026-08-20T02:34:34 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"; echo \"=== iframe.html script refs ===\"; grep -oE '(src|href)=[^ >]+\\.(js|mjs)' sb-iframe.html | head -10; echo \"--- size ---\"; wc -c sb-iframe.html", "description": "Find Sto>>
+
+### [2026-08-20T02:35:18 assistant] Everything's up. Full status:
+
+## ✅ Local app — `http://localhost:3000/`
+
+`HTTP 200`, 279 KB, footer SSR'd (`role="contentinfo"` present, fixture content rendering).
+
+**And it's confirmed current** — I tested for today's fixes specifically rather than assuming:
+
+| Marker | Result |
+|---|---|
+| Broken `padding:xs 0` in served CSS | **0** — gone ✅ |
+| Broken `margin:2xs 0 0` | **0** — gone ✅ |
+| Fixed `var(--chakra-space-xs)` | **5** occurrences ✅ |
+| `--zimm-*` tokens injected | 14 ✅ |
+
+So the dev server picked up every change including the two Chakra shorthand fixes.
+
+## ⚠️ Storybook — `http://localhost:6006/`
+
+**Already running** — PID 72403, uptime **8h 38m**. My `npm run storybook` just hit the port conflict and exited; nothing was broken.
+
+Story indexer is live and current: **72 stories**, including all 4 footer stories and 23 zimmButton stories.
+
+**But I can't verify the preview bun
+
+### [2026-08-20T02:36:51 user] restart storybook and pull the tablet and mobile frames
+
+### [2026-08-20T02:37:01 assistant] <<TOOL Bash: {"command": "kill 72403 2>/dev/null; sleep 3 2>/dev/null; for i in 1 2 3 4 5; do if lsof -nP -iTCP:6006 -sTCP:LISTEN >/dev/null 2>&1; then sleep 1; else break; fi; done; if lsof -nP -iTCP:6006 -sTCP:LISTEN >/dev/null 2>&>>
+
+### [2026-08-20T02:37:02 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "2834:28813", "maxDimension": 1023}>>
+
+### [2026-08-20T02:39:27 assistant] <<TOOL Bash: {"command": "echo \"=== task brad8yrtr output ===\"; tail -20 \"/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/652997c6-662c-4608-bb47-e37b77ba106b/tasks/brad8yrtr.output\" 2>/dev/null | sed -e 's/\>>
+
+### [2026-08-20T02:39:28 assistant] <<TOOL Bash: {"command": "curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma/footer-tablet.png\" \"https://www.figma.com/api/mcp/asset/14988d67-0a7a-4063-9ca3-197262d5c475.png\" && file \"$CLAUDE_JOB_DIR/tmp/figma/footer-tablet.png\"", "descrip>>
+
+### [2026-08-20T02:40:01 assistant] Nothing on 6006 — that task was an empty artifact. Starting Storybook properly now with `--ci` so it can't hit the interactive port prompt.
+
+### [2026-08-20T02:40:02 assistant] <<TOOL Bash: {"command": "npm run storybook -- --ci -p 6006 2>&1", "description": "Start Storybook non-interactively", "run_in_background": true}>>
+
+### [2026-08-20T02:40:04 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "1274:37829", "maxDimension": 1121}>>
+
+### [2026-08-20T02:40:38 assistant] <<TOOL Bash: {"command": "curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma/footer-mobile.png\" \"https://www.figma.com/api/mcp/asset/8cb2a54b-30e0-4e5d-90c5-eb04752c63ad.png\" && file \"$CLAUDE_JOB_DIR/tmp/figma/footer-mobile.png\"", "descrip>>
+
+### [2026-08-20T02:40:54 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma/footer-tablet.png"}>>
+
+### [2026-08-20T02:40:58 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma/footer-mobile.png"}>>
+
+### [2026-08-20T02:41:17 assistant] All three breakpoints captured. Checking Storybook came up, and chasing the one thing that looks like a real mismatch.
+
+### [2026-08-20T02:41:21 assistant] <<TOOL Bash: {"command": "for i in $(seq 1 30); do if curl -s -o /dev/null --max-time 3 http://localhost:6006/index.json 2>/dev/null; then echo \"Storybook UP after ~${i}0s\"; break; fi; sleep 4; done\necho \"=== port ===\"; lsof -nP>>
+
+### [2026-08-20T02:41:22 assistant] <<TOOL Bash: {"command": "echo \"=== mobile: does logo have a divider/border? ===\"; grep -n -A14 \"^    logo: {\" overrides/app/theme/components/footer.ts\necho \"=== legalGrid responsive rules ===\"; grep -n -A14 \"legalGrid: {\" o>>
+
+### [2026-08-20T02:41:36 assistant] Storybook up — PID 81747, 72 stories, ~10s. And both mobile details I flagged are **already correct** in `footer.ts` (`logo.borderTop` on mobile only ✅, `legalGrid` 2-col wrap on mobile ✅).
+
+Now the × icon — pulling the textfield component to settle it.
+
+### [2026-08-20T02:41:37 assistant] <<TOOL mcp__claude_ai_Figma__get_screenshot: {"fileKey": "wPiWmZZOVKnrENUWk2XWWm", "nodeId": "40000461:9679", "maxDimension": 1080}>>
+
+### [2026-08-20T02:42:10 assistant] <<TOOL Bash: {"command": "curl -sL -o \"$CLAUDE_JOB_DIR/tmp/figma/footer-textfield.png\" \"https://www.figma.com/api/mcp/asset/f904319d-a41a-464a-a3cc-5251c57b8136.png\" && sips -Z 1080 \"$CLAUDE_JOB_DIR/tmp/figma/footer-textfield.pn>>
+
+### [2026-08-20T02:42:19 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/figma/footer-textfield-3x.png"}>>
+
+### [2026-08-20T02:42:42 assistant] Decisive finding. Let me confirm what we actually render before I call it.
+
+### [2026-08-20T02:42:44 assistant] <<TOOL Bash: {"command": "echo \"=== what does our footer render at the email field? ===\"; grep -o 'aria-label=\"Subscribe\"' \"$CLAUDE_JOB_DIR/tmp/local.html\" | head -2\necho \"--- clear button present? ---\"; grep -o 'aria-label=>>
+
+### [2026-08-20T02:43:16 assistant] Everything's up. Report:
+
+## Status
+
+| Surface | State |
+|---|---|
+| **Local app** — `http://localhost:3000/` | ✅ Running, footer SSR'd, **verified current** (broken CSS forms absent, fixed forms present) |
+| **Storybook** — `http://localhost:6006/` | ✅ **Restarted fresh** — old 8h38m process killed, new PID 81747, up in ~10s, 72 stories indexed |
+| **Figma** | ✅ All 3 breakpoints + the textfield component captured |
+
+Footer stories: [`--default`](http://localhost:6006/?path=/story/layout-footer--default) · [`--subscribed`](http://localhost:6006/?path=/story/layout-footer--subscribed) · [`--subscribe-submit`](http://localhost:6006/?path=/story/layout-footer--subscribe-submit) · [`--subscribe-modal-open`](http://localhost:6006/?path=/story/layout-footer--subscribe-modal-open)
+
+---
+
+## 🔴 One real discrepancy found before you even start
+
+**The email field's trailing icon.**
+
+| | Figma | Our
+
+### [2026-08-20T02:45:28 user] first off - the footer on local and storybook is broken, meaning it's nowhere close how the footer is specced in figma, <footer role="contentinfo" class="css-13np98w"><div class="css-j7qwjs"><div class="css-vbtpy4"><div class="css-1ftuy8l"><div><p class="css-vxwocs">Keep in Touch</p><p class="css-16kn3n4">Sign up to stay up to date on the latest news from Zimmermann.</p><div aria-live="polite"><form novalidate="" class="css-7wh13m"><div class="css-qyh1qc"><div class="css-1x0ywl1"><div class="css-1cdpxlr"><label for=":R2bj6cjd5cnl:" class="css-1je5g1k">Email</label><input id=":R2bj6cjd5cnl:" type="email" name="footer-email" autocomplete="email" aria-invalid="false" class="css-tohjxk" value=""></div><button type="submit" class="chakra-button css-eyh16a" aria-label="Subscribe"><svg viewBox="0 0 24 24" focusable="false" class="chakra-icon css-1o2ugda" aria-hidden="true"><use role="presentati
+
+### [2026-08-20T02:45:28 user] [Image: source: /Users/marcel.a.n.navarro/.claude/image-cache/652997c6-662c-4608-bb47-e37b77ba106b/10.png]
+
+### [2026-08-20T02:46:51 assistant] Something's clearly wrong. Let me get the actual computed CSS rather than guess — the SSR'd HTML carries the Emotion rules.
+
+### [2026-08-20T02:46:58 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"; curl -s --max-time 25 http://localhost:3000/ -o cur.html\nnode -e \"\nconst fs=require('fs');\nconst h=fs.readFileSync('cur.html','utf8');\n// emotion SSR emits <style data-emotio>>
+
+### [2026-08-20T02:47:36 assistant] CSS and media queries are all emitting correctly — so the recipe is fine. Checking whether the **variables** those rules depend on actually exist.
+
+### [2026-08-20T02:47:40 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"\nnode -e \"\nconst h=require('fs').readFileSync('cur.html','utf8');\n// definitions look like  --name: value;   usages look like  var(--name)\nconst defs=new Set([...h.matchAll(/(->>
+
+### [2026-08-20T02:48:16 assistant] All variables resolve. So the CSS is valid — which means I'm guessing from a screenshot when I could measure. Playwright is installed; let me render and measure it properly.
+
+### [2026-08-20T02:48:17 assistant] <<TOOL Bash: {"command": "ls node_modules/.bin/ | grep -i playwright; node -e \"console.log('pw version:', require('./node_modules/@playwright/test/package.json').version)\" 2>/dev/null || node -e \"console.log('pw core:', require('.>>
+
+### [2026-08-20T02:48:35 assistant] <<TOOL Bash: {"command": "cat > \"$CLAUDE_JOB_DIR/tmp/measure.mjs\" <<'EOF'\nimport { chromium } from '/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/playwright-core/index.mjs';\nconst OUT = process.env.CLAUDE_JOB_DIR + '/>>
+
+### [2026-08-20T02:49:43 assistant] `networkidle` never settles on a dev server (HMR websocket). Switching to `domcontentloaded`.
+
+### [2026-08-20T02:49:45 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\" && sed -i '' \"s/waitUntil:'networkidle', timeout:60000/waitUntil:'domcontentloaded', timeout:60000/\" measure.mjs && node measure.mjs 2>&1 | tail -90", "description": "Re-run meas>>
+
+### [2026-08-20T02:50:17 assistant] **Found it.** The contact icons are ~580px apart *regardless of viewport* — at 402px wide, they sit at x=492, 1072, 1652. That's what's blowing the layout apart.
+
+### [2026-08-20T02:50:18 assistant] <<TOOL Bash: {"command": "echo \"=== footer.ts contactRow + contactIconLink ===\"; grep -n -B2 -A16 \"contactRow: {\" overrides/app/theme/components/footer.ts", "description": "Read contactRow and contactIconLink definitions"}>>
+
+### [2026-08-20T02:50:21 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"; node -e \"\nconst h=require('fs').readFileSync('cur.html','utf8');\nconst styles=[...h.matchAll(/<style[^>]*data-emotion[^>]*>([\\s\\S]*?)<\\/style>/g)].map(m=>m[1]).join('\\n');\>>
+
+### [2026-08-20T02:50:50 assistant] # 🔴 Root cause found — and it's a one-liner with a huge blast radius
+
+```ts
+// theme/components/footer.ts:290-295
+contactIconLink: {
+  width: 'xl',     // ← intended 24px
+  height: 'xl',
+}
+```
+
+emits:
+
+```css
+width:  var(--chakra-sizes-xl);   /* NOT --chakra-space-xl */
+height: var(--chakra-sizes-xl);
+```
+
+**Chakra resolves `width`/`height` through the `sizes` scale, not `space`.** Zimmermann's `xl` is `1.5rem` (24px) — but that lives in `theme.space`. Chakra's *default* `sizes.xl` is **36rem = 576px**.
+
+Measured: icons at x=492, 1072, 1652 — **580px apart** = 576px box + 4px gap. Exact match.
+
+Let me confirm the value and sweep for others, because this will not be the only one.
+
+### [2026-08-20T02:50:53 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\"; node -e \"\nconst h=require('fs').readFileSync('cur.html','utf8');\n['--chakra-sizes-xl','--chakra-space-xl','--zimm-scale-xl'].forEach(v=>{\n  const m=new RegExp(v.replace(/-/g,'>>
+
+### [2026-08-20T02:50:56 assistant] <<TOOL Bash: {"command": "echo \"=== SWEEP: sizing props using a SPACING scale key (the same bug class) ===\"\ngrep -rnE \"(width|height|minWidth|maxWidth|minHeight|maxHeight|boxSize|size):\\s*'(3xs|2xs|xs|s|m|l|xl|2xl|3xl|4xl|5xl|6x>>
+
+### [2026-08-20T02:51:09 assistant] Confirmed and isolated:
+
+```
+--chakra-sizes-xl   = 36rem   ← what got used  (576px)
+--chakra-space-xl   = 1.5rem  ← what was meant (24px)
+--zimm-scale-xl     = 1.5rem
+```
+
+Repo-wide sweep: **only these two lines**. Applying the fix.
+
+### [2026-08-20T02:51:14 assistant] <<TOOL Edit: {"replace_all": false, "file_path": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/theme/components/footer.ts", "old_string": "    // Contact icon touch target \u2014 24px, matches Figma 24x24 (WCAG 2.2 SC 2>>
+
+### [2026-08-20T02:51:18 assistant] <<TOOL Bash: {"command": "cd \"$CLAUDE_JOB_DIR/tmp\" && node measure.mjs 2>&1 | grep -E \"^#|footer|\\\"w\\\"|\\\"h\\\"|label|\\\"x\\\"|\\\"y\\\"|logo|bottomBarH\" | head -60", "description": "Re-measure after the fix", "timeout": 30>>
+
+### [2026-08-20T02:51:36 assistant] Fixed — icons now **28px apart** (24px box + 4px gap) instead of 580px, and all three columns are back. Let me look at the actual render.
+
+### [2026-08-20T02:51:36 assistant] <<TOOL Read: {"file_path": "/Users/marcel.a.n.navarro/.claude/jobs/652997c6/tmp/shots/desktop.png"}>>
+
+### [2026-08-20T02:51:54 assistant] <<TOOL Bash: {"command": "cd /Users/marcel.a.n.navarro/Dev/zimmermann-pwa\necho \"=== tsc ===\"; npx tsc --noEmit 2>&1 | tail -3; echo \"exit:$?\"\necho \"=== prettier ===\"; npx prettier --check overrides/app/theme/components/footer>>
+

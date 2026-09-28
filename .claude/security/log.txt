@@ -1,0 +1,9 @@
+[2026-08-14 19:47:37.969] Hook called with args: ['/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/security-guidance/2.0.6/hooks/security_reminder_hook.py']
+[2026-08-14 19:47:37.969] Processing: hook_event=UserPromptSubmit, tool=
+[2026-08-14 19:47:38.058] Captured git baseline: 98b48bd2721b
+[2026-08-14 19:48:54.508] Hook called with args: ['/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/security-guidance/2.0.6/hooks/security_reminder_hook.py']
+[2026-08-14 19:48:54.511] Processing: hook_event=UserPromptSubmit, tool=
+[2026-08-14 19:48:54.628] Captured git baseline: 53d204ab51a0
+[2026-09-26 01:16:12.803] Hook called with args: ['/Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/security-guidance/2.0.8/hooks/security_reminder_hook.py']
+[2026-09-26 01:16:12.807] Processing: hook_event=UserPromptSubmit, tool=
+[2026-09-26 01:16:12.890] Captured git baseline: 671b032a8b5b

@@ -1,0 +1,446 @@
+=== 542ac65 diff (docs alignment) ===
+commit 542ac65835482f7f189c1719fd9a873c71e267aa
+Author: TimLavelle <tim+1@lavelle.bio>
+Date:   Mon Aug 24 10:56:32 2026 +1000
+
+    docs(rules): align governance docs with this branch's footer/uiCopy patterns
+    
+    Reviewed .claude/rules/ and .claude/skills/ against what this branch actually
+    established over the footer-CDA-wiring and useUiCopy-globalization work.
+    Found and fixed concrete gaps, not just drift:
+    
+    - components.md: the container/presentational rule blocked leaf components
+      from calling data-fetching hooks with no exception, but we deliberately had
+      BottomBar/ZimmSubscribeSection call useUiCopy() directly — app-wide static
+      content read from a Provider mounted once at the root (same pattern as
+      useIntl), not a per-page fetch. Documented the exception so the next
+      session doesn't either avoid a legitimate pattern or misapply it to a real
+      SDK hook.
+    - testing.md: "don't duplicate coverage across layers" had no guidance on
+      *how* to resolve that tension, which is exactly what led to two rounds of
+      user correction on ZimmSubscribeSection's test suite. Clarified: scope the
+      assertions (mock what's covered elsewhere), don't skip the component's own
+      file. Also documented the ZimmIcon/Vitest SVG-barrel gap discovered this
+      branch (no test had ever rendered an icon-consuming component before).
+    - protectedFiles.md + CODEOWNERS: uiCopyProvider/ is mounted at the app root
+      in _app-config (same blast radius as _app-config itself) but had no
+      CODEOWNERS entry at all — no required review routing, unlike every other
+      Global Shell path. Added it to both.
+    - new-component/SKILL.md, code-quality/SKILL.md: same two fixes as
+      components.md/testing.md, applied to the scaffolding flow and the
+      audit checklist (Agent D no longer treats a play function in an unrelated
+      component's story as a substitute for this component's own test file).
+    
+    Edited under verified tier-1-approvers identity (gh api user + team
+    membership check) per AGENTS.md's Tier 1 Approval process.
+    
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+ .claude/rules/components.md             | 12 ++++++++++++
+ .claude/rules/protectedFiles.md         |  5 +++++
+ .claude/rules/testing.md                | 28 ++++++++++++++++++++++++++++
+ .claude/skills/code-quality/SKILL.md    | 11 +++++++++--
+ .claude/skills/new-component/SKILL.md   |  4 ++--
+ .cursor/rules/skills/code-quality.mdc   | 11 +++++++++--
+ .cursor/rules/skills/new-component.mdc  |  4 ++--
+ .cursor/rules/testing.mdc               | 28 ++++++++++++++++++++++++++++
+ .cursor/rules/tier2ProtectedFiles.mdc   |  5 +++++
+ .github/copilot-instructions.md         |  5 +++++
+ .vscode/instructions/code-generation.md | 15 +++++++++++----
+ .vscode/instructions/pr-review.md       | 11 +++++++++--
+ CODEOWNERS                              |  1 +
+ 13 files changed, 126 insertions(+), 14 deletions(-)
+---- full diff ----
+commit 542ac65835482f7f189c1719fd9a873c71e267aa
+Author: TimLavelle <tim+1@lavelle.bio>
+Date:   Mon Aug 24 10:56:32 2026 +1000
+
+    docs(rules): align governance docs with this branch's footer/uiCopy patterns
+    
+    Reviewed .claude/rules/ and .claude/skills/ against what this branch actually
+    established over the footer-CDA-wiring and useUiCopy-globalization work.
+    Found and fixed concrete gaps, not just drift:
+    
+    - components.md: the container/presentational rule blocked leaf components
+      from calling data-fetching hooks with no exception, but we deliberately had
+      BottomBar/ZimmSubscribeSection call useUiCopy() directly — app-wide static
+      content read from a Provider mounted once at the root (same pattern as
+      useIntl), not a per-page fetch. Documented the exception so the next
+      session doesn't either avoid a legitimate pattern or misapply it to a real
+      SDK hook.
+    - testing.md: "don't duplicate coverage across layers" had no guidance on
+      *how* to resolve that tension, which is exactly what led to two rounds of
+      user correction on ZimmSubscribeSection's test suite. Clarified: scope the
+      assertions (mock what's covered elsewhere), don't skip the component's own
+      file. Also documented the ZimmIcon/Vitest SVG-barrel gap discovered this
+      branch (no test had ever rendered an icon-consuming component before).
+    - protectedFiles.md + CODEOWNERS: uiCopyProvider/ is mounted at the app root
+      in _app-config (same blast radius as _app-config itself) but had no
+      CODEOWNERS entry at all — no required review routing, unlike every other
+      Global Shell path. Added it to both.
+    - new-component/SKILL.md, code-quality/SKILL.md: same two fixes as
+      components.md/testing.md, applied to the scaffolding flow and the
+      audit checklist (Agent D no longer treats a play function in an unrelated
+      component's story as a substitute for this component's own test file).
+    
+    Edited under verified tier-1-approvers identity (gh api user + team
+    membership check) per AGENTS.md's Tier 1 Approval process.
+    
+    Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+    Claude-Session: https://claude.ai/code/session_01Vdo9JLADhCFqCyVpzrGbGv
+
+diff --git a/.claude/rules/components.md b/.claude/rules/components.md
+index 6ef1e37..a84d4af 100644
+--- a/.claude/rules/components.md
++++ b/.claude/rules/components.md
+@@ -68,6 +68,18 @@ state belongs in a custom hook instead.
+   commerce SDK hooks — the reasoning is the same either way: a component that owns its own
+   data-fetching can't be reused somewhere the data arrives differently (SSR-prefetched,
+   mocked in Storybook, composed from a parent that already has it).
++
++  **Exception — Context-backed, app-wide static-content hooks** (`useIntl`, `useUiCopy`) may
++  be called from any component, including presentational leaves. These read from a Provider
++  mounted once at the app root (`_app-config`), not from a per-page/per-component fetch, and
++  degrade gracefully with no Provider present (fallback text, not a throw) — so calling one
++  from a leaf doesn't create the SSR/Storybook/parent-composition problem the rule above
++  exists to prevent, and doesn't multiply fetches the way an SDK hook would. `useUiCopy`
++  (`overrides/app/hooks/useUiCopy.ts`, Provider at `overrides/app/components/uiCopyProvider/`)
++  is the reference example — `BottomBar` and `ZimmSubscribeSection` both call it directly
++  for microcopy while still receiving their actual business data as props. This exception is
++  narrow: it covers content that is identical for every consumer regardless of route/context,
++  not anything that varies per page.
+ - **Extract-to-hook threshold.** Pull inline component logic out into a custom hook
+   (`overrides/app/hooks/use<ComponentName><Feature>.ts`) when either is true:
+ 
+diff --git a/.claude/rules/protectedFiles.md b/.claude/rules/protectedFiles.md
+index d3a4bdb..08ae80b 100644
+--- a/.claude/rules/protectedFiles.md
++++ b/.claude/rules/protectedFiles.md
+@@ -16,9 +16,14 @@ overrides/app/components/list-menu/
+ overrides/app/components/seo/
+ overrides/app/components/_app/
+ overrides/app/components/_app-config/
++overrides/app/components/uiCopyProvider/
+ overrides/app/routes.tsx
+ ```
+ 
++`uiCopyProvider/` is mounted once inside `_app-config` and provides `useUiCopy()`'s context
++value to every page on every site — the same blast radius as `_app-config` itself, so it
++belongs in this tier alongside it rather than defaulting to Tier 4 by omission.
++
+ ## Shared Product Components (Owner: Squad B — notify Squad A)
+ 
+ ```text
+diff --git a/.claude/rules/testing.md b/.claude/rules/testing.md
+index 2ed66b1..20f1c61 100644
+--- a/.claude/rules/testing.md
++++ b/.claude/rules/testing.md
+@@ -2,6 +2,23 @@
+ 
+ Three layers, three purposes. **Do not duplicate coverage across layers** — pick the cheapest layer that proves the behaviour.
+ 
++**This is not license to skip a component's own test file because its behaviour happens to be
++covered transitively elsewhere.** A component with real logic (branching, prop→JSX mapping
++decisions, event wiring) gets its own `index.test.ts`/`index.test.tsx`, even when the state it
++renders is owned by a hook that already has its own test, or a parent's assembly-level
++Storybook `play` already exercises the rendered result. Resolve the duplication concern by
++**scoping what that file asserts** — mock the hook/child component whose internals are proven
++elsewhere, and test only this component's own contract (given a state, does it render the
++right branch; given a DOM event, does it call the right handler) — not by leaving the
++component with no test of its own. Relying on a *different* component's story to prove *this*
++component's contract means the coverage isn't discoverable from the component's own folder,
++and can silently vanish if that unrelated file changes. See
++`overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx` for the
++resulting pattern (mocks `useSubscribeSection` and `ZimmSubscribeModal`, tests only its own
++render-branch/event-wiring contract). A component with no branching or decision logic at all
++(pure prop interpolation, e.g. `BottomBar`) still doesn't need its own suite — the exemption
++below for single-parent internal components still applies there.
++
+ | Layer | Tool | What it covers | File pattern | CI gate |
+ |---|---|---|---|---|
+ | Unit | Vitest | Pure logic, data mapping, transforms, hook behaviour in isolation | `*.test.ts` co-located with the source | Every PR (`qa.yml`) |
+@@ -55,6 +72,17 @@ Components use `index.test.ts` next to `index.tsx` in the component folder
+ - **`vi.mock()`** for module-level stubs. Mock the smallest possible surface: a single function, not a whole module, when feasible.
+ - **MSW** is allowed for cross-functional integration tests (multiple modules wired together). Production paths must never depend on MSW — see AGENTS.md > Rules > "No mocking."
+ - Do not mock the thing under test; do not assert on internal implementation calls when an output assertion would do.
++- **Known gap: `ZimmIcon` throws under Vitest.** It imports the base SFCC icons barrel
++  (`app/components/icons`), which has a top-level side effect (`AmexSymbol.viewBox = ...`)
++  that fails here because SVG imports resolve to raw path strings in this environment, not
++  components. Not fixable from a test file — the SVG transform lives in `vitest.config.ts`,
++  Tier 1 test config (AGENTS.md Hard Rule 8). Work around it by mocking `ZimmIcon` at the
++  smallest surface in any test that renders an icon-consuming component:
++  `vi.mock('app/components/ui-kits/atoms/zimmIcon', () => ({ ZimmIcon: () => null }))` — or,
++  if an assertion depends on an accessible name the real `ZimmIcon` would carry (e.g. a
++  fallback `<span aria-label>` with no wrapping interactive element), forward the relevant
++  props instead of returning `null`. See `footerNavColumn/index.test.tsx` and
++  `zimmSubscribeSection/index.test.tsx` for both variants.
+ 
+ ### Commerce SDK hooks
+ 
+diff --git a/.claude/skills/code-quality/SKILL.md b/.claude/skills/code-quality/SKILL.md
+index b0f03ec..4410bb5 100644
+--- a/.claude/skills/code-quality/SKILL.md
++++ b/.claude/skills/code-quality/SKILL.md
+@@ -92,13 +92,20 @@ errors. Cross-reference any new errors against the files in scope.
+ 
+ For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+ - A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+-- For logic-heavy components or hooks: a `*.test.ts` exists OR a `play` function exists in the story.
++- For logic-heavy components or hooks: the component's **own** `*.test.ts`/`*.test.tsx` exists
++  in the same folder. A `play` function elsewhere (this component's own story, or — this is
++  the common miss — a *different* component's assembly-level story) does not substitute for
++  it, even when it happens to exercise the same rendered output; see testing.md's note under
++  "What to test (and what to skip)". A component's own test file may still mock a hook or
++  child component whose internals are covered elsewhere — the point is that the component's
++  own render-branch/event-wiring contract has a test discoverable from its own folder.
+ - If a test file exists, verify:
+   - At least one test covers the primary render case.
+   - At least one test covers a user interaction (click, input) if the component has interactive elements.
+   - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+ - If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+-- If a logic-heavy file has neither a `.test.ts` nor a `play` function, flag as MISSING TEST.
++- If a logic-heavy file has no test file of its own, flag as MISSING TEST — regardless of
++  whether a `play` function exists somewhere else in the codebase.
+ 
+ For each utility file under `overrides/app/utils/`:
+ - **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+diff --git a/.claude/skills/new-component/SKILL.md b/.claude/skills/new-component/SKILL.md
+index f2ccca8..3903b0a 100644
+--- a/.claude/skills/new-component/SKILL.md
++++ b/.claude/skills/new-component/SKILL.md
+@@ -31,7 +31,7 @@ Key implications for scaffolding:
+    - `type <ComponentName>Props = { ... }` at the top of the file.
+    - JSDoc above the component if it will be consumed by ≥2 callers (shared/Tier 2).
+    - Chakra primitives for layout (`Box`, `Flex`, `Text`, etc.) using theme tokens — no hardcoded hex, pixel spacing, or raw font sizes.
+-   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation.
++   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation. Exception: Context-backed, app-wide static-content hooks (`useIntl`, `useUiCopy`) may be called directly — they read from a Provider mounted once at the app root and degrade gracefully with none present, so they don't create the reuse problem this rule exists to prevent. See components.md's exception note for the full reasoning.
+ 
+ 3. Create `overrides/app/components/<componentName>/index.stories.tsx` — but first decide
+    if a story is needed at all. Per [components.md](../../rules/components.md) →
+@@ -47,7 +47,7 @@ Key implications for scaffolding:
+      not every prop combination.
+    - Add a `play` function only if the component has interactive behaviour worth asserting.
+ 
+-4. Optional: if the component owns non-trivial logic, also create `index.test.ts` (Vitest) in the same folder. Skip otherwise.
++4. If the component owns non-trivial logic (branching, prop→JSX mapping decisions, event wiring), create `index.test.ts`/`index.test.tsx` (Vitest) in the same folder — even if that logic's effects are also covered by a hook's own test or a parent's assembly-level Storybook `play`. Resolve any duplication by mocking the hook/child whose internals are proven elsewhere and testing only this component's own contract, not by skipping the file. See testing.md's note under "What to test (and what to skip)". Skip only when the component has no branching/decision logic at all (pure prop interpolation).
+ 
+ 5. Optional: if the props type exceeds ~30 lines or will be consumed by sibling files, move it to `types.ts` in the same folder. Otherwise leave it inline.
+ 
+diff --git a/.cursor/rules/skills/code-quality.mdc b/.cursor/rules/skills/code-quality.mdc
+index 4c8e37e..d98deb1 100644
+--- a/.cursor/rules/skills/code-quality.mdc
++++ b/.cursor/rules/skills/code-quality.mdc
+@@ -94,13 +94,20 @@ errors. Cross-reference any new errors against the files in scope.
+ 
+ For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+ - A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+-- For logic-heavy components or hooks: a `*.test.ts` exists OR a `play` function exists in the story.
++- For logic-heavy components or hooks: the component's **own** `*.test.ts`/`*.test.tsx` exists
++  in the same folder. A `play` function elsewhere (this component's own story, or — this is
++  the common miss — a *different* component's assembly-level story) does not substitute for
++  it, even when it happens to exercise the same rendered output; see testing.md's note under
++  "What to test (and what to skip)". A component's own test file may still mock a hook or
++  child component whose internals are covered elsewhere — the point is that the component's
++  own render-branch/event-wiring contract has a test discoverable from its own folder.
+ - If a test file exists, verify:
+   - At least one test covers the primary render case.
+   - At least one test covers a user interaction (click, input) if the component has interactive elements.
+   - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+ - If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+-- If a logic-heavy file has neither a `.test.ts` nor a `play` function, flag as MISSING TEST.
++- If a logic-heavy file has no test file of its own, flag as MISSING TEST — regardless of
++  whether a `play` function exists somewhere else in the codebase.
+ 
+ For each utility file under `overrides/app/utils/`:
+ - **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+diff --git a/.cursor/rules/skills/new-component.mdc b/.cursor/rules/skills/new-component.mdc
+index 7afc03d..2c1562a 100644
+--- a/.cursor/rules/skills/new-component.mdc
++++ b/.cursor/rules/skills/new-component.mdc
+@@ -33,7 +33,7 @@ Key implications for scaffolding:
+    - `type <ComponentName>Props = { ... }` at the top of the file.
+    - JSDoc above the component if it will be consumed by ≥2 callers (shared/Tier 2).
+    - Chakra primitives for layout (`Box`, `Flex`, `Text`, etc.) using theme tokens — no hardcoded hex, pixel spacing, or raw font sizes.
+-   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation.
++   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation. Exception: Context-backed, app-wide static-content hooks (`useIntl`, `useUiCopy`) may be called directly — they read from a Provider mounted once at the app root and degrade gracefully with none present, so they don't create the reuse problem this rule exists to prevent. See components.md's exception note for the full reasoning.
+ 
+ 3. Create `overrides/app/components/<componentName>/index.stories.tsx` — but first decide
+    if a story is needed at all. Per [components.md](../../rules/components.md) →
+@@ -49,7 +49,7 @@ Key implications for scaffolding:
+      not every prop combination.
+    - Add a `play` function only if the component has interactive behaviour worth asserting.
+ 
+-4. Optional: if the component owns non-trivial logic, also create `index.test.ts` (Vitest) in the same folder. Skip otherwise.
++4. If the component owns non-trivial logic (branching, prop→JSX mapping decisions, event wiring), create `index.test.ts`/`index.test.tsx` (Vitest) in the same folder — even if that logic's effects are also covered by a hook's own test or a parent's assembly-level Storybook `play`. Resolve any duplication by mocking the hook/child whose internals are proven elsewhere and testing only this component's own contract, not by skipping the file. See testing.md's note under "What to test (and what to skip)". Skip only when the component has no branching/decision logic at all (pure prop interpolation).
+ 
+ 5. Optional: if the props type exceeds ~30 lines or will be consumed by sibling files, move it to `types.ts` in the same folder. Otherwise leave it inline.
+ 
+diff --git a/.cursor/rules/testing.mdc b/.cursor/rules/testing.mdc
+index f973782..ad2e2f5 100644
+--- a/.cursor/rules/testing.mdc
++++ b/.cursor/rules/testing.mdc
+@@ -9,6 +9,23 @@ alwaysApply: false
+ 
+ Three layers, three purposes. **Do not duplicate coverage across layers** — pick the cheapest layer that proves the behaviour.
+ 
++**This is not license to skip a component's own test file because its behaviour happens to be
++covered transitively elsewhere.** A component with real logic (branching, prop→JSX mapping
++decisions, event wiring) gets its own `index.test.ts`/`index.test.tsx`, even when the state it
++renders is owned by a hook that already has its own test, or a parent's assembly-level
++Storybook `play` already exercises the rendered result. Resolve the duplication concern by
++**scoping what that file asserts** — mock the hook/child component whose internals are proven
++elsewhere, and test only this component's own contract (given a state, does it render the
++right branch; given a DOM event, does it call the right handler) — not by leaving the
++component with no test of its own. Relying on a *different* component's story to prove *this*
++component's contract means the coverage isn't discoverable from the component's own folder,
++and can silently vanish if that unrelated file changes. See
++`overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx` for the
++resulting pattern (mocks `useSubscribeSection` and `ZimmSubscribeModal`, tests only its own
++render-branch/event-wiring contract). A component with no branching or decision logic at all
++(pure prop interpolation, e.g. `BottomBar`) still doesn't need its own suite — the exemption
++below for single-parent internal components still applies there.
++
+ | Layer | Tool | What it covers | File pattern | CI gate |
+ |---|---|---|---|---|
+ | Unit | Vitest | Pure logic, data mapping, transforms, hook behaviour in isolation | `*.test.ts` co-located with the source | Every PR (`qa.yml`) |
+@@ -62,6 +79,17 @@ Components use `index.test.ts` next to `index.tsx` in the component folder
+ - **`vi.mock()`** for module-level stubs. Mock the smallest possible surface: a single function, not a whole module, when feasible.
+ - **MSW** is allowed for cross-functional integration tests (multiple modules wired together). Production paths must never depend on MSW — see AGENTS.md > Rules > "No mocking."
+ - Do not mock the thing under test; do not assert on internal implementation calls when an output assertion would do.
++- **Known gap: `ZimmIcon` throws under Vitest.** It imports the base SFCC icons barrel
++  (`app/components/icons`), which has a top-level side effect (`AmexSymbol.viewBox = ...`)
++  that fails here because SVG imports resolve to raw path strings in this environment, not
++  components. Not fixable from a test file — the SVG transform lives in `vitest.config.ts`,
++  Tier 1 test config (AGENTS.md Hard Rule 8). Work around it by mocking `ZimmIcon` at the
++  smallest surface in any test that renders an icon-consuming component:
++  `vi.mock('app/components/ui-kits/atoms/zimmIcon', () => ({ ZimmIcon: () => null }))` — or,
++  if an assertion depends on an accessible name the real `ZimmIcon` would carry (e.g. a
++  fallback `<span aria-label>` with no wrapping interactive element), forward the relevant
++  props instead of returning `null`. See `footerNavColumn/index.test.tsx` and
++  `zimmSubscribeSection/index.test.tsx` for both variants.
+ 
+ ### Commerce SDK hooks
+ 
+diff --git a/.cursor/rules/tier2ProtectedFiles.mdc b/.cursor/rules/tier2ProtectedFiles.mdc
+index e382ef4..4a4aa19 100644
+--- a/.cursor/rules/tier2ProtectedFiles.mdc
++++ b/.cursor/rules/tier2ProtectedFiles.mdc
+@@ -23,9 +23,14 @@ overrides/app/components/list-menu/
+ overrides/app/components/seo/
+ overrides/app/components/_app/
+ overrides/app/components/_app-config/
++overrides/app/components/uiCopyProvider/
+ overrides/app/routes.tsx
+ ```
+ 
++`uiCopyProvider/` is mounted once inside `_app-config` and provides `useUiCopy()`'s context
++value to every page on every site — the same blast radius as `_app-config` itself, so it
++belongs in this tier alongside it rather than defaulting to Tier 4 by omission.
++
+ ## Shared Product Components (Owner: Squad B — notify Squad A)
+ 
+ ```text
+diff --git a/.github/copilot-instructions.md b/.github/copilot-instructions.md
+index a09e134..abe36ef 100644
+--- a/.github/copilot-instructions.md
++++ b/.github/copilot-instructions.md
+@@ -490,9 +490,14 @@ overrides/app/components/list-menu/
+ overrides/app/components/seo/
+ overrides/app/components/_app/
+ overrides/app/components/_app-config/
++overrides/app/components/uiCopyProvider/
+ overrides/app/routes.tsx
+ ```
+ 
++`uiCopyProvider/` is mounted once inside `_app-config` and provides `useUiCopy()`'s context
++value to every page on every site — the same blast radius as `_app-config` itself, so it
++belongs in this tier alongside it rather than defaulting to Tier 4 by omission.
++
+ ## Shared Product Components (Owner: Squad B — notify Squad A)
+ 
+ ```text
+diff --git a/.vscode/instructions/code-generation.md b/.vscode/instructions/code-generation.md
+index 0623d67..d36ea93 100644
+--- a/.vscode/instructions/code-generation.md
++++ b/.vscode/instructions/code-generation.md
+@@ -32,7 +32,7 @@ Key implications for scaffolding:
+    - `type <ComponentName>Props = { ... }` at the top of the file.
+    - JSDoc above the component if it will be consumed by ≥2 callers (shared/Tier 2).
+    - Chakra primitives for layout (`Box`, `Flex`, `Text`, etc.) using theme tokens — no hardcoded hex, pixel spacing, or raw font sizes.
+-   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation.
++   - No data-fetching hooks of any kind (commerce SDK hooks like `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or React Query) — accept data as props; the parent (a page or container component) owns data fetching. See components.md → Composition → Container/presentational separation. Exception: Context-backed, app-wide static-content hooks (`useIntl`, `useUiCopy`) may be called directly — they read from a Provider mounted once at the app root and degrade gracefully with none present, so they don't create the reuse problem this rule exists to prevent. See components.md's exception note for the full reasoning.
+ 
+ 3. Create `overrides/app/components/<componentName>/index.stories.tsx` — but first decide
+    if a story is needed at all. Per [components.md](../../rules/components.md) →
+@@ -48,7 +48,7 @@ Key implications for scaffolding:
+      not every prop combination.
+    - Add a `play` function only if the component has interactive behaviour worth asserting.
+ 
+-4. Optional: if the component owns non-trivial logic, also create `index.test.ts` (Vitest) in the same folder. Skip otherwise.
++4. If the component owns non-trivial logic (branching, prop→JSX mapping decisions, event wiring), create `index.test.ts`/`index.test.tsx` (Vitest) in the same folder — even if that logic's effects are also covered by a hook's own test or a parent's assembly-level Storybook `play`. Resolve any duplication by mocking the hook/child whose internals are proven elsewhere and testing only this component's own contract, not by skipping the file. See testing.md's note under "What to test (and what to skip)". Skip only when the component has no branching/decision logic at all (pure prop interpolation).
+ 
+ 5. Optional: if the props type exceeds ~30 lines or will be consumed by sibling files, move it to `types.ts` in the same folder. Otherwise leave it inline.
+ 
+@@ -162,13 +162,20 @@ errors. Cross-reference any new errors against the files in scope.
+ 
+ For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+ - A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+-- For logic-heavy components or hooks: a `*.test.ts` exists OR a `play` function exists in the story.
++- For logic-heavy components or hooks: the component's **own** `*.test.ts`/`*.test.tsx` exists
++  in the same folder. A `play` function elsewhere (this component's own story, or — this is
++  the common miss — a *different* component's assembly-level story) does not substitute for
++  it, even when it happens to exercise the same rendered output; see testing.md's note under
++  "What to test (and what to skip)". A component's own test file may still mock a hook or
++  child component whose internals are covered elsewhere — the point is that the component's
++  own render-branch/event-wiring contract has a test discoverable from its own folder.
+ - If a test file exists, verify:
+   - At least one test covers the primary render case.
+   - At least one test covers a user interaction (click, input) if the component has interactive elements.
+   - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+ - If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+-- If a logic-heavy file has neither a `.test.ts` nor a `play` function, flag as MISSING TEST.
++- If a logic-heavy file has no test file of its own, flag as MISSING TEST — regardless of
++  whether a `play` function exists somewhere else in the codebase.
+ 
+ For each utility file under `overrides/app/utils/`:
+ - **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+diff --git a/.vscode/instructions/pr-review.md b/.vscode/instructions/pr-review.md
+index f004f7c..565f7d7 100644
+--- a/.vscode/instructions/pr-review.md
++++ b/.vscode/instructions/pr-review.md
+@@ -161,13 +161,20 @@ errors. Cross-reference any new errors against the files in scope.
+ 
+ For each component file under `overrides/app/components/` or `overrides/app/pages/`:
+ - A paired `*.stories.tsx` exists in the same directory (required by [AGENTS.md](../../../AGENTS.md) > Testing).
+-- For logic-heavy components or hooks: a `*.test.ts` exists OR a `play` function exists in the story.
++- For logic-heavy components or hooks: the component's **own** `*.test.ts`/`*.test.tsx` exists
++  in the same folder. A `play` function elsewhere (this component's own story, or — this is
++  the common miss — a *different* component's assembly-level story) does not substitute for
++  it, even when it happens to exercise the same rendered output; see testing.md's note under
++  "What to test (and what to skip)". A component's own test file may still mock a hook or
++  child component whose internals are covered elsewhere — the point is that the component's
++  own render-branch/event-wiring contract has a test discoverable from its own folder.
+ - If a test file exists, verify:
+   - At least one test covers the primary render case.
+   - At least one test covers a user interaction (click, input) if the component has interactive elements.
+   - No tests use `toBeTruthy()` as the sole assertion — check for meaningful assertions.
+ - If a paired `.stories.tsx` is missing, flag as MISSING STORY (mandatory).
+-- If a logic-heavy file has neither a `.test.ts` nor a `play` function, flag as MISSING TEST.
++- If a logic-heavy file has no test file of its own, flag as MISSING TEST — regardless of
++  whether a `play` function exists somewhere else in the codebase.
+ 
+ For each utility file under `overrides/app/utils/`:
+ - **`.test.ts` required** when the utility has ≥1 conditional branch or performs ≥1
+diff --git a/CODEOWNERS b/CODEOWNERS
+index a1129c2..4e9ffb4 100644
+--- a/CODEOWNERS
++++ b/CODEOWNERS
+@@ -90,6 +90,7 @@ overrides/app/components/list-menu/                           @ZimmermannAU/pwa-
+ overrides/app/components/seo/                                 @ZimmermannAU/pwa-squad-a @ZimmermannAU/pwa-squad-b @ZimmermannAU/tier-2-approvers @ZimmermannAU/tier-1-approvers
+ overrides/app/components/_app/                                @ZimmermannAU/pwa-squad-a @ZimmermannAU/pwa-squad-b @ZimmermannAU/tier-2-approvers @ZimmermannAU/tier-1-approvers
+ overrides/app/components/_app-config/                         @ZimmermannAU/pwa-squad-a @ZimmermannAU/pwa-squad-b @ZimmermannAU/tier-2-approvers @ZimmermannAU/tier-1-approvers
++overrides/app/components/uiCopyProvider/                      @ZimmermannAU/pwa-squad-a @ZimmermannAU/pwa-squad-b @ZimmermannAU/tier-2-approvers @ZimmermannAU/tier-1-approvers
+ overrides/app/routes.tsx                                      @ZimmermannAU/pwa-squad-a @ZimmermannAU/pwa-squad-b @ZimmermannAU/tier-2-approvers @ZimmermannAU/tier-1-approvers
+ 
+ # ── TIER 2: Shared product components (Owner: Squad B — notify Squad A) ──

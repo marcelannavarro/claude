@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Verify token/CSS restructure and button fixes",
+  "description": "Deep-dive agent: confirm 121-property parity in tokens split, --zimm-focus-ring consolidation, and the button.js Figma-verified state fixes.",
+  "activeForm": "Verifying token/CSS restructure",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

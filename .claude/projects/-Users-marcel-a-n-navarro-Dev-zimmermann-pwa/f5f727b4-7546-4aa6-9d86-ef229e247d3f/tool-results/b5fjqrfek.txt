@@ -1,0 +1,404 @@
+  121652 summaries.txt
+  300206 uiknow.txt
+  421858 total
+---SUMMARIES---
+[2026-08-19T14:50:28]
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+## 1. Primary Request and Intent
+
+The user is Marcel Navarro, FED Lead on the Zimmermann PWA Kit project (luxury Australian fashion storefront on Salesforce Commerce Cloud). Across this session they made these explicit requests, in order:
+
+1. **Session start** — "hey claude, ready to work?"
+2. **Branch sync** — "make sure we have all branches from remote in github locally and make sure all active branches are up to date" (requested twice, at start and later)
+3. **PR recaps** — "tell me about the PRs — both open and closed&merged to develop — since PR #53 → recap to me in `ELI5 but i'm the FED Lead` approach"
+4. **Strategy analysis** — asked repeatedly (3×) to "take a step back" and explain concepts around components, tokens, and CSS structure in "ELI5 but I'm the FED Lead" register
+5. **Code review** — "is PR #56 good to approve? run the review"
+6. **FED Manual alignment** — update `/Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md` per PR #56
+7. **FED Lead playbook update** — update `/Users/marcel.a.n.navarro/Desktop/fedLead-playbook.md` with new lead notes
+8. **V&V** — "run an in-depth analysis and v&v on both the fed lead playbook and fed build manual from the latest in the develop branch"
+9. **PR #52/#55 rework analysis** — "execute an in-depth/exhaustive/recursive via loop engineering code review on PR #55"
+10. **Findings doc** — "create a .MD file with the list of findings for these 2 PRs in /Desktop"
+11. **Rework list** — "list down the improvements and revisions that need to be made for this PR"
+12. **Item-by-item execution** — clarification then execution of items 7, 8, 5, 6 (steps 1-5), 1
+13. **Items 9-13 explanation** — then focus on item 9, then the 3 absent-data patterns, then contact icons, then the locale button
+
+**Standing constraints stated by the user:**
+- "Do not call the AgentTool unless the user requested it"
+- "Do not use workflows or deep-research unless the user requested it"
+- Branch rules: never operate on `develop` or `main`
+
+## 2. Key Technical Concepts
+
+- **Salesforce PWA Kit v10** with `ccExtensibility` overrides pattern (`overrides/app/**` shadows `@salesforce/retail-react-app`)
+- **Chakra UI v2.7.0** — `defineStyleConfig`, multipart recipes (`parts` + `baseStyle`), `useStyleConfig`/`useMultiStyleConfig`, `__css`, `sx`, `textStyle` expansion, `useToken`
+- **Design token architecture (PR #56)** — one-way derivation: `foundation/*.ts` → `zimmTokens.ts` (derived) → `var(--zimm-*)` in recipes; 237→64 hand-typed literals
+- **`overrideStyling.md` 5-rung hierarchy** — `textStyle` → semantic tokens → theme recipe → `sx` → `.scss`; never raw hex/px/rem/em in component files
+- **The ccExtensibility resolver trap** — webpack-only; `.storybook/main.js` and `vitest.config.ts` don't load it
+- **The `shared/ui` barrel exception** — 208 base files import the barrel; barrel's internal `export {Button} from './Button'` is relative, so overriding `shared/ui/<Name>` intercepts nothing
+- **F2R atomic model** (Han Lee's branches) — Atom (`composes: []`) / Molecule (only atoms) / Organism (≥1 molecule) / Template / Page; Rule A: icons are attributes not components
+- **MRT preview environments (PR #54)** — 19-char slug limit, `pr-` prefix, SHA-256 digest, GET-before-POST idempotency, `ap-southeast-2`, shared concurrency group with `cancel-in-progress: false`
+- **Tier system** — Tier 1 (`foundation/`, `.claude/rules/`, `.github/workflows/`, `coderabbit.yaml`), Tier 2 (`theme/components/`, `components/header|footer`, `routes.tsx`)
+- **WCAG 2.2 AA** — SC 2.4.7 (focus visible), SC 2.5.8 (24px target), 1.1.1, 2.4.4, 3.2.4
+- **SOW quality bar** — ≤10 defects, no Sev3
+
+## 3. Files and Code Sections
+
+### `/Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md` (569 → 843 lines)
+Developer-facing manual. Major updates:
+- **Corrected an actively harmful trap**: §3 said `var(--zimm-*)` "does not resolve outside the app" and "Do not copy this pattern" — this was fixed by commit `e853484` (`ZimmTokensGlobal` in both `_app-config/index.tsx` and `.storybook/preview.tsx`)
+- Added: derivation model, 5-rung hierarchy, resolver trap 1b, SFCC bridge pattern, preview environments, unit rules, "Two component families" table, "What's actually overridden today" (only 7 dirs exist on develop)
+- Corrected: 36→27 `.zimm-*` classes, spacing px→rem, `--zimm-scale-NNN` are class-only
+
+### `/Users/marcel.a.n.navarro/Desktop/fedLead-playbook.md` (411 → 655 lines)
+Lead-facing playbook. Added: §1 quality bar (10 defects/no Sev3), Play 1 override-first rationale, Play 5 gate-zero + three-surface review + token checklist, Play 8 Figma-link correctness, Play 9 token escalation route, ownership alignment section (Tash/Kiera/Hannah), Week-2 items 10-13. Corrected: Button consumers 5→10, E2E areas (7 documented vs 2 implemented).
+
+### `/Users/marcel.a.n.navarro/Desktop/pr52-pr55-findings.md` (~709 lines)
+29 numbered findings (PR52-01…11, PR55-01…14, DEV-01…05) with revision log table.
+
+### `overrides/app/theme/components/zimmTextInput.ts` (8 → 173 lines) — CREATED as full recipe
+```ts
+const BORDER = {
+    default: 'var(--zimm-color-border-forms)',
+    hover:   'var(--zimm-color-border-focus)',
+    filled:  'var(--zimm-color-border-focus)',
+    focus:   'var(--zimm-color-border-focus)',
+    error:   'var(--zimm-color-status-error)',
+} as const
+export const resolveBorderColour = ({inverse, disabled, hasError, focused, filled}) => {...}
+export const resolveHoverBorderColour = (props) => props.hasError ? resolveBorderColour(props) : palette(props.inverse).hover
+export const resolveLabelColour = ({inverse, disabled, focused, filled}) => {...}
+export const ZimmTextInput = {
+    parts: ['root','row','content','label','input','clearButton','helper','error'],
+    baseStyle: (props) => ({ root:{...}, row:{...}, content:{...}, label:{...}, input:{...}, clearButton:{...}, helper:{...}, error:{...} }),
+}
+```
+
+### `overrides/app/components/ui-kits/atoms/zimmTextInput/index.tsx` (191 → 115 lines)
+Now: 0 `useState`, 0 inline styles, 10 recipe refs, 0 `cssVars`.
+```tsx
+const styles = useMultiStyleConfig('ZimmTextInput', {
+    inverse, disabled, hasError, focused, filled: value.length > 0,
+});
+```
+
+### `overrides/app/hooks/useZimmTextInputState.ts` (118 → 63 lines)
+Slimmed to real state only; controlled/uncontrolled pattern preserved:
+```ts
+const isControlled = controlledValue !== undefined
+const [internalValue, setInternalValue] = useState(defaultValue ?? '')
+const value = isControlled ? controlledValue : internalValue
+```
+
+### `overrides/app/theme/components/footer.ts` (228 → 371 lines)
+33 parts. Added in item 7: `subscribeHeading`, `subscribeBody`, `subscribeModalPanel`, `SIZE_MODAL_SUB`, `SIZE_SUB_BODY_MAX`. Added in item 6 step 4: `subscribeSuccess`, `modalOverlay`, `modalTitle`, `modalField`, `modalFieldLast`, `modalConsent`, `modalConsentLink`, `modalDisclaimer`, `modalActions`, `columnHeading`, `linkList`, `linkListItem`, `contactRow`, `contactIconLink`, `copyright`, `legalLink`.
+
+**`localeButton` part (just inspected, relevant to pending work):**
+```ts
+localeButton: {
+  textStyle: 'footer',
+  color: 'text.inverse',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '2xs',
+  background: 'none',
+  border: 'none',
+  padding: 0,
+  cursor: 'pointer',                    // ← implies interactivity
+  whiteSpace: 'nowrap',
+  _focusVisible: {                      // ← implies focusability
+    outline: 'var(--zimm-border-width-default) solid',
+    outlineColor: 'text.inverse',
+    outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+  },
+},
+```
+
+### `overrides/app/components/footer/index.tsx` (555 → ~463 lines)
+- Item 7: deleted `_foundation`, `subscribeHeadingStyle`, `subscribeBodyStyle`, `MODAL_BG`; migrated `SubscribeModal` + `SubscribeSection` to `useMultiStyleConfig`
+- Item 6 step 4: migrated all 35 `cssVars` refs; deleted `labelStyle`, `bottomBarTextStyle`, `subscribeSuccessStyle`, `iconLinkStyle`, `MODAL_OVERLAY_BG`, `MODAL_TEXT_MUTED`, `MODAL_Z_INDEX`; 15 → 1 inline styles
+- **Most recent change — ContactIconRow inert branch:**
+```tsx
+) : (
+  // No destination yet: footerConfig defines no contact-channel fields (HPC-034)
+  // and footer contact placement is still unconfirmed by UX (homepage.md, HPC-018
+  // note). Kept NON-INTERACTIVE but PERCEIVABLE:
+  //   - <span>: no href, no tabIndex, so nothing promises an action the app cannot
+  //     perform (avoids the WCAG 2.4.4 / 3.2.4 false affordance).
+  //   - labelled, not aria-hidden: ZimmIcon emits role="img" + aria-label, so screen
+  //     reader users learn the channel exists instead of getting silence (avoids the
+  //     1.1.1 information loss the previous aria-hidden caused).
+  // Switch to the <a> branch above as soon as a real href is supplied.
+  <chakra.span key={icon} __css={styles.contactIconLink}>
+    <ZimmIcon type={icon} size="md" aria-label={label} />
+  </chakra.span>
+),
+```
+
+**The locale button (the pending item), currently at ~line 316:**
+```tsx
+<chakra.button
+  type="button"
+  aria-label="Change locale"
+  __css={styles.localeButton}
+  // PLACEHOLDER: wire to locale selector once available.
+  // Label and destination are hardcoded until sourced from active locale/site config.
+  onClick={undefined}
+>
+  <chakra.span __css={styles.localeText}>United States (USD) / ENG</chakra.span>
+  <ZimmIcon type="chevron-right" size="sm" aria-hidden={true} />
+</chakra.button>
+```
+
+### `overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx`
+Added `sx?: SystemStyleObject` pass-through. Contains pattern ③:
+```tsx
+const SAFE_HREF_RE = /^(https?:|tel:|mailto:|#|\/(?!\/))/i;
+if (href && isSafeHref(href)) return <chakra.a href={href}>…</chakra.a>;
+return <chakra.button type="button" onClick={onClick}>…</chakra.button>;  // ← silent fallback
+```
+
+### `overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx` — discriminated union already enforces correct a11y:
+```ts
+} & ({ 'aria-hidden': true; 'aria-label'?: never } | { 'aria-hidden'?: never; 'aria-label': string });
+// emits role={ariaLabel ? 'img' : undefined}
+```
+
+### `overrides/app/utils/cssVars.ts` — **DELETED** (245 lines, 0 importers at time of deletion). Backup at `scratchpad/cssVars.ts.DELETED-BACKUP`.
+
+### `overrides/app/hooks/useZimmTextInputState.test.ts` (19 → 10 tests) and `overrides/app/theme/components/zimmTextInput.test.ts` (NEW, 13 tests)
+
+## 4. Errors and Fixes
+
+1. **`--prune-tags` deleted local tag `v9.9-rc.0`** — unrecoverable (no dangling object, no reflog for tags). I reported it honestly, noted it was malformed per the repo's own convention. **Never used `--prune-tags` again.**
+
+2. **Claimed `shared/ui` override propagates to all base components** — WRONG. The barrel `shared/ui/index.jsx:29` does `export {Button} from './Button'` (relative), which ccExtensibility doesn't rewrite. 208 base files import the barrel, 0 import `shared/ui/Button`. Added an exception note to both Desktop docs. Tim's framing (raw components for Contentful) was correct.
+
+3. **Reported "0 lint problems" using a grep broken by ANSI colour codes** — actual was 5 problems. Switched to `--format json` + Python parsing.
+
+4. **Claimed `cssTextStyles` went 7→5 presets** — WRONG. My regex `^    [a-zA-Z]+: \{` couldn't match `body2`/`heading3` (digits). There are 7. Nearly reported a non-existent "live bug" as a result; caught it on verification.
+
+5. **Item 7 mischaracterized as a duplicate** — `footer.ts` claimed to "mirror `_foundation.breakpoints`" but `_foundation` has no `breakpoints` key. Real issue was a false comment + fragmentation from a half-finished migration (2 of 5 sub-components).
+
+6. **Item 8 mischaracterized as "orphan imports from the BrandLogo swap"** — they support a commented-out JSX block at `header/index.tsx:359-380`; AGENTS.md forbids removing commented-out code.
+
+7. **Claimed contact icons were clickable** — WRONG. `ContactIconRow` is rendered at line ~427 as `<ContactIconRow />` with NO props, so all hrefs are `undefined`.
+
+8. **Claimed the base locale selector should be restored** — WRONG twice over: (a) all 11 sites have exactly 1 locale so `showLocaleSelector = length > 1` would be false everywhere; (b) HPC-026/REG-020-027 need a **country/region** selector (cross-storefront, grouped regions, search, currency display, REG-022 basket-loss warning, REG-026/027 routing), not a within-site language dropdown.
+
+9. **zsh word-splitting** — `npx eslint $FILES` with a newline-containing variable produced ENAMETOOLONG. Fixed by using command substitution inline: `npx eslint $(... | tr '\n' ' ')`.
+
+10. **`_hover` TS error in recipe test** — `Property '_hover' does not exist on type 'SystemStyleObject'`. Fixed with `as Record<string, unknown>` cast + comment.
+
+**Key user feedback that changed my approach:**
+- After I proposed "render nothing" for the fixture: *"footer renders nothing? nothing to click? visibly empty footer? how will this be tested then... take into consideration that the build is static-first for now because a lot of dependencies are still pending but we're not allowing that to block UI build - re-assess this"* → I downgraded item 9 from 🔴 to 🟡 and abandoned the "render nothing" proposal.
+- User asked repeatedly to "take a step back" for concept explanations — my first two attempts were too taxonomy-heavy (invented A–E mechanism labels); the third, plainer prose version landed.
+
+## 5. Problem Solving
+
+**Completed:** All 8 rework items on PR #55 executed and verified green (`tsc` 0 errors, 164 tests pass, 0 prettier problems, 5 intentional warnings). `cssVars.ts` eliminated (245 lines, 53 refs across 8 files). Footer 555→463 lines, inline styles 15→1. `zimmTextInput` 6 inline styles + 29 cssVars → 0 and 0.
+
+**Diagnosed but not fixed:**
+- **`npm run lint` fails repo-wide** — 19 prettier errors in `contentful/experiences/definitions.ts` and `routes.tsx`, both **identical to develop** (pre-existing). **No lint job exists in any workflow** — confirmed by grepping `.github/workflows/*.yml`.
+- **Three absent-data patterns:** ① guard+inert (correct, ContactIconRow), ② fallback-to-empty-string (`subscribeHeading ?? ''`, `subscribeBody ?? ''`, `copyrightOwner ?? ''` — render empty elements with margins), ③ silent element swap (`ZimmNavItem` link→button — affects ~18 nav links + legal links)
+- **Patterns ②/③ are dormant** because the fixture supplies everything and `#` passes `SAFE_HREF_RE`
+- **Item 9** (`data = FOOTER_FIXTURE` at line 367) — base `_app/index.jsx:484` renders `<Footer />` with no props; downgraded to tracked temporary binding
+- **Locale button feasibility** — country display name NOT derivable: `CountryConfig` has no name field; `ZimmermannEU` serves 4 slugs; per REG-020-028 the displayed country is user-*selected* state the unbuilt selector owns
+
+## 6. All User Messages
+
+1. "hey claude, ready to work?"
+2. "let's start off with making sure we're up to date, we must have all branches from remote in github locally and make sure all active branches are up to date with the latest in remote"
+3. "tell me about the PRs - both open and closed&merged to develop - since PR #53 -> recap to me in `ELI5 but i'm the FED Lead` approach"
+4. "from the latest updates on the branches, the merge of PR #54 to develop, and the open PR #56 (ignoring PR #52 an #55 and their branches) - what do these say about the strategy on components, tokens, and css structure?"
+5. "let's take a step back, for me to have a proper grasp on this/these concept/s found from the updates on the branches, the merge of PR #54 to develop, and the open PRs, let's start with the "ELI5 but i'm the FED Lead approach" for findings in the context of strategy for the components, tokens, and css structure"
+6. "let's take a step back, for me to have a proper grasp on this/these concept/s found, let's start with the "ELI5 but i'm the FED Lead approach" for findings in the context of strategy for the components, tokens, and css structure" (repeated verbatim — signal my answer hadn't landed)
+7. "in all of these, PR #56 with feature/pdp-token-class-spike are superior and and the correct implementations - with this said, which PRs (and branches) are misaligned and are for re-work/re-development"
+8. "new updates committed and pushed to PR #56 - what are the changes? what does this change with regards to the components, tokens, and css structure findings? what does this further solidify in terms of the approach for the UI build?"
+9. "before anything, is PR #56 good to approve? run the review"
+10. "approved and merged - ensure all local active branches are up to date with github remote"
+11. "no need to cut the stale branches"
+12. "PR #54 and #56 - these PRs are what define our components, tokens, and css structure along with CI automation for 'It's a CI automation which: Automates spinning up a dedicated environment for any feature/fix branch whenever it see's a commit to the branch / Will not create multiple branches on multiple commits, it checks if it exists, if it does then it just does another build / When the feature/fix branch is merged and closed, the CI will tear down that environment' - the goal is for me to have a solid grasp on the concepts in these 2 PRs, tell me everything i need to know about these 2 PRs and the code they bring into the codebase in 'ELI5 but i'm the FED Lead' approach"
+13. "given these updates, especially from PR #56, let's make sure that the FED Manual for the UI Build is fully-aligned so that the developers are able to build to spec: the manual is at /Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md"
+14. "side task, given: /Users/marcel.a.n.navarro/Desktop/fedLead-playbook.md - make the updates given these new notes for the FED Lead: additional notes for marcel as the fed lead with regards to the UI build: [16 bullet points including: be as vigilant as possible; look at spun-up env and figma; check vars and css; override-first approach; MCP/wrong figma links → ask jas to rework; be vigilant with tokens; han is updating registry for shared folder + override-first in f2r workflow; jhoan had an issue with her PR where properties were missing but she pushed anyway; missing tokens/misaligned designs → work with kiera; write unit tests + scaffold storybooks; zimmermann is very particular with UI; SOW is no more that 10 defects and no sev3; must test and check everything, 1hour or more; evaluate output to figma; do as much as we can, flag what we need from design team; have an alignment session with tash/kiera/hannah]"
+15. "look into /Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md and see if there are any updates to be made to it in alignment with the latest changes from the fed lead playbook"
+16. "run an in-depth analysis and v&v on both the fed lead playbook and fed build manual from the latest in the develop branch to ensure full alignment"
+17. "back to the audit on PRs #52 and #55, check for new updates/commits and run a re-check on their statuses given /Users/marcel.a.n.navarro/Desktop/pr52-pr55-findings.md"
+18. "let's pivot back to PR #56 (and it's branch) - i'm particular on revisitng what it introduces to the codebase... what in particular does it change with how the FEDs approach the manual UI build"
+19. "still in line with PR #56 (and its related branches) - for the components that we are building, what is being established? i remember something along the lines of /components vs. /shared/components, as per Tim the purpose of that is: [Tim's quote about raw react components for Contentful]"
+20. "let's pivot to atoms and molecules - what is the practice when building them? on which folder are they to exist? is there anything for PR 56 and its branches, and also Han Lee's works that point it towards a direction?"
+21. "hey claude, make sure we have all branches from github remote in local and that all active branches are up to date"
+22. "with the knowledge we've gathered... let's execute an in-depth/exhaustive/recursive via loop engineering code review on PR #55, to see where it is in terms of being up to spec with how PR #56 establishes we build"
+23. "re-run a confirmatory verification and validation check on the PR with the additional lens of /Users/marcel.a.n.navarro/Desktop/fedLead-playbook.md and /Users/marcel.a.n.navarro/Desktop/fedBuild-manual.md"
+24. "list down the improvements and revisions that need to be made for this PR"
+25. "items 1-8 seem to be straightforward changes, but i need further clarification on items #2, #5, #6 (particularly what changes would be needed when these are deleted), #7, and #8 - particularly why these changes? what changes are to be done? let's tackle each one by one"
+26. "let's focus on fix #7, what is this? show me what's wrong and how it is to be fixed?"
+27. "yes, make the change"
+28. "let's pivot to fix #8, what is this? show me what's wrong and how it is to be fixed?"
+29. "go for option a, execute"
+30. "let's pivot to fix #5, what is this? show me what's wrong and how it is to be fixed?"
+31. "execute fix #5"
+32. "among the 8 items, are all 7 done with only item 1 remaining?"
+33. "let's pivot to fix #6, what is this? show me what's wrong and how it is to be fixed?"
+34. "execute steps 1-3"
+35. "execute step 4"
+36. "execute step 5"
+37. "execute item 1"
+38. "lint and prettier are all clear?"
+39. "let's pivot to fixes #9-13, what are these? for each, show me what's wrong and how it is to be fixed?"
+40. "let's focus on fix #9, what is this? show me what's wrong and how it is to be fixed?"
+41. "the contents of the links in the footer, are they available already or not? what's the motivation behind using '#' and what do the rules say about this matter?"
+42. "show me the current approach and why it's wrong and how it should be instead and what the difference is"
+43. "footer renders nothing? nothing to click? visibly empty footer? how will this be tested then, particularly the links? take into consideration that the build is static-first for now because a lot of dependencies are still pending but we're not allowing that to block UI build - re-assess this"
+44. "this sounds good, but for the rest of the code for this PR, is the same approach of 'rendering nothing', 'nothing to click', or 'nothing to see' applied? - you mentioned the pattern already existing"
+45. "for these 3 patterns, give specific and easy to grasp examples and list down where they are used in this PR and what the behavior is"
+46. "my concern for these 3 is testing - QAs will check this and look at both the design aspect so if we have missing or unrendered components then that's an issue, if we have supposed clickable elements and they're not clickable then that's an issue, and if we expect behavior and it's missing then that's an issue"
+47. "in detail, show me the features that have these 3 patterns, and how they would function/work given the current state and build"
+48. "for the contact icon row, would it be problematic to activate click, keyboard, and screen reader even if it's still waiting on its dependency?"
+49. "keep them non-interactive but perceivable - how is this?"
+50. "yes, make the change"
+51. "for the locale button, what's our resolve to this? given that it's the worst implemented"
+52. "let's have it in this PR, execute the fix"
+53. "what would option A result to?"
+54. "run a feasibility check on option B first"
+55. "it seems like a works best still, it just needs to be declared/documented - what's option a again?"
+
+## 7. Pending Tasks
+
+- **Restate and execute Option A for the locale button** (the immediate ask) — convert `<chakra.button type="button" aria-label="Change locale" onClick={undefined}>` to an inert `<chakra.span>`, keeping the hardcoded "United States (USD) / ENG" label, and **declare/document it** (in-code comment + AC line)
+- **Adjust `styles.localeButton`** — it contains `cursor: 'pointer'` and `_focusVisible`, both of which would be misleading on an inert span
+- Items 10–13 from the earlier list remain open (locale button = item 10; item 11 = 8 provisional literals for Kiera; item 12 = `_firstName`/`_lastName` eslint-disable; item 13 = preview-vs-Figma review)
+- Pattern ② fixes (3 empty-string fallbacks) and pattern ③ fix (`ZimmNavItem` link→button) — proposed, not executed
+- Nothing has been committed — all work sits uncommitted in the working tree
+
+## 8. Current Work
+
+Immediately before the summary request, I was working on the **locale button in `overrides/app/components/footer/index.tsx`** (item 10).
+
+The user asked: *"it seems like a works best still, it just needs to be declared/documented - what's option a again?"*
+
+I had just run a check on `styles.localeButton` in `overrides/app/theme/components/footer.ts` to see whether the recipe would still make an inert span *look* interactive. The result showed it contains:
+```ts
+cursor: 'pointer',
+_focusVisible: {
+  outline: 'var(--zimm-border-width-default) solid',
+  outlineColor: 'text.inverse',
+  outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+},
+```
+Both of which need removing or moving for the inert version.
+
+**Option A, as previously defined:** convert the button to an inert `<chakra.span>` (no `type="button"`, no `aria-label`, not focusable, not announced as a control), **keep** the hardcoded "United States (USD) / ENG" label, and document the limitation.
+
+**What Option A results in (established earlier):** correct on only **1 of 11 storefronts** (ZimmermannUS). AU shows "United States (USD)" instead of AUD; UK instead of GBP; EU-fr/it/es instead of EUR/FR/IT/ES; HK, ME, USIntl, EUIntl, EUen all wrong.
+
+**Why Option B was rejected:** feasibility check showed the country display name is not derivable — `CountryConfig` has `urlSlug`, `sfccSiteId`, `locale`, `currency`, `shippingCountry`, `checkoutOwner`, `globalEPricing`, `boutiqueRegion` but **no display-name field**; `ZimmermannEU` serves 4 slugs (`en-eu`, `fr-eu`, `it-eu`, `es-eu`); and per REG-020–028 the displayed country reflects user-*selected* shipping destination that the unbuilt selector owns.
+
+## 9. Optional Next Step
+
+Restate Option A concisely and execute it, per the user's request: *"it seems like a works best still, it just needs to be declared/documented - what's option a again?"*
+
+The change to `overrides/app/components/footer/index.tsx`:
+```tsx
+// Country/region selector (REG-020–REG-027) is a separate story: cross-storefront
+// switching, region grouping, currency display, search, and the REG-022 basket-loss
+// warning. The base LocaleSelector does not apply — every Zimmermann site has exactly
+// one locale, so `supportedLocaleIds.length > 1` would never render it.
+// Non-interactive until that story lands. NOTE: label is hardcoded and is correct only
+// on ZimmermannUS — must be covered by SFCC-55's AC.
+<chakra.span __css={styles.localeButton}>
+  <chakra.span __css={styles.localeText}>United States (USD) / ENG</chakra.span>
+  <ZimmIcon type="chevron-right" size="sm" aria-hidden={true} />
+</chakra.span>
+```
+plus removing `cursor: 'pointer'` and `_focusVisible` from the `localeButton` recipe part in `overrides/app/theme/components/footer.ts`, then verifying with `tsc`, `vitest` and `eslint`. I should confirm the recipe adjustment with the user since it wasn't part of the original Option A description.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/652997c6-662c-4608-bb47-e37b77ba106b.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
+
+=====
+
+[2026-08-20T09:33:12]
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+## 1. Primary Request and Intent
+
+The user is **Marcel Navarro, FED Lead** on the Zimmermann PWA Kit project (luxury Australian fashion storefront on Salesforce Commerce Cloud), working on **PR #55 / branch `feature/SFCC-55_global-footer-ui`**. Across this session the explicit requests were, in order:
+
+1. **Locale button** — understand Option A's implications, then "leave it as is" (accepting the WCAG 2.5.3 exposure), later "no - disregard it" when `aria-disabled` restoration was proposed
+2. **Fix #12** (dead placeholder plumbing) before #11 — execute Option 3 (`PendingSignup` type), then 12c (stale comment)
+3. **Local-token system feasibility** — Tim's idea for tracking designer-dependency tokens; then "run an in-depth audit and inventory check into the currently implemented provisional tokens"
+4. **Write the audit to `/Desktop/provisional-token-audit.md`**
+5. **Track 1 execution** — z-index defect, `BP.tablet` dedupe, unit comments, Tier 1 newline revert
+6. **Fix #13** (preview vs Figma), F6 (fontSize in stories), local CodeRabbit run
+7. **Local visual testing** — dev server + Storybook + Figma comparison at set viewports
+8. **"full-on testing session"** with 8 V&V items: established approach (PR #56/Tim/Han), FED manual + playbook alignment, tests where needed, no style mirrors/drift, no forced/inline styles, footer up to spec with Figma, pixel-perfect accuracy, local CodeRabbit
+9. **Fonts** — new agreement between Marcel, Han and Tim to self-host Futura Round; investigate PR #53 and Han's branch, run feasibility, show diffs with justification, implement
+
+**Standing constraints stated by the user (preserve verbatim):**
+- *"the licence must be taken/kept out of the codebase"*
+- *"remove anything that mentions jersey, and for #6 remove any mentions of the licence just state that the fonts are being self-hosted for development and testing"*
+- "Do not call the AgentTool unless the user requested it"
+- "Do not use workflows or deep-research unless the user requested it"
+- Branch rules: never operate on `develop` or `main`
+- Never run `npm start` (AGENTS.md — dev server is shared; ask the user)
+- Commits/pushes/PRs only on explicit request (AGENTS.md Hard Rule #15)
+- Four absolute Tier 1 files where the verified-session exception does NOT apply: `overrides/app/ssr.js`, `config/default.js`, `config/sites.js`, `worker/main.js`
+
+## 2. Key Technical Concepts
+
+- **Salesforce PWA Kit v10** with `ccExtensibility` overrides pattern; resolver is webpack-only (Storybook/Vitest don't load it)
+- **Chakra UI v2.7.0** — `useMultiStyleConfig`, `useStyleConfig`, `__css`, `sx`, `textStyle`, `defineStyleConfig`, `toCSSVar`
+- **The two-scale trap**: `width`/`height`/`boxSize`/`min|maxWidth|Height` resolve through **`theme.sizes`**; `margin`/`padding`/`gap`/`top`-`right`-`bottom`-`left` through **`theme.space`**. The Zimmermann scale is registered as `space` only (`theme/index.ts:56`), deliberately — so a bare key on a sizing prop reads Chakra's defaults (`sizes.xl` = 36rem = 576px)
+- **Compound-value trap**: Chakra resolves a token only as the *entire* value. `padding: 'xs 0'` is emitted verbatim → browser drops the declaration
+- **`extendTheme` deep-merges**: a recipe named `Footer` inherits SFCC's `Footer` rather than replacing it. Colliding part names inherit base properties; a new key you add is appended **last**, so a shorthand can reset a base longhand
+- **Token derivation chain**: `foundation/*.ts` → `zimmTokens.ts` → `var(--zimm-*)` → recipes → components
+- **`ZimmTokensGlobal` pattern** — raw Emotion `<Global>` (not Chakra `styles.global`, which mangles quoted font-family values), dual-mounted in `_app-config/index.tsx` and `.storybook/preview.tsx`
+- **Tier system**: Tier 1 (`foundation/`, `.claude/rules/`, `.storybook/`, `.github/workflows/`), Tier 2 (`theme/components/`, `components/footer|header`, `_app-config/`)
+- **Tier 1 verified-session exception** — `gh api user --jq .login` + team/admin check
+- **WCAG**: 2.5.3 Label in Name (Level A), 2.4.7 Focus Visible, 2.5.8 Target Size
+- **Playwright measurement methodology**: `waitUntil: 'domcontentloaded'` (networkidle never settles on a dev server); programmatic `.focus()` does NOT trigger `:focus-visible`; hydration race drops keystrokes if typing starts too early
+- **Figma MCP**: `get_metadata`, `get_screenshot`, `get_variable_defs`
+
+## 3. Files and Code Sections
+
+### `overrides/app/theme/components/footer.ts` (heavily modified)
+The footer's multipart recipe. Changes this session:
+
+**Renamed export (fixes the extendTheme merge):**
+```ts
+export const ZimmFooter = {
+  parts: [...33 parts...],
+  baseStyle: { ... }
+}
+```
+
+**`BP` block — imports the foundation breakpoint:**
+```ts
+import { breakpoints } from '../foundation/gridSystem';
+
+const BP = {
+  tablet: breakpoints.md,      // Figma: alias/breakpoint/tablet — 768px
+  tabletWide: '53.75em',       // 860px (no foundation equivalent)
+  desktop: '64em',             // 1024px (≠ Chakra lg=62em / xl=80em)
+} as const;
+```
+
+**`contactIconLink` — the 576px bug fix:**
+```ts
+// MUST be the CSS var, not the bare token key 'xl': Chakra resolves width/height
+// through theme.sizes, not theme.space, and Chakra's default sizes.xl is 36rem
+// (576px) — which blew each icon up to 576px and destroyed the whole footer layout.
+contactIconLink: {
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+  width: 'var(--zimm-scale-xl)',
+  height: 'var(--zimm-scale-xl)',
+  color: 'var(--zimm-color-text-inverse)',
+},
+```
+
+**`modalOverlay` z-index fix:**
+```ts
+// Chakra zIndices.overlay (1300). Must clear the sticky header, which sets

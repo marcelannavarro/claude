@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "Third confirmatory pass: residual code refs + internal consistency + ticket activity",
+  "description": "Validate the last un-opened code references (types/contentful.ts Hotspot/ContentfulAsset shape, hotspotMarker.tsx), confirm 02-contentful.md section-number citations (§2/§3-5/§7/§10.x), run an internal cross-reference/section consistency check on the TSD, and re-fetch SFCC-123 for any new comments or status change. Fix or pass.",
+  "activeForm": "Running third confirmatory pass",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

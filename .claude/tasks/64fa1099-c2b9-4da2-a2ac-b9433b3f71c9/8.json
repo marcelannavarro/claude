@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "Create repeatable Arche audit tool",
+  "description": "scripts/audit.mjs: runs typecheck + tests + build + e2e smoke (init/plan idempotency/doctor) and prints a status report. Run after every phase.",
+  "activeForm": "Creating audit tool",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

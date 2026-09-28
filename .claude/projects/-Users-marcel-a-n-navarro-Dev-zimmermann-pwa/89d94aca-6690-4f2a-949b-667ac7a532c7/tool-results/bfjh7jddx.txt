@@ -1,0 +1,1252 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/Users/marcel.a.n.navarro/Dev/zimmermann-pwa[39m
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22m[2mZimmDrawer[2m > [22m[2mtitle (regression check — pre-existing path)[2m > [22m[2mrenders the in-flow header box; the dialog is named from the title text
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22m[2mZimmDrawer[2m > [22m[2mlabelledBy, no boxedHeader (regression check — pre-existing path)[2m > [22m[2mclose button floats (not boxed); the dialog is named from the external labelledBy target, not any rendered header text
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22m[2mZimmDrawer[2m > [22m[2mlabelledBy + boxedHeader (new path)[2m > [22m[2mclose button renders boxed (in-flow header row, empty title span); the dialog is still named from the external labelledBy target
+[22m[39mCould not parse CSS stylesheet
+
+ [31m❯[39m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 244[2mms[22m[39m
+[31m   [31m×[31m ZimmDrawer[2m > [22mtitle (regression check — pre-existing path)[2m > [22mrenders the in-flow header box; the dialog is named from the title text[39m[32m 145[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "SIGN IN":
+  [36m<div[31m
+    [33maria-labelledby[31m=[32m":r0:"[31m
+    [33maria-modal[31m=[32m"true"[31m
+    [33mclass[31m=[32m"css-yutv7b"[31m
+    [33mid[31m=[32m"chakra-modal-:r1:"[31m
+    [33mrole[31m=[32m"dialog"[31m
+    [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[31m
+    [33maria-label[31m=[32m"BROKEN"[31m
+    [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mclass[31m=[32m"chakra-ui-light"[31m
+  [33mdata-scroll-locked[31m=[32m"1"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<span[31m
+      [33mhidden[31m=[32m""[31m
+      [33mid[31m=[32m"__chakra_env"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"chakra-modal__overlay css-7h4jgz"[31m
+      [33mstyle[31m=[32m"opacity: 0;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-lock-disabled[31m=[32m"false"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"css-xil7wc"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m":r0:"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"css-yutv7b"[31m
+          [33mid[31m=[32m"chakra-modal-:r1:"[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"css-2p64q8"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"css-1rv5twg"[31m
+              [33mid[31m=[32m":r0:"[31m
+            [36m>[31m
+              [0mSIGN IN[0m
+            [36m</span>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"css-13ewfk5"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33maria-label[31m=[32m"BROKEN"[31m
+                [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m/>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<p>[31m
+            [0mBody content[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m ZimmDrawer[2m > [22mlabelledBy, no boxedHeader (regression check — pre-existing path)[2m > [22mclose button floats (not boxed); the dialog is named from the external labelledBy target, not any rendered header text[39m[32m 51[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "External heading":
+  [36m<h2[31m
+    [33mid[31m=[32m"ext-label"[31m
+  [36m/>[31m
+
+  --------------------------------------------------dialog:
+
+  Name "External heading":
+  [36m<div[31m
+    [33maria-labelledby[31m=[32m"ext-label"[31m
+    [33maria-modal[31m=[32m"true"[31m
+    [33mclass[31m=[32m"css-x8v9a0"[31m
+    [33mid[31m=[32m"chakra-modal-:r5:"[31m
+    [33mrole[31m=[32m"dialog"[31m
+    [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[31m
+    [33maria-label[31m=[32m"BROKEN"[31m
+    [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mclass[31m=[32m"chakra-ui-light"[31m
+  [33mdata-scroll-locked[31m=[32m"1"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<h2[31m
+        [33mid[31m=[32m"ext-label"[31m
+      [36m>[31m
+        [0mExternal heading[0m
+      [36m</h2>[31m
+    [36m</div>[31m
+    [36m<span[31m
+      [33mhidden[31m=[32m""[31m
+      [33mid[31m=[32m"__chakra_env"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"chakra-modal__overlay css-7h4jgz"[31m
+      [33mstyle[31m=[32m"opacity: 0;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-lock-disabled[31m=[32m"false"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"css-xil7wc"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"ext-label"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"css-x8v9a0"[31m
+          [33mid[31m=[32m"chakra-modal-:r5:"[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"css-14bt9kw"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"BROKEN"[31m
+              [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m/>[31m
+          [36m</div>[31m
+          [36m<p>[31m
+            [0mBody content[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m ZimmDrawer[2m > [22mlabelledBy + boxedHeader (new path)[2m > [22mclose button renders boxed (in-flow header row, empty title span); the dialog is still named from the external labelledBy target[39m[32m 47[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Another external heading":
+  [36m<h2[31m
+    [33mid[31m=[32m"ext-label-2"[31m
+  [36m/>[31m
+
+  --------------------------------------------------dialog:
+
+  Name "Another external heading":
+  [36m<div[31m
+    [33maria-labelledby[31m=[32m"ext-label-2"[31m
+    [33maria-modal[31m=[32m"true"[31m
+    [33mclass[31m=[32m"css-123iju3"[31m
+    [33mid[31m=[32m"chakra-modal-:r9:"[31m
+    [33mrole[31m=[32m"dialog"[31m
+    [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[31m
+    [33maria-label[31m=[32m"BROKEN"[31m
+    [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<div[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+    [33mrole[31m=[32m"region"[31m
+    [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mclass[31m=[32m"chakra-ui-light"[31m
+  [33mdata-scroll-locked[31m=[32m"1"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<h2[31m
+        [33mid[31m=[32m"ext-label-2"[31m
+      [36m>[31m
+        [0mAnother external heading[0m
+      [36m</h2>[31m
+    [36m</div>[31m
+    [36m<span[31m
+      [33mhidden[31m=[32m""[31m
+      [33mid[31m=[32m"__chakra_env"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"chakra-modal__overlay css-7h4jgz"[31m
+      [33mstyle[31m=[32m"opacity: 0;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33mdata-focus-lock-disabled[31m=[32m"false"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"css-xil7wc"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"ext-label-2"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"css-123iju3"[31m
+          [33mid[31m=[32m"chakra-modal-:r9:"[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mstyle[31m=[32m"transform: translateX(100%) translateZ(0);"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"css-xglh7l"[31m
+          [36m>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"css-1rv5twg"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"css-13ewfk5"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33maria-label[31m=[32m"BROKEN"[31m
+                [33mclass[31m=[32m"chakra-button css-15kr7jv"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m/>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<p>[31m
+            [0mBody content[0m
+          [36m</p>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mdata-focus-guard[31m=[32m"true"[31m
+      [33mstyle[31m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[31m
+      [33mtabindex[31m=[32m"0"[31m
+    [36m/>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"chakra-portal"[31m
+  [36m>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-top-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-left"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[31m
+    [36m/>[31m
+    [36m<div[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mid[31m=[32m"chakra-toast-manager-bottom-right"[31m
+      [33mrole[31m=[32m"region"[31m
+      [33mstyle[31m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[31m
+    [36m/>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m seedDrawerCloseUiCopy.mjs stays in sync with CLOSE_LABEL_FALLBACK (Finding 4b)[2m > [22mthe seeded drawer.close value matches the component's own fallback constant[39m[32m 2[2mms[22m[39m
+[31m     → expected 'Close' to be 'BROKEN' // Object.is equality[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22mZimmDrawer[2m > [22mtitle (regression check — pre-existing path)[2m > [22mrenders the in-flow header box; the dialog is named from the title text
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "SIGN IN":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m":r0:"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"css-yutv7b"[39m
+    [33mid[39m=[32m"chakra-modal-:r1:"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[39m
+    [33maria-label[39m=[32m"BROKEN"[39m
+    [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"chakra-ui-light"[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<span[39m
+      [33mhidden[39m=[32m""[39m
+      [33mid[39m=[32m"__chakra_env"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"chakra-modal__overlay css-7h4jgz"[39m
+      [33mstyle[39m=[32m"opacity: 0;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"css-xil7wc"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m":r0:"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"css-yutv7b"[39m
+          [33mid[39m=[32m"chakra-modal-:r1:"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"css-2p64q8"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"css-1rv5twg"[39m
+              [33mid[39m=[32m":r0:"[39m
+            [36m>[39m
+              [0mSIGN IN[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"css-13ewfk5"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"BROKEN"[39m
+                [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<p>[39m
+            [0mBody content[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx:[2m55:34[22m[39m
+    [90m 53| [39m      [34mexpect[39m(dialog)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 54| [39m
+    [90m 55| [39m      const closeButton = screen.getByRole('button', { name: 'Close' }…
+    [90m   | [39m                                 [31m^[39m
+    [90m 56| [39m      [34mexpect[39m(closeButton)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 57| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22mZimmDrawer[2m > [22mlabelledBy, no boxedHeader (regression check — pre-existing path)[2m > [22mclose button floats (not boxed); the dialog is named from the external labelledBy target, not any rendered header text
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "External heading":
+  [36m<h2[39m
+    [33mid[39m=[32m"ext-label"[39m
+  [36m/>[39m
+
+  --------------------------------------------------dialog:
+
+  Name "External heading":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"ext-label"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"css-x8v9a0"[39m
+    [33mid[39m=[32m"chakra-modal-:r5:"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[39m
+    [33maria-label[39m=[32m"BROKEN"[39m
+    [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"chakra-ui-light"[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<h2[39m
+        [33mid[39m=[32m"ext-label"[39m
+      [36m>[39m
+        [0mExternal heading[0m
+      [36m</h2>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mhidden[39m=[32m""[39m
+      [33mid[39m=[32m"__chakra_env"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"chakra-modal__overlay css-7h4jgz"[39m
+      [33mstyle[39m=[32m"opacity: 0;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"css-xil7wc"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"ext-label"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"css-x8v9a0"[39m
+          [33mid[39m=[32m"chakra-modal-:r5:"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"css-14bt9kw"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"BROKEN"[39m
+              [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<p>[39m
+            [0mBody content[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx:[2m87:34[22m[39m
+    [90m 85| [39m      [34mexpect[39m(dialog)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 86| [39m
+    [90m 87| [39m      const closeButton = screen.getByRole('button', { name: 'Close' }…
+    [90m   | [39m                                 [31m^[39m
+    [90m 88| [39m      [34mexpect[39m(closeButton)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m 89| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22mZimmDrawer[2m > [22mlabelledBy + boxedHeader (new path)[2m > [22mclose button renders boxed (in-flow header row, empty title span); the dialog is still named from the external labelledBy target
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "Close"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Another external heading":
+  [36m<h2[39m
+    [33mid[39m=[32m"ext-label-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------dialog:
+
+  Name "Another external heading":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"ext-label-2"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"css-123iju3"[39m
+    [33mid[39m=[32m"chakra-modal-:r9:"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "BROKEN":
+  [36m<button[39m
+    [33maria-label[39m=[32m"BROKEN"[39m
+    [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------region:
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+    [33mrole[39m=[32m"region"[39m
+    [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"chakra-ui-light"[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<h2[39m
+        [33mid[39m=[32m"ext-label-2"[39m
+      [36m>[39m
+        [0mAnother external heading[0m
+      [36m</h2>[39m
+    [36m</div>[39m
+    [36m<span[39m
+      [33mhidden[39m=[32m""[39m
+      [33mid[39m=[32m"__chakra_env"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"chakra-modal__overlay css-7h4jgz"[39m
+      [33mstyle[39m=[32m"opacity: 0;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mdata-focus-lock-disabled[39m=[32m"false"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"css-xil7wc"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"ext-label-2"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"css-123iju3"[39m
+          [33mid[39m=[32m"chakra-modal-:r9:"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mstyle[39m=[32m"transform: translateX(100%) translateZ(0);"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"css-xglh7l"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"css-1rv5twg"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"css-13ewfk5"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"BROKEN"[39m
+                [33mclass[39m=[32m"chakra-button css-15kr7jv"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<p>[39m
+            [0mBody content[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mdata-focus-guard[39m=[32m"true"[39m
+      [33mstyle[39m=[32m"width: 1px; height: 0px; padding: 0px; overflow: hidden; position: fixed; top: 1px; left: 1px;"[39m
+      [33mtabindex[39m=[32m"0"[39m
+    [36m/>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"chakra-portal"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-top-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-left"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column; margin: 0px auto;"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mid[39m=[32m"chakra-toast-manager-bottom-right"[39m
+      [33mrole[39m=[32m"region"[39m
+      [33mstyle[39m=[32m"position: fixed; z-index: var(--toast-z-index, 5500); pointer-events: none; display: flex; flex-direction: column;"[39m
+    [36m/>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx:[2m115:34[22m[39m
+    [90m113| [39m      [34mexpect[39m(dialog)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m114| [39m
+    [90m115| [39m      const closeButton = screen.getByRole('button', { name: 'Close' }…
+    [90m   | [39m                                 [31m^[39m
+    [90m116| [39m      [34mexpect[39m(closeButton)[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m117| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx[2m > [22mseedDrawerCloseUiCopy.mjs stays in sync with CLOSE_LABEL_FALLBACK (Finding 4b)[2m > [22mthe seeded drawer.close value matches the component's own fallback constant
+[31m[1mAssertionError[22m: expected 'Close' to be 'BROKEN' // Object.is equality[39m
+
+Expected: [32m"BROKEN"[39m
+Received: [31m"Close"[39m
+
+[36m [2m❯[22m overrides/app/components/ui-kits/atoms/zimmDrawer/index.test.tsx:[2m157:26[22m[39m
+    [90m155| [39m    const entry = ENTRIES.find((seedEntry) => seedEntry.key === 'drawe…
+    [90m156| [39m    [34mexpect[39m(entry)[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m157| [39m    [34mexpect[39m(entry[33m?.[39mvalue)[33m.[39m[34mtoBe[39m([33mCLOSE_LABEL_FALLBACK[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m158| [39m  })[33m;[39m
+    [90m159| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[90m (4)[39m
+[2m   Start at [22m 17:20:47
+[2m   Duration [22m 3.16s[2m (transform 317ms, setup 200ms, collect 1.82s, tests 244ms, environment 648ms, prepare 63ms)[22m
+

@@ -1,0 +1,497 @@
+diff --git a/overrides/app/pages/recentlyViewed/index.test.tsx b/overrides/app/pages/recentlyViewed/index.test.tsx
+index 81fa9c3..cb86ebf 100644
+--- a/overrides/app/pages/recentlyViewed/index.test.tsx
++++ b/overrides/app/pages/recentlyViewed/index.test.tsx
+@@ -1,17 +1,21 @@
+ /**
+- * SFCC-84 build plan step B2 — asserts only this container's own contract
+- * (`.claude/rules/testing.md`'s no-duplicate-coverage rule): given `useRecentlyViewedHistory`'s
+- * return value, does it render `ZimmRecentlyViewedGrid` (with the right computed `title`/
+- * `itemCountLabel`/`cards`) or this page's own empty state, correctly branched on
+- * `isRegistered`; and does the item-count label actually pluralize via real ICU `plural`
+- * resolution. `useRecentlyViewedHistory`, `useRecentlyViewedProductFetch`,
+- * `selectRecentlyViewedFullHistoryCard` and `ZimmRecentlyViewedGrid` are all mocked at the
+- * smallest surface — their own internals already have their own coverage elsewhere
+- * (`useRecentlyViewedHistory.test.ts`, `recentlyViewedProductFetch.test.ts`,
+- * `recentlyViewedFullHistoryCard.test.ts`, `zimmRecentlyViewedGrid/index.test.tsx`). Same
+- * smallest-surface-mocking convention `recommended-products/index.test.tsx` already establishes
+- * for an almost identical container shape (mocks the child organism it renders, the history hook,
+- * and the product-fetch utility).
++ * SFCC-84 build plan step E2 — asserts only this container's own contract
++ * (`.claude/rules/testing.md`'s no-duplicate-coverage rule): given `useEinstein()`'s own
++ * `isLoading`/`recommendations`, does it render `ZimmRecentlyViewedGrid` (with the right computed
++ * `title`/`itemCountLabel`/`cards`), this page's own empty state (correctly branched on
++ * `isRegistered`), or neither — and does the item-count label actually pluralize via real ICU
++ * `plural` resolution. `selectRecentlyViewedFullHistoryCard`, `resolveOrderableVariant`, and
++ * `ZimmRecentlyViewedGrid` are all mocked at the smallest surface — their own internals already
++ * have their own coverage elsewhere (`recentlyViewedFullHistoryCard.test.ts`,
++ * `zimmRecentlyViewedGrid/index.test.tsx`).
++ *
++ * **Rewritten for build plan step E2** — the interim mechanism's own view-history-hook and
++ * product-fetch-utility mocks are gone (both real modules deleted in build plan step E4; see
++ * index.tsx's own module docblock, which names them directly). Every test case below now drives
++ * its scenario entirely through `mockUseEinstein`, matching the exact pattern build plan step E1
++ * already established (`recommended-products/index.test.tsx`). Product fixtures keep the same
++ * `RecentlyViewedFullHistoryProduct` shape as before — a hydrated Einstein rec is a strict
++ * superset of it (see index.tsx's own module docblock) — only the mock supplying them changed.
+  *
+  * `useMultiSite` is mocked the same way `footer/index.test.tsx` already does for the same reason:
+  * the empty state's CTAs use the base SFCC `Link` (`@salesforce/retail-react-app/app/components/
+@@ -32,8 +36,8 @@ import { IntlProvider } from 'react-intl';
+ import { MemoryRouter } from 'react-router-dom';
+ import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site';
+ import { useCustomerType, useShopperBasketsMutationHelper } from '@salesforce/commerce-sdk-react';
+-import { useRecentlyViewedHistory } from '../../hooks/useRecentlyViewedHistory';
+-import { useRecentlyViewedProductFetch } from '../../utils/recentlyViewedProductFetch';
++import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
++import { EINSTEIN_RECOMMENDERS } from '@salesforce/retail-react-app/app/constants';
+ import {
+   selectRecentlyViewedFullHistoryCard,
+   resolveOrderableVariant,
+@@ -65,12 +69,8 @@ vi.mock('@salesforce/retail-react-app/app/hooks/use-toast', () => ({
+   useToast: () => vi.fn(),
+ }));
+ 
+-vi.mock('../../hooks/useRecentlyViewedHistory', () => ({
+-  useRecentlyViewedHistory: vi.fn(),
+-}));
+-
+-vi.mock('../../utils/recentlyViewedProductFetch', () => ({
+-  useRecentlyViewedProductFetch: vi.fn(),
++vi.mock('@salesforce/retail-react-app/app/hooks/use-einstein', () => ({
++  default: vi.fn(),
+ }));
+ 
+ vi.mock('../../utils/recentlyViewedFullHistoryCard', () => ({
+@@ -89,8 +89,7 @@ vi.mock('../../components/ui-kits/organisms/zimmRecentlyViewedGrid', () => ({
+ const mockUseMultiSite = vi.mocked(useMultiSite);
+ const mockUseCustomerType = vi.mocked(useCustomerType);
+ const mockUseShopperBasketsMutationHelper = vi.mocked(useShopperBasketsMutationHelper);
+-const mockUseRecentlyViewedHistory = vi.mocked(useRecentlyViewedHistory);
+-const mockUseRecentlyViewedProductFetch = vi.mocked(useRecentlyViewedProductFetch);
++const mockUseEinstein = vi.mocked(useEinstein);
+ const mockSelectRecentlyViewedFullHistoryCard = vi.mocked(selectRecentlyViewedFullHistoryCard);
+ const mockResolveOrderableVariant = vi.mocked(resolveOrderableVariant);
+ const mockZimmRecentlyViewedGrid = vi.mocked(ZimmRecentlyViewedGrid);
+@@ -103,6 +102,23 @@ const mockProducts: RecentlyViewedFullHistoryProduct[] = [
+   { id: 'rv-2', name: 'Product Two' } as RecentlyViewedFullHistoryProduct,
+ ];
+ 
++/**
++ * The exact `useEinstein()` return shape this container reads (`isLoading`,
++ * `recommendations.recs`, `getRecommendations`) — matching the pattern
++ * `recommended-products/index.test.tsx` (build plan step E1) already established for the same
++ * hook. No `as never` cast needed here (unlike the other mocks above): `useEinstein` is a base
++ * SFCC hook with no real TypeScript types of its own (covered by `vendor.d.ts`'s wildcard
++ * `any`-typed module declaration), so `mockReturnValue` imposes no shape constraint — confirmed
++ * against E1's own committed test file, which passes a plain object literal the same way.
++ */
++const mockEinsteinReturn = (
++  isLoading: boolean,
++  recs: RecentlyViewedFullHistoryProduct[],
++  getRecommendations: (...args: unknown[]) => unknown = vi.fn(),
++) => {
++  mockUseEinstein.mockReturnValue({ isLoading, recommendations: { recs }, getRecommendations });
++};
++
+ const renderPage = (
+   isRegistered: boolean,
+   addItemToNewOrExistingBasket: (...args: never[]) => Promise<unknown> = vi.fn().mockResolvedValue(undefined),
+@@ -124,14 +140,10 @@ afterEach(() => {
+   vi.clearAllMocks();
+ });
+ 
+-describe('RecentlyViewed — cards render when history exists', () => {
+-  test('renders ZimmRecentlyViewedGrid, not the empty state, when hasRecentlyViewed is true', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++describe('RecentlyViewed — cards render when Einstein has recs', () => {
++  test('renders ZimmRecentlyViewedGrid, not the empty state, when recs has items, and fires getRecommendations once on mount', () => {
++    const mockGetRecommendations = vi.fn();
++    mockEinsteinReturn(false, mockProducts, mockGetRecommendations);
+     // rv-2 deliberately maps to `null` (e.g. no usable image/name) — proves this container's own
+     // `.filter()` drops it instead of forwarding a null card or crashing.
+     mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) =>
+@@ -152,26 +164,23 @@ describe('RecentlyViewed — cards render when history exists', () => {
+     expect(screen.getByTestId('zimm-recently-viewed-grid-stub')).toBeInTheDocument();
+     expect(screen.queryByTestId('recently-viewed-empty')).not.toBeInTheDocument();
+ 
++    // Build plan step E2: this container fires getRecommendations once on mount, for this one
++    // recommender, with no seed products — matches recommended-products/index.tsx's own RV branch
++    // (build plan step E1; open question 3: Einstein derives from cookieId/userId, not seed
++    // products, for this recommender).
++    expect(mockGetRecommendations).toHaveBeenCalledWith(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED);
++
+     expect(mockZimmRecentlyViewedGrid).toHaveBeenCalledTimes(1);
+     const gridProps = mockZimmRecentlyViewedGrid.mock.calls[0][0];
+     expect(gridProps.title).toBe('Recently Viewed');
+     expect(gridProps.cards).toHaveLength(1);
+     expect(gridProps.cards[0]).toMatchObject({ id: 'rv-1', variation: 'plp' });
+-
+-    // The product-fetch utility is fed this shopper's real tracked ids, in the order the history
+-    // hook returned them.
+-    expect(mockUseRecentlyViewedProductFetch).toHaveBeenCalledWith(['rv-1', 'rv-2']);
+   });
+ });
+ 
+ describe('RecentlyViewed — page heading (2026-09-10 fix: this page had no Heading element at all)', () => {
+   test('renders a real h1 with the page title, in the populated branch', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++    mockEinsteinReturn(false, mockProducts);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(null);
+ 
+     renderPage(true);
+@@ -180,12 +189,7 @@ describe('RecentlyViewed — page heading (2026-09-10 fix: this page had no Head
+   });
+ 
+   test('renders a real h1 with the page title, in the empty branch', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(true);
+ 
+@@ -195,12 +199,7 @@ describe('RecentlyViewed — page heading (2026-09-10 fix: this page had no Head
+ 
+ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+   test('registered: shows the registered body copy and only the Continue Shopping CTA', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(true);
+ 
+@@ -214,12 +213,7 @@ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+   });
+ 
+   test('guest: shows the guest body copy and both Continue Shopping and Sign In CTAs', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: false,
+-      recentlyViewedIds: [],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: false });
++    mockEinsteinReturn(false, []);
+ 
+     renderPage(false);
+ 
+@@ -231,35 +225,27 @@ describe('RecentlyViewed — empty state, branched on isRegistered', () => {
+     expect(signInLink).toHaveAttribute('href', '/account');
+   });
+ 
+-  test('empty state gate is hasRecentlyViewed, not cards.length: renders the grid, not the empty state, while the product fetch is still in flight for a shopper with real tracked ids', () => {
+-    // The exact race this container's own docblock documents: recentlyViewedIds is non-empty
+-    // (hasRecentlyViewed true) but the fetch hasn't resolved yet, so products (and therefore
+-    // cards) is still []. Gating on cards.length === 0 would incorrectly show the empty-state
+-    // copy here; gating on hasRecentlyViewed must not.
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [], isLoading: true });
++  test('race-safe gate (build plan step E2, decision #3): does not render the empty state while isLoading is true, even with zero recs resolved so far', () => {
++    // This is the exact race the race-safe gate exists to prevent: a genuine returning shopper's
++    // getRecommendations request is still in flight (isLoading true) and recs has not resolved yet
++    // (still empty) — gating on `!isLoading && recs.length === 0` (rather than `recs.length === 0`
++    // alone) is what stops "you haven't viewed anything yet" from flashing during that window.
++    // Verified directly, not just asserted: temporarily removing the `!isLoading` half of that
++    // condition in index.tsx (leaving only `recs.length === 0`) makes this exact test fail — the
++    // empty-state testid renders — and restoring the real gate makes it pass again.
++    mockEinsteinReturn(true, []);
+ 
+     renderPage(true);
+ 
+     expect(screen.queryByTestId('recently-viewed-empty')).not.toBeInTheDocument();
+-    expect(screen.getByTestId('zimm-recently-viewed-grid-stub')).toBeInTheDocument();
+-    const gridProps = mockZimmRecentlyViewedGrid.mock.calls[0][0];
+-    expect(gridProps.cards).toHaveLength(0);
++    expect(screen.queryByTestId('zimm-recently-viewed-grid-stub')).not.toBeInTheDocument();
++    expect(mockSelectRecentlyViewedFullHistoryCard).not.toHaveBeenCalled();
+   });
+ });
+ 
+ describe('RecentlyViewed — item count pluralization (real ICU plural resolution)', () => {
+   test('renders "1 item" (singular) for a single card', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: [mockProducts[0]], isLoading: false });
++    mockEinsteinReturn(false, [mockProducts[0]]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue({
+       id: 'rv-1',
+       href: '/product/rv-1',
+@@ -276,12 +262,7 @@ describe('RecentlyViewed — item count pluralization (real ICU plural resolutio
+   });
+ 
+   test('renders "2 items" (plural) for two cards', () => {
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++    mockEinsteinReturn(false, mockProducts);
+     mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) => ({
+       id: product?.id ?? '',
+       href: `/product/${product?.id ?? ''}`,
+@@ -310,15 +291,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test("with no size selected, adds the product's own default id/price and never calls resolveOrderableVariant", () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: [{ ...mockProducts[0], price: 250 }],
+-      isLoading: false,
+-    });
++    mockEinsteinReturn(false, [{ ...mockProducts[0], price: 250 }]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(buildCard('rv-1', 'Product One'));
+ 
+     renderPage(true, addItemToNewOrExistingBasket);
+@@ -334,12 +307,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test('selecting a size chip then adding to bag resolves the real orderable variant for that card only', () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1', 'rv-2'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({ products: mockProducts, isLoading: false });
++    mockEinsteinReturn(false, mockProducts);
+     mockSelectRecentlyViewedFullHistoryCard.mockImplementation((product) =>
+       buildCard(product?.id ?? '', product?.name ?? ''),
+     );
+@@ -371,15 +339,7 @@ describe('RecentlyViewed — size-aware Add to Bag (2026-09-09, full parity with
+ 
+   test("a selection matching no real variant falls back to the product's own default id/price, same as no selection at all", () => {
+     const addItemToNewOrExistingBasket = vi.fn().mockResolvedValue(undefined);
+-    mockUseRecentlyViewedHistory.mockReturnValue({
+-      hasRecentlyViewed: true,
+-      recentlyViewedIds: ['rv-1'],
+-      markProductViewed: vi.fn(),
+-    });
+-    mockUseRecentlyViewedProductFetch.mockReturnValue({
+-      products: [{ ...mockProducts[0], price: 250 }],
+-      isLoading: false,
+-    });
++    mockEinsteinReturn(false, [{ ...mockProducts[0], price: 250 }]);
+     mockSelectRecentlyViewedFullHistoryCard.mockReturnValue(buildCard('rv-1', 'Product One'));
+     mockResolveOrderableVariant.mockReturnValue(null);
+ 
+diff --git a/overrides/app/pages/recentlyViewed/index.tsx b/overrides/app/pages/recentlyViewed/index.tsx
+index 71de1ee..4776f31 100644
+--- a/overrides/app/pages/recentlyViewed/index.tsx
++++ b/overrides/app/pages/recentlyViewed/index.tsx
+@@ -1,11 +1,12 @@
+-import React, { useState } from 'react';
++import React, { useEffect, useState } from 'react';
+ import { defineMessages, useIntl } from 'react-intl';
+ import { useCustomerType, useShopperBasketsMutationHelper } from '@salesforce/commerce-sdk-react';
+ import Seo from '@salesforce/retail-react-app/app/components/seo';
+ import { Box, Button, Center, Heading, Stack, Text } from '@salesforce/retail-react-app/app/components/shared/ui';
+ import Link from '@salesforce/retail-react-app/app/components/link';
++import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
+ import { useToast } from '@salesforce/retail-react-app/app/hooks/use-toast';
+-import { API_ERROR_MESSAGE } from '@salesforce/retail-react-app/app/constants';
++import { API_ERROR_MESSAGE, EINSTEIN_RECOMMENDERS } from '@salesforce/retail-react-app/app/constants';
+ // Zimmermann's own constant — NOT the base package above (see recommended-products/index.tsx's
+ // own comment on this exact gotcha: a named import off the base package's untyped module compiles
+ // but is undefined at runtime). APP_MAIN_BLEED_MX, not PAGE_CONTENT_BLEED_MX — this page has no
+@@ -15,13 +16,14 @@ import { API_ERROR_MESSAGE } from '@salesforce/retail-react-app/app/constants';
+ import { APP_MAIN_BLEED_MX } from 'app/constants';
+ import { ZimmRecentlyViewedGrid } from '../../components/ui-kits/organisms/zimmRecentlyViewedGrid';
+ import type { ZimmProductCardProps } from '../../components/ui-kits/organisms/zimmProductCard';
+-import { useRecentlyViewedHistory } from '../../hooks/useRecentlyViewedHistory';
+-import { useRecentlyViewedProductFetch } from '../../utils/recentlyViewedProductFetch';
+ import {
+   selectRecentlyViewedFullHistoryCard,
+   resolveOrderableVariant,
+ } from '../../utils/recentlyViewedFullHistoryCard';
+-import type { RecentlyViewedFullHistoryCard } from '../../utils/recentlyViewedFullHistoryCard';
++import type {
++  RecentlyViewedFullHistoryCard,
++  RecentlyViewedFullHistoryProduct,
++} from '../../utils/recentlyViewedFullHistoryCard';
+ 
+ // Message-id namespace follows this codebase's existing `<page>.<category>.<key>` convention
+ // (see home.*, product_list.*, product_detail.* in their own index.tsx files) -- `recently_viewed`
+@@ -158,14 +160,26 @@ const EmptyRecentlyViewed = ({ isRegistered }: EmptyRecentlyViewedProps) => {
+ };
+ 
+ /**
+- * SFCC-84 -- Recently Viewed Full History page container (build plan §B2). Thin container: reads
+- * this shopper's tracked view history off `useRecentlyViewedHistory` (the same interim,
+- * browser-tracked stand-in `RecommendedProducts`' own Recently-Viewed branch already uses -- see
+- * that hook's own docblock for why Einstein is not the data source yet), fetches real product data
+- * for those ids via `useRecentlyViewedProductFetch` (capped at 24 internally already -- nothing
+- * further to cap here), maps each result through `selectRecentlyViewedFullHistoryCard` (filtering
+- * the hard `null` gate every mapper in this codebase uses), and renders `ZimmRecentlyViewedGrid` --
+- * or, with no tracked history, this page's own empty state (`EmptyRecentlyViewed` above).
++ * SFCC-84 -- Recently Viewed Full History page container (build plan §B2, rewired to real Einstein
++ * data by build plan step E2). Thin container: calls `useEinstein()` directly, fires
++ * `getRecommendations(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED)` once on mount, reads
++ * `recommendations.recs` off that same hook once the request resolves, maps each rec through the
++ * unchanged `selectRecentlyViewedFullHistoryCard` (filtering the hard `null` gate every mapper in
++ * this codebase uses), and renders `ZimmRecentlyViewedGrid` -- or, with no recs, this page's own
++ * empty state (`EmptyRecentlyViewed` above). Matches `recommended-products/index.tsx`'s own
++ * Recently-Viewed branch exactly (build plan step E1, already committed) -- same
++ * `useEinstein()`/`getRecommendations`/`recommendations.recs` chain, same unmodified mapper family,
++ * just this page's own container instead of that shared rail.
++ *
++ * **Replaces the interim, browser-tracked view-history hook and its companion product-fetch
++ * utility this page previously shipped with** (both deleted in build plan step E4; see
++ * `recommended-products/index.tsx`'s own module docblock, which names them directly, for the full
++ * "why" of that interim build and why it is superseded now). `recommendations.recs` is a strict
++ * superset of the plain `ShopperProductsTypes.Product` shape the interim build fed this same
++ * mapper (Einstein's own `fetchRecProductDetails`, `use-einstein.js:465-520`, already merges each
++ * rec with its full hydrated `getProducts` record before this component ever sees it), so
++ * `selectRecentlyViewedFullHistoryCard` needed no change at all -- confirmed directly against that
++ * function's body, not assumed.
+  *
+  * **Known, already-flagged gap, not introduced here:** `selectRecentlyViewedFullHistoryCard`'s
+  * `badge` field is always `undefined` -- the plain `getProducts` endpoint this build reads from has
+@@ -173,31 +187,35 @@ const EmptyRecentlyViewed = ({ isRegistered }: EmptyRecentlyViewedProps) => {
+  * rendered by this page will never show a badge yet; this is a pre-existing, out-of-scope gap for
+  * this step, not a bug in this file.
+  *
+- * **Empty-state gate: `hasRecentlyViewed` (`recentlyViewedIds.length > 0`), not
+- * `cards.length === 0`.** The two are equivalent for a shopper who has never viewed anything, but
+- * diverge while `useRecentlyViewedProductFetch`'s own request is still in flight for a shopper who
+- * *does* have tracked ids: `cards` is `[]` until that fetch resolves (see that hook's own
+- * `isLoading` field, unused here for the same reason `RecommendedProducts`' own Recently-Viewed
+- * branch doesn't reference it either -- no loading skeleton exists for this fetch anywhere in this
+- * build yet). Gating on `cards.length === 0` would flash this page's own empty-state copy for a
+- * real returning shopper before the grid ever gets a chance to render. Gating on
+- * `hasRecentlyViewed` instead avoids that race entirely -- a shopper with real tracked ids never
+- * sees "you haven't viewed anything," even momentarily. The one residual case the two signals can
+- * still disagree on -- every tracked id failing to hydrate into a usable card (e.g. every product
+- * deleted/offline since it was viewed) -- is a real, accepted edge case, not solved here:
+- * `ZimmRecentlyViewedGrid` itself renders `null` for an empty `cards` array by its own documented
+- * contract, so that narrow case renders blank content rather than either this page's populated
+- * grid or its own empty-state copy. Reusing the history hook's own `hasRecentlyViewed` (rather
+- * than re-deriving `recentlyViewedIds.length === 0` locally) also keeps this page's gate
+- * automatically in sync with that hook's own definition of "has history" -- the same value
+- * `RecommendedProducts`' own AC-8 gate already uses for the rail.
++ * **Empty-state gate, race-safe (build plan step E2, decision #3):** `recs.length > 0` renders the
++ * grid; `!isLoading && recs.length === 0` renders `EmptyRecentlyViewed`; anything else (i.e.
++ * `isLoading` still `true`, request in flight, no recs yet) renders neither -- the same principle
++ * `recommended-products/index.tsx`'s own `!recommendations?.recs?.length` gate already applies
++ * (build plan step E1), just split into two named branches here because this page, unlike that
++ * rail, has a real, visible empty-state component that must not flash for a shopper who does have
++ * history. Gating on `cards.length === 0` (the post-mapping, filtered count) instead of
++ * `recs.length` (the raw Einstein count) would risk exactly that flash while
++ * `selectRecentlyViewedFullHistoryCard` is still filtering what could still turn out to be a
++ * fully-populated `recs` array -- gating on `recs.length` directly, ahead of that mapping step,
++ * avoids it. The one residual case this still can't distinguish from a genuine empty history --
++ * every returned rec failing to map (e.g. every product now offline/deleted) -- is the same
++ * accepted edge case the pre-revision hook-based gate already carried: `ZimmRecentlyViewedGrid`
++ * renders `null` for an empty `cards` array by its own documented contract, so that narrow case
++ * renders blank content rather than either this page's populated grid or its own empty-state copy.
++ * Not solved here, not new here.
+  *
+- * **SSR note, inherited from the hook, not new here:** `useRecentlyViewedHistory` starts every
+- * render (including the server-rendered one) at `{hasRecentlyViewed: false, recentlyViewedIds: []}`
+- * and only resolves real browser storage inside a `useEffect` -- so the very first paint of this
+- * page, even for a real returning shopper's browser, renders this page's own empty state until
+- * hydration completes. This is an existing, accepted property of that hook (already true for the
+- * rail this page complements), not something this container introduces or attempts to fix.
++ * **First-paint window, inherited from `useEinstein()` itself, not new here:** `isLoading` and
++ * `recommendations` both start at `false`/`[]` (`use-einstein.js:462-463`) on every render,
++ * including the server-rendered one and this component's very first client render, before the
++ * mount effect below has had any chance to run -- so, same as the pre-revision hook-based design
++ * this replaces (that hook's own `useState` initial values were equally empty on first render),
++ * there is a real window on first paint where this gate reads "not loading, zero recs" and renders
++ * `EmptyRecentlyViewed`, until the effect fires and flips `isLoading` to `true`. Unlike the
++ * pre-revision design, that fix-up was a synchronous `Storage` read (imperceptible); this one is a
++ * real network round-trip (`getRecommendations` -> Einstein -> `getProducts` hydration), so the
++ * window is not instant -- named here rather than left as a silent, undocumented regression. This
++ * is a property of `useEinstein()`'s own initial state, not something this container introduces or
++ * can resolve without changing that base SFCC hook (out of scope for this step).
+  *
+  * **SEO -- `noindex, nofollow`, via `Seo`'s `children`, not its `noIndex` prop.** Base `Seo`
+  * (`node_modules/@salesforce/retail-react-app/app/components/seo/index.jsx:20`) emits
+@@ -214,11 +232,22 @@ const EmptyRecentlyViewed = ({ isRegistered }: EmptyRecentlyViewedProps) => {
+ const RecentlyViewed = () => {
+   const intl = useIntl();
+   const { isRegistered } = useCustomerType();
+-  const { hasRecentlyViewed, recentlyViewedIds } = useRecentlyViewedHistory();
+-  const { products } = useRecentlyViewedProductFetch(recentlyViewedIds);
++  const { isLoading, recommendations, getRecommendations } = useEinstein();
+   const toast = useToast();
+   const { addItemToNewOrExistingBasket } = useShopperBasketsMutationHelper();
+ 
++  // Fires once on mount -- matches recommended-products/index.tsx's own Recently-Viewed branch
++  // (build plan step E1), which fires the identical call for the identical recommender, just from
++  // an effect with a wider dependency array (that component also handles other recommenders/zones
++  // sharing one effect). This page only ever renders this one recommender, so an empty dependency
++  // array is the direct equivalent -- `react-hooks/exhaustive-deps` is off repo-wide
++  // (@salesforce/pwa-kit-dev/configs/eslint/partials/react.js:26), and this exact
++  // fire-once-on-mount-with-no-deps pattern already has a precedent needing no lint suppression:
++  // home/index.tsx's own `useEffect(() => { einstein.sendViewPage(pathname); }, []);`.
++  useEffect(() => {
++    getRecommendations(EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED);
++  }, []);
++
+   // Same split product-list/productListCardMapper.ts's and recommended-products/index.tsx's own
+   // consumers already use: formatPrice is injected into the mapper rather than formatted inside
+   // it, keeping that mapper free of any react-intl dependency of its own.
+@@ -242,7 +271,13 @@ const RecentlyViewed = () => {
+       .catch(() => toast({ title: intl.formatMessage(API_ERROR_MESSAGE), status: 'error' }));
+   };
+ 
+-  const cards: ZimmProductCardProps[] = products
++  // Normalized to a real array so every `recs.length`/`recs.map` reference below is safe without
++  // repeating the optional chain at each call site -- `useEinstein()`'s own `recommendations`
++  // state starts as a plain `[]` (use-einstein.js:463), which has no `.recs` property at all, so
++  // `recommendations?.recs` reads `undefined` until the request above resolves.
++  const recs: RecentlyViewedFullHistoryProduct[] = recommendations?.recs ?? [];
++
++  const cards: ZimmProductCardProps[] = recs
+     .map((product): RecentlyViewedFullHistoryCard | null => {
+       const card = selectRecentlyViewedFullHistoryCard(product, formatPrice);
+       if (!card) return null;
+@@ -284,7 +319,7 @@ const RecentlyViewed = () => {
+       <Heading as="h1" srOnly>
+         {title}
+       </Heading>
+-      {hasRecentlyViewed ? (
++      {recs.length > 0 ? (
+         // Bleeds the grid edge-to-edge past #app-main's own sitewide padding, matching the
+         // Recently Viewed Rail's own flush treatment (product-detail/product-list's
+         // <RecommendedProducts mx={PAGE_CONTENT_BLEED_MX}>) — confirmed against this page's own
+@@ -323,9 +358,9 @@ const RecentlyViewed = () => {
+             cards={cards}
+           />
+         </Box>
+-      ) : (
++      ) : !isLoading && recs.length === 0 ? (
+         <EmptyRecentlyViewed isRegistered={isRegistered} />
+-      )}
++      ) : null}
+     </Box>
+   );
+ };

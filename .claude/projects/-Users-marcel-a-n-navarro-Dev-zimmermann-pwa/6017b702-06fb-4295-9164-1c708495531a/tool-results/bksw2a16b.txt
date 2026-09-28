@@ -1,0 +1,251 @@
+514:#### Step 4.6 — `cartDrawerContainer.tsx`: the real assembly (inserted 2026-09-20, built after 5.1 — see note)
+515-
+516-**Numbering note.** Labeled 4.6 because it's the piece B4 was always missing, not because it builds before B5's step 5.1 — it doesn't. It builds **last** among every B4/B5 content piece, because it needs all of them finished first: `cartItemMapper` (3.4), `useCartMergeAndCap` (4.2), `useCartMessages` (4.3), `ZimmCartItemActions` (4.4), `ZimmCartEmptyState` (4.5), and `ZimmCartButtonGroup` (5.1). Commit order (below) reflects this; the step numbering doesn't need to.
+517-
+518-**Why this step exists.** Found during step 4.2's own scoping (2026-09-19/20): `ZimmCartDrawer` (built commit 6) takes `children` as a prop and says so in its own docblock — *"the caller supplies the list... wired in a later commit in this same plan"* — but no step anywhere ever claimed that later commit. Same root cause as step 3.5's own insertion: a component built and tested in isolation, with its real integration point described in prose but never turned into an actual manifest line. `useCartMergeAndCap`'s own second call site (the "render guard," per its own step 4.2 text) has the same problem — no file was ever named for it. Both gaps share one fix: this container is the file that was missing.
+519-
+520-**Changes.** New file `overrides/app/pages/cart/cartDrawerContainer.tsx` (+ `.test.tsx`) — already in B4's manifest (Tier 3, `@pwa-squad-a`), just never claimed by a step. `ProductItem` already has the `secondaryActions` prop slot built and wired (confirmed: `product-item/index.tsx:176,257,365`), so this step only fills it, it doesn't add it.
+521-
+522-**Correction, 2026-09-21, found while actually verifying this step's own pass criterion 5 against the real current code before dispatch — this step does NOT modify "nothing else."** `ZimmCartDrawer` (`overrides/app/components/ui-kits/organisms/zimmCartDrawer/index.tsx:80`, built commit 6) has its own hardcoded ternary: `{itemCount === 0 ? <chakra.p>{EMPTY_BAG_PLACEHOLDER_TEXT}</chakra.p> : children}` — it renders its own interim placeholder text and **ignores `children` entirely** whenever `itemCount === 0`. No matter what this container passes as `children` (a real item list, or `<ZimmCartEmptyState />`), the drawer will keep showing `EMPTY_BAG_PLACEHOLDER_TEXT` at zero items, because that branch never reaches `children` at all. Pass criterion 5 ("Empty basket renders `ZimmCartEmptyState`, not an empty `children` array") is structurally unsatisfiable without also fixing this. Same shape of gap as this very step's own reason for existing (a component built with a documented placeholder, whose removal was implicitly assumed to be "a later commit" that no step ever actually claimed) — `ZimmCartDrawer`'s own docblock already says as much ("no real empty-state body... separate, later commits in this same plan").
+523-
+524-**Fix, now part of this step's own manifest:** `overrides/app/components/ui-kits/organisms/zimmCartDrawer/{index.tsx,index.test.tsx}` — remove the `itemCount === 0 ? ... : children` ternary and the now-dead `EMPTY_BAG_PLACEHOLDER_TEXT` constant entirely; render `{children}` unconditionally. The empty-vs-populated decision moves entirely to this container, which is exactly the job it already exists to do. Same tier as every other file already in this step's scope (`ui-kits/organisms/`, Tier 3, `@pwa-squad-a @pwa-squad-b`) — not a multi-tier escalation. `ZimmCartDrawer`'s own existing test suite has an assertion keyed to the old hardcoded placeholder text at `itemCount === 0` that will need updating to assert whatever `children` was passed instead — a real, expected test update, not a regression.
+525-
+526-This container is the thing that:
+527-1. Owns `useCurrentBasket()` — the one thing `components.md` forbids under `overrides/app/components/`, which is exactly why this lives under `overrides/app/pages/cart/` instead (open question 8's own resolution, finally acted on).
+528-2. Maps each basket line through `cartItemMapper.ts` into `ProductItem` props, rendering the result as `ZimmCartDrawer`'s `children`.
+529-
+530-   **Clarified 2026-09-21, checked against the real current code before dispatch, not assumed:**
+531-   `cartItemMapper.ts`'s own docblock already discloses that its output (`{itemId, productId,
+532-   name, image, combinedAttributes, quantity, stepQuantity}`) is not what `ProductItem` actually
+533-   consumes today — `ProductItem` takes a single `product: SfccProduct` prop (`SfccProduct = any`),
+534-   which flows straight through `ItemVariantProvider` into `useItemVariant()`, and the leaves that
+535-   read it (`item-price.tsx` in particular: `const { price, priceAfterItemDiscount } = variant`,
+536-   plus `type.set`/`type.master`/`pricePerUnit`) need fields `cartItemMapper`'s output never
+537-   included at all — it was never designed to be a complete `product` prop by itself. Base SFCC's
+538-   own real precedent (`node_modules/.../product-item-list/index.jsx`, confirmed by reading it
+539-   directly) builds this object as `{...productItem, ...productsByItemId[productItem.itemId]}` —
+540-   the raw basket line item spread together with its matching full `Product` record (fetched via
+541-   `useProducts({parameters: {ids: <comma-joined itemIds>}})` — **do NOT copy base's own
+542-   `allImages: true`** on that call; over-fetching, and the exact parameter implicated in the
+543-   SFCC-29 outage; this build needs one thumbnail per line, not every image). This container
+544-   builds that same merged object per line and passes **that** as `ProductItem`'s `product` prop —
+545-   `cartItemMapper.selectCartItemProps(...)`'s own output is still genuinely used "verbatim," just
+546-   for what it's actually good for: supplying `productId`/`name` (as `productName`) to
+547-   `ZimmCartItemActions` below, not as a substitute for the full merged object `ProductItem`
+548-   itself needs. Do not invent a second, different image/attribute-selection algorithm for the
+549-   merged object either — reuse `cartItemMapper`'s own `selectCartItemImage`/
+550-   `selectCombinedAttributes` internals if `ProductItem`'s leaves need those exact values, rather
+551-   than re-deriving them a second way. Base's bundle/bonus-product/multi-location-inventory
+552-   handling in that same file is real complexity this epic's own manifest never asked for — do
+553-   not replicate it; a plain per-line merge is sufficient scope here.
+554-3. Calls `useCartMergeAndCap` as the render guard on every render — the second of its two call sites; the first (the post-auth callback) was already wired into `useWishlistAuthDrawer.ts` back in step 4.2 itself.
+555-4. Supplies each item's `secondaryActions` with a real `ZimmCartItemActions`, wired to the actual remove/wishlist-move mutations — not a placeholder.
+556-5. **Sequences the wishlist-move resume itself, so it never races the merge/cap correction (added 2026-09-20, Marcel's decision).** `useWishlistAuthDrawer.ts`'s own `onAuthSuccess` fires synchronously, before its merge call even starts — confirmed by reading the actual code during step 4.4's own build, not assumed — so a resume naively wired straight to that signal could act on a not-yet-merged, not-yet-capped basket. Deliberately **not** fixed by reordering `onAuthSuccess` itself: that signal has four other real consumers (`header/rightBar`, `drawer-menu`, `product-view`, `ZimmWishlistAuthDrawer` itself) with no cart-merge dependency of their own, who want it to fire immediately for their own UX — changing its timing risks a real, unrelated regression to reach a guarantee only this container needs. Instead, this container's own resume handling must wait for the merge-then-cap chain it's already coordinating (item 3 above) to actually settle before invoking `onMoveToWishlist` for a resumed pending item (from step 4.4's `usePendingWishlistItem`) — the wait belongs here, in the one place that needs it, not in the shared hook everyone else also depends on.
+557-
+558-   **Mechanism, checked 2026-09-21 against `useWishlistAuthDrawer.ts`'s real current code, not
+559-   invented — this hook exposes no "merge+cap settled" signal of its own, so this container needs
+560-   its own independent one.** `onAuthSuccess` (line 177) fires before `mergeBasket.mutate(...)`
+561-   (line 205) even starts, and the hook's return type has no other callback for this. What IS
+562-   available: `capBasketQuantities` itself already resolves only once its own write (if any) has
+563-   fully settled (its own JSDoc), and both the merge and the cap are React Query mutations, which
+564-   `useIsMutating()` (the **reactive** hook — not `queryClient.isMutating()`, which is for an
+565-   imperative point-in-time read, the opposite need here) tracks live across the whole app, since
+566-   no basket mutation in this codebase carries a `mutationKey` to scope it. A workable approach:
+567-   this container passes its own callback as `onAuthSuccess` (e.g. flipping a small piece of local
+568-   state), but does **not** treat the shopper as non-guest for `ZimmCartItemActions`' own `isGuest`
+569-   prop purposes until `useIsMutating()` genuinely returns to `0` after that signal fires — since
+570-   `onAuthSuccess` and the `mergeBasket.mutate(...)` call it precedes both run synchronously within
+571-   the same effect body, the mutation is guaranteed to already be registered in the shared cache by
+572-   the time this container's own re-render can observe it, so there is no window where the guard
+573-   checks too early and finds nothing yet in flight. This is a starting hypothesis for the
+574-   Implementer to build against and pressure-test — including the steady-state case where a
+575-   shopper is already registered on mount, with nothing to wait for at all — not a settled design;
+576-   verify it holds via pass criterion 4's own required controlled-timing proof rather than trusting
+577-   real mutation timing to always land the same way in a test.
+578-6. Calls `useCartMessages`'s three functions imperatively at the moments that actually need them (wishlist-move success, already-in-wishlist, max-quantity-reached) — **not** by passing anything into `ZimmCartDrawer`'s `messages` slot. **Corrected 2026-09-20, found by step 4.3's own Implementer:** that slot is `ZimmCartDrawer`'s own documented reservation for SFCC-404's future real message-aggregation system (see that component's own prop docblock, written back in step 1.2 — "Reserved slot for SFCC-404's message-aggregation system"), not for this interim toast. It couldn't be used for the toast anyway even setting that aside: a Chakra toast fired via `useToast()` is a fire-and-forget call into Chakra's own global toast portal, with no persistent "current" value a parent component could read back and render into a slot. Leave the `messages` slot passed as `undefined`/omitted by this container — the interim toast renders entirely independently of the drawer's own component tree.
+579-7. Renders `ZimmCartEmptyState` in place of `children` when the basket has zero items.
+580-8. Renders `ZimmCartButtonGroup` as `ZimmCartDrawer`'s `footer` slot.
+581-9. Does **not** own `isOpen`/`onClose` itself — those arrive as props from whatever mounts this container (the final step, §9, via its own `useCartDrawer()` provider). This container's job is basket *content*, not the drawer's open/closed lifecycle — confirmed against `ZimmCartDrawer`'s own existing, unchanged prop contract (`isOpen`/`onClose` already required, already built).
+582-
+583-**Also corrects §9's own text (see "B1 — revised file manifest" below):** that section currently says to mount `<ZimmCartDrawer />` directly in `_app`. Once this container exists, `_app` should mount `<CartDrawerContainer />` instead, which renders `<ZimmCartDrawer>` internally — otherwise the app repeats the exact gap already found in the base "AddToCartModal" precedent that section cites: `AddToCartModalProvider` is mounted in base `_app` today, but `<AddToCartModal />` itself is never rendered anywhere, base or override (confirmed by grepping the entire `retail-react-app` package) — so add-to-cart already shows no visual feedback in this app, and "mirroring" that pattern literally would just build the cart drawer the same non-functional way.
+584-
+585-**Pass criteria.**
+586-1. Renders one `ProductItem` per real basket line, using `cartItemMapper.ts`'s output verbatim — not a second, hand-rolled mapping.
+587-2. `useCartMergeAndCap`'s render guard actually runs on a basket-driven re-render, and is proven (not assumed) to no-op while `useIsMutating()` is non-zero — this proves the wiring, step 4.2's own criterion 2 already proved the function. **Clarified 2026-09-20 (flagged by step 4.2's own Implementer, not yet a bug since this step hasn't been built):** "runs on a re-render" does not mean calling `capBasketQuantities` bare in the component's render body — that fires a side-effecting async function (it can issue a real mutation) during render, which React does not guarantee runs once, in order, or at all, and is a real correctness/purity violation, not just a style nit. Call it from `useEffect(() => { capBasketQuantities(basket); }, [basket])`, keyed on the basket state that actually changed — "runs on a basket-driven re-render" describes *when* the guard should trigger (whenever the basket's own relevant state changes), not *where in the render cycle* to place the call.
+588-3. Each rendered item's `secondaryActions` is a real, wired `ZimmCartItemActions` — not a placeholder or omitted prop.
+589-4. **A resumed wishlist-move genuinely waits for merge-then-cap to settle before firing (added 2026-09-20, see "Changes" item 5 above).** Prove this with a controlled-timing test — e.g. hold the merge/cap promise chain open with a manually-resolved promise, confirm `onMoveToWishlist` has not yet been called while it's pending, then resolve it and confirm the call happens after. An ordering that merely looks right when everything in a test resolves instantly (the same trap step 4.2's own callback-order criterion already named) does not satisfy this.
+590-5. Empty basket renders `ZimmCartEmptyState`, not an empty `children` array. Requires the `ZimmCartDrawer` fix described in "Changes" above (removing its own hardcoded placeholder ternary) — assert directly that `ZimmCartDrawer` renders whatever `children` it's given regardless of `itemCount`, and that this container is what actually decides between the real item list and `ZimmCartEmptyState`.
+591-6. `footer` slot renders `ZimmCartButtonGroup`. **Corrected 2026-09-20** — see the "Changes" section's own correction above: the `messages` slot is deliberately left empty/`undefined` by this container; `useCartMessages`'s three functions are called imperatively at the relevant moments instead, independent of any JSX slot. Assert the slot is genuinely omitted, not that it "renders nothing" as if something were attempted and produced an empty result.
+592-7. This container receives `isOpen`/`onClose` as props and does not read or own drawer-open state itself.
+593-8. `grep -rn "<ZimmCartDrawer" overrides/app` returns exactly one production call site: this container (plus its own stories/tests).
+594-
+595-**Loop.** Full — this is a first-time, multi-piece wiring step exactly like 3.5's insertion was, and a mistake here is exactly as invisible to any single piece's own per-file review as that one was.
+596-
+597----
+598-
+599-## 5. Loop configuration
+600-
+601-**Read `## 5.0 Verification standard` (added 2026-09-19, right after this table) before running
+602-any of the remaining rows (3.6 onward).** It's a cross-cutting addition earned the hard way during
+603-the post-commit-11 ad hoc pass — six real, shipped defects slipped past this table's own
+604-per-step checks the first time through, all for the same handful of reasons. The per-step checks
+605-below are unchanged and still the specific thing being tested; §5.0 is what makes sure they're
+606-actually being *proven*, not just read off the source and assumed.
+607-
+608-| Step | Tester checks | Scorer PASS gate |
+609-|---|---|---|
+610-| **0** | Nothing to drive. Read `detect-changes`'s output on the first cart PR after merge. | `e2e_scope == cart` on a cart-only PR; `homepage` still resolves for a homepage-only PR; zero-spec `--grep "@cart"` run reports "no tests found" and exits 0. |
+611-| **1.1** | Resolve `xLarge` at 1440 and 1920 viewport widths. Confirm 1186px both times, not 1180.8 and 1574. Confirm the five other size variants byte-identical. | 1186px rem constant at both widths; `maxWidth: '100%'` present; five sibling variants unchanged; `grep` for `xLarge` consumers still returns only the type union and the story. |
+612-| **1.2** | Drive the drawer: open, Escape, backdrop click, close button. Tab through and confirm focus never escapes the panel. Close and confirm focus returns to the trigger **and** scroll position is where it was. Render empty and confirm the 52px band is still occupying space. Resize 1920 → 1440 → 834 → 402 and confirm two-column → single-column at tablet with a 32px gutter. | All four close paths call `onClose`; `finalFocusRef` receives focus; scroll offset restored (not just unlocked); `min-height` on the messages band equals the 52px token in the empty story; single-column at and below tablet; `659.2` appears nowhere; `recipeParts` and `recipeGuards` green; recipe registered. |
+613-| **2.1** | This is the one step the Tester cannot score alone. Confirm all eight markers log in the running app **from three surfaces**: the cart, the account wishlist page, and a checkout summary. | Eight files, `.tsx`, `tsc` clean, zero logic diff from base, `item-variant` imports relative not base-path, markers observed on all three surfaces, **Marcel's explicit go-ahead recorded** before step 2.2 starts. |
+614-| **2.2** | Pass a `width` and an `mr` to `CartItemVariantImage` from a test caller and confirm the caller wins. Pass a `color` to `CartItemVariantName` and confirm it applies. Render with no stepper and no actions. Render at 402px and look for any truncation or hidden element. | Caller-props win on image and name; gift-card render emits neither slot and throws nothing; colour+size is one text node; no array shorthand in geometry; `audit:tokens` clean; `recipeGuards` confirms `Zimm*` namespacing on both recipes. |
+615-| **3.1** | Drive the stepper through all five quantity conditions: 1, 2, at-max, fully-OOS, unavailable. Keyboard only: Tab to each control, Enter and Space. Confirm the focus ring is visibly different from rest. | Five states each assert the right enabled/disabled pair and the 0.4 opacity where greyed; keyboard operable; `aria-label` on both; focus-visible resolved value ≠ default; resolved target ≥24×24; `play` covers increment/decrement/boundary. |
+616-| **3.2** | Render each of the three copy strings. Confirm DOM position between stepper and actions. Confirm error state widens the details gap. | Three strings verbatim; error → `status.error` token, warning → `text.muted` token; gap 12 → 16 on error; no hex literals; no low-stock variant in the union. |
+617-| **3.3** | Render on-sale with quantity 2 and confirm both Was and Now scale. Render with and without a discount label. | Was struck, Now current, both quantity-scaled; label present only when the prop is; no `display-price` override created. |
+618-| **3.4** | Feed the mapper a full line item, one with no image, one with missing colour, one with `c_maxOrderQuantity` absent, one with it set to 5, one with it set to `"abc"`. | Fallback returns 3 on absent/0/negative/non-numeric; returns 5 when set to 5; mapper emits one combined colour+size string; `grep` finds no SDK hook in any leaf; `product-detail/index.tsx` unmodified. |
+619-| **3.6** (this row was still labeled 3.5 here after the 2026-09-18 renumbering — see the Commit order table and §4's own step heading, both correctly say 3.6; fixed 2026-09-19, found by the Tester dispatched for this exact step) | Run Storybook's a11y check on every story in B3. Then keyboard-only through a full cart item: image → name → price → stepper − → stepper + → message → Remove → Move to Wishlist. | 11 ACs each mapped in the PR body to a file and an assertion; a11y check green on every story; live region preserved (as of 2026-09-19, this step's own Scorer found the real mechanism is `ZimmQuantityStepper`'s own `aria-live="polite"` value span, not `product-quantity-picker.tsx`'s now-orphaned `VisuallyHidden role="status"` — see §4's step 3.6 text); no colour-only state. |
+620-| **4.1** | Mock passwordless success and assert the merge. Mock create-account and assert no merge. Then run the existing suites for `header/rightBar`, `drawer-menu` and `product-view`. | `mergeBasket` once, `sum_quantities`, `createDestinationBasket: true`; not called on register; social route untouched; all four consumers' suites green; hook signature unchanged; blast radius named in the PR body. |
+621-| **4.2** | **Adversarial pass — the only step that gets one.** Try to make it double-write: fire the callback and the render guard simultaneously. Fire twice on the same basket version. Make the server reject and confirm it stops. Drive the boundary at 2, 3, 4, 5. Then assert call **order**, not just end state. | One write under concurrency; one write per basket version; server rejection surfaces an error with no retry storm; `>=` boundary correct at 3 and 4; consolidation to one line at 3; merge → cap → resume order asserted; `useIsMutating()` no-op proven by making it fail on purpose first. |
+622-| **4.3** | Emit each of the three messages. Confirm one emit site by grep. | One emit site; three strings verbatim; SFCC-404 marker present. The `within(document.body)`/portal-exception criterion is deferred to whichever of step 4.4/4.6 first renders a message-triggering component — see step 4.3's own pass criterion 3 text (corrected 2026-09-20) for why a hook-only step can't meet it. |
+623-| **4.4** | Remove at qty 1 and qty 3. Wishlist-move at qty 1 and qty 3. Already-in-wishlist. Guest click. Guest completes email-code. Guest completes a simulated redirect. A 6-minute-old pending item. Keyboard-only on both links, checking the focus ring. | One call for a qty-3 remove (not three); single SKU saved on a qty-3 move; count decrements by full quantity; item stays in cart on already-in-wishlist and on guest click; resume works from state **and** from storage; stale item not resumed and both stores cleared; focus-visible ≠ default on both links. |
+624-| **4.5** | Remove the last item. Confirm the discrete component renders and the header text changes at the same moment. Render at a non-AU site and inspect the CTA href. | Discrete component (no inline JSX); header and body both switch; CTA href site-prefixed; two-to-one collapse asserted; no hardcoded AU contact details. |
+625-| **5.1** | Render domestic and count children. Render international and assert Apple Pay is absent from the DOM, then measure group height against domestic-minus-express. Drive hover/focus/active/disabled on all three buttons. Click Checkout domestic; click it as an international guest and as an international authenticated shopper. | Three children domestic in fixed order; **one** child international with `queryByRole` null and height unchanged; all five states asserted per button with focus-visible ≠ default; h52/px32/gap16 resolved from `actionSizes` tokens not literals; error story renders enabled with zero feedback copy; both international branches reach the stub; `countries.ts` unmodified. |
+626-| **4.6** (inserted 2026-09-20, built after 5.1 — see its own step text for why the label doesn't match build order) | Render with a real multi-line basket and confirm one `ProductItem` per line via `cartItemMapper`'s own output. Force a basket over the cap and confirm the render guard fires exactly once and no-ops while a mutation is in flight. Click each item's Remove/Wishlist links and confirm the real mutations fire, not a stub. Render with zero items and confirm `ZimmCartEmptyState`, not an empty list. | One `ProductItem` per line, mapped not hand-built; render guard proven to run and to no-op under `useIsMutating()`, mirroring 4.2's own proof but for the real wiring; `secondaryActions` is a real `ZimmCartItemActions` on every item; empty state swaps in at zero items; `footer`/`messages` slots render `ZimmCartButtonGroup`/`useCartMessages` output; container owns no `isOpen`/`onClose` state itself; exactly one production `<ZimmCartDrawer` call site. |
+627-
+628----
+629-
+630-## 5.0 Verification standard (added 2026-09-19, applies to every remaining step, 3.6 onward)
+631-
+632-Six real, currently-shipped defects were found in commits already scored PASS on Design fidelity,
+633-by a from-scratch re-audit that rendered the real components live instead of reading source and
+634-Figma side by side. Every one of the six traces back to one of the gaps below. These are now
+635-mandatory for every remaining step's Design-fidelity check — not optional rigor, a gate. When
+636-dispatching Tester/Scorer for 3.6 onward, brief them with this section explicitly: they start
+637-each run with no memory of today, so the standard has to be restated, not assumed carried over.
+638-
+639-1. **A rendered-output claim needs a live measurement citation, not a source read.** "The recipe
+640-   sets `fontWeight: 500`" is not the same claim as "the rendered text measures `font-weight: 500`
+641-   in a real browser" — the first can be true while the second is false. Every Design-fidelity
+642-   PASS from here on cites an actual measured value (computed style, bounding box, or a real
+643-   screenshot) against the actual Figma-sourced value, for every property being signed off, not
+644-   just the ones that seem most at-risk.
+645-2. **A wrapper's correct style does not prove a nested element inherits it.** Two of the six
+646-   defects were exactly this shape: `textStyle`/`fontWeight` correctly set on a container, silently
+647-   lost before reaching the actual visible text, because the nested element was either a Chakra
+648-   component with its own competing theme registration (`Heading`, and by extension `Button`/
+649-   `IconButton`/`Modal`/anything imported from `@chakra-ui/react` un-wrapped in a plain `chakra.*`
+650-   factory) or a literal HTML tag with its own default rendering (`<b>`, via a base SFCC
+651-   component). Whenever a style is applied above a boundary like that, verify the leaf text node's
+652-   own computed style directly — inheritance is not something to assume across it.
+653-3. **A previously-recorded "confirmed correct" is not permanent proof.** This exact document's own
+654-   audit trail (`figma-reference/discrepancies.md`) both found real bugs *and*, twice, had to
+655-   retract its own "confirmed" claims once they were checked against a real render instead of
+656-   restated from a prior pass. Re-verify against a live render before citing an earlier pass as
+657-   settled, especially for anything touching the same file again.
+658-4. **Storybook `play` functions auto-run on load.** A live check against a story with a `play`
+659-   function is measuring the *post-play* state by the time any normal wait resolves, not the
+660-   initial seed — sample within ~100ms of mount if the true initial state matters, and never treat
+661-   a play function's own scripted end-state as a seeding bug.
+662-5. **Read the real, current JSX before asserting how two elements relate.** More than one
+663-   mis-scoped finding this pass came from reasoning about layout from a written description
+664-   instead of the actual current source — siblings vs. nested, same container vs. different, is
+665-   checkable in seconds and shouldn't be inferred.
+666-6. **A fix for one interaction can silently break a different one.** The focus-ring fix's first
+667-   attempt passed its own new test and broke backdrop-click-to-close, undetected until the full
+668-   existing suite was re-run. Any interaction/focus/event-handling change re-runs the component's
+669-   *entire* existing test suite, not just the new assertion, before being called done.
+670-7. **Mutation-test every new test, and disclose when jsdom genuinely can't.** Revert the fix,
+671-   confirm the new test fails with the real wrong value; restore, confirm it passes. If a property
+672-   (native `:focus-visible` matching is the known example so far) can't be made mutation-sensitive
+673-   under jsdom, say so directly in the test's own comment rather than claim proof the test doesn't
+674-   actually provide — the real proof in that case is the live-browser verification, cited as such.
+675-8. **No AI attribution, no third-person references to any person, in any commit message.**
+676-   Objective and technical only — what changed and why, not who caught it or confirmed it. Two
+677-   rounds of whole-branch correction this pass were both this exact category.
+678-9. **A green Vitest suite does not prove a `.stories.tsx` file actually renders (added 2026-09-20,
+679-   after step 4.4 shipped four crashing stories through an entire round-0 build, its Tester's Full
+680-   loop, and its own Orchestrator, all green).** `ZimmCartItemActions` called `ZimmLink`, which
+681-   calls `useSafeHref()` unconditionally, which needs a `MultiSiteProvider` the story never
+682-   supplied — every sibling component that already uses `ZimmLink` (`footer`, `zimmSizeSelector`,
+683-   `zimmNavItem`, `zimmSearchInput`, `zimmLink`'s own story) already carries the decorator this one
+684-   was missing. `index.test.tsx`'s own Vitest suite mocked `useSafeHref` away specifically to avoid
+685-   this exact hazard — correctly, for a unit test — which is precisely why it could never have
+686-   caught a *Storybook*-level failure of the same hazard; the two layers were never actually
+687-   testing the same thing. **Any step that creates or meaningfully changes a `.stories.tsx` file
+688-   must actually build and serve Storybook and run `test-storybook --ci` (or equivalent — open each
+689-   changed story in a real browser and confirm no error boundary) before that step can be scored,
+690-   not just read the `play` function and assume it executes.** This is a different failure mode
+691-   than points 1–7 above (which are about a story rendering the *wrong* thing) — this is about
+692-   whether it renders *at all*, and no other gate in this loop checks for it.
+693-
+694-## 6. Open questions
+695-
+696-These block the handoff. None is a decision I should make for you.
+697-
+698-1. **`.github/workflows/qa.yml` is Tier 1 and owner approval is not confirmed.** B0 is BLOCKED until either the authenticated `gh` login is verified in `@ZimmermannAU/tier-1-approvers` or a named approving review is secured. Until B0 lands, every cart PR gets `e2e_scope: skip` and no PR-time E2E.
+699-
+700-2. **`overrides/app/components/item-variant/` has no CODEOWNERS entry and there is no catch-all.** Five files with an 11-surface blast radius would merge with **no required reviewer**. Adding the entry is a Tier 1 Governance change to `CODEOWNERS`, explicitly outside my scope. Your call: add it as a separate ticket first, or accept that the widest-reaching part of this change is ungoverned and compensate with a manually-requested reviewer on B2.
+701-
+702-3. **`overrides/app/hooks/useWishlistAuthDrawer.ts` is also ungoverned, and the merge call changes auth behaviour for three surfaces outside the cart** (`header/rightBar`, `drawer-menu`, `product-view`). Not in `frozenFiles.md`, not in `protectedFiles.md`'s shared-hooks list, no CODEOWNERS entry. This is a second instance of #2 and arguably the more dangerous one. Does B4 need an explicitly requested reviewer, and does the cross-surface behaviour change need Hard Rule #10 scope confirmation from you before it is written?
+703-
+704-4. **`overrides/app/hooks/use-toast.ts` does not exist.** The settled decision says "use `overrides/app/hooks/use-toast.ts`, not the base hook" — but that file is absent, and the path is listed in `protectedFiles.md` and routed in CODEOWNERS to `@pwa-squad-a @pwa-squad-b @tier-2-approvers @tier-1-approvers`. So honouring the decision literally means **creating a Tier 2 shared hook** this bundle has not budgeted a review for. My recommendation: import the base hook at `@salesforce/retail-react-app/app/hooks/use-toast` and wrap it in our own untiered `useCartMessages.ts`. That satisfies the decision's actual intent (one handler, SFCC-404 is a one-file swap), costs no Tier 2 review, and automatically picks up the override the day someone creates it. I have **not** applied this — the decision is yours to confirm.
+705-
+706-5. **The stepper's `+` and `−` are a mismatched pair.** `MinusIcon` is a Zimmermann/Figma icon in `overrides/app/components/icons/zimm.tsx`; `PlusIcon` is re-exported from the base template in `index.tsx`. That file's own comments show the established pattern of migrating an icon into `zimm.tsx` when the base glyph is wrong (`CloseIcon`: "off-centre glyph within its viewBox"; the chevrons: filled vs stroked). AGENTS.md is explicit: if a required icon is missing from the overrides set, **ask — do not substitute a visually different one**. Is the base `PlusIcon` acceptable against Figma's `Icon_plus`, or does it need adding to `zimm.tsx`?
+707-
+708-6. **Apple Pay and Google Pay marks do not exist.** `zimm.tsx` has `ZimmAppleSignInIcon` and `ZimmGoogleSignInIcon` — sign-in marks, not Pay marks — and there is no `applePay`/`googlePay` asset anywhere in `overrides/app`. Both are brand-licensed artwork with usage rules. SFCC-275 AC1 requires 48×24 logos. Same AGENTS.md rule applies: ask, do not substitute. This is the only part of B5 that cannot pass.
+709-
+710-7. **Nothing opens the cart drawer, and no story owns the trigger.** See the closing line.
+711-
+712-8. **Container placement needs your confirmation.** SFCC-271's mutations and SFCC-250's guards need something that owns `useCurrentBasket()`, and `components.md` forbids data-fetching in anything under `overrides/app/components/`. Base `pages/cart/index.jsx` exists, so the override rule would normally say copy-first it — but the session notes decided 315 is explicitly "not an override of base `pages/cart`". My plan threads this by creating a **new custom file** at `overrides/app/pages/cart/cartDrawerContainer.tsx` (a path CODEOWNERS already routes to `@pwa-squad-a`, Tier 3), leaving base `pages/cart/index.jsx` untouched and still serving `/cart` as today — a sibling file named anything other than `index` does not shadow the base page. Confirm that, or tell me to copy-first the page instead (which adds `index.jsx` + up to 13 partials to B2's scope).
+713-
+714-9. **Registry regeneration sits inside my no-plan scope.** PR #85's shape includes `npm run generate:registry`, which writes `.claude/registry/{components,hooks,pages,routes,utils}.md`. I am instructed not to plan changes under `zimmermann-pwa/.claude/**`. It is a derived artefact that `postinstall` rewrites anyway, and `.claude/registry/` is **not** routed in CODEOWNERS (only `.claude/rules/` and `.claude/settings.json` are). Confirm the Implementer should run it, and on which branches.
+715-
+716-10. **SFCC-318's existence is unconfirmed.** Listed in SFCC-315's description as a dependent, but not returned by the Jira key search. If it is real and someone is waiting on B1, that changes B1's urgency.
+717-
+718-11. **SFCC-250 is not end-to-end verifiable this sprint.** Gate findings #1/#2: the TSD for SFCC-268 is `v0.1 Draft` with Technical Lead sign-off Pending, its own template says a TSD is not approved for implementation until signed, the live dev probe found no `c_maxOrderQuantity` on any product — and Jira nonetheless has SFCC-268 as Ready for SIT. Do you accept shipping 250 tested only against the fallback, or does 268 need reopening first?
+719-
+720----
+721-
+722-## 7. My own unverified gaps
+723-
+724-Stated so you can discount them, not buried.
+725-
+726-- **I did not open Figma.** Every design value here is transcribed from `session-notes.md` §11. If §11 mis-transcribed a node, I inherited it. The one place this matters most is the 1186px panel width, which drives step 1.1 — I verified the *code* side (82%) directly but took 1186 on trust.
+727-- **I ran no tests and no `tsc`.** Every pass criterion is specified, not observed.
+728-- **`--zimm-scale-1300` = 52px is inferred**, from the consistent ÷25 pattern across `space/700`→28, `space/1200`→48, `space/1100`→44, `space/3200`→128. The Implementer must confirm it against `foundation/spacing.ts` and `zimmTokens.ts` before typing it.
+729-- **I did not read base `components/quantity-picker`**, so I do not know exactly what the override's `product-quantity-picker.tsx` is replacing internally. Step 3.1 assumes it is replaceable behind the same prop surface.
+730-- **I did not verify `ZimmLink` carries hover/focus/active states.** Steps 4.4 and 3.1 lean on inheritance from `ZimmLink` and `ZimmButton` respectively. `ZimmButton`'s states I confirmed from the session notes' direct quotes of its recipe; `ZimmLink`'s I did not.
+731-- **Tiers for `item-variant/` and `useWishlistAuthDrawer.ts` read as "ungoverned"** from CODEOWNERS plus absence from `frozenFiles.md` and `protectedFiles.md`. I did not check GitHub repo settings for a default-reviewer rule that might cover them anyway.
+732-- **I did not confirm PR #85's file list.** The exemplar pattern is taken from gate finding #14's description of it.
+733-
+734----
+735-
+736-**What Marcel is missing:** the header bag `IconButton` at `/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/header/rightBar/index.tsx:418` has **no `onClick` and no `to`/`href`** — it is a dead button today, and none of the seven cards owns wiring it, so this bundle can land complete and a shopper still has no way to open their bag; the fix lives in `header/rightBar/`, which is **Tier 2 Global Shell** (both squads + tier-2 + tier-1 approvers), so it is not a five-minute addendum to any of these branches.
+737-agentId: a6c97de5de2f7951a (use SendMessage with to: 'a6c97de5de2f7951a', summary: '<5-10 word recap>' to continue this agent)
+738-<usage>subagent_tokens: 177068
+739-tool_uses: 20
+740-duration_ms: 657230</usage>
+741----
+742-
+743-# 8. Gate verification of this plan (added after synthesis, 2026-09-16)
+744-
+745-The planner declared its own unverified gaps honestly. These were checked directly.
+746-
+747-## CORRECTED — the planner's "what Marcel is missing" was misdiagnosed
+748-
+749-**Claim:** "the header bag `IconButton` at `header/rightBar/index.tsx:418` has **no `onClick` and no
+750-`to`/`href`** — it is a dead button today."
+751-
+752-**That is false.** The element spans ~418–437 and carries `onClick={onMyCartClick}` at **line 436**.
+753-The planner read the opening tag and stopped before the handler.
+754-
+755-**But the underlying concern is real, and sharper than the planner's version.** Traced through:
+756-
+757-```
+758-header/rightBar/index.tsx:436   onClick={onMyCartClick}
+759-header/index.tsx:252            onMyCartClick={onMyCartClick}
+760-_app/index.tsx:422              onMyCartClick={onCartClick}
+761-_app/index.tsx:317              const onCartClick = () => {
+762-                                  const path = buildUrl('/cart');
+763-                                  history.push(path);      // <-- NAVIGATES
+764-                                  onClose();

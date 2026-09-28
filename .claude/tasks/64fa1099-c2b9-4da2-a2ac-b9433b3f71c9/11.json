@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "Phase 6: PM/wiki spine",
+  "description": "provider-jira + provider-confluence; requirement-ID/story-key linkage into skills + commit trailers; wire into CLI.",
+  "activeForm": "Building PM/wiki spine",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,752 @@
+########## deploy-preview.yml ##########
+     1	name: Deploy Preview
+     2	
+     3	# Ephemeral per-branch MRT preview environments. On every push to a feature/fix
+     4	# branch, creates (or reuses) a dedicated MRT environment, syncs runtime env vars,
+     5	# builds, and deploys — giving devs/testers a live URL to review during PR without
+     6	# waiting for a merge to develop. Companion teardown workflow: teardown-preview.yml.
+     7	#
+     8	# Every ephemeral target is prefixed `pr-`, so it can never collide with the fixed
+     9	# named environments (dev, dev1, test, sit, stg, uat, production).
+    10	
+    11	on:
+    12	  push:
+    13	    branches:
+    14	      - 'feature/**'
+    15	      - 'fix/**'
+    16	      - '!fix/release-*'
+    17	      # `*` doesn't match `/` in GitHub Actions branch globs, so the pattern
+    18	      # above alone wouldn't exclude a nested fix/release/<version> naming slip
+    19	      # — this repo's documented convention is the hyphenated
+    20	      # fix/release-{version}-* form, but this guards defensively either way.
+    21	      - '!fix/release/**'
+    22	
+    23	# Keyed on the raw branch name (not the derived slug) — concurrency groups are
+    24	# evaluated before any job/step runs, so the key can't depend on a step output.
+    25	# cancel-in-progress is deliberately false: a cancelled Actions run does NOT cancel
+    26	# an already-submitted MRT-side operation (a POST/PATCH, or an in-flight
+    27	# `pwa-kit-dev push`), so a naively-cancelled run's server-side effects could still
+    28	# land after its successor starts. Same reasoning deploy-test.yml documents for its
+    29	# own cancel-in-progress: false.
+    30	concurrency:
+    31	  group: mrt-preview-${{ github.ref_name }}
+    32	  cancel-in-progress: false
+    33	
+    34	permissions:
+    35	  contents: read
+    36	  pull-requests: write
+    37	
+    38	jobs:
+    39	  deploy-preview:
+    40	    name: Deploy Preview
+    41	    runs-on: ubuntu-latest
+    42	    # Deliberately NOT bound to a GitHub Environment. It used to declare
+    43	    # `environment: dev`, which made GitHub log a real Deployment tagged
+    44	    # "dev" on every single push to a feature/fix branch -- every PR showed
+    45	    # a misleading "Deployed to dev" even though the actual target is
+    46	    # always an isolated pr-<slug> MRT preview, never the shared dev tier
+    47	    # (confirmed against real Deployment records, 2026-08-25). The binding
+    48	    # wasn't doing anything functional either: MRT_USER/MRT_API_KEY below
+    49	    # are already repo-level secrets, the dev-tier Variables this job
+    50	    # actually needs are fetched explicitly via the GitHub API further down
+    51	    # (SOURCE_ENV: dev, using GH_ENV_READ_TOKEN) rather than the native
+    52	    # environment: binding, and `dev` carries no protection rules to lose.
+    53	    # 12 min target-wait deadline + headroom for npm install/build/push — a
+    54	    # tighter timeout could cancel the job mid-wait, and a cancelled Actions run
+    55	    # does not cancel an already-submitted MRT-side operation (see the
+    56	    # concurrency note above), so the timeout needs real margin over the wait
+    57	    # budget, not just the wait budget itself.
+    58	    timeout-minutes: 35
+    59	    env:
+    60	      MRT_USER: ${{ secrets.MRT_USER }}
+    61	      MRT_API_KEY: ${{ secrets.MRT_API_KEY }}
+    62	      MRT_PROJECT: zimmermann
+    63	    steps:
+    64	      - uses: actions/checkout@v4
+    65	
+    66	      - uses: actions/setup-node@v4
+    67	        with:
+    68	          node-version: '24'
+    69	          cache: 'npm'
+    70	
+    71	      - name: Install dependencies
+    72	        run: npm install --include=dev
+    73	
+    74	      - name: Compute MRT preview slug
+    75	        id: slug
+    76	        env:
+    77	          BRANCH_NAME: ${{ github.ref_name }}
+    78	        run: |
+    79	          SLUG=$(node scripts/computeMrtPreviewSlug.mjs "$BRANCH_NAME")
+    80	          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+    81	
+    82	      - name: Read desired proxy config from config/dev.js
+    83	        id: proxy
+    84	        run: |
+    85	          PROXY_JSON=$(node -e "
+    86	            const cfgs = require('./config/dev.js')?.ssrParameters?.proxyConfigs
+    87	            if (!Array.isArray(cfgs) || cfgs.length === 0) {
+    88	              console.error('config/dev.js has no ssrParameters.proxyConfigs')
+    89	              process.exit(1)
+    90	            }
+    91	            console.log(JSON.stringify(cfgs))
+    92	          ")
+    93	          echo "json=$PROXY_JSON" >> "$GITHUB_OUTPUT"
+    94	
+    95	      # Region and proxy config are NOT derived from the bundle push — confirmed
+    96	      # live this session: two successful `pwa-kit-dev push` calls left
+    97	      # ssr_proxy_configs null on a freshly created target, and region defaults to
+    98	      # us-east-2 unless set explicitly. Both must be set here, explicitly, and
+    99	      # self-healed on every run in case a target was ever created out-of-band
+   100	      # (e.g. by hand through the MRT console) with the wrong values.
+   101	      - name: Ensure MRT target exists with correct region/proxy config
+   102	        id: ensure
+   103	        env:
+   104	          SLUG: ${{ steps.slug.outputs.slug }}
+   105	          PROXY_JSON: ${{ steps.proxy.outputs.json }}
+   106	        run: |
+   107	          python3 - <<'PYEOF'
+   108	          import base64, json, os, sys, time, urllib.request, urllib.error
+   109	
+   110	          SLUG, PROJECT = os.environ['SLUG'], os.environ['MRT_PROJECT']
+   111	          USER, API_KEY = os.environ['MRT_USER'], os.environ['MRT_API_KEY']
+   112	          DESIRED_PROXY = json.loads(os.environ['PROXY_JSON'])
+   113	          DESIRED_REGION = 'ap-southeast-2'
+   114	
+   115	          token = base64.b64encode(f'{USER}:{API_KEY}'.encode()).decode()
+   116	          headers = {'Authorization': f'Basic {token}', 'Content-Type': 'application/json'}
+   117	          base = f'https://cloud.mobify.com/api/projects/{PROJECT}/'
+   118	
+   119	          def get_target():
+   120	              req = urllib.request.Request(base + f'target/{SLUG}/', headers=headers)
+   121	              for attempt in range(3):
+   122	                  try:
+   123	                      return json.loads(urllib.request.urlopen(req, timeout=30).read())
+   124	                  except urllib.error.HTTPError as e:
+   125	                      if e.code == 404:
+   126	                          return None
+   127	                      if attempt < 2 and (e.code == 429 or e.code >= 500):
+   128	                          print(f'Transient HTTP {e.code} on target lookup — backing off 30s')
+   129	                          time.sleep(30)
+   130	                          continue
+   131	                      raise
+   132	                  except urllib.error.URLError as e:
+   133	                      if attempt < 2:
+   134	                          print(f'Connection error on target lookup ({e.reason}) — backing off 30s')
+   135	                          time.sleep(30)
+   136	                          continue
+   137	                      raise
+   138	
+   139	          def proxy_matches(existing_proxy):
+   140	              if not existing_proxy:
+   141	                  return False
+   142	              # Compare the full config per entry, not just path/host — a field
+   143	              # this repo doesn't use today drifting silently would otherwise
+   144	              # never trigger the self-heal PATCH below.
+   145	              norm = lambda cfgs: sorted(json.dumps(c, sort_keys=True) for c in cfgs)
+   146	              return norm(existing_proxy) == norm(DESIRED_PROXY)
+   147	
+   148	          existing = get_target()
+   149	          if existing is None:
+   150	              print(f'No existing target for {SLUG} — creating in {DESIRED_REGION}.')
+   151	              payload = {
+   152	                  'name': SLUG,
+   153	                  'ssr_region': DESIRED_REGION,
+   154	                  'ssr_proxy_configs': DESIRED_PROXY,
+   155	              }
+   156	              req = urllib.request.Request(
+   157	                  base + 'target/', data=json.dumps(payload).encode(), method='POST', headers=headers
+   158	              )
+   159	              try:
+   160	                  resp = urllib.request.urlopen(req, timeout=30)
+   161	                  print(f'Create requested: {resp.status}')
+   162	              except urllib.error.HTTPError as e:
+   163	                  print(f'Create failed {e.code}: {e.read().decode()}', file=sys.stderr)
+   164	                  sys.exit(1)
+   165	          else:
+   166	              print(f'Target {SLUG} already exists (state={existing.get("state")}) — reusing.')
+   167	              needs_patch = (
+   168	                  existing.get('ssr_region') != DESIRED_REGION
+   169	                  or not proxy_matches(existing.get('ssr_proxy_configs'))
+   170	              )
+   171	              if needs_patch:
+   172	                  print(f'Target {SLUG} has drifted region/proxy config — self-healing.')
+   173	                  payload = {'ssr_region': DESIRED_REGION, 'ssr_proxy_configs': DESIRED_PROXY}
+   174	                  req = urllib.request.Request(
+   175	                      base + f'target/{SLUG}/', data=json.dumps(payload).encode(), method='PATCH', headers=headers
+   176	                  )
+   177	                  try:
+   178	                      urllib.request.urlopen(req, timeout=30)
+   179	                  except urllib.error.HTTPError as e:
+   180	                      print(f'Region/proxy patch failed {e.code}: {e.read().decode()}', file=sys.stderr)
+   181	                      sys.exit(1)
+   182	                  # The PATCH alone updates target config but not the already-running
+   183	                  # Lambda — confirmed live, the relocation only takes effect after the
+   184	                  # next `pwa-kit-dev push`, which always runs later in this job.
+   185	          PYEOF
+   186	
+   187	      - name: Wait for target to reach ACTIVE
+   188	        id: wait
+   189	        env:
+   190	          SLUG: ${{ steps.slug.outputs.slug }}
+   191	        run: |
+   192	          python3 - <<'PYEOF'
+   193	          import base64, json, os, sys, time, urllib.request, urllib.error
+   194	
+   195	          SLUG, PROJECT = os.environ['SLUG'], os.environ['MRT_PROJECT']
+   196	          USER, API_KEY = os.environ['MRT_USER'], os.environ['MRT_API_KEY']
+   197	          token = base64.b64encode(f'{USER}:{API_KEY}'.encode()).decode()
+   198	          headers = {'Authorization': f'Basic {token}'}
+   199	          url = f'https://cloud.mobify.com/api/projects/{PROJECT}/target/{SLUG}/'
+   200	
+   201	          # Fresh create ~5 min, region-relocation redeploy ~2 min, per validated
+   202	          # session data — poll generously but bounded so a stuck target fails loudly.
+   203	          deadline, poll_every = time.time() + 12 * 60, 20
+   204	          while True:
+   205	              req = urllib.request.Request(url, headers=headers)
+   206	              try:
+   207	                  body = json.loads(urllib.request.urlopen(req, timeout=30).read())
+   208	              except urllib.error.HTTPError as e:
+   209	                  if e.code == 429:
+   210	                      if time.time() > deadline:
+   211	                          print('Timed out waiting for ACTIVE (persistently rate limited)', file=sys.stderr)
+   212	                          sys.exit(1)
+   213	                      try:
+   214	                          backoff = max(1, min(60, int(e.headers.get('Retry-After', 30))))
+   215	                      except (TypeError, ValueError):
+   216	                          backoff = 30
+   217	                      print(f'Rate limited — backing off {backoff}s')
+   218	                      time.sleep(backoff)
+   219	                      continue
+   220	                  # The create request is asynchronous — a freshly-created target
+   221	                  # can briefly 404 (not yet visible) or 5xx before settling, not
+   222	                  # just while waiting on state transitions. Retry those like any
+   223	                  # other not-yet-ready signal instead of failing the job outright.
+   224	                  if e.code == 404 or e.code >= 500:
+   225	                      print(f'Transient HTTP {e.code} — target not visible yet, retrying')
+   226	                      if time.time() > deadline:
+   227	                          print(f'Timed out waiting for ACTIVE (last error={e.code})', file=sys.stderr)
+   228	                          sys.exit(1)
+   229	                      time.sleep(poll_every)
+   230	                      continue
+   231	                  raise
+   232	              except urllib.error.URLError as e:
+   233	                  print(f'Connection error ({e.reason}) — retrying')
+   234	                  if time.time() > deadline:
+   235	                      print('Timed out waiting for ACTIVE', file=sys.stderr)
+   236	                      sys.exit(1)
+   237	                  time.sleep(poll_every)
+   238	                  continue
+   239	              state = body.get('state')
+   240	              print(f'target {SLUG} state={state}')
+   241	              if state == 'ACTIVE':
+   242	                  # Read the real hostname from the API rather than assuming a
+   243	                  # fixed host suffix — that suffix is MRT-account-specific and
+   244	                  # could change; a hardcoded guess would silently publish a dead
+   245	                  # URL in the PR comment if it ever did.
+   246	                  hostname = body.get('ssr_external_hostname')
+   247	                  if not hostname:
+   248	                      print('Target is ACTIVE but ssr_external_hostname is empty', file=sys.stderr)
+   249	                      sys.exit(1)
+   250	                  with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+   251	                      out.write(f'hostname={hostname}\n')
+   252	                  break
+   253	              if state and state.endswith('_FAILED'):
+   254	                  print(f'Target entered failed state: {state}', file=sys.stderr)
+   255	                  sys.exit(1)
+   256	              if time.time() > deadline:
+   257	                  print(f'Timed out waiting for ACTIVE (last state={state})', file=sys.stderr)
+   258	                  sys.exit(1)
+   259	              time.sleep(poll_every)
+   260	          PYEOF
+   261	
+   262	      # Steps below lift .github/workflows/sync-env-vars-to-mrt.yml's env-var-sync
+   263	      # logic near-verbatim. The one structural change: source (which GitHub
+   264	      # Environment to read from) and destination (which MRT target to PATCH) are
+   265	      # no longer the same value — source is always `dev`+`shared` regardless of
+   266	      # branch, since there's no per-branch GitHub Environment; destination is the
+   267	      # computed slug.
+   268	      - name: Parse syncable keys from .env.sample
+   269	        id: parse
+   270	        run: |
+   271	          python3 - <<'PYEOF'
+   272	          import re, os, json
+   273	
+   274	          # Only keys explicitly tagged `# mrt:true` in .env.sample are synced.
+   275	          keys = []
+   276	          pending_mrt = False
+   277	          with open('.env.sample') as f:
+   278	              for line in f:
+   279	                  line = line.rstrip('\n')
+   280	                  if re.match(r'^#\s*mrt:true', line):
+   281	                      pending_mrt = True
+   282	                      continue
+   283	                  stripped = line.strip()
+   284	                  if not stripped or stripped.startswith('#'):
+   285	                      if not stripped:
+   286	                          pending_mrt = False
+   287	                      continue
+   288	                  eq = stripped.find('=')
+   289	                  if eq == -1:
+   290	                      pending_mrt = False
+   291	                      continue
+   292	                  key = stripped[:eq].strip()
+   293	                  if pending_mrt:
+   294	                      keys.append(key)
+   295	                  pending_mrt = False
+   296	
+   297	          print(f'Parsed {len(keys)} MRT-tagged keys from .env.sample')
+   298	          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+   299	              out.write(f'keys={json.dumps(keys)}\n')
+   300	          PYEOF
+   301	
+   302	      - name: Fetch GitHub Environment variables (dev + shared)
+   303	        id: gh_vars
+   304	        env:
+   305	          # Always dev — ephemeral preview branches have no GitHub Environment of
+   306	          # their own to source from.
+   307	          SOURCE_ENV: dev
+   308	          REPO: ${{ github.repository }}
+   309	          GH_TOKEN: ${{ secrets.GH_ENV_READ_TOKEN }}
+   310	        run: |
+   311	          python3 - <<'PYEOF'
+   312	          import json, os, subprocess, sys
+   313	
+   314	          SOURCE_ENV = os.environ['SOURCE_ENV']
+   315	          REPO = os.environ['REPO']
+   316	
+   317	          def fetch_env(env_name):
+   318	              """Fetch all variables from a GitHub Environment. Returns dict of name→value."""
+   319	              import urllib.parse
+   320	              safe_name = urllib.parse.quote(env_name, safe='')
+   321	              result = subprocess.run(
+   322	                  ['gh', 'api', f'/repos/{REPO}/environments/{safe_name}/variables',
+   323	                   '--paginate', '--jq', '.variables[] | {(.name): .value}'],
+   324	                  capture_output=True, text=True
+   325	              )
+   326	              if result.returncode != 0:
+   327	                  print(f'GitHub API error fetching {env_name}: {result.stderr}', file=sys.stderr)
+   328	                  sys.exit(1)
+   329	              out = {}
+   330	              for line in result.stdout.strip().splitlines():
+   331	                  if line:
+   332	                      out.update(json.loads(line))
+   333	              return out
+   334	
+   335	          shared_vars = fetch_env('shared')
+   336	          target_vars = fetch_env(SOURCE_ENV)
+   337	          all_vars = dict(shared_vars)
+   338	          for name, value in target_vars.items():
+   339	              if value or name not in all_vars:
+   340	                  all_vars[name] = value
+   341	
+   342	          print(f'Found {len(shared_vars)} variables in GitHub Environment: shared')
+   343	          print(f'Found {len(target_vars)} variables in GitHub Environment: {SOURCE_ENV}')
+   344	          print(f'Merged total (target overrides shared): {len(all_vars)}')
+   345	
+   346	          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+   347	              out.write(f'vars={json.dumps(all_vars)}\n')
+   348	          PYEOF
+   349	
+   350	      - name: Sync env vars to the preview target
+   351	        env:
+   352	          MRT_TARGET_SLUG: ${{ steps.slug.outputs.slug }}
+   353	          SYNC_KEYS: ${{ steps.parse.outputs.keys }}
+   354	          GH_VARS: ${{ steps.gh_vars.outputs.vars }}
+   355	        run: |
+   356	          python3 - <<'PYEOF'
+   357	          import base64, json, os, sys, urllib.request, urllib.error
+   358	
+   359	          TARGET  = os.environ['MRT_TARGET_SLUG']
+   360	          PROJECT = os.environ['MRT_PROJECT']
+   361	          USER    = os.environ['MRT_USER']
+   362	          API_KEY = os.environ['MRT_API_KEY']
+   363	
+   364	          syncable_keys = json.loads(os.environ['SYNC_KEYS'])
+   365	          gh_vars       = json.loads(os.environ['GH_VARS'])
+   366	
+   367	          payload = {}
+   368	          skipped_empty = []
+   369	          skipped_missing = []
+   370	          for key in syncable_keys:
+   371	              if key in gh_vars:
+   372	                  val = gh_vars[key]
+   373	                  if val:
+   374	                      payload[key] = {'value': val}
+   375	                  else:
+   376	                      skipped_empty.append(key)
+   377	              else:
+   378	                  skipped_missing.append(key)
+   379	
+   380	          print(f'Keys to sync:    {len(payload)}')
+   381	          print(f'Skipped (empty): {len(skipped_empty)}')
+   382	          print(f'Skipped (not in GitHub Environment): {len(skipped_missing)}')
+   383	
+   384	          if not payload:
+   385	              print('Nothing to sync.')
+   386	              sys.exit(0)
+   387	
+   388	          token = base64.b64encode(f'{USER}:{API_KEY}'.encode()).decode()
+   389	          url   = f'https://cloud.mobify.com/api/projects/{PROJECT}/target/{TARGET}/env-var/'
+   390	          req   = urllib.request.Request(
+   391	              url,
+   392	              data=json.dumps(payload).encode(),
+   393	              method='PATCH',
+   394	              headers={
+   395	                  'Authorization': f'Basic {token}',
+   396	                  'Content-Type': 'application/json',
+   397	              },
+   398	          )
+   399	          try:
+   400	              resp = urllib.request.urlopen(req, timeout=30)
+   401	              print(f'\nMRT response: {resp.status} {resp.reason}')
+   402	              print(f'Synced {len(payload)} env vars to MRT target: {TARGET}')
+   403	          except urllib.error.HTTPError as e:
+   404	              print(f'MRT API error {e.code}: {e.read().decode()}', file=sys.stderr)
+   405	              sys.exit(1)
+   406	          except urllib.error.URLError as e:
+   407	              print(f'MRT API connection error: {e.reason}', file=sys.stderr)
+   408	              sys.exit(1)
+   409	          PYEOF
+   410	
+   411	      # Must run after env vars are synced, not before — a target with no env
+   412	      # vars 500s on every request (confirmed live).
+   413	      - name: Build and push to preview target
+   414	        env:
+   415	          SLUG: ${{ steps.slug.outputs.slug }}
+   416	        run: |
+   417	          npm run build
+   418	          npx pwa-kit-dev push -t "$SLUG" -w
+   419	
+   420	      # Deliberately placed after the push above, not right after the "wait
+   421	      # for ACTIVE" step that first produced steps.wait.outputs.hostname --
+   422	      # the target existing and being ACTIVE only means the MRT
+   423	      # infrastructure is ready, not that this PR's own code is live there
+   424	      # yet. e2e-browserstack (qa.yml) downloads this artifact and points
+   425	      # BrowserStack at the resulting URL instead of the static test-tier
+   426	      # RETAIL_APP_HOME, so it actually tests this PR's own changes rather
+   427	      # than whatever unrelated build happens to be live on test tier
+   428	      # (test is a deliberate, tag-promoted environment with no guaranteed
+   429	      # relationship to any given PR -- confirmed with the developer,
+   430	      # 2026-08-25). Short retention: only needed within this PR's own CI
+   431	      # cycle, never referenced again after.
+   432	      - name: Persist preview hostname for e2e-browserstack
+   433	        env:
+   434	          PREVIEW_HOSTNAME: ${{ steps.wait.outputs.hostname }}
+   435	        run: printf '%s\n' "$PREVIEW_HOSTNAME" > preview-hostname.txt
+   436	
+   437	      - name: Upload preview hostname artifact
+   438	        uses: actions/upload-artifact@v4
+   439	        with:
+   440	          name: mrt-preview-hostname
+   441	          path: preview-hostname.txt
+   442	          retention-days: 1
+   443	
+   444	      - name: Find open PR for this branch
+   445	        id: pr
+   446	        env:
+   447	          GH_TOKEN: ${{ github.token }}
+   448	          BRANCH: ${{ github.ref_name }}
+   449	        run: |
+   450	          NUMBER=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+   451	          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+   452	
+   453	      # Upserts on an exact HTML-comment marker (not a text substring) so a
+   454	      # coincidental match in someone else's comment can't be mistaken for ours,
+   455	      # and so redeploys update the same comment instead of spamming the thread —
+   456	      # the URL is deterministic from the slug and never changes between pushes.
+   457	      # Pattern mirrors protected-file-guard.yml's Tier 2 warning comment.
+   458	      - name: Post or update preview URL comment
+   459	        if: steps.pr.outputs.number != ''
+   460	        uses: actions/github-script@v7
+   461	        env:
+   462	          PR_NUMBER: ${{ steps.pr.outputs.number }}
+   463	          SLUG: ${{ steps.slug.outputs.slug }}
+   464	          PREVIEW_HOSTNAME: ${{ steps.wait.outputs.hostname }}
+   465	        with:
+   466	          script: |
+   467	            const prNumber = Number(process.env.PR_NUMBER)
+   468	            const marker = `<!-- mrt-preview:${process.env.SLUG} -->`
+   469	            const previewUrl = `https://${process.env.PREVIEW_HOSTNAME}`
+   470	            const body = `${marker}\n## 🚀 MRT Preview Environment\n\n**Live preview:** ${previewUrl}\n\nTarget: \`${process.env.SLUG}\` · Updated: ${new Date().toISOString()}\n\n_Auto-updated on every push to this branch. Torn down when this PR closes or the branch is deleted._`
+   471	
+   472	            // Paginated — listComments only returns the first page (30) by
+   473	            // default, which would miss the marker on a busy PR and start
+   474	            // duplicating comments instead of updating in place. c.body is
+   475	            // optional in the REST payload, so guard against null too.
+   476	            const comments = await github.paginate(github.rest.issues.listComments, {
+   477	              owner: context.repo.owner,
+   478	              repo: context.repo.repo,
+   479	              issue_number: prNumber,
+   480	              per_page: 100,
+   481	            })
+   482	            const existing = comments.find(
+   483	              (c) => (c.body ?? '').includes(marker) && c.user?.login === 'github-actions[bot]'
+   484	            )
+   485	            if (existing) {
+   486	              await github.rest.issues.updateComment({
+   487	                owner: context.repo.owner,
+   488	                repo: context.repo.repo,
+   489	                comment_id: existing.id,
+   490	                body,
+   491	              })
+   492	            } else {
+   493	              await github.rest.issues.createComment({
+   494	                owner: context.repo.owner,
+   495	                repo: context.repo.repo,
+   496	                issue_number: prNumber,
+   497	                body,
+   498	              })
+   499	            }
+
+########## teardown-preview.yml ##########
+     1	name: Teardown Preview
+     2	
+     3	# Companion to deploy-preview.yml. Deletes the ephemeral MRT environment for a
+     4	# branch once it's no longer needed.
+     5	#
+     6	# Two triggers are both necessary: `pull_request: closed` covers the normal PR
+     7	# merge/close path, and `delete` is a backstop for a branch deleted without ever
+     8	# opening a PR. This repo has delete_branch_on_merge enabled, so a normal merge
+     9	# fires BOTH events for the same branch, usually seconds apart — every step below
+    10	# is written to be safe under that double-fire, not just under the concurrency
+    11	# group serialising them.
+    12	
+    13	on:
+    14	  # No `branches:` filter — a preview PR closing against any base (not just
+    15	  # develop) must still tear down its target, or a PR opened against the wrong
+    16	  # base leaves an MRT target running with only the `delete` backstop to catch
+    17	  # it. resolve-branch's eligibility check below already filters by head branch
+    18	  # pattern, which is the check that actually matters here.
+    19	  pull_request:
+    20	    types: [closed]
+    21	  delete:
+    22	
+    23	permissions:
+    24	  contents: read
+    25	  pull-requests: write
+    26	
+    27	jobs:
+    28	  # `on.delete` has no branch-filter syntax (fires for tag deletions too), and
+    29	  # `on.pull_request.branches` filters by base branch, not head branch — neither
+    30	  # trigger can express "head/deleted branch matches feature/**|fix/** but not
+    31	  # fix/release-*" on its own, so it's resolved here instead.
+    32	  resolve-branch:
+    33	    name: Resolve branch and eligibility
+    34	    runs-on: ubuntu-latest
+    35	    if: github.event_name == 'pull_request' || (github.event_name == 'delete' && github.event.ref_type == 'branch')
+    36	    outputs:
+    37	      branch: ${{ steps.branch.outputs.name }}
+    38	      eligible: ${{ steps.branch.outputs.eligible }}
+    39	    steps:
+    40	      - name: Resolve branch name and eligibility
+    41	        id: branch
+    42	        env:
+    43	          EVENT_NAME: ${{ github.event_name }}
+    44	          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+    45	          DELETE_REF: ${{ github.event.ref }}
+    46	        run: |
+    47	          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+    48	            BRANCH="$PR_HEAD_REF"
+    49	          else
+    50	            BRANCH="$DELETE_REF"
+    51	          fi
+    52	          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+    53	          # Mirrors deploy-preview.yml's trigger filters — must stay in sync so
+    54	          # teardown considers exactly the branches deploy would have created a
+    55	          # target for. Excludes both the documented fix/release-{version}-*
+    56	          # naming and a defensive fix/release/** slash-nested variant.
+    57	          if [[ "$BRANCH" =~ ^(feature|fix)/ ]] && [[ ! "$BRANCH" =~ ^fix/release- ]] && [[ ! "$BRANCH" =~ ^fix/release/ ]]; then
+    58	            echo "eligible=true" >> "$GITHUB_OUTPUT"
+    59	          else
+    60	            echo "eligible=false" >> "$GITHUB_OUTPUT"
+    61	          fi
+    62	
+    63	  teardown:
+    64	    name: Teardown Preview
+    65	    needs: resolve-branch
+    66	    if: needs.resolve-branch.outputs.eligible == 'true'
+    67	    runs-on: ubuntu-latest
+    68	    environment: dev
+    69	    timeout-minutes: 20
+    70	    # Same group as deploy-preview.yml, keyed on branch name. This is what makes
+    71	    # the pull_request+delete double-fire safe: whichever run starts first runs to
+    72	    # completion (target fully gone, or fully created) before the second starts —
+    73	    # the second then finds a 404 and treats it as success, rather than the two
+    74	    # runs interleaving their API calls against the same target.
+    75	    concurrency:
+    76	      group: mrt-preview-${{ needs.resolve-branch.outputs.branch }}
+    77	      cancel-in-progress: false
+    78	    env:
+    79	      MRT_USER: ${{ secrets.MRT_USER }}
+    80	      MRT_API_KEY: ${{ secrets.MRT_API_KEY }}
+    81	      MRT_PROJECT: zimmermann
+    82	    steps:
+    83	      # The branch being torn down may already be gone (delete event, or a merge
+    84	      # that already deleted it) — never checkout it directly.
+    85	      - uses: actions/checkout@v4
+    86	        with:
+    87	          ref: develop
+    88	
+    89	      # Pinned to match deploy-preview.yml's node-version so the slug fallback
+    90	      # below (when no marker comment exists) produces the same result on
+    91	      # either side, even if the script ever starts relying on newer syntax.
+    92	      - uses: actions/setup-node@v4
+    93	        with:
+    94	          node-version: '24'
+    95	
+    96	      # Deploy computed the slug from the feature branch's own tree; this job
+    97	      # checked out develop instead, since the branch may already be deleted. If
+    98	      # develop's copy of computeMrtPreviewSlug.mjs ever diverges from the version
+    99	      # that produced the live deploy (e.g. the algorithm changes while an old
+   100	      # preview branch is still open), recomputing here could target the wrong
+   101	      # slug — deleting nothing, or deleting a different branch's target. When
+   102	      # this run came from a PR close, the exact slug that was actually deployed
+   103	      # is already recorded verbatim in the marker on deploy-preview.yml's own PR
+   104	      # comment, so read it back rather than trust a recomputation. Only fall back
+   105	      # to recomputing when there's no PR context (the `delete`-only path) or no
+   106	      # matching comment was ever posted (e.g. the branch never had an open PR at
+   107	      # deploy time, so no comment was possible).
+   108	      - name: Resolve slug from PR comment marker
+   109	        id: marker
+   110	        if: github.event_name == 'pull_request'
+   111	        uses: actions/github-script@v7
+   112	        with:
+   113	          script: |
+   114	            const prNumber = context.payload.pull_request.number
+   115	            const comments = await github.paginate(github.rest.issues.listComments, {
+   116	              owner: context.repo.owner,
+   117	              repo: context.repo.repo,
+   118	              issue_number: prNumber,
+   119	              per_page: 100,
+   120	            })
+   121	            // listComments returns ascending creation order — reverse before
+   122	            // matching so a second/later marker comment (e.g. posted after the
+   123	            // slug algorithm changed while this PR was open) wins over a stale
+   124	            // earlier one, rather than silently deleting the wrong target.
+   125	            const match = comments
+   126	              .filter((c) => c.user?.login === 'github-actions[bot]')
+   127	              .reverse()
+   128	              .map((c) => (c.body ?? '').match(/<!-- mrt-preview:([a-z0-9-]+) -->/))
+   129	              .find(Boolean)
+   130	            core.setOutput('slug', match ? match[1] : '')
+   131	
+   132	      - name: Compute MRT preview slug
+   133	        id: slug
+   134	        env:
+   135	          BRANCH_NAME: ${{ needs.resolve-branch.outputs.branch }}
+   136	          MARKER_SLUG: ${{ steps.marker.outputs.slug }}
+   137	        run: |
+   138	          if [[ -n "$MARKER_SLUG" ]]; then
+   139	            # The marker slug selects what gets deleted — restrict it to the
+   140	            # pr- namespace deploy always produces, so a malformed or
+   141	            # unexpectedly-authored marker comment can never point teardown at
+   142	            # one of the fixed named environments.
+   143	            if [[ ! "$MARKER_SLUG" =~ ^pr-[a-z0-9-]+$ ]]; then
+   144	              echo "Refusing to use marker slug outside the pr- namespace: $MARKER_SLUG" >&2
+   145	              exit 1
+   146	            fi
+   147	            SLUG="$MARKER_SLUG"
+   148	            echo "Using slug from PR comment marker: $SLUG"
+   149	          else
+   150	            SLUG=$(node scripts/computeMrtPreviewSlug.mjs "$BRANCH_NAME")
+   151	            echo "No PR comment marker found — recomputed slug from branch name: $SLUG"
+   152	          fi
+   153	          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+   154	
+   155	      - name: Wait for stable state, then delete (idempotent)
+   156	        env:
+   157	          SLUG: ${{ steps.slug.outputs.slug }}
+   158	        run: |
+   159	          python3 - <<'PYEOF'
+   160	          import base64, json, os, sys, time, urllib.request, urllib.error
+   161	
+   162	          SLUG, PROJECT = os.environ['SLUG'], os.environ['MRT_PROJECT']
+   163	          USER, API_KEY = os.environ['MRT_USER'], os.environ['MRT_API_KEY']
+   164	          token = base64.b64encode(f'{USER}:{API_KEY}'.encode()).decode()
+   165	          headers = {'Authorization': f'Basic {token}'}
+   166	          target_url = f'https://cloud.mobify.com/api/projects/{PROJECT}/target/{SLUG}/'
+   167	
+   168	          # DELETE 409s while the target is mid *_IN_PROGRESS — confirmed live
+   169	          # ({"detail":"Deploy in progress"}) — so wait for a stable state first,
+   170	          # same reasoning as deploy-preview.yml's create-side poll.
+   171	          deadline, poll_every = time.time() + 12 * 60, 20
+   172	          while True:
+   173	              req = urllib.request.Request(target_url, headers=headers)
+   174	              try:
+   175	                  body = json.loads(urllib.request.urlopen(req, timeout=30).read())
+   176	              except urllib.error.HTTPError as e:
+   177	                  if e.code == 404:
+   178	                      print(f'{SLUG} already gone — nothing to tear down.')
+   179	                      sys.exit(0)
+   180	                  if e.code == 429:
+   181	                      if time.time() > deadline:
+   182	                          print('Timed out waiting for stable state (persistently rate limited)', file=sys.stderr)
+   183	                          sys.exit(1)
+   184	                      try:
+   185	                          backoff = max(1, min(60, int(e.headers.get('Retry-After', 30))))
+   186	                      except (TypeError, ValueError):
+   187	                          backoff = 30
+   188	                      print(f'Rate limited — backing off {backoff}s')
+   189	                      time.sleep(backoff)
+   190	                      continue
+   191	                  raise
+   192	              except urllib.error.URLError as e:
+   193	                  # Teardown is the only cleanup path for a preview target — a
+   194	                  # transient connection error failing the job outright would
+   195	                  # leave the target running until someone deletes it by hand.
+   196	                  # Retry the same as deploy-preview.yml's wait loop.
+   197	                  print(f'Connection error ({e.reason}) — retrying')
+   198	                  if time.time() > deadline:
+   199	                      print('Timed out waiting for stable state', file=sys.stderr)
+   200	                      sys.exit(1)
+   201	                  time.sleep(poll_every)
+   202	                  continue
+   203	              state = body.get('state', '')
+   204	              if not state.endswith('_IN_PROGRESS'):
+   205	                  break
+   206	              if time.time() > deadline:
+   207	                  print(f'Timed out waiting for stable state (last={state})', file=sys.stderr)
+   208	                  sys.exit(1)
+   209	              print(f'{SLUG} state={state} — waiting')
+   210	              time.sleep(poll_every)
+   211	
+   212	          req = urllib.request.Request(target_url, method='DELETE', headers=headers)
+   213	          try:
+   214	              resp = urllib.request.urlopen(req, timeout=30)
+   215	              print(f'Deleted {SLUG}: {resp.status}')
+   216	          except urllib.error.HTTPError as e:
+   217	              if e.code == 404:
+   218	                  print(f'{SLUG} already deleted (race with a duplicate trigger) — treating as success.')
+   219	              else:
+   220	                  print(f'Delete failed {e.code}: {e.read().decode()}', file=sys.stderr)
+   221	                  sys.exit(1)
+   222	          PYEOF
+   223	
+   224	      - name: Update PR comment to reflect teardown
+   225	        if: github.event_name == 'pull_request'
+   226	        uses: actions/github-script@v7
+   227	        env:
+   228	          SLUG: ${{ steps.slug.outputs.slug }}
+   229	        with:
+   230	          script: |
+   231	            const marker = `<!-- mrt-preview:${process.env.SLUG} -->`
+   232	            const prNumber = context.payload.pull_request.number
+   233	
+   234	            const comments = await github.paginate(github.rest.issues.listComments, {
+   235	              owner: context.repo.owner,
+   236	              repo: context.repo.repo,
+   237	              issue_number: prNumber,
+   238	              per_page: 100,
+   239	            })
+   240	            const existing = comments.find(
+   241	              (c) => (c.body ?? '').includes(marker) && c.user?.login === 'github-actions[bot]'
+   242	            )
+   243	            if (existing) {
+   244	              await github.rest.issues.updateComment({
+   245	                owner: context.repo.owner,
+   246	                repo: context.repo.repo,
+   247	                comment_id: existing.id,
+   248	                body: `${marker}\n## 🧹 MRT Preview Environment torn down\n\nTarget \`${process.env.SLUG}\` was deleted after this PR closed.`,
+   249	              })
+   250	            }

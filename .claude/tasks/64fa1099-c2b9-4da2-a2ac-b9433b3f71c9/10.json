@@ -1,0 +1,9 @@
+{
+  "id": "10",
+  "subject": "Phase 5: multi-AI propagation + registry",
+  "description": "arche sync: propagate .claude/rules → Cursor/Copilot with synced-from headers + drift check. Agent-readable codebase registry via pack registryScanners.",
+  "activeForm": "Building multi-AI propagation + registry",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,873 @@
+=== product-list/index.tsx diff (added/removed lines only) ===
+-  Heading,
++  useBreakpointValue,
+-  Modal,
+-  ModalHeader,
+-  ModalBody,
+-  ModalFooter,
+-  ModalContent,
+-  ModalCloseButton,
+-  ModalOverlay,
++  Radio,
++  RadioGroup,
+-import Refinements from '@salesforce/retail-react-app/app/pages/product-list/partials/refinements';
+-import CategoryLinks from '@salesforce/retail-react-app/app/pages/product-list/partials/category-links';
+-import SelectedRefinements from '@salesforce/retail-react-app/app/pages/product-list/partials/selected-refinements';
+-import StoreInventoryFilter from '@salesforce/retail-react-app/app/pages/product-list/partials/inventory-filter';
+-// Icons — this repo's single source of truth is overrides/app/components/icons, never the
+-// base template path directly.
+-import { FilterIcon, ChevronDownIcon } from '../../components/icons';
++// SFCC-847 — filter drawer wiring. `ZimmDrawer` shell (SFCC-736) + `ZimmFiltersDrawerContent`
++// organism. Facet groups are derived from live SFCC productSearchResult.refinements (see
++// activeRefinements below) — the earlier hardcodedFilterFacets placeholder has been removed.
++import { ZimmDrawer } from '../../components/ui-kits/atoms/zimmDrawer';
++import { ZimmFiltersDrawerContent } from '../../components/ui-kits/organisms/zimmFiltersDrawerContent';
++import type { FilterFacetGroup } from '../../components/ui-kits/organisms/zimmFiltersDrawerContent';
++import { ZimmSelectedChip } from '../../components/ui-kits/atoms/zimmSelectedChip';
++import { ZimmButton } from '../../components/ui-kits/atoms/zimmButton';
++import { ZimmLink } from '../../components/ui-kits/atoms/zimmLink';
++import { ZimmCheckboxRefinements } from '../../components/ui-kits/atoms/zimmCheckboxRefinements';
++import { ZimmSizeRefinements } from '../../components/ui-kits/atoms/zimmSizeRefinements';
++import { useFilterDrawerState, buildAppliedRefine } from './useFilterDrawerState';
++// flattenRefinementValues import removed 2026-09-16 (SFCC-847) — was only used by the
++// in-panel chip strip for multi-select facets, which was removed per user request (chips
++// stack visually above the checkbox list; the checkbox tick is already the DS-correct
++// selected indicator, matches the Figma Colour/Material variants). Applied-filter chips
++// as a page-level pattern remain in SFCC-108's scope, not this ticket.
+-  STORE_LOCATOR_IS_ENABLED,
+-import { getConfig } from '@salesforce/pwa-kit-runtime/utils/ssr-config';
+-import LoadingSpinner from '@salesforce/retail-react-app/app/components/loading-spinner';
+-import { isHydrated } from '@salesforce/retail-react-app/app/utils/utils';
++import { isHydrated, isServer } from '@salesforce/retail-react-app/app/utils/utils';
++// Same attributeId OOTB's own Refinements.jsx componentMap keys ColorRefinements on —
++// used here to gate the ZimmCheckboxRefinements swatch dot to the colour facet only.
++const COLOR_REFINEMENT_ATTRIBUTE_ID = 'c_refinementColor';
++// Same attributeId OOTB's own Refinements.jsx componentMap keys SizeRefinements on — used
++// here to route the Size facet to ZimmSizeRefinements (button/chip grid) instead of
++// ZimmCheckboxRefinements (checkbox design).
++const SIZE_REFINEMENT_ATTRIBUTE_ID = 'c_size';
++
++// SFCC-847 — persists categoryOptions (below) across a hard refresh, same idiom OOTB's own
++// Refinements.jsx already uses for FILTER_ACCORDION_SATE (window.localStorage, gated by
++// isServer so it never runs during SSR).
++const CATEGORY_OPTIONS_STORAGE_KEY = 'sfcc-847-filter-drawer-category-options';
++
++type PageChipDatum = { key: string; label: string; onRemove: () => void };
++
++type SelectedChipRowProps = {
++  chips: PageChipDatum[];
++  visibleChips: PageChipDatum[];
++  offset: number;
++  canPageLeft: boolean;
++  canPageRight: boolean;
++  onOffsetChange: (next: number) => void;
++  onClearAll: () => void;
++};
++
++/**
++ * SFCC-847 — CLEAR ALL + windowed applied-filter chips + paging arrows. Rendered as a
++ * fragment so the caller owns the surrounding row: the desktop bar places it inline ahead of
++ * FILTERS/Sort, while mobile gives it its own second row beneath the FILTERS/SORT BY row.
++ * How many chips fit in the window is the caller's decision (see `chipsPerPage`).
++ */
++const SelectedChipRow = ({
++  chips,
++  visibleChips,
++  offset,
++  canPageLeft,
++  canPageRight,
++  onOffsetChange,
++  onClearAll,
++}: SelectedChipRowProps) => {
++  if (chips.length === 0) return null;
++
++  return (
++    <>
++      <Box flexShrink={0} whiteSpace="nowrap">
++        <ZimmLink label="Clear all" size="large" onClick={onClearAll} />
++      </Box>
++
++      <Flex gap="var(--zimm-scale-xs)">
++        {visibleChips.map((chip) => (
++          <ZimmSelectedChip
++            key={chip.key}
++            label={chip.label}
++            variant="outlined"
++            onRemove={() => {
++              chip.onRemove();
++              if (offset > 0 && offset >= chips.length - 1) {
++                onOffsetChange(offset - 1);
++              }
++            }}
++          />
++        ))}
++      </Flex>
++
++      <ZimmButton
++        variant="icon"
++        icon="chevron-left"
++        label="Previous chips"
++        disabled={!canPageLeft}
++        onClick={() => onOffsetChange(offset - 1)}
++      />
++      <ZimmButton
++        variant="icon"
++        icon="chevron-right"
++        label="Next chips"
++        disabled={!canPageRight}
++        onClick={() => onOffsetChange(offset + 1)}
++      />
++    </>
++  );
++};
++
+-  const { isOpen, onOpen, onClose } = useDisclosure();
++  const filterDrawer = useDisclosure();
+-  const storeLocatorEnabled = getConfig()?.app?.storeLocatorEnabled ?? STORE_LOCATOR_IS_ENABLED;
+-  const [filtersLoading, setFiltersLoading] = useState(false);
+-  const [wishlistLoading, setWishlistLoading] = useState<string[]>([]);
++  // Offset into the applied-filter chip window, shared by the desktop bar and the mobile row.
++  // Window size is breakpoint-dependent — see `chipsPerPage`.
++  const [chipOffset, setChipOffset] = useState(0);
++  const [wishlistLoading, setWishlistLoading] = useState<string[]>([]);
+-  // Apply disallow list to refinements.
+-  if (productSearchResult?.refinements) {
+-    productSearchResult.refinements = productSearchResult.refinements.filter(
+-      ({ attributeId }) => !REFINEMENT_DISALLOW_LIST.includes(attributeId),
+-    );
+-  }
++  // SFCC-847 — persisted list of category radio options for the drawer's Category facet.
++  // category.categories (OOTB useCategory data) only lists the CURRENT category's children —
++  // once the shopper navigates into a leaf category (no children of its own), it comes back
++  // empty and the radio list would otherwise vanish. Persisting the last non-empty list keeps
++  // every sibling option available across that navigation. Sources from the same real, correct
++  // OOTB data category.categories already provides, just surviving the navigation. Also
++  // seeded from localStorage on mount so a hard refresh on a leaf category page doesn't lose
++  // it either — in-memory state alone only survives client-side navigation, not a real reload.
++  const [categoryOptions, setCategoryOptions] = useState<{ id: string; name?: string }[] | undefined>(() => {
++    if (isServer) return undefined;
++    try {
++      const stored = window.localStorage.getItem(CATEGORY_OPTIONS_STORAGE_KEY);
++      return stored ? JSON.parse(stored) : undefined;
++    } catch {
++      return undefined;
++    }
++  });
++  useEffect(() => {
++    if (category?.categories && category.categories.length > 0) {
++      setCategoryOptions(category.categories);
++      if (!isServer) {
++        // Persistence is best-effort — quota exceeded, private browsing, or disabled storage
++        // must not break category loading; the in-memory setCategoryOptions above already
++        // covers this render regardless of whether the write below succeeds.
++        try {
++          window.localStorage.setItem(CATEGORY_OPTIONS_STORAGE_KEY, JSON.stringify(category.categories));
++        } catch {
++          // Ignore — see comment above.
++        }
++      }
++    }
++  }, [category]);
+-    setFiltersLoading(isRefetching);
++  // SFCC-847 — parentCategoryId is used both in the page-level chip strip (to navigate back
++  // to the parent when the category chip is removed) and in applyFilters (categoryCleared).
++  // Defined at component scope so both consumers share the same value without re-deriving it.
++  const parentCategoryId = (category as { parentCategoryId?: string } | undefined)?.parentCategoryId;
++
++  // SFCC-847 — every selection in the drawer (category + every refinement facet) is
++  // buffered locally via useFilterDrawerState rather than applied straight to the URL on
++  // each click. Matches how the Storybook stories for this drawer already behaved (no
++  // navigation on selection) and makes APPLY the single moment that actually commits.
++  // Resyncs from the page's real applied filters every time the drawer opens (see the
++  // hook's own docblock). Pass searchParams.refine (the URL-derived ground truth) as the
++  // resync source, NOT productSearchResult.selectedRefinements — the API field only echoes
++  // back what SFCC decides to include (typically just cgid), so it silently misses applied
++  // refine params for colour, size, etc. The URL is always authoritative for what's applied.
++  const {
++    pendingCategoryId,
++    setPendingCategoryId,
++    pendingRefine,
++    setValues,
++    removeValue,
++    clearAll,
++    resyncPendingRefine,
++  } = useFilterDrawerState({
++    isOpen: filterDrawer.isOpen,
++    categoryId: params.categoryId,
++    selectedRefinements: searchParams.refine,
++  });
++
++  // SFCC-847 — when the shopper changes the Category radio to a different category, clear
++  // any pending refine selections immediately. Those selections belonged to the OLD
++  // category's facet set and may not even be valid options for the new one (e.g. a colour
++  // only Clothing has) — keeping them checked would show a stale, possibly-invalid selection
++  // for the moment before the prefetch (pendingCategoryChanged below) resolves. Once it
++  // resolves, the checkboxes re-render against the NEW category's own live values, and
++  // anything the shopper picks from there on IS carried through to APPLY (see applyFilters) —
++  // this clear is just about not carrying the OLD category's stale selection across the
++  // switch, not about discarding whatever gets picked afterwards. Reverting back to the
++  // current category restores whatever the URL already has applied (resync effect handles
++  // that on the next open).
++  const handleCategoryChange = (newCategoryId: string) => {
++    setPendingCategoryId(newCategoryId);
++    if (newCategoryId !== params.categoryId) {
++      clearAll();
++    }
++  };
++
++  // CLEAR resets the *entire* pending draft, not just refinements — matching OOTB's own
++  // resetFilters, which resets every piece of applied filter state (refine AND
++  // searchByInventory) in one action, not just checkboxes. Without also reverting
++  // pendingCategoryId, a shopper who tentatively switched category then pressed CLEAR would
++  // still see that category selected, even though every other pending change was discarded.
++  const handleClearAll = () => {
++    clearAll();
++    setPendingCategoryId(undefined);
++  };
++
++  // Discards all pending (unapplied) selections when the drawer is dismissed via the X
++  // button or backdrop — not via APPLY, which calls filterDrawer.onClose() directly and
++  // lets the navigation + resync effect own the state transition.
++  const handleDrawerClose = () => {
++    filterDrawer.onClose();
++    clearAll();
++    setPendingCategoryId(undefined);
++  };
++
++  // SFCC-847 — matches toggleFilter's own signature exactly (value, attributeId, selected,
++  // allowMultiple) so OOTB's own CheckboxRefinements (see refinementFacetGroups below) can
++  // be reused unmodified for the drawer's facet content, instead of hand-rolling a generic
++  // Checkbox list. The only difference from the page's real toggleFilter is that this writes
++  // to the buffered pendingRefine instead of navigating immediately — APPLY (below) is what
++  // actually commits. allowMultiple=false is dead code for CheckboxRefinements specifically
++  // (it never passes a 4th arg — always multi-select) but kept for signature-fidelity with
++  // the real toggleFilter, in case a future facet type needs it.
++  const handleBufferedToggle = (
++    value: { value: string | number },
++    attributeId: string,
++    selected: boolean,
++    allowMultiple = true,
++  ) => {
++    const stringValue = String(value.value);
++    if (!allowMultiple) {
++      // Single-select (e.g. price via RadioRefinements): RadioRefinement always calls with
++      // selected=false regardless of actual state (same OOTB quirk toggleFilter's own
++      // allowMultiple=false branch already works around) — derive the real current selection
++      // from pendingRefine instead. Clicking the already-selected value clears it; clicking
++      // any other value replaces it.
++      const current = pendingRefine[attributeId]?.[0];
++      setValues(attributeId, current === stringValue ? [] : [stringValue]);
++      return;
++    }
++    if (selected) {
++      removeValue(attributeId, stringValue);
++    } else {
++      setValues(attributeId, [...(pendingRefine[attributeId] ?? []), stringValue]);
++    }
++  };
++
++  // SFCC-847 — secondary prefetch: when the drawer is open and the shopper has changed the
++  // Category radio to a different category, fetch that category's live refinements so the
++  // Colour/Size/etc. accordions show what's actually available for the pending category
++  // rather than the current page's facet set. limit=1 minimises data transfer — only the
++  // refinements array is needed, not the product hits.
++  const pendingCategoryChanged = filterDrawer.isOpen && !!pendingCategoryId && pendingCategoryId !== params.categoryId;
++
++  const { data: pendingCategoryResult } = useProductSearch(
++    {
++      parameters: {
++        limit: 1,
++        refine: [`cgid=${pendingCategoryId ?? ''}`] as unknown as string,
++      },
++    },
++    {
++      // Only fires when the drawer is open with a different category pending.
++      enabled: pendingCategoryChanged,
++    },
++  );
++
++  // The refinements driving the non-Category accordions: use the pending category's live
++  // refinements when a different category is selected (so Colour shows dresses colours, not
++  // clothing colours). While that prefetch is in flight or has failed, render an empty set
++  // rather than falling back to the OLD category's refinements — showing Clothing's colours
++  // for a moment while "Dresses" is already selected would let the shopper pick a value that
++  // isn't even valid for the category they're navigating to. Only fall back to the current
++  // page's refinements when no category change is pending at all.
++  const activeRefinements = (
++    pendingCategoryChanged ? pendingCategoryResult?.refinements ?? [] : productSearchResult?.refinements ?? []
++  ).filter(({ attributeId }) => !REFINEMENT_DISALLOW_LIST.includes(attributeId));
++
++  // Commits every buffered selection at once — the drawer's APPLY handler. A category
++  // change and any refine selections made alongside it (colour/size, etc.) are applied
++  // together in one navigation: activeRefinements/the checkboxes already reflect the
++  // PENDING category's own live facet set once pendingCategoryChanged is true (see the
++  // prefetch above), so whatever the shopper picked there is already valid for the category
++  // they're navigating to — discarding it here would throw away a selection the drawer
++  // itself just showed as available. Every attribute this drawer manages (every non-cgid
++  // attributeId SFCC currently returns) is overwritten from pendingRefine — including
++  // attributes the shopper unticked back to empty, which simply won't appear in
++  // pendingRefine and so get deleted — while attributes this drawer doesn't manage (e.g.
++  // StoreInventoryFilter's `ilids`) are left untouched.
++  const applyFilters = () => {
++    filterDrawer.onClose();
++
++    // Union of the OLD category's refinement attributes (productSearchResult, i.e. what's
++    // currently applied) and the NEW/pending category's (activeRefinements) — not just the
++    // latter alone. A category-specific attribute that only the OLD category has (e.g. a
++    // future sleeve-length facet Dresses carries but Tops doesn't) would otherwise survive
++    // buildAppliedRefine's delete pass untouched, leaking a stale, no-longer-valid refine
++    // value into the new category's URL. cgid/ilids are excluded — cgid because it's tracked
++    // separately via the URL path segment, ilids because StoreInventoryFilter isn't one of
++    // this drawer's managed facets at all (see buildAppliedRefine's own docblock).
++    const managedAttributeIds = Array.from(
++      new Set([
++        ...activeRefinements.map(({ attributeId }) => attributeId),
++        ...(productSearchResult?.refinements ?? []).map(({ attributeId }) => attributeId),
++      ]),
++    ).filter((attributeId) => attributeId !== 'cgid' && attributeId !== 'ilids');
++
++    const searchParamsCopy = {
++      ...searchParams,
++      refine: buildAppliedRefine(searchParams.refine, managedAttributeIds, pendingRefine),
++    };
++    delete searchParamsCopy.offset;
++
++    const categoryChanged = !!pendingCategoryId && pendingCategoryId !== params.categoryId;
++    // The shopper removed the sub-category chip: pendingCategoryId is undefined but the
++    // current page IS a sub-category. parentCategoryId is derived at component scope from the
++    // SFCC Category object (which carries it at runtime — confirmed in SDK mock data and
++    // storefront-next types). Navigate to it so the shopper returns to the broader listing.
++    const categoryCleared = pendingCategoryId === undefined && !!params.categoryId && !!parentCategoryId;
++
++    // A category change (or clear back to parent) always lands on /category/{id} regardless
++    // of isSearch. `q` must be dropped from a search-page URL too — leaving it in would make
++    // the next render's isSearch check treat the category page as search results.
++    if (categoryChanged || categoryCleared) {
++      delete searchParamsCopy.q;
++    }
++    const appliedUrl = categoryChanged
++      ? `/category/${pendingCategoryId}?${stringifySearchParams(searchParamsCopy)}`
++      : categoryCleared
++      ? `/category/${parentCategoryId}?${stringifySearchParams(searchParamsCopy)}`
++      : isSearch
++      ? `/search?${stringifySearchParams(searchParamsCopy)}`
++      : `/category/${params.categoryId}?${stringifySearchParams(searchParamsCopy)}`;
++    navigate(appliedUrl);
++  };
++
++  // SFCC-847 — Category facet group, built from categoryOptions (the cached, persisted
++  // list defined above) rather than category.categories directly — see that state's own
++  // comment for why. Sources from the same real, correct OOTB data category.categories
++  // already provides, just surviving navigation into a leaf category instead of vanishing.
++  const selectedCategoryOption = categoryOptions?.find(({ id }) => id === pendingCategoryId);
++  const categoryFacetGroup: FilterFacetGroup | null =
++    categoryOptions && categoryOptions.length > 0
++      ? {
++          id: 'category',
++          label: 'Category',
++          // SFCC-847 AC #4: "Selected variant renders the chosen value as a chip/tag ...
++          // replacing the options list." Category chip appears in both alwaysVisibleContent
++          // (visible when accordion collapsed) and content (replaces the RadioGroup when expanded).
++          alwaysVisibleContent: selectedCategoryOption ? (
++            <Flex wrap="wrap" gap="var(--zimm-scale-2xs)">
++              <ZimmSelectedChip
++                label={selectedCategoryOption.name ?? selectedCategoryOption.id}
++                onRemove={() => {
++                  setPendingCategoryId(undefined);
++                  resyncPendingRefine(searchParams.refine);
++                }}
++              />
++            </Flex>
++          ) : undefined,
++          content: selectedCategoryOption ? undefined : (
++            <RadioGroup value={pendingCategoryId ?? ''} onChange={handleCategoryChange}>
++              <Stack sx={{ gap: 'var(--zimm-scale-m)' }}>
++                {categoryOptions.map(({ id, name }) => (
++                  // `colorScheme="gray"` is a valid Chakra scheme; the earlier "black"
++                  // silently fell back to Chakra's default blue at render (no such scheme
++                  // defined in the theme). Full DS square-radio visuals are a follow-up —
++                  // needs a Radio theme override or a ZimmRadioRefinements atom. Label
++                  // typography goes through textStyle="navigation" so the labels render
++                  // uppercase per Figma's `Default/Navigation` style, regardless of the
++                  // Title Case coming from BM data.
++                  <Radio
++                    key={id}
++                    value={id}
++                    colorScheme="gray"
++                    sx={{
++                      paddingLeft: '2px',
++                      '& + span': {
++                        marginTop: '0',
++                        verticalAlign: 'center',
++                      },
++                    }}
++                  >
++                    <Text as="span" textStyle="navigation" verticalAlign="center">
++                      {name ?? id}
++                    </Text>
++                  </Radio>
++                ))}
++              </Stack>
++            </RadioGroup>
++          ),
++        }
++      : null;
++
++  // activeRefinements already has REFINEMENT_DISALLOW_LIST filtered out (cgid is filtered
++  // out explicitly below, same as in applyFilters — activeRefinements itself does not
++  // exclude it), and reflects the pending category's live facet set when the shopper has
++  // changed the Category radio — so Colour shows dresses colours when Dresses is pending,
++  // not the old page's clothing colours.
++  const refinementFacetGroups: FilterFacetGroup[] = activeRefinements
++    .filter(({ attributeId }) => attributeId !== 'cgid')
++    .map((refinement) => {
++      const selectedValues = pendingRefine[refinement.attributeId] ?? [];
++      // SFCC-847 — per the design document: Size matches OOTB's own button/chip grid
++      // (ZimmSizeRefinements, which reuses SizeRefinements unmodified — see its own
++      // docblock), every other facet uses checkbox styling (ZimmCheckboxRefinements) —
++      // neither routes through componentMap's own per-attribute-type dispatch (which would
++      // send colour to swatches too). The OOTB sidebar and mobile modal are unaffected —
++      // they still use componentMap via the base Refinements component, unchanged.
++      // handleBufferedToggle (above) stands in for the page's real toggleFilter, buffering
++      // into pendingRefine instead of navigating immediately. No `alwaysVisibleContent` chip
++      // strip on multi-select facets — the checkbox tick itself is the selected indicator,
++      // matching Figma's Colour/Material variants (audited 2026-09-16). Applied-filter chip
++      // patterns as a page-level surface belong to SFCC-108 AC #6, not this ticket.
++      const isSize = refinement.attributeId === SIZE_REFINEMENT_ATTRIBUTE_ID;
++
++      return {
++        id: refinement.attributeId,
++        label: refinement.label ?? refinement.attributeId,
++        alwaysVisibleContent:
++          selectedValues.length > 0 ? (
++            <Flex wrap="wrap" gap="var(--zimm-scale-2xs)">
++              {selectedValues.map((value) => (
++                <ZimmSelectedChip
++                  key={value}
++                  label={String(value)}
++                  onRemove={() => handleBufferedToggle({ value }, refinement.attributeId, true)}
++                />
++              ))}
++            </Flex>
++          ) : undefined,
++        content: isSize ? (
++          <ZimmSizeRefinements
++            filter={refinement}
++            toggleFilter={handleBufferedToggle}
++            selectedFilters={selectedValues}
++          />
++        ) : (
++          <ZimmCheckboxRefinements
++            filter={refinement}
++            toggleFilter={handleBufferedToggle}
++            selectedFilters={selectedValues}
++            showColorSwatch={refinement.attributeId === COLOR_REFINEMENT_ATTRIBUTE_ID}
++          />
++        ),
++      };
++    });
++
++  const filterFacetGroups: FilterFacetGroup[] = [
++    ...(categoryFacetGroup ? [categoryFacetGroup] : []),
++    ...refinementFacetGroups,
++  ];
++
+-  // Toggles filter on and off
+-  const toggleFilter = (
+-    value: { value: string | number },
+-    attributeId: string,
+-    selected: boolean,
+-    allowMultiple = true,
+-  ) => {
+-    // Special handling for inventory filter
+-    if (attributeId === 'ilids') {
+-      if (!selected) {
+-        setSearchByInventory(value.value);
+-      } else {
+-        setSearchByInventory(null);
+-      }
+-      return;
+-    }
+-
+-    const searchParamsCopy = { ...searchParams };
+-
+-    // Remove the `offset` search param if present.
+-    delete searchParamsCopy.offset;
+-
+-    // If we aren't allowing for multiple selections, simply clear any value set for the
+-    // attribute, and apply a new one if required.
+-    if (!allowMultiple) {
+-      const previousValue = searchParamsCopy.refine[attributeId];
+-      delete searchParamsCopy.refine[attributeId];
+-
+-      // Note the loose comparison, for "string != number" checks.
+-      if (!selected && value.value != previousValue) {
+-        searchParamsCopy.refine[attributeId] = value.value;
+-      }
+-    } else {
+-      // Get the attibute value as an array.
+-      let attributeValue = searchParamsCopy.refine[attributeId] || [];
+-
+-      // Ensure that the value is still converted into an array if it's a `string` or `number`.
+-      if (typeof attributeValue === 'string') {
+-        attributeValue = attributeValue.split('|');
+-      } else if (typeof attributeValue === 'number') {
+-        attributeValue = [attributeValue];
+-      }
+-
+-      // Either set the value, or filter the value out.
+-      if (!selected) {
+-        attributeValue.push(value.value);
+-      } else {
+-        // Note the loose comparison, for "string != number" checks.
+-        attributeValue = attributeValue?.filter((v: string | number) => v != value.value);
+-      }
+-
+-      // Update the attribute value in the new search params.
+-      searchParamsCopy.refine[attributeId] = attributeValue;
+-
+-      // If the update value is an empty array, remove the current attribute key.
+-      if (searchParamsCopy.refine[attributeId].length === 0) {
+-        delete searchParamsCopy.refine[attributeId];
+-      }
+-    }
+-
+-    if (isSearch) {
+-      navigate(`/search?${stringifySearchParams(searchParamsCopy)}`);
+-    } else {
+-      navigate(`/category/${params.categoryId}?${stringifySearchParams(searchParamsCopy)}`);
+-    }
+-  };
+-
+-  // Helper function to create StoreInventoryFilter component
+-  const createStoreInventoryFilter = () => {
+-    if (!storeLocatorEnabled) return null;
+-    return (
+-      <StoreInventoryFilter
+-        key="storeInventoryFilter"
+-        toggleFilter={toggleFilter}
+-        selectedFilters={productSearchResult?.selectedRefinements || {}}
+-      />
+-    );
+-  };
+-
++  // ── Page-level applied-filter chip data ──────────────────────────────────────────────────
++  // Unified list of all currently applied chips: category first, then refinement values.
++  // Built here (not inside JSX) so the IIFE anti-pattern is avoided.
++  const pageChips: PageChipDatum[] = [];
++
++  // Category chip: show when params.categoryId matches one of the sibling options, meaning
++  // we're inside a sub-category. parentCategoryId is the destination when it is removed.
++  const isCategoryChipActive =
++    !!params.categoryId && !!parentCategoryId && !!categoryOptions?.some((opt) => opt.id === params.categoryId);
++
++  if (isCategoryChipActive) {
++    const categoryChipLabel = (category?.name ?? params.categoryId ?? '').toUpperCase();
++    pageChips.push({
++      key: `cgid-${params.categoryId}`,
++      label: categoryChipLabel,
++      onRemove: () => {
++        const next = { ...searchParams };
++        delete next.offset;
++        navigate(`/category/${parentCategoryId}?${stringifySearchParams(next)}`);
++      },
++    });
++  }
++
++  // Refinement chips — one per applied value, skipping cgid.
++  Object.entries(searchParams.refine).forEach(([attributeId, values]) => {
++    if (attributeId === 'cgid') return;
++    const valueArray = Array.isArray(values)
++      ? values
++      : typeof values === 'string'
++      ? values.split('|')
++      : [String(values)];
++    valueArray.forEach((value) => {
++      pageChips.push({
++        key: `${attributeId}-${value}`,
++        label: String(value),
++        onRemove: () => {
++          const nextRefine = { ...searchParams.refine };
++          const current = Array.isArray(nextRefine[attributeId])
++            ? nextRefine[attributeId]
++            : String(nextRefine[attributeId]).split('|');
++          const filtered = (current as string[]).filter((v) => v !== value);
++          if (filtered.length === 0) {
++            delete nextRefine[attributeId];
++          } else {
++            nextRefine[attributeId] = filtered;
++          }
++          const next = { ...searchParams, refine: nextRefine };
++          navigate(
++            isSearch
++              ? `/search?${stringifySearchParams(next)}`
++              : `/category/${params.categoryId}?${stringifySearchParams(next)}`,
++          );
++        },
++      });
++    });
++  });
++
++  // Annotated because the shared/ui re-export of useBreakpointValue is untyped (`any`), which
++  // would otherwise leak into the offset arithmetic below.
++  const chipsPerPage: number = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 3;
++  const safeChipOffset = Math.min(chipOffset, Math.max(0, pageChips.length - chipsPerPage));
++  const visiblePageChips = pageChips.slice(safeChipOffset, safeChipOffset + chipsPerPage);
++  const canChipLeft = safeChipOffset > 0;
++  const canChipRight = safeChipOffset + chipsPerPage < pageChips.length;
++
++  // Clearing the category chip has to navigate to the parent category — `resetFilters` only
++  // clears `refine`, which would leave the shopper on the narrowed category URL.
++  const handleChipClearAll = () => {
++    setChipOffset(0);
++    if (isCategoryChipActive && parentCategoryId) {
++      const cleared = { ...searchParams, refine: {} };
++      delete cleared.offset;
++      navigate(`/category/${parentCategoryId}?${stringifySearchParams(cleared)}`);
++    } else {
++      resetFilters();
++    }
++  };
++  // ─────────────────────────────────────────────────────────────────────────────────────────
++
+-
+-        {/* Header */}
++        {/* Header — desktop only */}
+-          display={{ base: 'none', lg: 'flex' }}
++          display={{ base: 'none', md: 'flex' }}
++          {/* flex={1} is load-bearing: it gives the bar the full remaining width so the spacer
++              below can push FILTERS | SORT BY to the right edge. */}
+-            <SelectedRefinements
+-              filters={productSearchResult?.refinements}
+-              toggleFilter={toggleFilter}
+-              handleReset={resetFilters}
+-              selectedFilterValues={productSearchResult?.selectedRefinements}
+-            />
+-          </Box>
+-          <Box paddingTop={'45px'}>
+-            <Sort sortUrls={sortUrls} productSearchResult={productSearchResult} basePath={basePath} />
++            {/* SFCC-847 — single-row filter bar: CLEAR ALL | chip window | < > | FILTERS | SORT BY */}
++            <Flex align="center" gap="var(--zimm-scale-xs)" minH="40px">
++              <SelectedChipRow
++                chips={pageChips}
++                visibleChips={visiblePageChips}
++                offset={safeChipOffset}
++                canPageLeft={canChipLeft}
++                canPageRight={canChipRight}
++                onOffsetChange={setChipOffset}
++                onClearAll={handleChipClearAll}
++              />
++
++              {/* Spacer pushes FILTERS | SORT to the right */}
++              <Box flex={1} />
++
++              {/* FILTERS trigger */}
++              <Box flexShrink={0}>
++                <ZimmLink label="Filters" size="large" onClick={filterDrawer.onOpen} />
++              </Box>
++
++              {/* Vertical separator */}
++              <Box w="1px" h="16px" bg="var(--zimm-color-border-tertiary)" flexShrink={0} />
++
++              {/* Sort By */}
++              <Sort sortUrls={sortUrls} productSearchResult={productSearchResult} basePath={basePath} />
++            </Flex>
+-        {/* Filter Button for Mobile */}
++        {/* Header — mobile only */}
+-          <Stack spacing={6}>
++          <Stack spacing={4} marginBottom={6}>
+-            <Stack
+-              display={{ base: 'flex', md: 'none' }}
+-              direction="row"
+-              justify="flex-start"
+-              align="center"
+-              spacing={1}
+-              height={12}
+-              borderColor="gray.100"
+-            >
+-              <Flex align="center">
+-                <Button
+-                  fontSize="sm"
+-                  colorScheme="black"
+-                  variant="outline"
+-                  marginRight={2}
+-                  display="inline-flex"
+-                  leftIcon={<FilterIcon boxSize={5} />}
+-                  onClick={onOpen}
+-                >
+-                  <FormattedMessage defaultMessage="Filter" id="product_list.button.filter" />
+-                </Button>
+-              </Flex>
+-              <Flex align="center">
+-                <Button
+-                  maxWidth="245px"
+-                  fontSize="sm"
+-                  marginRight={2}
+-                  colorScheme="black"
+-                  variant="outline"
+-                  display="inline-flex"
+-                  rightIcon={<ChevronDownIcon boxSize={5} />}
+-                  onClick={() => setSortOpen(true)}
+-                >
+-                  {intl.formatMessage(
+-                    {
+-                      id: 'product_list.button.sort_by',
+-                      defaultMessage: 'Sort By: {sortOption}',
+-                    },
+-                    {
+-                      sortOption: selectedSortingOptionLabel?.label,
+-                    },
+-                  )}
+-                </Button>
++
++            {/* Row 1: FILTERS | SORT BY */}
++            <Flex align="center" justify="center" gap="var(--zimm-scale-xs)" minH="40px">
++              <Box flexShrink={0}>
++                <ZimmLink label="Filters" size="large" onClick={filterDrawer.onOpen} />
++              </Box>
++              <Box w="1px" h="16px" bg="var(--zimm-color-border-tertiary)" flexShrink={0} />
++              <Box flexShrink={0}>
++                <ZimmLink label="Sort by" size="large" onClick={() => setSortOpen(true)} />
++              </Box>
++            </Flex>
++
++            {/* Row 2: selected chips — only when filters are active */}
++            {pageChips.length > 0 && (
++              <Flex align="center" justify="center" gap="var(--zimm-scale-xs)" minH="40px">
++                <SelectedChipRow
++                  chips={pageChips}
++                  visibleChips={visiblePageChips}
++                  offset={safeChipOffset}
++                  canPageLeft={canChipLeft}
++                  canPageRight={canChipRight}
++                  onOffsetChange={setChipOffset}
++                  onClearAll={handleChipClearAll}
++                />
+-            </Stack>
++            )}
+-          <Box marginBottom={4}>
+-            <SelectedRefinements
+-              filters={productSearchResult?.refinements}
+-              toggleFilter={toggleFilter}
+-              handleReset={resetFilters}
+-              selectedFilterValues={productSearchResult?.selectedRefinements}
+-            />
+-          </Box>
+-        <Grid templateColumns={{ base: '1fr', md: '280px 1fr' }} columnGap={6}>
+-          <Stack display={{ base: 'none', md: 'flex' }}>
+-            <Island hydrateOn={'visible'}>
+-              <Refinements
+-                itemsBefore={
+-                  category?.categories
+-                    ? [
+-                        <CategoryLinks key="itemsBefore" category={category} onSelect={onClose} />,
+-                        createStoreInventoryFilter(),
+-                      ].filter(Boolean)
+-                    : [createStoreInventoryFilter()].filter(Boolean)
+-                }
+-                isLoading={filtersLoading}
+-                toggleFilter={toggleFilter}
+-                filters={productSearchResult?.refinements}
+-                excludedFilters={['cgid']}
+-                selectedFilters={searchParams.refine}
+-              />
+-            </Island>
+-          </Stack>
++        {/* SFCC-847 — single column at every breakpoint: the sidebar Refinements that used
++            to occupy the 280px column has been removed. The FILTERS drawer now covers that
++            job across the full viewport range — both the desktop bar and the mobile row open
++            the same ZimmDrawer, so there is no breakpoint without a filter entry point. */}
++        <Grid templateColumns="1fr">
+-      {/* Modal for filter options on mobile */}
+-      <Modal isOpen={isOpen} onClose={onClose} size="full" motionPreset="slideInBottom" scrollBehavior="inside">
+-        <ModalOverlay />
+-        <ModalContent top={0} marginTop={0}>
+-          <ModalHeader>
+-            <Heading as="h1" fontWeight="bold" fontSize="2xl">
+-              <FormattedMessage defaultMessage="Filter" id="product_list.modal.title.filter" />
+-            </Heading>
+-          </ModalHeader>
+-          <ModalCloseButton />
+-          <ModalBody py={4}>
+-            {filtersLoading && <LoadingSpinner />}
+-            <Refinements
+-              toggleFilter={toggleFilter}
+-              filters={productSearchResult?.refinements}
+-              selectedFilters={searchParams.refine}
+-              itemsBefore={
+-                category?.categories
+-                  ? [
+-                      <CategoryLinks key="itemsBefore" category={category} onSelect={onClose} />,
+-                      createStoreInventoryFilter(),
+-                    ].filter(Boolean)
+-                  : [createStoreInventoryFilter()].filter(Boolean)
+-              }
+-              excludedFilters={['cgid']}
+-            />
+-          </ModalBody>
+-
+-          <ModalFooter
+-            // justify="space-between"
+-            display="block"
+-            width="full"
+-            borderTop="1px solid"
+-            borderColor="gray.100"
+-            paddingBottom={10}
+-          >
+-            <Stack>
+-              <Button width="full" onClick={onClose}>
+-                {intl.formatMessage(
+-                  {
+-                    id: 'product_list.modal.button.view_items',
+-                    defaultMessage: 'View {prroductCount} items',
+-                  },
+-                  {
+-                    prroductCount: productSearchResult?.total,
+-                  },
+-                )}
+-              </Button>
+-              <Button width="full" variant="outline" onClick={resetFilters}>
+-                <FormattedMessage defaultMessage="Clear Filters" id="product_list.modal.button.clear_filters" />
+-              </Button>
+-            </Stack>
+-          </ModalFooter>
+-        </ModalContent>
+-      </Modal>
++      {/* Mobile sort drawer */}
++      {/* SFCC-847 — desktop filter drawer. Facet groups are derived from live SFCC
++          productSearchResult.refinements. Every selection (category + refinements) is
++          buffered locally via useFilterDrawerState — nothing here calls toggleFilter/
++          navigate on click. CLEAR only resets the buffer (clearAll); APPLY (applyFilters)
++          is the one action that actually navigates/commits, matching the drawer's own
++          onApply contract and how the Storybook stories for this organism already behave.
++          Facet input UI uses Chakra Checkbox/Radio defaults until SFCC-108 delivers
++          Zimmermann-branded atoms (swatches, size chips). */}
++      <ZimmDrawer
++        isOpen={filterDrawer.isOpen}
++        onClose={handleDrawerClose}
++        size="large"
++        hasOverlay={false}
++        // "FILTER BY" per the Zimmermann Design System 2026 Figma (2026-09-14 reference
++        // screenshot). AC text and Figma header disagree on this title — flagged; reconcile
++        // with Bianca Morley before merge.
++        title="FILTER BY"
++      >
++        <ZimmFiltersDrawerContent
++          facetGroups={filterFacetGroups}
++          // Category opens by default — explicit developer direction, since it's the facet
++          // shoppers reach for first. FLAGGED FOR REVIEW: SFCC-847's AC only specifies
++          // "one accordion expanded at a time" (confirmed by Bianca Morley) and describes
++          // Expanded/Collapsed as generic per-accordion variant states — it does not specify
++          // which facet group, if any, should be open when the drawer first renders. This is
++          // a developer addition beyond the documented AC, not a fix aligning with it.
++          // Reconcile with Bianca Morley before merge, same as the "FILTER BY" title and
++          // allowMultipleExpanded flags elsewhere in this file.
++          initialExpandedId="category"
++          // One accordion expanded at a time, matching SFCC-847 AC text — explicit developer
++          // direction 2026-09-14 resolves the earlier Figma-vs-AC conflict (Figma showed
++          // Category/Colour/Size expanded simultaneously) in favour of AC/one-at-a-time.
++          // allowMultipleExpanded intentionally omitted — ZimmAccordion defaults to false.
++          onClear={handleClearAll}
++          onApply={applyFilters}
++        />
++      </ZimmDrawer>

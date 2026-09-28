@@ -1,0 +1,594 @@
+overrides/app/utils/refinementValues.ts:5: * child values — flattens the tree into one flat list so a caller (chip-label lookup,
+overrides/app/components/ui-kits/zimmProductCardShared.ts:15: * `sizeChips` / `notifyMe` by `ZimmProductCardContent`. Do not rename a value here without
+overrides/app/components/ui-kits/zimmProductCardShared.ts:27:  sizeChips: 'sizeChips',
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:13: *  both branches. Same reasoning `zimmSizeChip.css.ts` documents for its own `disabled` prop. */
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:65: *   - `sizeChipWrapper` — wraps the composed ZimmSizeChipGroup (PLP-only when rendered at all).
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:80:    'sizeChipWrapper',
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:207:    sizeChipWrapper: {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/zimmProductCardContent.css.ts:212:      // 24px — matches priceWrapper/sizeChipWrapper's own marginTop above: Figma's "Content"
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:8:import type { ZimmSizeChipValue } from '../zimmSizeChipGroup';
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:10:const SIZES: ZimmSizeChipValue[] = [
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:39:/** Minimal, PLP-shaped default: name link, bag action, price — no attributes, no size chips. */
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:49:    showSizeChips: false,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:97: * Wraps `ZimmProductCardContent` so `selectedSizeChipValue` is genuinely live rather than a
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:98: * static arg — neither this component nor the `ZimmSizeChipGroup` it composes tracks selection
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:99: * itself (both are correctly controlled components), so a story that wants a chip click to
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:103: * union keyed by `variation` — `selectedSizeChipValue`/`onSizeChipSelect` are already valid
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:104: * (optional) members on every value of the type, so `{...args, selectedSizeChipValue,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:105: * onSizeChipSelect}` needs no narrowing before it assigns back to `ZimmProductCardContentProps`,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:106: * unlike that other file's `propsWithLiveSelection`. `handleSizeChipSelect` still fires the
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:107: * original `args.onSizeChipSelect` (the `fn()` spy below) so Storybook's Actions panel keeps
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:110:const WithSizeChipsExample = (args: ZimmProductCardContentProps) => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:111:  const [selectedSizeChipValue, setSelectedSizeChipValue] = useState<string | undefined>('m');
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:112:  const handleSizeChipSelect = (value: string) => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:113:    setSelectedSizeChipValue(value);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:114:    args.onSizeChipSelect?.(value);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:119:      selectedSizeChipValue={selectedSizeChipValue}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:120:      onSizeChipSelect={handleSizeChipSelect}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:125:/** PLP-shaped: the size-chip picker renders in place of the attributes line. Size chips are
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:127: *  different chip to see the live selection move. Rendered via `WithSizeChipsExample` above,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:128: *  which owns `selectedSizeChipValue` as local state; every other arg below is unchanged. */
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:129:export const WithSizeChips: Story = {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:132:    showSizeChips: true,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:133:    sizeChipValues: SIZES,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:134:    selectedSizeChipValue: 'm',
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:135:    onSizeChipSelect: fn(),
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:137:  render: (args) => <WithSizeChipsExample {...args} />,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:141: * PLP-shaped, one-size product: triggers `ZimmSizeChipGroup`'s own `values.length === 1` branch
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:143: * `[role=radiogroup]` of chips. Plain args here, not wrapped in `WithSizeChipsExample` and with no
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:144: * `selectedSizeChipValue`/`onSizeChipSelect` — there is nothing to select in that branch (it never
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:145: * reaches the chip-click/keyboard-navigation code path at all), so the interactive wrapper this
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:146: * file uses for `WithSizeChips` would misleadingly imply a selection state that doesn't exist here.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:148:export const WithSizeChipsOneSize: Story = {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:151:    showSizeChips: true,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.stories.tsx:152:    sizeChipValues: [{ value: 'os', label: 'One size' }],
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:8:import { ZimmSizeChipGroup } from '../zimmSizeChipGroup';
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:9:import type { ZimmSizeChipValue } from '../zimmSizeChipGroup';
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:21: *                   `showSizeChips` props below), not this component.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:22: *   - "sizeChips" — the size-chip-group wrapper (present only when `showSizeChips` is true).
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:121:   * PLP-only size-chip picker, per the organism's config. Always rendered in the DOM whenever
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:124:   * `data-card-slot="sizeChips"` note.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:126:  showSizeChips: boolean;
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:127:  sizeChipValues?: ZimmSizeChipValue[];
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:128:  selectedSizeChipValue?: string;
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:129:  onSizeChipSelect?: (value: string) => void;
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:143: * colour/size attributes, price, PLP-only size-chip picker, and an out-of-stock notify-me CTA.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:175:  showSizeChips,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:176:  sizeChipValues,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:177:  selectedSizeChipValue,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:178:  onSizeChipSelect,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:186:  // comment, and `zimmSizeChip.css.ts`'s identical `disabled` naming for the same reason).
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:225:                // unavailable. Same idiom as ZimmSizeChip's own onClick guard.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:252:      {showSizeChips && (
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:253:        <chakra.div __css={styles.sizeChipWrapper} data-card-slot={CARD_SLOT.sizeChips}>
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:254:          <ZimmSizeChipGroup
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:255:            values={sizeChipValues ?? []}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:256:            selectedValue={selectedSizeChipValue}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx:257:            onSelect={onSizeChipSelect}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:3: * branch and wire the right handler) — not ZimmProductName/ZimmProductPrice/ZimmSizeChipGroup's
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:14: * zimmSizeChipGroup/index.test.tsx's identical comment on this same distinction).
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:25:import type { ZimmSizeChipValue } from '../zimmSizeChipGroup';
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:32:// ZimmSizeChipGroup/ZimmSizeChip's own `styles.X` reads resolve to `undefined` under this same
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:34:// zimmSizeChipGroup/index.test.tsx documents for ZimmSizeChip's own unresolved `styles.chip`.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:49:      sizeChipWrapper: {},
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:76:  showSizeChips: false,
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:80:const SIZES: ZimmSizeChipValue[] = [
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:173:        showSizeChips
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:174:        sizeChipValues={SIZES}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:208:describe('ZimmProductCardContent — size-chip slot (PLP only)', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:209:  test('is absent entirely when showSizeChips is false, even when values are supplied', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:210:    wrap(<ZimmProductCardContent {...BASE_PROPS} showSizeChips={false} sizeChipValues={SIZES} />);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:211:    expect(document.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`)).not.toBeInTheDocument();
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:215:  test('renders the composed ZimmSizeChipGroup when showSizeChips is true', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:216:    wrap(<ZimmProductCardContent {...BASE_PROPS} showSizeChips sizeChipValues={SIZES} selectedSizeChipValue="s" />);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:217:    expect(document.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`)).toBeInTheDocument();
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:221:  test('forwards onSizeChipSelect straight through to the composed group', async () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:222:    const onSizeChipSelect = vi.fn();
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:227:        showSizeChips
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:228:        sizeChipValues={SIZES}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:229:        onSizeChipSelect={onSizeChipSelect}
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:233:    expect(onSizeChipSelect).toHaveBeenCalledWith('xs');
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:236:  test('defaults to an empty size list without crashing when sizeChipValues is omitted', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:237:    wrap(<ZimmProductCardContent {...BASE_PROPS} showSizeChips />);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:238:    expect(document.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`)).toBeInTheDocument();
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:239:    // ZimmSizeChipGroup itself renders null for an empty values array.
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:272:  test('stamps content/price/sizeChips when all optional slots are active', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:273:    wrap(<ZimmProductCardContent {...BASE_PROPS} currentPrice="$100.00" showSizeChips sizeChipValues={SIZES} />);
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:276:    expect(document.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`)).toBeInTheDocument();
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:284: * ever regresses the focus ring or accidentally hides the size-chip slot — both are exactly the
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:302:  test('sizeChipWrapper never sets display:none — visibility belongs to the Step 6 organism, not this recipe', () => {
+overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx:304:    expect((style.sizeChipWrapper as Record<string, unknown>).display).not.toBe('none');
+overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:21:// zimmSizeChipGroup/index.test.tsx's comment on its composed atom's unresolved styles.chip.
+overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx:288: * zimmSizeChip.css.test.ts / zimmTextInput.css.test.ts.
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:6:import { ZimmSizeChipGroup } from './index';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:7:import type { ZimmSizeChipValue } from './index';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:9:// ZimmSizeChip's own recipe also needs useMultiStyleConfig — mock both layers so tests don't
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:11:// parts; the atom's `styles.chip` simply resolves to undefined under it, which is a legal,
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:28:const val = (value: string, label: string, over: Partial<ZimmSizeChipValue> = {}): ZimmSizeChipValue => ({
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:36:describe('ZimmSizeChipGroup — radiogroup semantics', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:38:    wrap(<ZimmSizeChipGroup values={FOUR} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:43:    wrap(<ZimmSizeChipGroup values={FOUR} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:48:describe('ZimmSizeChipGroup — One Size', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:50:    wrap(<ZimmSizeChipGroup values={[val('os', 'One size')]} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:59:    wrap(<ZimmSizeChipGroup values={[val('os', 'One size')]} onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:65:describe('ZimmSizeChipGroup — no offered sizes', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:67:    const { container } = wrap(<ZimmSizeChipGroup values={[]} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:72:describe('ZimmSizeChipGroup — roving tabindex', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:74:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="m" />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:83:    wrap(<ZimmSizeChipGroup values={FOUR} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:93:    wrap(<ZimmSizeChipGroup values={values} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:99:    // disabled 'XS' chip instead of skipping to the enabled 'S' chip would still pass here
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:100:    // ('XS'.includes('S') === true). Assert DOM identity via the chip's own value attribute
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:101:    // instead — matches the lowercase value convention ZimmSizeChip sets via data-size-value.
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:105:  test('a disabled chip is never the roving tab stop, even when two are adjacent', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:107:    wrap(<ZimmSizeChipGroup values={values} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:117:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="xs" onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:130:describe('ZimmSizeChipGroup — roving tabindex resync on rerender', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:132:    const { rerender } = wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="xs" />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:140:        <ZimmSizeChipGroup values={FOUR} selectedValue="l" />
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:153:    const { rerender } = wrap(<ZimmSizeChipGroup values={values} selectedValue="s" />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:162:        <ZimmSizeChipGroup values={valuesWithSDisabled} selectedValue="s" />
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:175:describe('ZimmSizeChipGroup — arrow key navigation', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:179:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="xs" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:188:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="xs" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:197:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="m" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:206:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="m" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:215:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="l" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:224:    wrap(<ZimmSizeChipGroup values={FOUR} selectedValue="xs" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:231:describe('ZimmSizeChipGroup — disabled sizes are skipped by arrow navigation', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:237:    wrap(<ZimmSizeChipGroup values={values} selectedValue="xs" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:247:    wrap(<ZimmSizeChipGroup values={values} selectedValue="m" onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:255:describe('ZimmSizeChipGroup — click selection', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:259:    wrap(<ZimmSizeChipGroup values={FOUR} onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.test.tsx:268:    wrap(<ZimmSizeChipGroup values={values} onSelect={onSelect} />);
+overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.tsx:120: * used there for price/size-chips/notify-me. A story rendering this component standalone (see
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:2:import { ZimmSizeChipGroup } from './zimmSizeChipGroup.css';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:8: * `radiogroup` shipped with no `justifyContent`/`gap` at all, which rendered every chip flush
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:9: * against its neighbour (confirmed live: 28px-wide chips exactly 28px apart, i.e. touching).
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:11:describe('ZimmSizeChipGroup — recipe wiring', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:13:    const parts = Object.keys(ZimmSizeChipGroup.baseStyle());
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:14:    expect(parts.sort()).toEqual([...ZimmSizeChipGroup.parts].sort());
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:17:  test('radiogroup spreads chips with space-between, not a gap value — matches the real Figma SizeSelector (node 40002163:41459: flex items-center justify-between w-[208px])', () => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:18:    const { radiogroup } = ZimmSizeChipGroup.baseStyle();
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.test.ts:24:    const { oneSize } = ZimmSizeChipGroup.baseStyle();
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:4:import { ZimmSizeChip } from '../../atoms/zimmSizeChip';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:7:  groupLabel: { id: 'size_chips.group.label', defaultMessage: 'Select a size' },
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:10:const ZIMM_SIZE_CHIP_GROUP_RECIPE = 'ZimmSizeChipGroup';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:13:export type ZimmSizeChipValue = {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:19:   * can still see the full size run — the size-chip Figma component set includes a dedicated
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:25:type ZimmSizeChipGroupProps = {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:26:  values: ZimmSizeChipValue[];
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:30:   * Selection callback. Called on click and on arrow-key navigation landing on a new chip.
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:37:const firstEnabledIndex = (list: ZimmSizeChipValue[]): number => list.findIndex((v) => !v.isDisabled);
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:45:const computeFocusIndex = (list: ZimmSizeChipValue[], selected: string | undefined): number => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:51: * Molecule — the full PDP size-chip group: a `[role=radiogroup]` row of ZimmSizeChip atoms with
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:53: * handleSwatchesKeyDown for a row with no pagination and a real per-chip disabled state (arrow
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:54: * navigation must skip a disabled chip rather than land on or select it).
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:56: * When exactly one size is offered, the size-chip Figma component set's other Type applies: a
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:60:export const ZimmSizeChipGroup = ({ values, selectedValue, onSelect }: ZimmSizeChipGroupProps) => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:63:  const styles = useMultiStyleConfig(ZIMM_SIZE_CHIP_GROUP_RECIPE, {});
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:101:  const handleChipsKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:112:    if (currentIndex < 0) return; // every chip disabled — nothing to navigate from
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:124:    // Looped through every chip and found none enabled — nothing to do.
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:133:      <chakra.span __css={styles.oneSize} data-testid="size-chip-one-size">
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:145:      onKeyDown={handleChipsKeyDown}
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:148:        <ZimmSizeChip
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.tsx:162:export default ZimmSizeChipGroup;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:4:import { ZimmSizeChipGroup } from './index';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:5:import type { ZimmSizeChipValue } from './index';
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:7:const meta: Meta<typeof ZimmSizeChipGroup> = {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:8:  title: 'Commerce/ZimmSizeChipGroup',
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:9:  component: ZimmSizeChipGroup,
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:14:type Story = StoryObj<typeof ZimmSizeChipGroup>;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:16:const SIZES: ZimmSizeChipValue[] = [
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:26:  return <ZimmSizeChipGroup values={SIZES} selectedValue={selectedValue} onSelect={setSelectedValue} />;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:29:/** Multi-size row, nothing selected initially — click a chip to see the live selection. */
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:36:  return <ZimmSizeChipGroup values={SIZES} selectedValue={selectedValue} onSelect={setSelectedValue} />;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:39:/** A size pre-selected — its chip renders with the selected treatment and is the tab stop. Click
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:40: *  a different chip to move the live selection, same as `Default` above. */
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:45:const SIZES_WITH_DISABLED: ZimmSizeChipValue[] = [
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:54:  return <ZimmSizeChipGroup values={SIZES_WITH_DISABLED} selectedValue={selectedValue} onSelect={setSelectedValue} />;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:58: *  Click any enabled chip to move the live selection; the disabled chip stays unselectable via
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:64:/** The size-chip Figma component set's other Type — a single non-interactive label, not a
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/index.stories.tsx:74:  return <ZimmSizeChipGroup values={SIZES} selectedValue={selectedValue} onSelect={setSelectedValue} />;
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:4: * Recipe for the PDP size-chip group. Two mutually-exclusive root renders, matching the two
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:5: * "Type" variants of the size-chip Figma component set (node 40003066:34868):
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:7: *     ZimmSizeChip atoms in a row; each chip's own fill/border/focus styling stays in the
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:8: *     sibling ZimmSizeChip atom's own recipe, this part is layout only.
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:12: *     real interactive chips, just non-interactive — confirmed via `get_design_context` on
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:15:export const ZimmSizeChipGroup = {
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:24:      // however many chips exist evenly across the card's full content width, with no gap
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:25:      // declared alongside it. This was previously left undeclared entirely ("no inter-chip gap
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:26:      // value confirmed") pending that exact measurement, which rendered every chip flush against
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:27:      // its neighbour with zero spacing — confirmed live (each 28px chip exactly 28px from the
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:36:      // The non-interactive single-label footprint from the size-chip Figma component set's
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:38:      // --zimm-scale-700 (28px) the ZimmSizeChip atom's own `chip` part uses, since it is the
+overrides/app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css.ts:49:      // reuse-for-the-wrong-purpose gap already accepted in zimmSizeChip.css.ts's own
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:8:// Required since the size chips render via ZimmButton, which pulls in ZimmIcon and therefore
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:74:  // --- chip contract (SFCC-847) ----------------------------------------------------------
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:75:  // The chips render through ZimmButton rather than a bare Chakra Button. That swap only
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:79:  test('renders each chip as a checkbox-role control carrying its selected state', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:94:    const chips = screen.getAllByRole('checkbox');
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:95:    expect(chips).toHaveLength(2);
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:96:    expect(chips[0]).toHaveAttribute('aria-checked', 'true');
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.test.tsx:97:    expect(chips[1]).toHaveAttribute('aria-checked', 'false');
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:17:// Figma-exact chip width (node 40003890:151757) — the OOTB grid used a fixed 44px column.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:18:// Treated as a MINIMUM, not a fixed size: see the layout note on SizeChipRow below.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:21:// audit-allow: Figma-sourced chip width with no equivalent --zimm-* token.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:22:const CHIP_MIN_WIDTH = '89.3px';
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:25: * One flat row of size chips, styled to the Figma chip spec (node 40003890:151757) via
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:31: * straight out of the chip) and "0P (US 2P)". A grid can't solve this: its columns are uniform,
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:32: * so widening the track to fit the longest label would inflate every chip. Flex sizes each chip
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:33: * independently — CHIP_MIN_WIDTH holds the design for the common case while a long label grows
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:34: * only its own chip.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:39:const SizeChipRow = ({ filter, toggleFilter, selectedFilters }: ZimmSizeRefinementsProps) => {
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:55:            // outlined chip. `size="medium"` already supplies the Figma chip metrics from
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:57:            // the chip width and the lighter border need stating here.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:68:              // own chip rather than being clipped. flexShrink 0 stops a crowded row from
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:69:              // squeezing chips below the spec width.
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:70:              minWidth: CHIP_MIN_WIDTH,
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:72:              // ZimmButton's `secondary` uses a black border; the filter chip keeps the
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:89: * SFCC-847 — the Size facet's chip row, plus sub-group headings (e.g. Clothing/Accessories/
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:105:    return <SizeChipRow filter={filter} toggleFilter={toggleFilter} selectedFilters={selectedFilters} />;
+overrides/app/components/ui-kits/atoms/zimmSizeRefinements/index.tsx:119:          <SizeChipRow
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:4:import { ZimmSizeChip } from './index';
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:7:// the full Zimmermann theme (which would require the ZimmSizeChip recipe to be registered
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:11:  return { ...actual, useMultiStyleConfig: () => ({ chip: {} }) };
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:14:describe('ZimmSizeChip — element and radio semantics', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:16:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:17:    const chip = screen.getByRole('radio', { name: 'M' });
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:18:    expect(chip.tagName).toBe('BUTTON');
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:22:    render(<ZimmSizeChip value="42" label="42" isSelected={false} isFocusable={true} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:27:describe('ZimmSizeChip — aria-checked reflects isSelected', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:29:    render(<ZimmSizeChip value="m" label="M" isSelected={true} isFocusable={true} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:34:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:39:describe('ZimmSizeChip — roving tabindex', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:41:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:46:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={false} onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:51:describe('ZimmSizeChip — selection', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:52:  test('calls onSelect with the chip value when clicked', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:54:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} onSelect={onSelect} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:61:describe('ZimmSizeChip — disabled', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:63:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} isDisabled onSelect={vi.fn()} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:67:  test('never calls onSelect when a disabled chip is clicked', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.test.tsx:69:    render(<ZimmSizeChip value="m" label="M" isSelected={false} isFocusable={true} isDisabled onSelect={onSelect} />);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:4:const ZIMM_SIZE_CHIP_RECIPE = 'ZimmSizeChip';
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:6:type ZimmSizeChipProps = {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:9:  /** Visible/accessible label rendered inside the chip (e.g. "S", "M", "42"). */
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:14:   * Whether this size is unavailable. Sets the real native `disabled` attribute so the chip is
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:19:   * Whether this chip is reachable via Tab (`tabIndex={0}`) vs. removed from the tab order
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:20:   * (`tabIndex={-1}`) — the caller (ZimmSizeChipGroup) drives a roving tabindex across the row.
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:29: * Atom — a single size option in a PDP size-chip row: a 28x28 button with radio semantics (one
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:31: * orchestration (that lives in the parent ZimmSizeChipGroup, matching the ZimmColourSwatch /
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:34:export const ZimmSizeChip = ({ value, label, isSelected, isDisabled, isFocusable, onSelect }: ZimmSizeChipProps) => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:35:  const styles = useMultiStyleConfig(ZIMM_SIZE_CHIP_RECIPE, { selected: isSelected, disabled: isDisabled });
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:39:      __css={styles.chip}
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:45:      data-testid="size-chip"
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:50:        // doesn't have to recall that fact to trust onSelect can't fire for a disabled chip.
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:59:export type { ZimmSizeChipProps };
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.tsx:60:export default ZimmSizeChip;
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:4:import { ZimmSizeChip } from './index';
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:6:const meta: Meta<typeof ZimmSizeChip> = {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:7:  title: 'Commerce/ZimmSizeChip',
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:8:  component: ZimmSizeChip,
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:11:  // rendered in isolation — the molecule normally provides this via its chip row.
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:22:type Story = StoryObj<typeof ZimmSizeChip>;
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:24:/** Unselected, enabled chip. */
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:35:/** Selected chip — outline-only box (border, no fill), distinct from Default's plain text. */
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:46:/** Disabled chip — genuinely inert (native `disabled` attribute), muted treatment. */
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:73:    const chip = canvas.getByRole('radio', { name: 'M' });
+overrides/app/components/ui-kits/atoms/zimmSizeChip/index.stories.tsx:75:    await expect(chip).toHaveFocus();
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:2:import { resolveBackgroundColour, resolveBorderColour, resolveTextColour, ZimmSizeChip } from './zimmSizeChip.css';
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:19: * Matches zimmSizeChip.css.ts's own (module-private, deliberately not re-exported)
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:20: * ZimmSizeChipStyleProps shape structurally — TypeScript's structural typing means this file
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:23:type SizeChipStyleProps = {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:28:let base: SizeChipStyleProps;
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:38:describe('ZimmSizeChip — border colour precedence', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:56:describe('ZimmSizeChip — background colour precedence', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:74:describe('ZimmSizeChip — text colour precedence', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:89:  // green. Disabled must win — a disabled chip should never read as selected/default-text.
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:95:describe('ZimmSizeChip — recipe wiring', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:97:    const parts = Object.keys(ZimmSizeChip.baseStyle(base));
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:98:    expect(parts.sort()).toEqual([...ZimmSizeChip.parts].sort());
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:101:  test('the chip colours reflect the resolved resolvers', () => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:103:    const style = ZimmSizeChip.baseStyle(props);
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:104:    expect(style.chip.borderColor).toBe(resolveBorderColour(props));
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:105:    expect(style.chip.background).toBe(resolveBackgroundColour(props));
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.test.ts:106:    expect(style.chip.color).toBe(resolveTextColour(props));
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:4:type ZimmSizeChipStyleProps = {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:14: * `border` shorthand on `chip` below is made invisible rather than removed outright — the same
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:18:export const resolveBorderColour = ({ selected, disabled }: ZimmSizeChipStyleProps): string => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:31:export const resolveBackgroundColour = ({ selected, disabled }: ZimmSizeChipStyleProps): string => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:42:export const resolveTextColour = ({ selected, disabled }: ZimmSizeChipStyleProps): string => {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:49: * Recipe for the PDP size chip atom — a single 28x28 (--zimm-scale-700) size option, read
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:50: * directly off the size-chip Figma component set (node 40003038:125876) for this exact
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:62: * its 34x34 Figma frame vs. 28x28 for the other three — the ring extends past the chip
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:68:export const ZimmSizeChip = {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:69:  parts: ['chip'],
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:70:  baseStyle: (props: ZimmSizeChipStyleProps): Record<string, SystemStyleObject> => ({
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:71:    chip: {
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:89:        // Figma's Focus variant (…130506) shows a border box even when the chip isn't
+overrides/app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css.ts:91:        // (not instead of) the outer ring — an unselected-but-tabbed-to chip still gets a
+overrides/app/components/ui-kits/atoms/zimmAccordion/zimmAccordion.css.ts:57:    // panel's so a facet's chips align visually with the options list below when expanded.
+overrides/app/components/ui-kits/atoms/zimmAccordion/index.tsx:25:   * container — the real facet content (radio buttons, colour swatches, size chips, etc.)
+overrides/app/components/ui-kits/atoms/zimmAccordion/index.tsx:32:   * accordion (e.g. the current selection chips for a filter facet). Rendered outside
+overrides/app/components/ui-kits/atoms/zimmCheckboxRefinements/index.tsx:66:                  // Selected reads as a primary action, matching ZimmButton/ZimmSelectedChip.
+overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx:71:  // These exist so a caller can express a selectable *state* (a filter chip) rather than an
+overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx:88:  test('applies role and aria-checked together for a selectable chip', () => {
+overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx:91:    const chip = screen.getByRole('checkbox');
+overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx:92:    expect(chip).toHaveAttribute('aria-checked', 'true');
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx:34:   * chip reading "0" that should announce "Add filter: 0" — pass the full phrase here and
+overrides/app/components/ui-kits/atoms/zimmButton/index.tsx:52:} & ({ role?: never; ariaChecked?: never } | { role: 'checkbox' | 'radio'; ariaChecked: boolean }); // `aria-checked` is a selectable control that never exposes what it is set to. // union so the role and its state cannot be supplied apart: a `role="checkbox"` with no // button and never conveys whether it is currently applied. Modelled as a discriminated // — e.g. a filter chip. Without these a screen reader announces the control as a plain // Toggle semantics, for a button that represents a *selectable state* rather than an action
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:5:type ZimmSelectedChipProps = {
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:10:   *  bar. Borderless by design: the chips sit in a labelled row, so the row itself provides
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:16: * Interim chip used for selected refinements in the SFCC-847 filter drawer and page-level
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:20: * SFCC-108 replaces this with the final Zimmermann-branded Selected chip design and this atom is retired.
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:22: * @param props see ZimmSelectedChipProps
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:24:export const ZimmSelectedChip = ({ label, onRemove, variant = 'filled' }: ZimmSelectedChipProps) => {
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:35:      // audit-allow: Figma chip height (node 40003890:151757) with no equivalent --zimm-*
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:37:      // buttons, which is a different component. Revisit if SFCC-108 introduces a chip token.
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.tsx:53:      {/* Decorative — the chip's own aria-label above already announces "Remove filter: ...". */}
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:6:import { ZimmSelectedChip } from './index';
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:8:// The chip renders a ZimmIcon close glyph, which pulls in the base SFCC icons barrel — whose
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:12:// is decorative — the chip's own aria-label carries the accessible name.
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:15:const renderChip = (props: React.ComponentProps<typeof ZimmSelectedChip>) =>
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:18:      <ZimmSelectedChip {...props} />
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:22:describe('ZimmSelectedChip', () => {
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:26:    renderChip({ label: 'Blue', onRemove: vi.fn() });
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:31:  test('calls onRemove when the chip is activated', () => {
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:33:    renderChip({ label: 'Blue', onRemove });
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:41:    // The chip is a Flex with as="button" — assert the native element rather than the role
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:43:    renderChip({ label: 'Blue', onRemove: vi.fn() });
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:45:    const chip = screen.getByRole('button', { name: 'Remove filter: Blue' });
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:46:    expect(chip.tagName).toBe('BUTTON');
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:47:    expect(chip).toHaveAttribute('type', 'button');
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.test.tsx:51:    renderChip({ label: 'Blue', onRemove: vi.fn(), variant });
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.stories.tsx:3:import { ZimmSelectedChip } from './index';
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.stories.tsx:5:const meta: Meta<typeof ZimmSelectedChip> = {
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.stories.tsx:6:  title: 'Commerce/ZimmSelectedChip',
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.stories.tsx:7:  component: ZimmSelectedChip,
+overrides/app/components/ui-kits/atoms/zimmSelectedChip/index.stories.tsx:10:type Story = StoryObj<typeof ZimmSelectedChip>;
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:27:  /** PLP + Wishlist — the size-chip picker is hidden at every breakpoint/pointer type by default
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:39:   *  is not a pointer-type concern at all: the size-chip wrapper stays hidden permanently, in
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:154: *          hide/reveal pair of its own, the size-chip wrapper falls back to Content's natural
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:156: *          and caught by re-checking the real render against Figma, which shows size chips hidden
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:213: *      too (price, the size-selector, notify-me), so a click on a size chip or the notify-me
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:342:      // its notify-me button, and every ZimmSizeChip button nested inside its own sizeChips
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:409:        // `ZimmSizeChip`'s own roving tabindex) permanently in the tab order with no way for that
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:414:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:425:        [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: { display: 'none' },
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:460:          // this same root — scoped here, not on the price/size-chip wrapper itself, so that
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:461:          // focus landing on ANY descendant control (name link, bag button, size chip) triggers
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:468:          // a size chip, notify-me) left `:focus-within` true, and therefore every reveal below
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:512:          // exists at all. `display: 'flex'` matches ZimmSizeChipGroup's own natural root display
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:513:          // (zimmSizeChipGroup.css.ts's `radiogroup`/`oneSize` parts) — `position`/`clipPath` are
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:515:          [`[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:522:          [`&:hover [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts:527:          [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:8:import type { ZimmSizeChipValue } from '../../molecules/zimmSizeChipGroup';
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:65: * size-chip permanent-hide) drives this too, in zimmProductCard.css.ts, since it is already
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:219:  sizeChipValues?: ZimmSizeChipValue[];
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:220:  selectedSizeChipValue?: string;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:221:  onSizeChipSelect?: (value: string) => void;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:226:  // No additions — Home never shows the bag, attributes, or size chips (see VARIATION_CONFIG).
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:245:  sizeChipValues?: ZimmSizeChipValue[];
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:246:  selectedSizeChipValue?: string;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:247:  onSizeChipSelect?: (value: string) => void;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:277:  showSizeChips: boolean;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:282:  /** PLP/Wishlist: the size-chip picker is hidden by default and reveals on hover. */
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:320:    showSizeChips: false,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:333:    showSizeChips: true,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:346:    showSizeChips: true,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:398:  const { onAddToBag, sizeChipValues, selectedSizeChipValue, onSizeChipSelect, colour, size, onRemove } =
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:420:  // only stops the organism adding its OWN hide/reveal pair, which leaves the size-chip wrapper
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:422:  // re-checking the real Storybook render against Figma, which confirms size chips stay hidden
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:433:  // for both the size-chip permanent-hide and this new price rule, since both only ever apply to
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:509:        showSizeChips={config.showSizeChips}
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:510:        sizeChipValues={sizeChipValues}
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:511:        selectedSizeChipValue={selectedSizeChipValue}
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx:512:        onSizeChipSelect={onSizeChipSelect}
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:11: * `ZimmProductPrice`, `ZimmSizeChipGroup`, `ZimmSizeChip`, and this organism's own `root`) — same
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:106:        sizeChipWrapper: {},
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:112:        // ZimmSizeChipGroup.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:115:        // ZimmSizeChip.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:116:        chip: {},
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:202:const SIZE_CHIPS_KEY = `[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:204:const HOVER_SIZE_CHIPS_KEY = `&:hover ${SIZE_CHIPS_KEY}`;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:215:const FOCUS_VISIBLE_SIZE_CHIPS_KEY = `&:has(:focus-visible) ${SIZE_CHIPS_KEY}`;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:218:// size-chips above — the "hidden by default" half must not be reachable by a touch pointer).
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:386:  test('a size chip fires onSizeChipSelect independently of the name-link overlay (PLP)', async () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:387:    const onSizeChipSelect = vi.fn();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:389:    wrap(<ZimmProductCard {...buildCardProps('plp')} sizeChipValues={SIZES} onSizeChipSelect={onSizeChipSelect} />);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:391:    expect(onSizeChipSelect).toHaveBeenCalledWith('s');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:481:  test('home never renders the bag, attributes row or size chips', () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:484:    expect(document.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`)).not.toBeInTheDocument();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:760:    expect(root[SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:761:    expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:762:    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:776:    // all. Clip-path here left a real, always-tabbable `<button>` (each ZimmSizeChip's own roving
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:780:    expect(root[SIZE_CHIPS_KEY]).toEqual({ display: 'none' });
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:785:    expect((hoverBlock[SIZE_CHIPS_KEY] as Record<string, unknown>).display).toBe('flex');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:786:    expect((hoverBlock[SIZE_CHIPS_KEY] as Record<string, unknown>).position).toBe('absolute');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:787:    expect((hoverBlock[SIZE_CHIPS_KEY] as Record<string, unknown>).clipPath).toBe('inset(50%)');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:790:    expect((hoverBlock[HOVER_SIZE_CHIPS_KEY] as Record<string, unknown>).position).toBe('static');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:791:    expect((hoverBlock[HOVER_SIZE_CHIPS_KEY] as Record<string, unknown>).clipPath).toBe('none');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:793:    // user tabbing into the card (e.g. onto the bag button or a size chip) sees the size-selector
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:798:    expect((hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY] as Record<string, unknown>).position).toBe('static');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:799:    expect((hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY] as Record<string, unknown>).clipPath).toBe('none');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:806:    expect(root[SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:809:    expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:811:    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:817:   * out-of-stock item must NOT get the price/size-selector swap, and that the size-chip wrapper
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:832:  test('unavailable PLP: no desktop price swap, size-chips permanently hidden, price hidden on mobile only, notify-me still hover-gates', () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:841:    // Both price and size-chips get an unconditional (mobile-first) rule now — a permanent hide
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:842:    // for size-chips (no reveal anywhere), and a mobile-only hide for price (reveals again at
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:845:    expect((root[SIZE_CHIPS_KEY] as Record<string, unknown>).display).toBe('none');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:850:    expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:852:    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:854:    // emitted as an unconditional root-level rule, unlike price/size-chips' own unconditional half.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:930: * `[data-card-slot="sizeChips"]` element composed under the real generated root class actually
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:932: * (unavailable-PLP shape) with a bare marker div for the size-chips slot, through the real
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:935:describe('ZimmProductCard — Fix C: size-chip wrapper is genuinely hidden when unavailable, not just un-revealed', () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:936:  test('a real [data-card-slot="sizeChips"] element, composed under the real unavailable-PLP root recipe, resolves to display:none', () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:947:          <div data-card-slot="sizeChips">size chips</div>
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:952:    const sizeChips = container.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`) as HTMLElement;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:953:    expect(window.getComputedStyle(sizeChips).display).toBe('none');
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1064: * descendant-selector suffix the real recipe emits (`SIZE_CHIPS_KEY`, module-scope above) — with
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1076:describe('ZimmProductCard — Fix 2 (Scorer rework round 1): size chips reveal on keyboard focus, not just mouse hover', () => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1083:    const revealSelector = FOCUS_VISIBLE_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1089:          <div data-card-slot="sizeChips">size chips</div>
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1094:    const sizeChips = container.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`) as HTMLElement;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1100:    expect(sizeChips.matches(revealSelector)).toBe(false);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1119:    // :has(:focus-visible) on the card ROOT (not on the size-chip wrapper itself, which would be
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1125:    expect(sizeChips.matches(revealSelector)).toBe(true);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1131:    const revealSelector = FOCUS_VISIBLE_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1138:            <div data-card-slot="sizeChips">size chips</div>
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1144:    const sizeChips = container.querySelector(`[data-card-slot="${CARD_SLOT.sizeChips}"]`) as HTMLElement;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx:1158:    expect(sizeChips.matches(revealSelector)).toBe(false);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:9:import type { ZimmSizeChipValue } from '../../molecules/zimmSizeChipGroup';
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:31:const SIZES: ZimmSizeChipValue[] = [
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:40: * variant/state (variation × availability × image count × price mode × size-chip cardinality),
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:85: * Wraps `ZimmProductCard` so `selectedSizeChipValue` is genuinely live rather than a static arg —
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:86: * neither `ZimmProductCard` nor the `ZimmSizeChipGroup` it composes tracks selection itself (both
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:87: * are correctly controlled components), so any story that wants a chip click to visually select
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:88: * must own that state itself, the same pattern zimmSizeChipGroup/index.stories.tsx's
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:90: * every enabled-size-chip story in this file rather than each retyping it. Every arg passes
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:92: * `selectedSizeChipValue`/`onSizeChipSelect` become live. `onSizeChipSelectFromArgs` still fires
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:93: * the original `args.onSizeChipSelect` (each story's own `fn()` spy) so Storybook's Actions panel
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:96: * `onSizeChipSelect`/`selectedSizeChipValue` only exist on the `plp`/`wishlist` members of
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:101: * narrowed, `{...args, selectedSizeChipValue, onSizeChipSelect}` is a proper subtype of the
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:110:  // Lazy initializer: seeds from args.selectedSizeChipValue once on mount only, never re-syncs on rerender.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:111:  const [selectedSizeChipValue, setSelectedSizeChipValue] = useState<string | undefined>(() =>
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:112:    args.variation === 'plp' || args.variation === 'wishlist' ? args.selectedSizeChipValue : undefined,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:114:  const isSizeChipVariation = args.variation === 'plp' || args.variation === 'wishlist';
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:115:  const onSizeChipSelectFromArgs = isSizeChipVariation ? args.onSizeChipSelect : undefined;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:116:  const handleSizeChipSelect = (value: string) => {
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:117:    setSelectedSizeChipValue(value);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:118:    onSizeChipSelectFromArgs?.(value);
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:120:  const propsWithLiveSelection: ZimmProductCardProps = isSizeChipVariation
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:121:    ? { ...args, selectedSizeChipValue, onSizeChipSelect: handleSizeChipSelect }
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:130: * price. Hover to check: price hides and the size-chip picker takes its place, arrows appear
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:143: * Size chips are genuinely interactive here, not a static snapshot — starts with nothing selected;
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:144: * click a chip to see it visually select. Rendered via `LiveSizeSelectionCard` above, which owns
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:145: * `selectedSizeChipValue` as local state; every other arg below is unchanged.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:161:    sizeChipValues: SIZES,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:162:    onSizeChipSelect: fn(),
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:193: * Home card: image + name only by default — no bag, no attributes, no size chips at all. Hover
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:284:    // Previously omitted entirely, which left the hover-revealed size-chip wrapper empty (no
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:287:    // same fixture data to actually demonstrate that behaviour. `selectedSizeChipValue: 'm'`
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:289:    // Hover reference (node 40002187:58458), which likewise shows one chip pre-selected.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:290:    sizeChipValues: SIZES,
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:291:    selectedSizeChipValue: 'm',
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:292:    onSizeChipSelect: fn(),
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:389: * One size offered: ZimmSizeChipGroup's `values.length === 1` branch renders a single
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:391: * component's own `OneSize` story and zimmProductCardContent's own `WithSizeChipsOneSize` for
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:394: * chip-click/keyboard-navigation code path at all), so the interactive wrapper would
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:396: * `WithSizeChipsOneSize` documents for itself.
+overrides/app/components/ui-kits/organisms/zimmProductCard/index.stories.tsx:401:    sizeChipValues: [{ value: 'os', label: 'One size' }],
+overrides/app/components/ui-kits/organisms/zimmFiltersDrawerContent/index.stories.tsx:48:// Provisional — the "Selected" variant renders the chosen value as a chip/tag replacing the
+overrides/app/components/ui-kits/organisms/zimmFiltersDrawerContent/index.stories.tsx:49:// options list. Zimmermann's Magento site has no such state, so the chip visual and its
+overrides/app/components/ui-kits/organisms/zimmFiltersDrawerContent/index.stories.tsx:55:    [chip] Ready to wear ✕ &nbsp;
+overrides/app/components/ui-kits/organisms/zimmFiltersDrawerContent/index.stories.tsx:57:      (provisional — SFCC-847 AC v=Selected; final chip design pending Figma sign-off)
+overrides/app/components/ui-kits/organisms/zimmFiltersDrawerContent/index.tsx:12: * chips). SFCC-847 supplies the container; the panel content comes from the caller and, in
+overrides/app/components/header/rightBar/index.tsx:61:// as plain inverse-colour text directly over the solid icon, not a separate badge chip — the
+overrides/app/theme/components/index.ts:36:import { ZimmSizeChip } from 'app/components/ui-kits/atoms/zimmSizeChip/zimmSizeChip.css';
+overrides/app/theme/components/index.ts:37:import { ZimmSizeChipGroup } from 'app/components/ui-kits/molecules/zimmSizeChipGroup/zimmSizeChipGroup.css';
+overrides/app/theme/components/index.ts:85:  ZimmSizeChip,
+overrides/app/theme/components/index.ts:86:  ZimmSizeChipGroup,
+overrides/app/pages/product-list/index.tsx:67:import { ZimmSelectedChip } from '../../components/ui-kits/atoms/zimmSelectedChip';
+overrides/app/pages/product-list/index.tsx:74:// in-panel chip strip for multi-select facets, which was removed per user request (chips
+overrides/app/pages/product-list/index.tsx:76:// selected indicator, matches the Figma Colour/Material variants). Applied-filter chips
+overrides/app/pages/product-list/index.tsx:113:// here to route the Size facet to ZimmSizeRefinements (button/chip grid) instead of
+overrides/app/pages/product-list/index.tsx:150: * have yet. Owns its own `selectedSizeChipValue` local state — same pattern
+overrides/app/pages/product-list/index.tsx:157:  const [selectedSizeChipValue, setSelectedSizeChipValue] = useState<string | undefined>(
+overrides/app/pages/product-list/index.tsx:158:    () => cardProps.selectedSizeChipValue,
+overrides/app/pages/product-list/index.tsx:160:  const handleSizeChipSelect = (value: string) => {
+overrides/app/pages/product-list/index.tsx:161:    setSelectedSizeChipValue(value);
+overrides/app/pages/product-list/index.tsx:162:    cardProps.onSizeChipSelect?.(value);
+overrides/app/pages/product-list/index.tsx:168:      selectedSizeChipValue={selectedSizeChipValue}
+overrides/app/pages/product-list/index.tsx:169:      onSizeChipSelect={handleSizeChipSelect}
+overrides/app/pages/product-list/index.tsx:174:type PageChipDatum = { key: string; label: string; onRemove: () => void };
+overrides/app/pages/product-list/index.tsx:176:type SelectedChipRowProps = {
+overrides/app/pages/product-list/index.tsx:177:  chips: PageChipDatum[];
+overrides/app/pages/product-list/index.tsx:178:  visibleChips: PageChipDatum[];
+overrides/app/pages/product-list/index.tsx:187: * SFCC-847 — CLEAR ALL + windowed applied-filter chips + paging arrows. Rendered as a
+overrides/app/pages/product-list/index.tsx:190: * How many chips fit in the window is the caller's decision (see `chipsPerPage`).
+overrides/app/pages/product-list/index.tsx:192:const SelectedChipRow = ({
+overrides/app/pages/product-list/index.tsx:193:  chips,
+overrides/app/pages/product-list/index.tsx:194:  visibleChips,
+overrides/app/pages/product-list/index.tsx:200:}: SelectedChipRowProps) => {
+overrides/app/pages/product-list/index.tsx:201:  if (chips.length === 0) return null;
+overrides/app/pages/product-list/index.tsx:210:        {visibleChips.map((chip) => (
+overrides/app/pages/product-list/index.tsx:211:          <ZimmSelectedChip
+overrides/app/pages/product-list/index.tsx:212:            key={chip.key}
+overrides/app/pages/product-list/index.tsx:213:            label={chip.label}
+overrides/app/pages/product-list/index.tsx:216:              chip.onRemove();
+overrides/app/pages/product-list/index.tsx:217:              if (offset > 0 && offset >= chips.length - 1) {
+overrides/app/pages/product-list/index.tsx:228:        label="Previous chips"
+overrides/app/pages/product-list/index.tsx:235:        label="Next chips"
+overrides/app/pages/product-list/index.tsx:276:  // Offset into the applied-filter chip window, shared by the desktop bar and the mobile row.
+overrides/app/pages/product-list/index.tsx:277:  // Window size is breakpoint-dependent — see `chipsPerPage`.
+overrides/app/pages/product-list/index.tsx:278:  const [chipOffset, setChipOffset] = useState(0);
+overrides/app/pages/product-list/index.tsx:403:  // SFCC-847 — parentCategoryId is used both in the page-level chip strip (to navigate back
+overrides/app/pages/product-list/index.tsx:404:  // to the parent when the category chip is removed) and in applyFilters (categoryCleared).
+overrides/app/pages/product-list/index.tsx:567:    // The shopper removed the sub-category chip: pendingCategoryId is undefined but the
+overrides/app/pages/product-list/index.tsx:599:          // SFCC-847 AC #4: "Selected variant renders the chosen value as a chip/tag ...
+overrides/app/pages/product-list/index.tsx:600:          // replacing the options list." Category chip appears in both alwaysVisibleContent
+overrides/app/pages/product-list/index.tsx:604:              <ZimmSelectedChip
+overrides/app/pages/product-list/index.tsx:656:      // SFCC-847 — per the design document: Size matches OOTB's own button/chip grid
+overrides/app/pages/product-list/index.tsx:663:      // into pendingRefine instead of navigating immediately. No `alwaysVisibleContent` chip
+overrides/app/pages/product-list/index.tsx:665:      // matching Figma's Colour/Material variants (audited 2026-09-16). Applied-filter chip
+overrides/app/pages/product-list/index.tsx:676:                <ZimmSelectedChip
+overrides/app/pages/product-list/index.tsx:838:  // ── Page-level applied-filter chip data ──────────────────────────────────────────────────
+overrides/app/pages/product-list/index.tsx:839:  // Unified list of all currently applied chips: category first, then refinement values.
+overrides/app/pages/product-list/index.tsx:841:  const pageChips: PageChipDatum[] = [];
+overrides/app/pages/product-list/index.tsx:843:  // Category chip: show when params.categoryId matches one of the sibling options, meaning
+overrides/app/pages/product-list/index.tsx:845:  const isCategoryChipActive =
+overrides/app/pages/product-list/index.tsx:848:  if (isCategoryChipActive) {
+overrides/app/pages/product-list/index.tsx:849:    const categoryChipLabel = (category?.name ?? params.categoryId ?? '').toUpperCase();
+overrides/app/pages/product-list/index.tsx:850:    pageChips.push({
+overrides/app/pages/product-list/index.tsx:852:      label: categoryChipLabel,
+overrides/app/pages/product-list/index.tsx:861:  // Refinement chips — one per applied value, skipping cgid.
+overrides/app/pages/product-list/index.tsx:870:      pageChips.push({
+overrides/app/pages/product-list/index.tsx:897:  const chipsPerPage: number = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 3;
+overrides/app/pages/product-list/index.tsx:898:  const safeChipOffset = Math.min(chipOffset, Math.max(0, pageChips.length - chipsPerPage));
+overrides/app/pages/product-list/index.tsx:899:  const visiblePageChips = pageChips.slice(safeChipOffset, safeChipOffset + chipsPerPage);
+overrides/app/pages/product-list/index.tsx:900:  const canChipLeft = safeChipOffset > 0;
+overrides/app/pages/product-list/index.tsx:901:  const canChipRight = safeChipOffset + chipsPerPage < pageChips.length;
+overrides/app/pages/product-list/index.tsx:903:  // Clearing the category chip has to navigate to the parent category — `resetFilters` only
+overrides/app/pages/product-list/index.tsx:905:  const handleChipClearAll = () => {
+overrides/app/pages/product-list/index.tsx:906:    setChipOffset(0);
+overrides/app/pages/product-list/index.tsx:907:    if (isCategoryChipActive && parentCategoryId) {
+overrides/app/pages/product-list/index.tsx:957:            {/* SFCC-847 — single-row filter bar: CLEAR ALL | chip window | < > | FILTERS | SORT BY */}
+overrides/app/pages/product-list/index.tsx:959:              <SelectedChipRow
+overrides/app/pages/product-list/index.tsx:960:                chips={pageChips}
+overrides/app/pages/product-list/index.tsx:961:                visibleChips={visiblePageChips}
+overrides/app/pages/product-list/index.tsx:962:                offset={safeChipOffset}
+overrides/app/pages/product-list/index.tsx:963:                canPageLeft={canChipLeft}
+overrides/app/pages/product-list/index.tsx:964:                canPageRight={canChipRight}
+overrides/app/pages/product-list/index.tsx:965:                onOffsetChange={setChipOffset}
+overrides/app/pages/product-list/index.tsx:966:                onClearAll={handleChipClearAll}
+overrides/app/pages/product-list/index.tsx:1007:            {/* Row 2: selected chips — only when filters are active */}
+overrides/app/pages/product-list/index.tsx:1008:            {pageChips.length > 0 && (
+overrides/app/pages/product-list/index.tsx:1010:                <SelectedChipRow
+overrides/app/pages/product-list/index.tsx:1011:                  chips={pageChips}
+overrides/app/pages/product-list/index.tsx:1012:                  visibleChips={visiblePageChips}
+overrides/app/pages/product-list/index.tsx:1013:                  offset={safeChipOffset}
+overrides/app/pages/product-list/index.tsx:1014:                  canPageLeft={canChipLeft}
+overrides/app/pages/product-list/index.tsx:1015:                  canPageRight={canChipRight}
+overrides/app/pages/product-list/index.tsx:1016:                  onOffsetChange={setChipOffset}
+overrides/app/pages/product-list/index.tsx:1017:                  onClearAll={handleChipClearAll}
+overrides/app/pages/product-list/index.tsx:1167:          Zimmermann-branded atoms (swatches, size chips). */}
+overrides/app/pages/product-list/productListCardMapper.ts:8:import type { ZimmSizeChipValue } from '../../components/ui-kits/molecules/zimmSizeChipGroup';
+overrides/app/pages/product-list/productListCardMapper.ts:55: * `ZimmSizeChipGroup` expects. `orderable` on each value already reflects real stock per that
+overrides/app/pages/product-list/productListCardMapper.ts:58:export const selectSizeChipValues = (hit: ProductListSearchHit): ZimmSizeChipValue[] => {
+overrides/app/pages/product-list/productListCardMapper.ts:106:    sizeChipValues: selectSizeChipValues(hit),
+overrides/app/pages/product-list/productListCardMapper.test.ts:2:import { selectProductListCard, selectGalleryImages, selectSizeChipValues } from './productListCardMapper';
+overrides/app/pages/product-list/productListCardMapper.test.ts:38:      sizeChipValues: [],
+overrides/app/pages/product-list/productListCardMapper.test.ts:113:describe('selectSizeChipValues', () => {
+overrides/app/pages/product-list/productListCardMapper.test.ts:115:    expect(selectSizeChipValues({ ...baseHit, variationAttributes: undefined })).toEqual([]);
+overrides/app/pages/product-list/productListCardMapper.test.ts:118:  test('maps size attribute values to chip values, disabled from orderable', () => {
+overrides/app/pages/product-list/productListCardMapper.test.ts:133:    expect(selectSizeChipValues(hit)).toEqual([
+overrides/app/pages/product-list/productListCardMapper.test.ts:144:    expect(selectSizeChipValues(hit)).toEqual([{ value: 'm', label: 'm', isDisabled: false }]);
+overrides/app/pages/product-list/useFilterDrawerState.ts:28:   *  change back to the currently-applied category (e.g. removing the category chip): that
+overrides/app/pages/product-list/useFilterDrawerState.test.ts:87:    // shopper reverting it via the category chip's onRemove — pendingRefine must come back

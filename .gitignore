@@ -1,0 +1,8 @@
+.claude/.credentials.json
+.claude.json
+.claude/backups/
+.claude/jobs/*/tmp/
+Claude-Desktop/claude-code/
+Claude-Desktop/Cache/
+Claude-Desktop/Code Cache/
+Claude-Desktop/GPUCache/

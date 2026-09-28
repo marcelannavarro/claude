@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Fact-check & dash-convention pass",
+  "description": "Verify all claims in the drafted TSD against code/Confluence/Jira; ensure no em/en dashes per project writing conventions; confirm seeds are marked resolved or flagged, not shipped as unverified fact.",
+  "activeForm": "Fact-checking & cleaning dashes",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

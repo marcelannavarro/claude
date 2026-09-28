@@ -1,0 +1,682 @@
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/components.md ##########
+     1	# Components, Hooks & Storybook
+     2	
+     3	Everything about designing, structuring, and presenting a React component or hook in this
+     4	project. Split out of [conventions.md](./conventions.md) — see that file for cross-cutting
+     5	rules that apply to every file regardless of type (TypeScript-only, DRY/KISS/SOLID, magic
+     6	numbers, security). TypeScript idioms live in [typescript.md](./typescript.md); Chakra/CSS
+     7	conventions live in [css.md](./css.md).
+     8	
+     9	---
+    10	
+    11	## Components
+    12	
+    13	- **Named export** matches the folder name (e.g. `productTile/` exports `ProductTile`).
+    14	  No default exports of anonymous functions.
+    15	- **Props type name** matches the component name: `ProductTileProps` for `ProductTile`,
+    16	  `TopNavProps` for `TopNav`.
+    17	- **Props type placement:**
+    18	  - _Default:_ declare the `Props` type at the top of the component file.
+    19	  - _Move to `types.ts` in the same folder_ only when (a) the type is consumed by sibling
+    20	    files (story, test, sub-components) **or** (b) it exceeds ~30 lines and mixes with
+    21	    other shared types worth co-locating.
+    22	  - The trigger is _shared consumption_, not line count alone.
+    23	- **JSDoc** is required on:
+    24	
+    25	  - Any component used by ≥2 callers (shared components — typically Tier 2 in
+    26	    [protectedFiles.md](./protectedFiles.md)).
+    27	  - Any exported hook.
+    28	  - Any utility function with non-obvious behaviour.
+    29	
+    30	  Leaf components used by a single page don't need JSDoc — the prop type is sufficient.
+    31	
+    32	- **Callback props** follow `onEventName` (e.g. `onAddToCart`, `onClose`).
+    33	- **Required props are non-optional;** optional props use `?` — no `| undefined` unions
+    34	  for "I forgot to mark it optional."
+    35	- **Accessibility (JSX) — mechanically enforced by `.coderabbit/ast-grep-rules/`, so get
+    36	  these right at authoring time:**
+    37	  - Every `<img>` needs an `alt` attribute (`alt=""` is fine for purely decorative images).
+    38	  - Every `IconButton` (including wrapped variants like `IconButtonWithRegistration`) needs
+    39	    an `aria-label` — it renders no visible text, so screen readers have nothing else to
+    40	    announce.
+    41	  - Any element with an `onClick` that isn't natively interactive (`div`, `span`, `Box`,
+    42	    `Flex`, `Stack`, `VStack`, `HStack`, `Grid`, `Text`, and similar) needs a `role`
+    43	    attribute at minimum — and for real keyboard operability, also `tabIndex={0}` and an
+    44	    `onKeyDown` handler (or just use a `Button`/native interactive element instead, which
+    45	    is almost always simpler than reimplementing keyboard behaviour).
+    46	
+    47	---
+    48	
+    49	## Composition — writing a "clean" component
+    50	
+    51	Rules of thumb for when a component is doing too much and should be split, or when inline
+    52	state belongs in a custom hook instead.
+    53	
+    54	- **Complexity / size.** A component function should stay roughly under ~150 lines and
+    55	  avoid deep branching (rule of thumb: ~10-15 cyclomatic complexity — count independent
+    56	  paths through the render logic, not total lines). **This is not currently ESLint-enforced**
+    57	  — `.eslintrc.js` has no `max-lines-per-function` or `complexity` rule configured today, so
+    58	  treat this as a self-check during authoring and something `/code-quality` should flag, not
+    59	  something the build will fail on yet. If this keeps being a problem in practice, adding
+    60	  those two ESLint rules is a cheap follow-up (they're built into ESLint core, no new
+    61	  dependency needed).
+    62	- **Container/presentational separation.** Anything under `overrides/app/components/`
+    63	  receives data as props — it does not call data-fetching hooks itself (SDK hooks like
+    64	  `useCurrentBasket`/`useCurrentCustomer`/`useProduct`, or any `@salesforce/commerce-sdk-react`
+    65	  / React Query hook). Data-fetching belongs in `overrides/app/pages/` or another container
+    66	  component, which then passes the result down. This generalizes the existing
+    67	  "no commerce state hooks inside leaf components" rule to _all_ data-fetching, not just
+    68	  commerce SDK hooks — the reasoning is the same either way: a component that owns its own
+    69	  data-fetching can't be reused somewhere the data arrives differently (SSR-prefetched,
+    70	  mocked in Storybook, composed from a parent that already has it).
+    71	
+    72	  **Exception — Context-backed, app-wide static-content hooks** (`useIntl`, `useUiCopy`) may
+    73	  be called from any component, including presentational leaves. Both read from a Provider
+    74	  mounted above the route tree, not from a per-page/per-component fetch — so calling one from
+    75	  a leaf doesn't create the SSR/Storybook/parent-composition problem the rule above exists to
+    76	  prevent, and doesn't multiply fetches the way an SDK hook would. `useUiCopy`
+    77	  (`overrides/app/hooks/useUiCopy.ts`, Provider at `overrides/app/components/uiCopyProvider/`)
+    78	  is the reference example — `BottomBar` and `ZimmSubscribeSection` both call it directly
+    79	  for microcopy while still receiving their actual business data as props. This exception is
+    80	  narrow: it covers content that is identical for every consumer regardless of route/context,
+    81	  not anything that varies per page.
+    82	
+    83	  **Their no-Provider behaviour differs, and it matters for tests and stories.** `useUiCopy`
+    84	  degrades to fallback text — `useContext(UiCopyContext) ?? FALLBACK_ONLY` — so a leaf calling
+    85	  it renders with zero setup. `useIntl` **throws** (`react-intl`'s `invariantIntlContext`:
+    86	  _"Could not find required `intl` object"_), and its `IntlProvider` is mounted by the **base
+    87	  SFCC `_app`**, not by `_app-config` — a strictly narrower subtree. `.storybook/preview.tsx`
+    88	  supplies one for stories precisely because of this; any Vitest test rendering a `useIntl`
+    89	  consumer must wrap it too. An earlier revision of this paragraph claimed both hooks degrade
+    90	  gracefully and that both Providers sit in `_app-config`; neither is true of `useIntl`.
+    91	- **Extract-to-hook threshold.** Pull inline component logic out into a custom hook
+    92	  (`overrides/app/hooks/use<ComponentName><Feature>.ts`) when either is true:
+    93	
+    94	  - The component has ≥2 pieces of related `useState` that change together (a strong signal
+    95	    the state belongs in one place, whether that's a custom hook or a single reducer).
+    96	  - Any `useEffect` has a non-trivial dependency array or a cleanup function — non-trivial
+    97	    meaning more than a single obvious dependency, or the effect does anything beyond a
+    98	    one-line side effect.
+    99	
+   100	  This one is judgment-heavy, not a hard mechanical gate — `/code-quality` should flag it as
+   101	  a should-fix, not a must-fix, and a component with ≥4 `useState` calls is a reasonable
+   102	  coarse trigger to at least stop and ask "should this be a hook?"
+   103	
+   104	---
+   105	
+   106	## Hooks
+   107	
+   108	- **File extension** is `.ts` (no JSX in a hook file).
+   109	- **Exported function name** matches the filename: `useWishlist.ts` exports `useWishlist`.
+   110	- **Parameters and return value are typed** — no implicit `any`, no missing return type.
+   111	  See [typescript.md](./typescript.md) for the general typing rules this extends.
+   112	- **JSDoc** is required on every exported hook, including a `@returns` description.
+   113	
+   114	---
+   115	
+   116	## Storybook
+   117	
+   118	Storybook is the canonical place to view components in isolation. Keep it browsable —
+   119	a flat 200-story sidebar is unusable.
+   120	
+   121	### When a story is required
+   122	
+   123	- **Required** for any component exported from its folder under `overrides/app/components/`
+   124	  or `overrides/app/pages/` (i.e. anything another file imports).
+   125	- **Not required** for purely internal sub-components that only render inside one parent
+   126	  (e.g. `productTile/priceRow.tsx` used only by `productTile/index.tsx`). Cover their
+   127	  variants via the parent's stories.
+   128	- Pages get a story showing the full assembly with representative props — not a story per
+   129	  sub-section.
+   130	
+   131	### Categorisation
+   132	
+   133	Story `title` drives the sidebar tree. Pick the first matching category:
+   134	
+   135	| Category      | What goes here                                                                                                                                                                                      |
+   136	| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   137	| `Foundation/` | Design tokens — Colour, Typography, Spacing, Icons, Shadows                                                                                                                                         |
+   138	| `Elements/`   | Generic building blocks — both display (Badge, Tag, Link, Avatar, Skeleton) and interactive controls (Button, Input, Checkbox, Select). Tiebreaker: _can it be used outside a form?_ → `Elements/`. |
+   139	| `Layout/`     | Global chrome, navigation, and structural components — Header, Footer, DrawerMenu, ListMenu, Breadcrumb, Pagination, Seo                                                                            |
+   140	| `Commerce/`   | Commerce-specific shared components — ProductTile, OrderSummary, PromoCode, DisplayPrice, SwatchGroup                                                                                               |
+   141	| `Forms/`      | Composed form assemblies — AddressForm, CheckoutContactForm, NewsletterSignup                                                                                                                       |
+   142	| `Pages/`      | Full page assemblies — PDP, PLP, Cart, Checkout, Account                                                                                                                                            |
+   143	| `Contentful/` | CMS-driven components — HeroBanner, RichText, ContentBlock. Use mock Contentful data in stories so variants are visible without a live CMS connection.                                              |
+   144	
+   145	Naming convention: singular for a concept or proper noun (`Foundation`, `Commerce`, `Layout`, `Contentful`); plural for a collection (`Elements`, `Forms`, `Pages`).
+   146	
+   147	Examples:
+   148	
+   149	```ts
+   150	export default { title: 'Commerce/ProductTile' }; // ✅
+   151	export default { title: 'Layout/Header' }; // ✅
+   152	export default { title: 'Elements/Button' }; // ✅
+   153	export default { title: 'Pages/PDP' }; // ✅
+   154	export default { title: 'Elements/DisplayPrice' }; // ❌ — eCommerce specific, use Commerce/
+   155	export default { title: 'Primitives/Button' }; // ❌ — use Elements/
+   156	```
+   157	
+   158	When in doubt: ask "what does this component _know_ about?" Commerce → `Commerce/`,
+   159	CMS-driven → `Contentful/`, nothing domain-specific → `Elements/`, page-level composition → `Pages/`.
+   160	
+   161	### Story content
+   162	
+   163	- Every story file has a `Default` named export.
+   164	- Add named exports for meaningful states (`Loading`, `OutOfStock`, `WithDiscount`) — not
+   165	  for every possible prop combination.
+   166	- `play` functions only when there's interactive behaviour worth asserting; otherwise the
+   167	  story is purely visual.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/conventions.md ##########
+     1	# Code Conventions
+     2	
+     3	Cross-cutting code-writing rules that apply to every file in a PR, regardless of type. Domain-specific
+     4	conventions are split into their own files — see **See also** below. Both
+     5	[.claude/skills/new-component/](../skills/new-component/SKILL.md) (when scaffolding) and
+     6	[.claude/skills/code-quality/](../skills/code-quality/SKILL.md) (when auditing) reference this
+     7	file and its siblings. Update the relevant file once — both skills, and (via
+     8	[scripts/syncCursorRules.mjs](../../scripts/syncCursorRules.mjs)) all other AI tool configs,
+     9	pick it up.
+    10	
+    11	> Higher-level project rules live in [AGENTS.md](../../AGENTS.md). Tier classifications live in
+    12	> [frozenFiles.md](./frozenFiles.md) and [protectedFiles.md](./protectedFiles.md).
+    13	
+    14	## See also
+    15	
+    16	- **[typescript.md](./typescript.md)** — TypeScript idioms: `any`/`type` vs `interface`,
+    17	  discriminated unions, utility types, `satisfies`, `readonly`, generics.
+    18	- **[css.md](./css.md)** — Chakra token usage, hardcoded-value policy, `.scss` conventions.
+    19	- **[components.md](./components.md)** — component/hook/Storybook structure and the
+    20	  composition rules for a "clean" component (complexity limits, container/presentational
+    21	  separation, extract-to-hook threshold).
+    22	- **[testing.md](./testing.md)** — Vitest / Storybook `play` / Playwright layer selection.
+    23	- **[frozenFiles.md](./frozenFiles.md)** / **[protectedFiles.md](./protectedFiles.md)** —
+    24	  Tier 1 / Tier 2 file protection.
+    25	
+    26	---
+    27	
+    28	## General — every file in a PR
+    29	
+    30	These apply to all `.ts`/`.tsx` files Claude creates or modifies, regardless of folder.
+    31	
+    32	- **TypeScript only inside `overrides/`.** `.js`/`.jsx` is not acceptable here — see AGENTS.md.
+    33	- **No commented-out code blocks introduced by this PR** unless accompanied by an explicit
+    34	  strong reason in a comment immediately above. Existing comments are preserved per AGENTS.md —
+    35	  the rule is about _introducing_ new dead code, not removing old.
+    36	- **No `console.log` or `console.error` calls** outside of error boundaries or explicit
+    37	  developer-tooling files. Use the project's logger when one is introduced.
+    38	- **No hardcoded design values** — Chakra token usage is a whole topic of its own now; see
+    39	  [css.md](./css.md).
+    40	- **React rules of hooks apply everywhere hooks are called.** Only call hooks at the top
+    41	  level of a component or another hook. No conditional, looped, or nested hook calls.
+    42	- **TypeScript idioms** (`any`, `type` vs `interface`, and the rest) — see
+    43	  [typescript.md](./typescript.md).
+    44	- **Australian spelling** in Zimmermann-authored identifiers and copy (`colour`, `centre`,
+    45	  `organisation`). Override files keep upstream Salesforce spelling verbatim.
+    46	- **Apply DRY, KISS, and SOLID.** Don't repeat logic — extract to a shared utility or hook
+    47	  once the same pattern appears in two places. Prefer the simplest design that works; resist
+    48	  speculative abstractions. Keep modules to a single responsibility; split a file when it
+    49	  starts mixing concerns.
+    50	- **No magic numbers or strings.** Any literal value with semantic meaning — pixel
+    51	  thresholds, retry counts, country codes, feature flag names, status strings, error
+    52	  codes — must be a named constant (`const MAX_RETRIES = 3`) or live in a config/enum
+    53	  module. Excepted: `0`, `1`, `-1` in obvious idiomatic uses, and string literals that _are_
+    54	  the value (e.g. CSS class names, JSX text).
+    55	- **Payment credentials — never logged, never persisted client-side.** Gift card numbers,
+    56	  gift card PINs, credit card PANs, CVVs and similar secrets must not appear in any
+    57	  `console.*` call, Sentry breadcrumb / event, GTM dataLayer push, analytics event, MRT
+    58	  access log, or response body returned to the browser beyond a masked form. Never store
+    59	  them in `localStorage`, `sessionStorage`, IndexedDB, or cookies — form state lives in
+    60	  React only and is cleared on unmount. Submit them in the POST **body**, never as a
+    61	  query string (URLs end up in MRT access logs, browser history, Referer headers). After
+    62	  submit, render only the serial portion (e.g. `••••••••1234`). Do not add body-logging
+    63	  middleware on routes that carry these fields. Logger and Sentry `beforeSend` must
+    64	  redact them. See [.docs/prd/giftcards.md §10](../../.docs/prd/giftcards.md) for the
+    65	  GiveX-specific rationale (only the card's serial portion may be displayed or logged).
+    66	- **`dangerouslySetInnerHTML` must always wrap its value in a sanitizer call**
+    67	  (e.g. `DOMPurify.sanitize(...)`) — never pass raw/unsanitized HTML (CMS content,
+    68	  API responses, user input). Unsanitized HTML injection is an XSS vector. Enforced
+    69	  by a `semgrep.yml` rule at PR review time — get it right at authoring time instead
+    70	  of finding out post-review.
+    71	
+    72	---
+    73	
+    74	## File naming and folder structure
+    75	
+    76	- **Zimmermann-authored files and folders:** `camelCase` (e.g. `productTile.tsx`,
+    77	  `useWishlist.ts`, `formatPrice.ts`).
+    78	- **Override files (mirroring a base Salesforce file):** keep the original kebab-case
+    79	  filename and folder name exactly (e.g. `product-tile.tsx`). This makes the origin of a
+    80	  file obvious at a glance.
+    81	- **Component folder layout:** each component lives in its own folder under
+    82	  [overrides/app/components/](../../overrides/app/components/). Use `index.tsx` for the
+    83	  component itself so imports stay clean:
+    84	
+    85	  ```
+    86	  overrides/app/components/productTile/
+    87	    index.tsx              ← the component
+    88	    index.stories.tsx      ← Storybook story
+    89	    index.test.ts          ← Vitest (only if logic-heavy)
+    90	    types.ts               ← only if props/types are shared with sibling files
+    91	    productTile.scss       ← only if Chakra props are insufficient
+    92	  ```
+    93	
+    94	  Import as `import ProductTile from '.../components/productTile'`.
+    95	
+    96	---
+    97	
+    98	## Utilities
+    99	
+   100	- **Pure functions** — no side effects unless clearly intentional and called out in a comment.
+   101	- **No imports from `overrides/app/hooks/`** — utilities must not depend on hooks
+   102	  (it's the other direction).
+   103	- **Vitest required** when the utility has ≥1 conditional branch or performs ≥1
+   104	  transformation (currency, locale, mapping, parsing, etc.). Trivial re-exports or
+   105	  one-liners don't need a test.
+   106	
+   107	---
+   108	
+   109	## Imports
+   110	
+   111	- **No circular imports** — if file A imports from file B, B must not import from A
+   112	  (check one level deep).
+   113	- **No `../../../..` chains longer than 3 levels** — flag for path-alias review.
+   114	- **No imports from internal `node_modules/@salesforce/...` source paths** — use the
+   115	  package's published entrypoints (`@salesforce/retail-react-app/...`).
+   116	- **No imports from a later-sprint feature** — cross-check
+   117	  `.docs/memory/sprintScope.md`.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/css.md ##########
+     1	# CSS & Styling Conventions
+     2	
+     3	Chakra UI and `.scss` conventions. See [AGENTS.md](../../AGENTS.md) > Rules > Styling for the
+     4	higher-level policy (Chakra props first, `.scss` only when insufficient, theme file
+     5	ownership/tiers) — this file covers the concrete day-to-day rules underneath that policy.
+     6	
+     7	---
+     8	
+     9	## Tokens — no hardcoded design values
+    10	
+    11	Chakra UI props must use the Chakra token system — no hardcoded hex colours, no pixel
+    12	values for spacing, no raw font sizes. Tokens belong in
+    13	[overrides/app/theme/foundation/](../../overrides/app/theme/) (Tier 1 — see
+    14	[frozenFiles.md](./frozenFiles.md)).
+    15	
+    16	```tsx
+    17	// ❌ hardcoded
+    18	<Box color="#1A1A1A" padding="16px" />
+    19	
+    20	// ❌ a bare Chakra/theme token string — resolves correctly (theme.colors/theme.space ARE
+    21	// registered from the Zimmermann foundations) but is still not allowed in an override
+    22	// component; see overrideStyling.md's hierarchy point 2 for why
+    23	<Box color="text.default" padding="m" />
+    24	
+    25	// ✅ token, as a raw var(--zimm-*) reference
+    26	<Box color="var(--zimm-color-text-default)" padding="var(--zimm-scale-m)" />
+    27	```
+    28	
+    29	Type is its own case, not shown above — set it with `textStyle` (`textStyle="body2"`), never
+    30	a raw `fontSize`, per [overrideStyling.md](./overrideStyling.md) point 1. There's no
+    31	`var(--zimm-*)` substitute for the composite `textStyle` expansion itself, only for its
+    32	individual pieces (`var(--zimm-font-size-*)` etc.), so `textStyle` stays a bare key —
+    33	it's the one entry in the hierarchy that isn't a colour/spacing token.
+    34	
+    35	**The raw-hex/px/rem/em half of this has a script but no CI gate yet.**
+    36	`npm run audit:tokens` (`scripts/auditTokenUsage.mjs`) scans `overrides/app/components/**`
+    37	and `overrides/app/theme/components/**` for exactly this — see
+    38	[overrideStyling.md](./overrideStyling.md)'s `Never` note for the full scope and its
+    39	acknowledged-exception rules. It's not wired into CI (no `.coderabbit/ast-grep-rules/` rule
+    40	either), so nothing blocks a merge that skips running it — that's still a real gap, just not
+    41	an unstarted one.
+    42	The bare-token-vs-`var(--zimm-*)` half above **is** mechanically enforced for recipe files —
+    43	see `theme/components/recipeGuards.test.ts`, which runs on every `npm run test` — though it
+    44	can't see the same mistake made as a JSX/`sx` prop; that half still relies on review.
+    45	
+    46	---
+    47	
+    48	## `.scss` — only when Chakra props are insufficient
+    49	
+    50	Per AGENTS.md, reach for a `.scss` file alongside a component only when Chakra's prop system
+    51	genuinely can't express what's needed (e.g. complex pseudo-selectors, keyframe animations,
+    52	print styles). When you do:
+    53	
+    54	- **File naming:** matches the component file exactly — `productTile.scss` next to
+    55	  `productTile/index.tsx` (see [conventions.md](./conventions.md) > File naming and folder
+    56	  structure for the folder layout this sits in).
+    57	- **Scoped, co-located only.** No global stylesheets outside `overrides/app/theme/` — a
+    58	  component's `.scss` file must only affect that component's own markup.
+    59	- **Nesting depth ≤ 3 levels.** Beyond that, the selector is almost always reaching into a
+    60	  child component's internals rather than styling its own root — a sign the styling belongs
+    61	  in that child instead, or that Chakra's `sx` prop / a theme variant would express it more
+    62	  directly.
+    63	- **No ID selectors.** Class-based only — an ID selector's specificity makes it
+    64	  disproportionately hard to override later (including by a legitimate future Chakra
+    65	  variant), and IDs aren't guaranteed unique when a component renders more than once on a
+    66	  page.
+    67	- **No `!important`** without an inline comment explaining why the override is genuinely
+    68	  unavoidable (e.g. fighting a third-party widget's inline styles) — same reasoning as the
+    69	  `any`/non-null-assertion escape hatches in [typescript.md](./typescript.md): allowed, but
+    70	  the reason has to be visible at the point of use, not left for the next reader to guess.
+    71	- **Prefer Chakra's `sx` prop or a theme variant extension over a new `.scss` file** for
+    72	  anything that's really just "a Chakra style the prop system doesn't have a named prop for"
+    73	  — a new global class is a bigger footprint than a one-off `sx` override, and `sx` keeps the
+    74	  style co-located with the JSX that uses it instead of a separate file to keep in sync.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/typescript.md ##########
+     1	# TypeScript Conventions
+     2	
+     3	TypeScript-specific idioms that apply to every `.ts`/`.tsx` file. See
+     4	[conventions.md](./conventions.md) for the base "TypeScript only inside `overrides/`" rule
+     5	and general cross-cutting conventions; see [components.md](./components.md) for how these
+     6	apply specifically to component props and hook signatures.
+     7	
+     8	---
+     9	
+    10	- **No `any`** without an inline comment explaining why a narrower type is impossible.
+    11	  Prefer `unknown` with a type guard when the shape is genuinely not known at that point.
+    12	- **Prefer `type` over `interface`** for component props, shared shapes, and utility type
+    13	  aliases. Use `interface` only when declaration merging is genuinely needed.
+    14	- **No non-null assertion (`!`)** without an inline comment explaining why the value is
+    15	  guaranteed non-null at that point — same reasoning as the `any` policy. Prefer a proper
+    16	  null check, an early return, or narrowing the type instead.
+    17	- **Discriminated unions for variant/state modeling.** When a value can be one of several
+    18	  distinct shapes (e.g. a basket item that's either a product or a gift card, or a fetch
+    19	  state that's loading/error/success), model it as a discriminated union with a common
+    20	  literal `kind`/`type` field rather than one type with a pile of optional fields. Lets
+    21	  TypeScript narrow correctly in each branch instead of requiring manual `? :` guards.
+    22	- **Prefer utility types over hand-rolled duplicate shapes.** `Pick<ProductTileProps, 'id' | 'name'>`,
+    23	  `Omit<...>`, `Partial<...>`, `Required<...>` — reach for these before redeclaring a
+    24	  near-identical type by hand. A hand-copied type silently drifts from its source when the
+    25	  original changes; a utility type doesn't.
+    26	- **`import type` for type-only imports.** `import type {ProductTileProps} from './types'` —
+    27	  keeps type-only imports from ending up in the compiled bundle and makes the type-vs-value
+    28	  distinction explicit at the import site.
+    29	- **`satisfies` over a type assertion (`as`)** when you want literal-type inference _and_
+    30	  a check that the value conforms to a type — e.g. a config object where you want
+    31	  autocomplete on the literal keys but also compiler validation against a shape. Reach for
+    32	  `as` only when you're genuinely overriding what TypeScript can infer (and treat that the
+    33	  same as an `any` — comment why).
+    34	- **`readonly`** on props and arrays that the receiving component/function must not mutate
+    35	  — particularly array/object props passed down from a parent that still owns that data.
+    36	  Signals intent at the type level instead of relying on convention alone.
+    37	- **Generic type parameter naming.** Single-letter (`T`, `K`, `V`) is fine for a generic
+    38	  utility with one obvious parameter. Once there's more than one type parameter, or the
+    39	  generic's role isn't obvious from context, use a descriptive name prefixed with `T`
+    40	  (`TItem`, `TResponse`) so the signature reads clearly without having to trace usage.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/frozenFiles.md ##########
+     1	# Tier 1 — Frozen Files
+     2	
+     3	These files must not be modified by Claude Code without the developer explicitly naming the file
+     4	in the prompt AND confirming they have spoken to the listed owner. No exceptions.
+     5	
+     6	> **Note:** this is a slim overrides project on `@salesforce/retail-react-app` v10 — paths
+     7	> below reference `overrides/app/...` (the customisation surface) rather than the upstream
+     8	> monorepo `packages/template-retail-react-app/app/...` path.
+     9	
+    10	## Design System (Owner: UI Designer — #design-system)
+    11	
+    12	The whole `overrides/app/theme/foundation/` folder is Tier 1. Currently present:
+    13	
+    14	```text
+    15	overrides/app/theme/index.ts
+    16	overrides/app/theme/foundation/index.ts
+    17	overrides/app/theme/foundation/colour.ts
+    18	overrides/app/theme/foundation/fonts.ts
+    19	overrides/app/theme/foundation/typography.ts
+    20	overrides/app/theme/foundation/gridSystem.ts
+    21	overrides/app/theme/foundation/spacing.ts
+    22	overrides/app/theme/foundation/motion.ts
+    23	overrides/app/theme/foundation/sizes.ts
+    24	overrides/app/theme/foundation/zimmTokens.ts
+    25	```
+    26	
+    27	**Fonts are self-hosted and served on every tier.** `overrides/app/static/fonts/` holds two
+    28	Futura Round faces — Regular 400 and Medium 500 — declared by
+    29	`overrides/app/theme/fontFace.tsx` and mounted in both `_app-config/index.tsx` and
+    30	`.storybook/preview.tsx`. Only two faces exist because only two are used: all 22 textStyles
+    31	resolve to fontWeight 400 or 500, and `fonts.body === fonts.heading`.
+    32	
+    33	There is **no environment gate** on this, and it is worth stating plainly because an earlier
+    34	revision of this section claimed there was. `ZimmFontFace` mounts unconditionally inside
+    35	`_app-config`'s `ChakraProvider`, and `pwa-kit-dev`'s `staticFolderCopyPlugin` copies
+    36	`overrides/app/static` in both the client and SSR webpack configs — so the `.woff2` are
+    37	published with every bundle and shoppers on every storefront render Futura Round.
+    38	
+    39	`foundation/fonts.ts` already lists `'Futura Round'` first in both stacks, so the `@font-face`
+    40	declaration is the only thing that makes it resolve — no component, recipe or token changes.
+    41	The fallback stack renders roughly 13% wider, which is why serving the real faces matters for
+    42	design-parity review against Figma.
+    43	
+    44	Per-component theme overrides live in `overrides/app/theme/components/` (**Tier 2**) or, per
+    45	the co-location pattern, beside their component as `<name>.css.ts` — governed by that
+    46	component's own CODEOWNERS entry instead, not this Tier — see
+    47	[protectedFiles.md](./protectedFiles.md). `overrides/app/theme/globalStyles.ts`
+    48	is also **Tier 2** — it composes the `.zimm-*` global class registry from the `--zimm-*`
+    49	variables defined in `foundation/zimmTokens.ts`, so it is derived styling rather than a
+    50	brand token source, but it emits CSS on every page and therefore needs a named owner.
+    51	
+    52	## Commerce SDK Hooks (Owner: Integration / SI Partner — #integration)
+    53	
+    54	```text
+    55	overrides/app/hooks/use-current-basket.ts
+    56	overrides/app/hooks/use-current-customer.ts
+    57	overrides/app/hooks/use-einstein.ts
+    58	overrides/app/hooks/use-datacloud.ts
+    59	overrides/app/hooks/use-refresh-token.ts
+    60	overrides/app/hooks/use-multi-site.ts
+    61	overrides/app/hooks/use-navigation.ts
+    62	```
+    63	
+    64	Note: `commerce-sdk-react` is consumed from `node_modules/@salesforce/commerce-sdk-react/` —
+    65	it is not in this repo and cannot be modified here. The hooks above are the overrides surface.
+    66	
+    67	## Runtime & Integration Config (Owner: Integration / SI Partner — #integration)
+    68	
+    69	```text
+    70	config/                              ← entire directory (default.js, sites.js, sit.js, dev.js, utils.js)
+    71	overrides/app/ssr.js
+    72	overrides/app/ssr/                   ← SSR helper modules split from ssr.js in refactor 610020e:
+    73	                                         connectionPools.ts  — undici pool isolation (blast-radius mitigation)
+    74	                                         contentSecurityPolicy.ts  — CSP headers; wrong change = security hole on every page
+    75	                                         slasTokens.ts  — SLAS auth token handling; wrong change = broken auth site-wide
+    76	                                         paymentMetadata.ts  — payment method metadata SSR (checkout pages)
+    77	                                         marketingCloud.ts  — MC client-credentials token exchange
+    78	worker/main.js
+    79	package.json (root)
+    80	mobify.config.js
+    81	overrides/app/config/countries.ts
+    82	overrides/app/config/contentful.ts   ← gates preview/draft content; removing the server-side check exposes drafts on production
+    83	```
+    84	
+    85	**`overrides/app/request-processor.js` — add here when populated.**
+    86	Currently the Salesforce example stub. Once Zimmermann's geo-redirect and storefront-routing logic lands here it runs on every single request — it will be one of the highest-blast-radius files in the repo. Add it to this section before that work begins.
+    87	
+    88	## Build Pipeline (Owner: Integration / SI Partner — #integration)
+    89	
+    90	Path aliases are configured in four places that must stay in sync (see architecture.md §Path Aliases).
+    91	Breaking either file silently breaks every `app/` and `~` import across the codebase.
+    92	
+    93	```text
+    94	babel.config.js    ← path aliases for npm start dev server + production build
+    95	tsconfig.json      ← path aliases for TypeScript / VS Code intellisense; also enforces strict mode
+    96	```
+    97	
+    98	## Consent (Owner: Integration / SI Partner — #integration)
+    99	
+   100	```text
+   101	Didomi / consent configuration (paths TBD — add when introduced)
+   102	```
+   103	
+   104	## Test & Tooling Config (Owner: Integration / SI Partner — #integration)
+   105	
+   106	Mirrors AGENTS.md hard rule 8 — test config drift breaks every contributor's harness.
+   107	
+   108	```text
+   109	vitest.config.*
+   110	vitest.setup.ts       ← test environment setup; complements vitest.config.*
+   111	playwright.config.*
+   112	.storybook/
+   113	lighthouserc.js
+   114	browserstack.yml      ← must target e2e/tests/zimm only; scope change = CI cost explosion + upstream test failures.
+   115	                         Named without a leading dot deliberately — browserstack-node-sdk requires exactly this
+   116	                         filename (renamed from .browserstack.yml on 2026-08-25 — SFCC-751; the old dotfile name
+   117	                         made every SDK-driven run fail at config resolution before any test executed).
+   118	```
+   119	
+   120	## CI/CD Pipeline (Owner: Integration / SI Partner — #integration)
+   121	
+   122	```text
+   123	.github/workflows/
+   124	```
+   125	
+   126	## Governance (Owner: Both Squad Leads + Integration Lead — #dev-team)
+   127	
+   128	```text
+   129	AGENTS.md
+   130	CLAUDE.md
+   131	CODEOWNERS
+   132	.claude/rules/
+   133	.claude/settings.json
+   134	coderabbit.yaml              ← AI PR review config; weakening it removes Tier 1 change detection and commit-format enforcement
+   135	.coderabbit/                 ← ast-grep rule content coderabbit.yaml points at; weakening/deleting a rule here silently removes that check with no signal in coderabbit.yaml itself
+   136	semgrep.yml                  ← semgrep rule content (payment-credential-logging, XSS); same silent-weakening risk as .coderabbit/
+   137	scripts/hooks/pre-commit     ← enforces Contentful drift check and blocks direct edits to derived AI config files
+   138	scripts/hooks/commit-msg     ← enforces conventional commits; /generate-changelog depends on this
+   139	```
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/protectedFiles.md ##########
+     1	# Tier 2 — Protected Files
+     2	
+     3	These can be modified on a feature branch but require a PR review from a developer who is not
+     4	the author before merging to develop.
+     5	
+     6	> Paths reference `overrides/app/...` per this project's slim overrides layout. Override files
+     7	> keep the original Salesforce filename (kebab-case) but are TypeScript (`.ts`/`.tsx`).
+     8	
+     9	## Global Shell (Owner: Both Squads — coordinate before touching)
+    10	
+    11	```text
+    12	overrides/app/components/header/
+    13	overrides/app/components/footer/
+    14	overrides/app/components/drawer-menu/
+    15	overrides/app/components/list-menu/
+    16	overrides/app/components/seo/
+    17	overrides/app/components/_app/
+    18	overrides/app/components/_app-config/
+    19	overrides/app/components/uiCopyProvider/
+    20	overrides/app/routes.tsx
+    21	```
+    22	
+    23	`uiCopyProvider/` is mounted once inside `_app-config` and provides `useUiCopy()`'s context
+    24	value to every page on every site — the same blast radius as `_app-config` itself, so it
+    25	belongs in this tier alongside it rather than defaulting to Tier 4 by omission.
+    26	
+    27	## Shared Product Components (Owner: Squad B — notify Squad A)
+    28	
+    29	```text
+    30	overrides/app/components/product-tile/
+    31	overrides/app/components/product-item/
+    32	overrides/app/components/display-price/
+    33	overrides/app/components/image-gallery/
+    34	overrides/app/components/swatch-group/
+    35	overrides/app/components/recommended-products/
+    36	```
+    37	
+    38	## Shared Commerce Components (Owner: Squad A — notify Squad B)
+    39	
+    40	```text
+    41	overrides/app/components/order-summary/
+    42	overrides/app/components/promo-code/
+    43	overrides/app/components/pickup-or-delivery/
+    44	```
+    45	
+    46	## Theme Component Styles (Owner: UI Designer — notify before changing)
+    47	
+    48	```text
+    49	overrides/app/theme/components/
+    50	overrides/app/theme/globalStyles.ts
+    51	```
+    52	
+    53	One file per Chakra component (e.g. `header.ts`, `listMenu.ts`). Register new
+    54	files in `overrides/app/theme/components/index.ts`. Foundations live alongside
+    55	in `overrides/app/theme/foundation/` and are **Tier 1** — see
+    56	[frozenFiles.md](./frozenFiles.md).
+    57	
+    58	A component's own recipe may instead live beside it as `<name>.css.ts` (e.g.
+    59	`overrides/app/components/footer/footer.css.ts`) rather than here — see
+    60	[overrideStyling.md](./overrideStyling.md)'s co-location pattern, introduced with the
+    61	footer decomposition. It's still registered in `overrides/app/theme/components/index.ts`
+    62	either way. A co-located `<name>.css.ts` is **not** governed by this section's Tier 2
+    63	UI-designer gate — CODEOWNERS' `overrides/app/components/**/*.css.ts` rule routes it to
+    64	the owning squad(s) only. This folder's Tier 2 designation still applies to whatever
+    65	hasn't moved to co-location, and to genuinely cross-component shared values (e.g.
+    66	`footerShared.ts`) that a single component's file can't own.
+    67	
+    68	`globalStyles.ts` is the `.zimm-*` global class registry, composed into
+    69	`theme/index.ts` as `styles.global`. It is derived from the `--zimm-*` variables in
+    70	`foundation/zimmTokens.ts` rather than defining brand values itself, so it sits at
+    71	Tier 2 — but it emits CSS on every page, so treat a change here as wider-reaching
+    72	than a single component override.
+    73	
+    74	## Translations (Owner: Integration / SI Partner — notify before changing)
+    75	
+    76	```text
+    77	translations/
+    78	overrides/app/static/translations/
+    79	```
+    80	
+    81	## Shared Hooks — 5+ consumers (Owner: Both Squads — coordinate before touching)
+    82	
+    83	```text
+    84	overrides/app/hooks/use-auth-modal.ts
+    85	overrides/app/hooks/use-toast.ts
+    86	overrides/app/hooks/use-modal-state.ts
+    87	overrides/app/hooks/use-intersection-observer.ts
+    88	overrides/app/hooks/use-currency.ts
+    89	overrides/app/hooks/use-dnt-notification.ts
+    90	overrides/app/hooks/use-app-origin.ts
+    91	overrides/app/hooks/use-selected-store.ts
+    92	```
+    93	
+    94	## Environment Switching Tooling (Owner: Integration / SI Partner — notify before changing)
+    95	`scripts/switchEnv.mjs` (`npm run env`) manages `.env.shared`/`.env.<tier>` locally and gates
+    96	`push` — writing shared/tier values to this repo's GitHub Environments (`shared` + one per
+    97	deployment tier under Settings > Environments) — to `@ZimmermannAU/tier-1-approvers`. The
+    98	script's own gh-identity check is a fast-fail convenience only, same reasoning as
+    99	[AGENTS.md's Tier 1 Approval](../../AGENTS.md#tier-1-approval--how-its-actually-enforced) section
+   100	— the real enforcement is GitHub itself: writing an Environment Variable requires repo Admin,
+   101	which only tier-1-approvers hold. A careless change here could weaken that gate, or misroute a
+   102	personal credential (Jira/Confluence token, Contentful CMA token) into the centrally-shared
+   103	store instead of keeping it local-only — see the `scope:personal` handling documented in
+   104	`.env.sample`'s header before changing the scope-parsing logic.
+   105	```text
+   106	scripts/switchEnv.mjs
+   107	```
+   108	
+   109	## Contentful Schema Definitions (Owner: Integration / SI Partner — notify before changing)
+   110	
+   111	These files define the Zimmermann content model, authored once as a single
+   112	organization-scoped Contentful **Environment Template** (`npm run sync:contentful`,
+   113	via `client.environmentTemplate.*` in the `contentful-management` SDK) and installed
+   114	into each environment (`npm run install:contentful -- --target <env>`). This replaced
+   115	an earlier per-environment `sync.js` + migration-file pipeline once Contentful moved to
+   116	recommending organization-level content models over independently-synced
+   117	space/environment content types.
+   118	
+   119	`content-types/*.js` is the sole source of truth per content type (including
+   120	`localized`/`required`/`validations` — there is no longer a separate migration file that
+   121	overrides an inferior default). Field deletion during an install is opt-in
+   122	(`--delete-deleted-fields`), off by default — a mistaken field definition pushed to the
+   123	production Contentful environment is difficult to undo and may break running components.
+   124	
+   125	```text
+   126	scripts/contentful/buildTemplate.js
+   127	scripts/contentful/setup/installTemplate.mjs
+   128	scripts/contentful/content-types/
+   129	```
+   130	
+   131	Always run `install:contentful` against a non-production Contentful environment first.
+   132	Requires `CONTENTFUL_MANAGEMENT_TOKEN` and `CONTENTFUL_ORGANIZATION_ID` (local / CI only —
+   133	never deployed to MRT).
+

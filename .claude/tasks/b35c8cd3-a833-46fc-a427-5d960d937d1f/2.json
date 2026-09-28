@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Pull exact Figma specs per component",
+  "description": "For each mapped node: get_design_context / get_variable_defs to record exact dimensions, colors, typography, spacing at each breakpoint frame the file defines.",
+  "activeForm": "Pulling Figma specs per component",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": []
+}

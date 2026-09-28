@@ -1,0 +1,2723 @@
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push less than a minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+* MuleSoft contract tests (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Run contract tests
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 1 minute ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Build and check bundle size
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+* Bundle size check (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+* Dev Gate (ID 93385166727)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 2 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+* Tag sprint rollover (ID 93385192818)
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+* Tag sprint rollover (ID 93385192818)
+  ✓ Set up job
+  * Run actions/checkout@v4
+  * Check for sprint.txt change
+  * Create sprint tag
+  * Post Run actions/checkout@v4
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  * Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  * Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 3 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  * Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  * Push build to dev
+  * Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 5 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+* Deploy to dev (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  X Push build to dev
+  - Post Run actions/setup-node@v4
+  * Post Run actions/checkout@v4
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+X develop Deploy Dev ZimmermannAU/zimmermann-pwa#8 · 31236585642
+Triggered via push about 6 minutes ago
+
+JOBS
+✓ Bundle size check in 2m38s (ID 93384599162)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Build and check bundle size
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ MuleSoft contract tests in 1m6s (ID 93384599251)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  ✓ Run contract tests
+  ✓ Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Dev Gate in 4s (ID 93385166727)
+  ✓ Set up job
+  ✓ Check all dev gate signals passed
+  ✓ Complete job
+X Deploy to dev in 2m54s (ID 93385192786)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-node@v4
+  ✓ Install dependencies
+  X Push build to dev
+  - Post Run actions/setup-node@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ Tag sprint rollover in 8s (ID 93385192818)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Check for sprint.txt change
+  - Create sprint tag
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+MuleSoft contract tests: .github#2
+
+watch exit code: 1

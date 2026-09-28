@@ -1,0 +1,404 @@
+Regenerating Claude Code registry...
+Generating Claude Code registry...
+  components.md  — 110 entries (Override: 6, Custom: 37, Base: 67)
+  hooks.md       — 70 entries (Override: 1, Custom: 13, Base: 56)
+  utils.md       — 34 entries (Override: 0, Custom: 5, Base: 29)
+  pages.md       — 18 entries (Override: 2, Custom: 3, Base: 13)
+  routes.md      — 18 entries (Inherited: 13, Override: 5)
+Done.
+Running Vitest for files related to your staged changes...
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/Users/marcel.a.n.navarro/Dev/zimmermann-pwa[39m
+
+ [32m✓[39m overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx [2m([22m[2m32 tests[22m[2m)[22m[32m 224[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx [2m([22m[2m62 tests[22m[2m)[22m[32m 224[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+[90mstderr[2m | overrides/app/theme/index.test.tsx[2m > [22m[2mrendered output[2m > [22m[2mtextStyle applies the brand type style end to end
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mrenders a real <a> when given a safe href
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mrenders a single control for the label — no separate hidden/decorative trigger element — regression guard: an earlier revision kept a zero-width chevron button around as the real PopoverTrigger child, leaving an invisible extra Tab stop between every pair of L1 items with no visible focus ring (WCAG 2.4.7)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/theme/index.test.tsx[2m > [22m[2mrendered output[2m > [22m[2mButton renders square and uppercase from the theme override
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/theme/index.test.tsx [2m([22m[2m127 tests[22m[2m)[22m[32m 157[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mforwards item, itemsKey, and maxColumns to the given contentComponent
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mrenders a non-navigating <button> when no href is given
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/molecules/zimmProductMeta/index.test.tsx[2m > [22m[2mZimmProductMeta[2m > [22m[2mresolves its recipe under a ChakraProvider — 28px of rhythm, not an inherited default
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/ui-kits/molecules/zimmProductMeta/index.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mrenders a heading for a headed group and each of its links
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mgives the popover dialog an accessible name — regression guard: axe flagged this as a real violation once a real interaction actually opened the popover (aria-dialog-name), a pre-existing gap in both this override and base SFCC's own list-menu-popover.jsx
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mrenders the label as a non-navigating button when the item has no href (the common mega-menu-trigger case)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards a ref to the underlying <button> element
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards a ref to the underlying <a> element
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mrenders the label as a real link when the item does carry its own href
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mrenders no heading element for an unheaded group
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mrenders a loading spinner while items is undefined
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mrenders a loading spinner and marks the nav aria-busy while items is undefined
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mnever falls back to a broken /category/undefined href — regression guard for the SFCC-96 fix
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards aria-haspopup/aria-expanded/aria-controls/id
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mrenders every section it is given, not a fixed column count
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards tabIndex={-1} — used by megaMenuContent/index.tsx to pull a leaf link out of Tab order without touching its visual rendering
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mdoes not wrap the whole nav in an atomic live region — regression guard: aria-live/aria-atomic on the entire <nav> re-announced every mega-menu link (plus the promo image alt text) on any later, unrelated mutation inside it, which is what produced the "screen reader reads everything at once" bug
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mcalls onClose when a leaf link is activated
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mmarks the link visually active (underlined) when isActive is true, without claiming it is the current page — regression guard: isActive reflects "the mega-menu is open," not real navigation state, so it must never set aria-current
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2momits the tabindex attribute (default tabbable) when tabIndex is not given
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mis a controlled component — isOpen is driven entirely by the prop, not internal state
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mscopes aria-live/aria-atomic to just the loading indicator, not the whole nav
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mdoes not wrap the L1/L2 nav content in an atomic live region — regression guard: aria-live/aria-atomic on the whole #drawer-menu-nav wrapper re-announced every link in a freshly drilled-into L2 panel on top of the correct, already-in-place focus-move announcement (this same component's own panelRef effect), which is what produced the reads-everything-at-once bug shared with the desktop nav (list-menu.tsx)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mcalls onClose when a leaf link is activated
+[22m[39mNot implemented: navigation to another Document
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mdoes not mark the link visually active when isActive is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards onMouseOver
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mthe single control carries the correct name/role/state — regression guard: previously the visible label had no aria-expanded/aria-haspopup at all, and a separate invisible element carried them instead, so a screen reader announced "Open Clothing menu, collapsed" while sitting on a zero-width node the label's own name never reached
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mforwards onKeyDown
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mrenders the promo image with its mapped src/alt when present
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mrenders a zero-columns item as a plain accessible link, not a popover trigger
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2maria-expanded reflects the popover actually being open
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader logo[2m > [22m[2mrenders the logo as an accessible, natively-focusable button
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mrenders an item with one or more columns as a ListMenuPopover, passing the columns field through
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mscopes aria-live/aria-atomic to just the loading indicator
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mmarks the current page with aria-current="page" when active
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mhovering the trigger label calls the given onOpen, not an internally-owned disclosure
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mhovering the label calls onOpen
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx[2m > [22m[2mZimmNavItem[2m > [22m[2mdoes not fall back to an unsafe href — renders a button instead
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 322[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader logo[2m > [22m[2mis reachable via keyboard Tab order
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mrenders both direct-link and mega-menu items side by side in the same nav
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mrespects a custom maxColumns
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mstyles each column's first link as a heading only when twoColumnLayout is set
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mthe label has no click handler of its own when the item carries its own href — ZimmNavItem renders a real <a> instead, which already navigates on its own; PopoverTrigger's own onClick/onToggle still applies regardless
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mdoes not style the first link as a heading for a single-column item
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mEscape while the trigger itself has focus calls onClose
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mopening one mega-menu item closes any other that was open — regression guard: hovering a second L1 item used to leave the first one stuck open with no way to close it
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mrenders a direct-link L1 item as an accessible link, with no drill-down affordance
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2man unhandled key on the trigger does not call onClose
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader logo[2m > [22m[2minvokes onLogoClick when clicked, wiring the homepage-navigation handler
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mmarks the two-column heading link with the class sectionLinks uses to cancel its own row gap
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mcontent calling its own onClose calls the given onClose, not an internally-owned disclosure
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mArrowDown calls onEnterPanel — the panel is open, so this is the W3C WAI-ARIA APG Disclosure Navigation pattern's documented fast-path from the trigger into the panel's first link
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mrenders no image element when the item has no promoImage
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mega-menu open state[2m > [22m[2mstarts closed
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mrenders an item with columns as a drill-down button, no chevron affordance
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mArrowDown does nothing when onEnterPanel is not given — regression guard: list-menu-popover.tsx only passes onEnterPanel while its panel is actually open, so ArrowDown on a closed trigger must not throw or do anything
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2misFullyOpen — leaf links pulled out of Tab order while the panel is still animating[2m > [22m[2msets tabIndex={-1} on every leaf link when isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mArrowDown still forwards to onTriggerKeyDown (L1 roving focus is a separate concern from entering the panel)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mega-menu open state[2m > [22m[2ma mega-menu item reporting open swaps RightBar to fullSwap
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mSpace opens the menu when the item carries its own href — regression guard: a real <a> (the one real item that's both a link and a mega-menu trigger, 'New') never activates on Space natively, only Enter/click do, so Space silently did nothing until wired by hand
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2misFullyOpen — leaf links pulled out of Tab order while the panel is still animating[2m > [22m[2mleaves leaf links normally tabbable when isFullyOpen is true
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mSpace on a link-with-href item prevents the default (page-scroll) action — it does not fall through to any native <a> behaviour
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mega-menu open state[2m > [22m[2mclicking the fullSwap Close control closes the mega menu
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2misFullyOpen — leaf links pulled out of Tab order while the panel is still animating[2m > [22m[2mdefaults to normally tabbable when isFullyOpen is omitted — a story/test rendering this component standalone (no real motion phase) keeps normal Tab behaviour
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mSpace does not call onOpen a second time for a plain mega-menu button (no href) — the fix is scoped to the link case, native button activation already covers it
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mhovering a second item while the first is still mid-expand switches directly to it, closing the first immediately — regression guard: routing this through the same contentOut fade as an already-open switch got the phase machine stuck, since expanding content has no visible opacity change to fade from
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mforwards onTriggerKeyDown (L1 roving focus) alongside its own Escape handling
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2mArrowDown moves focus to the next leaf link in DOM order
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL2: flattens every column of the active item into one stacked list of headings + links
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2ma stale Down-Arrow request from when an item was only pending (not yet active) does not move focus once it later opens for real via a plain hover
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mobile drawer state (SFCC-97)[2m > [22m[2mclosed by default: both bars start at menuExpanded="closed"
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx[2m > [22m[2mListMenuTrigger[2m > [22m[2mrenders an empty label gracefully when name is omitted
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-trigger.test.tsx
+[22m[39mNot implemented: navigation to another Document
+
+ [32m✓[39m overrides/app/components/list-menu/list-menu-trigger.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 509[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mthe trigger underline swaps to the newly-hovered item immediately — regression guard: hovering a new L1 item used to leave the old trigger underlined until the whole content fade-out finished, instead of both underlines animating at the same time
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mobile drawer state (SFCC-97)[2m > [22m[2mmenu-click from closed calls the real onMenuClick (base _app's onOpen) and moves both bars to mobileL1
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2mArrowDown crosses from the last link of one column to the first link of the next
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL2: renders the promo image with its mapped src/alt when the active item has one
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mobile drawer state (SFCC-97)[2m > [22m[2mmenu-click again from mobileL1 (toggle semantics) calls the registered close handler and resets to closed, without re-calling the real onMenuClick
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2mArrowDown from the very last link wraps to the very first
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'expanding'": gridTemplateRows '1fr', opacity '0'
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mreports open (not closed) to the header shell after switching directly from one open item to another — regression guard: this used to race, since each MegaMenuContent instance reported its own isOpen independently and the previously-open item's reportClose could fire after the newly-open item's reportOpen in the same commit
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL2: renders no image element when the active item has no promoImage
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2mArrowUp moves focus to the previous leaf link
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mobile drawer state (SFCC-97)[2m > [22m[2mclose-click from RightBar resets both bars to closed
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL1: never renders a promo image, even when items in the list carry one
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2mArrowUp from the very first link wraps to the very last
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mclosing an item that is no longer the open one does not clobber whichever item opened after it
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/header/index.test.tsx[2m > [22m[2mHeader mobile drawer state (SFCC-97)[2m > [22m[2mdrilling in via the shared DrawerMenuStateContext moves both bars to mobileL2, and back-click returns to mobileL1 without closing
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/megaMenuContent/index.test.tsx[2m > [22m[2mMegaMenuContent[2m > [22m[2mUp/Down arrow navigation[2m > [22m[2man unrelated key does not move focus
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/list-menu/megaMenuContent/index.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 606[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL2: styles each group's first link as a heading only when twoColumnLayout is set
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'contentIn'": gridTemplateRows '1fr', opacity '1'
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/header/index.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 514[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenuView[2m > [22m[2mArrowRight/ArrowLeft roves focus between direct-link L1 triggers
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mL2: does not style the first link as a heading for a single-column item
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu.test.tsx[2m > [22m[2mListMenu[2m > [22m[2mpasses useHeaderNav()’s items and isLoading through to ListMenuView
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/list-menu/list-menu.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 635[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'open'": gridTemplateRows '1fr', opacity '1'
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mreturning from L2 to L1 (isDrilledIn: false) shows the root list again
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mmoves focus onto the L1 panel once loading finishes — regression guard: the panel is not mounted yet while isLoading/items are unsettled, so the focus effect must re-run once it actually mounts, not just on isOpen/isDrilledIn/activeItem
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'contentOut'": gridTemplateRows '1fr', opacity '0'
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mdrilling from L1 into L2 moves focus onto the new panel — regression guard: L1 and L2 occupy the same subtree, so without this the L1 button that had focus unmounts and focus silently drops to document.body, restarting keyboard tab order from the top
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'collapsing'": gridTemplateRows '0fr', opacity '0'
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mreturning from L2 to L1 moves focus onto the root list panel
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenuView[2m > [22m[2mguest: renders a Sign In link rather than the account accordion
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'closed'": gridTemplateRows '0fr', opacity '0'
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenu (container)[2m > [22m[2mwires useHeaderNav() and useDrawerMenuState() through to DrawerMenuView
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenu (container)[2m > [22m[2mregisters its real onClose with the shared drawer state on mount, unregisters on unmount
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'expanding'": isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/drawer-menu/index.test.tsx[2m > [22m[2mDrawerMenu (container)[2m > [22m[2mnotifies the shared drawer state closed whenever isOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/drawer-menu/index.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 877[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'contentIn'": isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'open'": isFullyOpen is true
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'contentOut'": isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'collapsing'": isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mphase "'closed'": isFullyOpen is false
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2m'expanding' starts at 0fr and only reaches 1fr after the value is deferred a frame — not synchronously on first render
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2man inactive instance (isOpen=false) always renders the closed resting state, regardless of the shared motionPhase prop
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2ma pending item (isOpen=true, isActiveItem=false) — the incoming item during a switch — stays at the closed CSS resting state even though its Popover is already open
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mthe height reveal completing calls onExpandComplete only during the expanding phase
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mthe height collapse completing calls onCollapseComplete only during the collapsing phase
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2ma transitionend on the reveal wrapper during a steady phase (open) calls neither height callback
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mthe content fade-in completing calls onContentInComplete only during the contentIn phase
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/list-menu/list-menu-popover.test.tsx[2m > [22m[2mListMenuPopover[2m > [22m[2mmotion phase -> CSS mapping[2m > [22m[2mthe content fade-out completing calls onContentOutComplete only during the contentOut phase
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/list-menu/list-menu-popover.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 1411[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[32m352 passed[39m[22m[90m (352)[39m
+[2m   Start at [22m 16:06:30
+[2m   Duration [22m 16.97s[2m (transform 2.23s, setup 25.19s, collect 74.89s, tests 5.64s, environment 72.94s, prepare 2.39s)[22m
+
+[feature/SFCC-236_product-card-shared-component 2ee4a65] fix(ui-kits): restore ZimmProductCard swipe paging and hover-reveal a11y
+ 7 files changed, 575 insertions(+), 67 deletions(-)

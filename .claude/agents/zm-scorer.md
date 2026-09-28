@@ -1,0 +1,1 @@
+/Users/marcel.a.n.navarro/Dev/zimmerMANN-skills/agents/zm-scorer.md

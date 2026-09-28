@@ -1,0 +1,421 @@
+Regenerating Claude Code registry...
+Generating Claude Code registry...
+  components.md  — 119 entries (Override: 8, Custom: 46, Base: 65)
+  hooks.md       — 74 entries (Override: 1, Custom: 17, Base: 56)
+  utils.md       — 37 entries (Override: 0, Custom: 8, Base: 29)
+  pages.md       — 19 entries (Override: 3, Custom: 4, Base: 12)
+  routes.md      — 19 entries (Inherited: 11, Override: 8)
+Done.
+Running Vitest for files related to your staged changes...
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/Users/marcel.a.n.navarro/Dev/zimmermann-pwa[39m
+
+ [32m✓[39m overrides/app/pages/product-list/productListCardMapper.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/index.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.test.tsx [2m([22m[2m27 tests[22m[2m)[22m[32m 154[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.test.tsx [2m([22m[2m38 tests[22m[2m)[22m[32m 274[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx [2m([22m[2m77 tests[22m[2m)[22m[32m 294[2mms[22m[39m
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — cards render when history exists[2m > [22m[2mrenders ZimmRecentlyViewedGrid, not the empty state, when hasRecentlyViewed is true
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.label.item_count" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:220:32[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.label.item_count'[39m,
+    defaultMessage: [32m'{count, plural, one {# Item} other {# Items}}'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — empty state, branched on isRegistered[2m > [22m[2mregistered: shows the registered body copy and only the Continue Shopping CTA
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.heading" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:107:21[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.heading'[39m,
+    defaultMessage: [32m"You haven't viewed anything yet."[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.body_registered" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:111:24[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.body_registered'[39m,
+    defaultMessage: [32m'Continue shopping to start building your history.'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.cta.continue_shopping" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:126:21[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.cta.continue_shopping'[39m,
+    defaultMessage: [32m'Continue Shopping'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — empty state, branched on isRegistered[2m > [22m[2mguest: shows the guest body copy and both Continue Shopping and Sign In CTAs
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.heading" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:107:21[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.heading'[39m,
+    defaultMessage: [32m"You haven't viewed anything yet."[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.body_guest" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:112:24[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.body_guest'[39m,
+    defaultMessage: [32m'Sign in to keep track of your history, or continue shopping.'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.cta.continue_shopping" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:126:21[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.cta.continue_shopping'[39m,
+    defaultMessage: [32m'Continue Shopping'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.empty.cta.sign_in" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at EmptyRecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:130:23[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.empty.cta.sign_in'[39m,
+    defaultMessage: [32m'Sign In'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — empty state, branched on isRegistered[2m > [22m[2mempty state gate is hasRecentlyViewed, not cards.length: renders the grid, not the empty state, while the product fetch is still in flight for a shopper with real tracked ids
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.label.item_count" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:220:32[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.label.item_count'[39m,
+    defaultMessage: [32m'{count, plural, one {# Item} other {# Items}}'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — item count pluralization (real ICU plural resolution)[2m > [22m[2mrenders "1 Item" (singular) for a single card
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.label.item_count" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:220:32[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.label.item_count'[39m,
+    defaultMessage: [32m'{count, plural, one {# Item} other {# Items}}'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/pages/recentlyViewed/index.test.tsx[2m > [22m[2mRecentlyViewed — item count pluralization (real ICU plural resolution)[2m > [22m[2mrenders "2 Items" (plural) for two cards
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.heading.title" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:210:22[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.heading.title'[39m,
+    defaultMessage: [32m'Recently Viewed'[39m
+  }
+}
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recently_viewed.label.item_count" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecentlyViewed [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/pages/recentlyViewed/index.tsx:220:32[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recently_viewed.label.item_count'[39m,
+    defaultMessage: [32m'{count, plural, one {# Item} other {# Items}}'[39m
+  }
+}
+
+ [32m✓[39m overrides/app/pages/recentlyViewed/index.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2mrecommender=PDP_RECENTLY_VIEWED + hasRecentlyViewed true renders ZimmRecentlyViewedRail, not ProductScroller
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2many other recommender renders ProductScroller, not ZimmRecentlyViewedRail, regardless of history state (hasRecentlyViewed true)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — cap (RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS, hard per-breakpoint cap)[2m > [22m[2mrenders at most RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base cards when more are supplied
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2many other recommender renders ProductScroller, not ZimmRecentlyViewedRail, regardless of history state (hasRecentlyViewed false)
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — cap (RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS, hard per-breakpoint cap)[2m > [22m[2mrenders exactly the number of cards supplied when under the cap
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2mrecommender=PDP_RECENTLY_VIEWED + hasRecentlyViewed false renders null (AC 8): no rail, no scroller
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — order preservation (AC 2: most-recent-first, left to right)[2m > [22m[2mrenders cards in the exact order received, not sorted or reversed
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2mdead-check reordering (bug fix #3): recommendations empty/undefined from useEinstein() + hasRecentlyViewed true still renders the rail
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — empty state[2m > [22m[2mrenders null when cards is empty
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2mSee-Full-History link appears when available cards exceed the visible count at this breakpoint
+[22m[39mError: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recommended_products.link.see_full_history" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecommendedProducts [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/components/recommended-products/index.tsx:392:46[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recommended_products.link.see_full_history'[39m,
+    defaultMessage: [32m'See Full History'[39m
+  }
+}
+Could not parse CSS stylesheet
+Error: [@formatjs/intl Error MISSING_TRANSLATION] Missing message: "recommended_products.link.see_full_history" for locale "en-AU", using default message as fallback. 
+
+    at new MissingTranslationError [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/error.js:79:28[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4m@formatjs/intl[24m/src/message.js:68:21[90m)[39m
+    at formatMessage [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-intl[24m/src/components/provider.js:49:39[90m)[39m
+    at RecommendedProducts [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39moverrides/app/components/recommended-products/index.tsx:392:46[90m)[39m
+    at renderWithHooks [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at updateFunctionComponent [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:19617:20[90m)[39m
+    at beginWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21640:16[90m)[39m
+    at beginWork$1 [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27465:14[90m)[39m
+    at performUnitOfWork [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26599:12[90m)[39m
+    at workLoopSync [90m(/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26505:5[90m)[39m {
+  code: [32m'MISSING_TRANSLATION'[39m,
+  descriptor: {
+    id: [32m'recommended_products.link.see_full_history'[39m,
+    defaultMessage: [32m'See Full History'[39m
+  }
+}
+
+[90mstderr[2m | overrides/app/components/recommended-products/index.test.tsx[2m > [22m[2mRecommendedProducts — Recently Viewed branch (SFCC-83/84, build plan A6)[2m > [22m[2mSee-Full-History link is absent when available cards do not exceed the visible count at this breakpoint
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/recommended-products/index.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 170[2mms[22m[39m
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — See-Full-History link[2m > [22m[2mrenders the link, pointed at seeAllHref, when seeAllHref is provided
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx[2m > [22m[2mZimmRecentlyViewedRail — See-Full-History link[2m > [22m[2mdoes not render the link when seeAllHref is absent
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 192[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m196 passed[39m[22m[90m (196)[39m
+[2m   Start at [22m 10:52:39
+[2m   Duration [22m 3.57s[2m (transform 863ms, setup 1.64s, collect 8.33s, tests 1.21s, environment 5.65s, prepare 403ms)[22m
+
+[feature/SFCC-83-84_recently-viewed 3c9425e] fix(product-list): resolve colour-blind images and complete card interactions
+ 10 files changed, 824 insertions(+), 92 deletions(-)

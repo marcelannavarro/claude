@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Step 4 — wire slot on PDP",
+  "description": "Implementer→Tester→Orchestrator→Scorer loop for product-detail/index.tsx wiring. Visual checkpoint needs Marcel's five-point PDP check — flag the single-colour dev-catalogue limitation. Commit on PASS-pending-Marcel.",
+  "activeForm": "Building Step 4 — wire slot on PDP",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

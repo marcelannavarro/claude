@@ -1,0 +1,203 @@
+=== L320 [2026-09-01T08:48:12] user :: text
+<task-notification>
+<task-id>acd97184d91c01b33</task-id>
+<tool-use-id>toolu_01JzDFdRStvjQ3nrK5hLNKjf</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/acd97184d91c01b33.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 multi-angle code audit" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># PR #65 Review — Global Header Rebuild (SFCC-52/746/747/96/97)
+
+I worked this as a single reviewer across the angles below (no Task/sub-agent tool was available in this environment — only `Read`/`Bash` — so I ran each angle as a dedicated, sequential deep-dive against the two worktrees and the base commit, rather than literally spawning parallel agents). I did not re-run `tsc`/`lint`/`test`/`audit:tokens` — your numbers are treated as ground truth throughout.
+
+---
+
+## Angle 1 — Correctness and regression
+
+**🔴 Dead responsive-image pipeline — mega-menu/drawer promo images ship unoptimized. CONFIRMED, ONE-OFF.**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage` — a fully-built, heavily-documented AVIF/WebP responsive-srcset builder whose own doc comment says it's "used for the header mega-menu's promo images (desktop/tablet: `megaMenuContent/index.tsx`, mobile drawer L2: `drawer-menu/index.tsx`)". I grepped every consumer:
+```
+grep -rln "buildContentfulResponsiveImage|ContentfulResponsiveImage|avifSrcSet|webpSrcSet" overrides/app/components
+→ (no results)
+```
+Both actual call sites render a plain, unoptimized image instead:
+- `overrides/app/components/list-menu/megaMenuContent/index.tsx:152`: `&lt;Image src={promoImage.src} alt={promoImage.alt} loading="lazy" __css={styles.promoImage} /&gt;`
+- `overrides/app/components/drawer-menu/index.tsx:223`: same pattern.
+
+`promoImage.src` comes straight from `resolveImageEntry.ts:29` (`asset.fields.file.url`) — the raw Contentful CDN URL, no `w=`/`fm=avif`/`q=` params at all. The display box is not a thumbnail either — `megaMenuContent.css.ts`'s own comment cites a fixed 862px-wide `promoImageWrapper`. This directly contradicts AGENTS.md's Performance section ("serve correctly sized images... never render full-resolution images at thumbnail size") and the utility's own stated purpose. `contentfulImage.test.ts` passes fine in isolation — this is exactly the class of gap unit tests and `tsc`/lint cannot see.
+
+**🟡 Mega-menu can get stuck open with a phantom "Close" control after a rapid hover→close. PLAUSIBLE, ONE-OFF.**
+Traced through `useMegaMenuMotion.ts`'s reducer + `list-menu-popover.tsx`'s `useTransitionSafeValue`:
+- `useTransitionSafeValue` (list-menu-popover.tsx:38-57) defers committing a new CSS target value by two `requestAnimationFrame`s, so a genuine prior painted frame exists before the value changes (this is a real, previously-confirmed empirical fix, well documented).
+- `useMegaMenuMotion`'s `CLOSE` handler, when `state.phase === 'expanding'`, jumps straight to `{...state, phase: 'collapsing', pendingItemId: null}` (useMegaMenuMotion.ts:65-67) — **keeping `activeItemId`** — specifically to dodge a different, already-guarded stuck-transition bug (contentOut never fading because opacity was never visible). This case *is* covered by an explicit regression test (`useMegaMenuMotion.test.ts:162`, "closing mid-expand collapses directly instead of routing through contentOut").
+- But if `CLOSE` fires *before* the original HOVER's deferred double-rAF has committed `value = '1fr'` (i.e., within ~2 animation frames of the hover), `gridTemplateRowsTarget` recomputes to `'0fr'` — which is **already** the current, uncommitted `value`. `setValue('0fr')` is then a no-op (React bails on an identical value), so `grid-template-rows` never actually changes, no CSS transition runs, `onTransitionEnd` never fires, and `COLLAPSE_COMPLETE` is never dispatched. The phase machine is stuck at `'collapsing'` with `activeItemId` still set — so `ListMenuView`'s `useEffect` (list-menu.tsx:59-65) never calls `reportClose()`, and the header shell's `isMegaMenuOpen` stays `true`, keeping `RightBar` on its `'fullSwap'` Close-control (rightBar/index.tsx:175-185) instead of search/icons.
+- Real trigger: opening a mega-menu item and closing it (Escape, or `ListMenuTrigger`'s own `onKeyDown` Escape handler at `list-menu-trigger.tsx:72`) within a couple of frames — plausible via a fast Enter-then-Escape keyboard sequence, not just an implausible mouse micro-movement.
+- It's self-healing on the *next* hover — the reducer's `HOVER` handler explicitly treats a stuck `'collapsing'` phase as a fresh open (`useMegaMenuMotion.ts:43`) — but in the interim the header shows a stale "Close" control with no visible menu. None of `useMegaMenuMotion.test.ts`'s 14 reducer-only tests exercise this because the bug lives one layer down, in the DOM-timing interaction the reducer tests can't see.
+
+**🟡 `useHeaderNav`'s documented fetch-failure behaviour is wrong, unread, and untested. CONFIRMED, ONE-OFF.**
+`overrides/app/hooks/useHeaderNav.ts:45-49`'s `@returns` doc says `items` is `undefined` "on fetch failure... callers should treat that the same as 'nothing to render yet'" — but the type doc four lines above it (line 20-23) and the actual implementation (line 78-82: `items = isLoading ? undefined : resolved ? filterByRegion(...) : []`) agree that `items` is **always `[]`, never `undefined`, once `isLoading` is false** — including on error. Neither `list-menu.tsx:165` nor `drawer-menu/index.tsx:255` ever reads `isError` at all (confirmed by grep — the only non-mock occurrence of `isError` anywhere in the new code is a mocked value in two test files). `useHeaderNav.test.ts`'s 5 tests cover success/empty/locale-fallback but never mock a rejected `getEntries()` call, so this contradiction was never caught. Functionally this likely still fails closed acceptably (empty nav, no crash), but the doc is actively wrong and the failure path is unverified.
+
+---
+
+## Angle 2 — Conventions, structure, and tier ownership
+
+**🔴/flag — Tier 1 `theme/foundation/` files modified. CONFIRMED (the edit); NOT independently verifiable (the sign-off).**
+`overrides/app/theme/foundation/gridSystem.ts` and `overrides/app/theme/foundation/zimmTokens.ts` are both edited by this PR (commit `9a1d3d9`, "centralize outer container padding into gridSystem.ts"). Both are listed verbatim under Tier 1 "Design System (Owner: UI Designer)" in `.claude/rules/frozenFiles.md`, and AGENTS.md Hard Rule #3 says this folder specifically requires UI-designer sign-off. The change itself is well-engineered (derives `containerPadding` from `spacing.ts` instead of hardcoding, adds a `grid.maxWidth` token, backed by a matching `theme/index.test.tsx` update) and its comment claims "confirmed with the design team 2026-08-27" — but that's a code comment, not a recorded approval, and I found no reference to designer sign-off in the commit message itself. This needs to be confirmed as a process fact before merge; I can't settle it from the diff.
+
+**🟡 Stale "not wired" documentation across 3 files — contradicted by this PR's own code. CONFIRMED, UNIFORM (same stale claim, 4 separate spots).**
+`header/headerTypes.ts:17-21`'s `MenuExpandedState` doc, `header/leftBar/index.tsx:19` (`menuExpanded` prop) and `:23` (`onBack` prop), and `header/rightBar/index.tsx:79-80` (`menuExpanded`) and `:84` (`onClose`) all say variants of "Not wired to any real mega-menu/drawer state on this branch... is that follow-up work's job (SFCC-96/97)." But `header/index.tsx:156-203` in this *same* PR demonstrably wires real state: `useHeaderMenuExpandedState` (a genuine depth state machine) and `isMegaMenuOpen`/`MegaMenuOpenContext` (genuinely driven by `ListMenuView`'s `activeItemId`, confirmed via `list-menu.tsx:58-65`) both feed the real `menuExpanded` value passed to `LeftBar`/`RightBar`. These comments are leftovers from an earlier point in the 65-commit history that never got reconciled with the later wiring work.
+
+**🔵 Stale comment claims `navGroup.js` doesn't exist yet — it does, in this same PR. CONFIRMED.**
+`scripts/contentful/content-types/headerNavItem.js:29-31`: "`navGroup` is authored on a separate branch... and has no local file in this content-types/ directory yet." `scripts/contentful/content-types/navGroup.js` is a complete, 36-line file created by this PR. Same root cause as the finding above.
+
+**🔵 Out-of-scope drive-by edit. CONFIRMED.**
+`overrides/app/constants/index.ts` gains one line unrelated to the header rebuild: `* TODO: Review this file and remove any constants that are not used.` Trivial, but it's scope creep in the license-header block of an already very large PR, against AGENTS.md's "Minimal changes" rule.
+
+**Could not verify — Squad A/B coordination.** `squadA.md` requires notifying Squad B before touching `header/`, `footer/`, `drawer-menu/`, `list-menu/`. Whether that happened isn't visible in the code or git history I have access to.
+
+---
+
+## Angle 3 — Contract fidelity
+
+**🔴 New barrel file re-exports the base (unstyled) `ListMenuPopover` instead of this PR's own override. CONFIRMED, ONE-OFF (but a repeatable-shape landmine).**
+`overrides/app/components/list-menu/index.ts` is a brand-new file (confirmed: doesn't exist at `269d5d4`). Line 3:
+```ts
+export { ListMenuPopover } from '@salesforce/retail-react-app/app/components/list-menu/list-menu-popover';
+```
+This PR *also* creates a full local override at `overrides/app/components/list-menu/list-menu-popover.tsx` (282 lines) specifically to fix base `ListMenuPopover`'s internal relative-import of the base (inaccessible) `list-menu-trigger` — but the barrel still points at the base path instead of `./list-menu-popover`. Live impact today is contained — `list-menu.tsx:3` (the real consumer) correctly imports the override via the relative path, sidestepping the broken barrel — but the barrel is the one place the SFCC-bridge pattern says a downstream consumer *should* be able to trust. Per `package.json`'s `"ccExtensibility": {"extends": "@salesforce/retail-react-app", "overridesDir": "overrides"}` (whole-package path mirroring, not per-directory registration), this would still resolve correctly in the real webpack build, but per `overrideStyling.md`'s own documented gotcha, Storybook and Vitest don't run that resolver — so any future story/test that imports `ListMenuPopover` the "normal" way (via the barrel, the pattern the codebase's own docs recommend) would silently exercise the unstyled base component. This is the same defect class as the codebase's already-acknowledged `product-tile`/`DisplayPrice` instance — this PR adds a second one. `overrides/app/components/list-menu/index.ts:4`'s `ListMenuContent` re-export from base is, by contrast, correct (no local override exists for it) — included for contrast, not as a finding.
+
+**Clean — DrawerMenu/ListMenu default-export API compatibility.** Both accept every prop base `_app/index.jsx` passes (`root`, `itemsKey`, `itemsCountKey`, `itemComponent`/`contentComponent`) even though they ignore most of them, per their own documented "self-fetches its own data" design (`drawer-menu/index.tsx:236-238`, `list-menu.tsx:148-151`). No crash risk found.
+
+---
+
+## Angle 4 — Failure modes and security
+
+- No `dangerouslySetInnerHTML` anywhere in the new header/nav/drawer/mega-menu code (grep confirmed zero hits).
+- `isSafeHref` (pre-existing, reused correctly) gates every Contentful-sourced `href` through `ZimmNavItem` (`zimmNavItem/index.tsx:100`), failing closed to a non-navigating `&lt;button&gt;` on an unsafe scheme.
+- 🔵 **Note, defense-in-depth**: `scripts/contentful/content-types/headerNavItem.js:27`'s `href` field is a free-text `Symbol` with no CMS-side pattern validation — the *only* defense against a `javascript:`-scheme href is the frontend's `isSafeHref`. That defense does work today, but there's no belt-and-braces at the content-authoring layer.
+- `useContentfulClient.ts`'s new try/catch around `getContentfulConfig()` (for Storybook's non-SSR context) and `useHeaderNav`'s `enabled: !!client` gate together mean a missing/broken Contentful config never throws — it degrades to an empty nav. Consistent with AGENTS.md's "each external system must fail independently."
+
+---
+
+## Angle 5 — Token and styling strategy
+
+**Semantic-intent check: clean.** Spot-checked every new recipe (`header.css.ts`, `leftBar.css.ts`, `rightBar.css.ts`, `zimmNavItem.css.ts`, `zimmSearchInput.css.ts`, `megaMenuContent.css.ts`, `list-menu.css.ts`, `drawer-menu.css.ts`) — every `text.*`/`icon.*` var is on `color:`, every `bg`/`background.*` var is on `background`/`bg`, `border.*` vars (e.g. `zimmSearchInput.css.ts:25`'s `var(--zimm-color-border-focus)`) are on border-color longhands. No mismatches found.
+
+**🟡 PLAUSIBLE, needs a manual keyboard check — several new `variant="unstyled"` IconButtons define no explicit `_focusVisible`.** `leftBar/index.tsx:83-95` (hamburger), `rightBar/index.tsx:205-215` (tablet search), `:242-260` (account trigger), `:387-397` (mobile search), `:427-445` (mobile bag), `:452-464` (mobileL2 close) all omit `_focusVisible`. This is inconsistent with every *other* new interactive atom in this PR, which explicitly tokenizes it: `ZimmNavItem` (`zimmNavItem.css.ts:47-51`), `ZimmSearchInput`'s clear button (`index.tsx:103-106`), and `Header`'s own `logoButton` part (`header.css.ts:73-74`) all set `_focusVisible` via `var(--zimm-focus-ring)` explicitly. I could not confirm in a browser whether Chakra's base Button theme's default focus ring still applies under `variant="unstyled"` (in which case these get an un-tokenized, inconsistent ring) or not at all (a WCAG 2.4.7/2.4.11 gap) — flagging for a DevTools tab-through check.
+
+**Recipe state exhaustiveness — open question, not a finding either way.** `ZimmNavItem` (the most-reused new interactive part: L1 triggers, mega-menu leaf links, drawer rows) defines `_hover`/`_focusVisible` but no `_active`/`_disabled`. SFCC-746 explicitly disclaims owning hover/focus/active states ("defined in UI kit, not re-specified in this ticket"), so I'm not treating this as an AC violation. I could not locate any Figma node reference in this PR's comments for a nav-item pressed/disabled state either way — I don't have Figma tool access in this session to check directly, so per the instructions I'm flagging this as an open question rather than asserting a gap.
+
+---
+
+## Angle 6 — Accessibility
+
+**🔴 SFCC-747 AC10 violated — logo is not the first focusable element. CONFIRMED.**
+`header/index.tsx` renders `topBar` (`LeftBar` — hamburger + desktop nav; then `RightBar` — search + icon buttons) at lines 230-251, **before** `logoBar` (the logo button) at lines 256-270. DOM/tab order therefore puts every nav item, the hamburger, the search input, and every icon button *ahead of* the logo. This isn't circumstantial — the PR's own test proves it:
+```
+overrides/app/components/header/index.test.tsx:107-117
+test('is reachable via keyboard Tab order', ...) {
+  // The topBar row's own controls (LeftBar's menu-control button, RightBar's close-icon
+  // stub — see the mocks above) sit ahead of the logoBar's logo button in DOM order; tab
+  // past both first, matching the real component tree.
+  await user.tab(); await user.tab(); await user.tab();
+  expect(screen.getByRole('button', {name: 'Logo'})).toHaveFocus();
+}
+```
+The test passes *because* it encodes the AC-violating order as correct. The old header (pre-PR) had no such ordering constraint to violate since it wrapped the logo/nav differently — this is this PR's own layout decision.
+
+**🔴 SFCC-747 AC9 violated — logo's accessible name is "Logo," not "Zimmermann, go to homepage." CONFIRMED.**
+`header/index.tsx:258-259`:
+```tsx
+&lt;Button aria-label={t('header.button.assistive_msg.logo', 'Logo')} variant="unstyled" onClick={onLogoClick} __css={styles.logoButton}&gt;
+  &lt;ZimmLogo sx={HEADER_LOGO_SX} /&gt;
+&lt;/Button&gt;
+```
+`translations/en-US.json` confirms the shipped fallback is literally `"Logo"`. Because the wrapping `&lt;Button&gt;` carries its own explicit `aria-label`, `ZimmLogo`'s own `aria-label="Zimmermann"` (`zimmLogo/index.tsx:42`, on the inner `role="img"` SVG) is completely superseded in the accessible-name computation — a screen reader announces only "Logo, button," never "Zimmermann" and never the required destination phrase.
+
+**🟡 New nested `&lt;nav&gt;` landmark — regression, not pre-existing. CONFIRMED.**
+`header/leftBar/index.tsx:99`: `&lt;chakra.nav __css={styles.nav}&gt;{children}&lt;/chakra.nav&gt;`. At tablet+, `children` resolves to `&lt;ListMenu&gt;`, which renders its own `&lt;nav id="list-menu" aria-label="Main navigation"&gt;` (`list-menu.tsx:77`) — producing `&lt;nav&gt;&lt;nav aria-label="Main navigation"&gt;…&lt;/nav&gt;&lt;/nav&gt;`. The pre-PR header wrapped the identical `children` in a plain `&lt;Box {...styles.bodyContainer}&gt;` (a `&lt;div&gt;`), confirmed via `git show 269d5d4:.../header/index.tsx:236` — so this nested-landmark structure is newly introduced by this PR's `leftBar.css.ts`/`chakra.nav` choice, not inherited.
+
+**🟡 `PopoverFooter onClick` on a non-natively-interactive element with no `role`/keyboard handling of its own. CONFIRMED (rule-letter), likely low practical impact.**
+`rightBar/index.tsx:304`: `&lt;PopoverFooter onClick={handleSignout} cursor={isSigningOut ? 'not-allowed' : 'pointer'}&gt;` — `PopoverFooter` isn't natively interactive and has neither `role` nor `tabIndex`/`onKeyDown` of its own, which is exactly what components.md's onClick-on-non-native rule exists to catch. In practice the inner `&lt;Button&gt;` (line 306) is a real, natively keyboard-operable element whose click (mouse or keyboard-triggered) bubbles up to `PopoverFooter`'s handler, so today this likely isn't a live keyboard-trap — but it's a fragile pattern (any future markup change that stops the click event bubbling, e.g. an intermediate wrapper, silently breaks sign-out with no compile-time signal), and it doesn't follow the rule as written.
+
+**Clean:** every new `&lt;Image&gt;` has `alt` (sourced through `resolveImageEntry`'s defensive fallback chain); every new `IconButton` has `aria-label` (spot-checked all ~10); no raw `&lt;div onClick&gt;` pattern anywhere in the new code — every clickable non-button row goes through `ZimmNavItem`, which renders a real `&lt;a&gt;`/`&lt;button&gt;`.
+
+---
+
+## Angle 7 — Against the ticket
+
+Verified against each AC:
+- SFCC-52 AC1/2/6/7 — present (sticky container `header.css.ts:31-32`; RightBar's icon set matches AC6; LeftBar hamburger + RightBar mobileSection matches AC7).
+- SFCC-747 AC1-7 (masthead placement) — structurally fine.
+- SFCC-747 **AC9 and AC10 — both violated**, see Angle 6 above.
+- SFCC-747 AC11 (visible focus ring, 3:1 contrast) on the logo itself — `logoButton`'s `_focusVisible`/`_focus` are present and tokenized (`header.css.ts:73-74`); I could not verify the actual rendered contrast ratio without a browser.
+- SFCC-52 AC8/9/10/11 (mobile drawer open/close, categories, Saved/Account footer) — all confirmed implemented (`useHeaderMenuExpandedState`, `DrawerMenuL1Nav`, `DrawerMenuView`'s footer block).
+- SFCC-96 (desktop mega-menu: left column, right promo image, Close control, Contentful-managed) — structurally present; promo images ship unoptimized (Angle 1 finding).
+- SFCC-746 (Contentful-managed nav, region scoping) — `pickMostSpecificByRegion`/`filterByRegion` correctly reused/extended from the footer pattern; the ticket's own disclaimer on hover/focus/active states is respected by not holding this PR to that bar.
+
+---
+
+## Angle 8 — Intra-step DRY
+
+**🔵 `'/login'` typed independently in two files, no shared constant.** `header/index.tsx:215` (`navigate('/login')`, post-signout redirect) vs. `drawer-menu/index.tsx:24` (`const SIGN_IN_HREF = '/login';`). Different use-cases but the same literal route with no shared source — a candidate for a small shared route-constants module, matching the `footerShared.ts`/`headerShared.ts` precedent this codebase already established. ONE-OFF today, UNIFORM-shaped risk (nothing stops a third file from re-typing it).
+
+**Clean — breakpoints.** `BP` (from `theme/components/headerShared.ts`) is the single shared source consumed identically by `leftBar.css.ts`, `rightBar.css.ts`, and `megaMenuContent.css.ts` — this exactly matches the `footerShared.ts` reference pattern the rubric calls out.
+
+**Clean — other candidate constants.** `HEADER_NAV_INCLUDE_DEPTH` and `MAXIMUM_NUMBER_COLUMNS` are each defined exactly once with no parallel literal found elsewhere.
+
+---
+
+## Visual checkpoint brief
+
+I do not have a working Figma tool in this session (only `Read`/`Bash` were provided as functions, despite an MCP server being referenced in context) — every row below is built from the Figma node IDs already cited in this PR's own code comments, which is the only ground truth available to me. Rows with no cited node are marked as an open question, not silently dropped.
+
+| What to check | Figma node | Expected value | How to verify |
+|---|---|---|---|
+| Logo tab order | — (AC10, no node cited) | Logo is 1st focusable element in header | DevTools: Tab from page top, confirm logo receives focus before hamburger/nav/icons — **currently fails, see Angle 6** |
+| Logo accessible name | — (AC9, no node cited) | "Zimmermann, go to homepage" | Screen reader / accessibility tree: currently announces "Logo" — **fails, see Angle 6** |
+| Hamburger container | 40000307:11906 | 24×24px container, 20px icon | DevTools computed width/height on `leftBar.css.ts`'s `hamburger` part |
+| Desktop nav gap | 40000259:10788 | 40px (`--zimm-scale-3xl`... wait: `leftBar.css.ts` uses `var(--zimm-scale-3xl)`) | DevTools computed `gap` on `ZimmHeaderLeftBar.nav` |
+| topBar vertical padding (mobile/tablet/desktop) | 40000259:13476 / :13480 / :13481 | 24px mobile, 48px tablet/desktop | DevTools computed padding-top/bottom on `header.css.ts`'s `topBar` |
+| Search input container | 40000259:10875 | 180×24px | DevTools computed width/height on `ZimmSearchInput.container` |
+| Search clear icon | 40000259:13091 | 16×16px, right edge | DevTools computed size/position |
+| Desktop icon group | 40000259:10802 | icon set + spacing | DevTools layout vs. Figma frame |
+| Tablet icon group | 40000307:11794 | search icon leftmost of 4 | DevTools DOM order + computed gap |
+| Profile icon touch target | 40000307:11794 (tablet) / 40000259:10802 (desktop) | 24px tablet → 44px desktop | DevTools computed width/height at each breakpoint |
+| Profile icon visual size | 40002081:16697 | 24px (no exact `ZimmIconSize` token — `lg`=20px used instead, per code comment) | DevTools rendered `&lt;svg&gt;` size — **known gap, already flagged in-code as pending designer sign-off** |
+| Mobile right icon row | 40000259:13476 | 24×24px containers, 20px icon, 16px gap | DevTools computed gap/size |
+| mobileL2 icon gap | 40002355:40102 | 16px | DevTools computed gap |
+| Nested `&lt;nav&gt;` landmark | — (regression, no node applicable) | One `&lt;nav&gt;` per logical region | DevTools Elements/Accessibility tree: confirm `&lt;nav&gt;` is not nested inside another `&lt;nav&gt;` — **currently fails, see Angle 6** |
+| Mega-menu promo image format | — (no node; performance concern) | AVIF/WebP responsive `srcSet` | Network tab: confirm image request uses `fm=avif`/`fm=webp` — **currently fails, plain URL, see Angle 1** |
+| Logo height (desktop/tablet vs mobile) | — (no node cited; comment says "derived from logoBar padding") | 66px desktop/tablet, 26px mobile | DevTools computed height on `&lt;ZimmLogo&gt;` at each breakpoint — flagging as an open question since no Figma node backs the derivation directly |
+
+---
+
+## What I tried to falsify
+
+- **AC10 (logo-first focus order)** — I didn't take the code comments' word for it; I traced actual DOM emission order in `header/index.tsx` and cross-checked against the PR's own test, which turned out to *prove* the violation in its own assertions and comments. This is about as confirmed as a finding can be without running a browser myself.
+- **AC9 (accessible name)** — checked both the component's fallback string and the shipped `translations/en-US.json` value, and traced the accessible-name-computation interaction between the outer `Button`'s `aria-label` and the inner `ZimmLogo`'s own `aria-label`, to rule out the SVG's name "leaking through."
+- **The SFCC-bridge pattern** — rather than trust the doc comments claiming things are/aren't wired to base, I grepped the base package for every internal consumer of `list-menu`/`drawer-menu`, read the actual barrel file, and cross-checked `package.json`'s `ccExtensibility` config to determine whether the misexport is masked in the real build (it is) or in Storybook/Vitest (it isn't).
+- **The "not wired to real state" claims** — instead of accepting the prop-doc comments, I read `header/index.tsx`'s actual hook usage and confirmed the wiring is real, making the docs stale.
+- **The mega-menu motion state machine** — rather than trust the extensive, confident inline reasoning, I hand-traced the reducer against `useTransitionSafeValue`'s rAF-deferred commit to look for a case the team's own (already-thorough) regression tests didn't cover, and found one layer down from where their tests look.
+- **The responsive-image utility** — didn't trust the "used for X, Y" doc comment; grepped every actual consumer and confirmed it's dead.
+- **Tokens/DRY** — grepped for parallel literals (breakpoints, hrefs, include-depths, column counts) across component/css/test triples rather than reading one file and assuming consistency.
+
+## What I could not verify
+
+- **Any actual rendered/visual output** — no browser, no Storybook runtime, no screenshot tool in this session. Every layout/spacing/colour claim in the visual checkpoint table is inferred from code + cited Figma node IDs, not observed.
+- **Figma ground truth directly** — no working Figma MCP tool was exposed to me as a callable function in this session (despite server instructions appearing in context), so I could not confirm any pixel/colour value, nor confirm whether a `_active`/`_disabled` nav-item state exists in Figma at all — flagged as an open question rather than silently dropped, per instructions.
+- **Squad A/B coordination process** — not visible in code or git history.
+- **Tier-1 UI-designer sign-off on `gridSystem.ts`/`zimmTokens.ts`** — the code comment claims a design-team conversation happened; I have no way to confirm a formal approval record from the diff or commit messages.
+- **Full line-by-line review of every one of the 95 changed files.** I did not exhaustively read: `list-menu.stories.tsx` (359 lines) and `list-menu.stories.content.ts` beyond the sections quoted above, `header/index.stories.tsx`, `leftBar`/`rightBar` `.stories.tsx`, `types/contentful.ts` (97 lines) beyond spot checks, `types/vendor.d.ts`, `zimm.tsx` icon markup beyond confirming `aria-hidden` usage at call sites, `zimmContactIconRow`'s diff, `uiCopyProvider`'s test diff, or every one of the ~15 new/changed test files' individual assertions line-by-line. I prioritized the files most likely to carry the failure modes the five tickets and the six review angles actually care about, per the task's own steer to spend budget where gates can't see, rather than re-confirming what `tsc`/lint/test already gated.
+- **Whether Chakra's base theme supplies a default `_focusVisible` under `variant="unstyled"`** for the un-tokenized IconButtons flagged in Angle 5 — this needs an actual keyboard-tab-through in a browser, which I could not do here.
+
+---
+
+### Key files referenced
+`/private/tmp/.../pr65/head/overrides/app/components/header/index.tsx`, `header/index.test.tsx`, `header/leftBar/index.tsx`, `header/leftBar/leftBar.css.ts`, `header/rightBar/index.tsx`, `header/headerTypes.ts`, `header/header.css.ts`, `overrides/app/components/list-menu/index.ts`, `list-menu/list-menu.tsx`, `list-menu/list-menu-popover.tsx`, `list-menu/megaMenuContent/index.tsx`, `list-menu/megaMenuContent/megaMenuContent.css.ts`, `overrides/app/components/drawer-menu/index.tsx`, `overrides/app/hooks/useHeaderNav.ts`, `useHeaderNav.test.ts`, `useMegaMenuMotion.ts`, `useMegaMenuMotion.test.ts`, `useHeaderMenuExpandedState.ts`, `useDrawerMenuState.ts`, `overrides/app/utils/contentfulImage.ts`, `resolveImageEntry.ts`, `overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx`, `zimmNavItem/index.tsx`, `zimmNavItem/zimmNavItem.css.ts`, `zimmSearchInput/index.tsx`, `overrides/app/theme/foundation/gridSystem.ts`, `zimmTokens.ts`, `overrides/app/theme/components/index.ts`, `translations/en-US.json`, `scripts/contentful/content-types/headerNavItem.js`, `navGroup.js`, `overrides/app/constants/index.ts`.</result>
+<usage><subagent_tokens>251249</subagent_tokens><tool_uses>58</tool_uses><duration_ms>1174475</duration_ms></usage>
+</task-notification>
+
+=== L323 [2026-09-01T08:49:50] assistant :: tool_use:Agent
+{"description": "Verify PR #65 findings batch", "subagent_type": "zm-scorer", "run_in_background": true, "prompt": "You are verifying findings, not scoring a PR. This is \"findings mode\": for each claim below, reproduce it from source in the given worktree/repo, or say you could not. Return one of:\n- **CONFIRMED** (reproduced directly from source)\n- **PLAUSIBLE** (consistent with what you read, but decisive evidence is missing \u2014 say exactly what would settle it)\n- **UNSUPPORTED** (the citation does not support the claim \u2014 say what is actually true instead)\n\nWhere a finding's conclusion is broader than its search supports, downgrade it and say so \u2014 that's the single most common failure mode. Any \"X exists nowhere\" claim must state its search scope in the same sentence (e.g. \"grepped overrides/app/components only\").\n\nRepo: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa. PR #65 head commit: 10eb79dc881b3e3881d528ee661090779dc11b9d, base: 269d5d40149b9947111dd87e78d37b92fccd4c99. Worktrees exist (node_modules symlinked, do not need reinstalling) at:\n- HEAD: /private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/scratchpad/pr65/head\n- BASE: /private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/scratchpad/pr65/base\n\nVerify each of these 15 claims independently. Do not just re-read the same lines the original finding cites and nod \u2014 actively try to break each one (find a consumer the grep missed, find a guard that prevents the failure mode, find that the \"old\" behavior wasn't actually different, etc.).\n\n1. **Dead responsive-image pipeline.** Claim: `overrides/app/utils/contentfulImage.ts`'s `buildContentfulResponsiveImage`/`ContentfulResponsiveImage` (an AVIF/WebP responsive-srcset builder, doc comment says it's for the mega-menu/drawer promo images) has zero consumers \u2014 `megaMenuContent/index.tsx` and `drawer-menu/index.tsx` both render a plain `<Image src={promoImage.src}>` with the raw unoptimized Contentful CDN URL from `resolveImageEntry.ts` instead. Verify by grepping all of `overrides/app/components` (not just the two named files) for any use of `buildContentfulResponsiveImage`/`ContentfulResponsiveImage`/`avifSrcSet`/`webpSrcSet`, and confirm what `promoImage.src` actually resolves to and whether it carries any width/format query params.\n\n2. **Mega-menu stuck-open edge case.** Claim: in `overrides/app/hooks/useMegaMenuMotion.ts`, if `CLOSE` fires within ~2 animation frames of a `HOVER` (before `list-menu-popover.tsx`'s `useTransitionSafeValue`'s double-rAF-deferred value commit), `gridTemplateRowsTarget` recomputes to a value equal to the already-current (uncommitted) `value`, `setValue` becomes a no-op, no CSS transition fires, `onTransitionEnd` never fires, and the phase machine sticks at `'collapsing'` with `activeItemId` still set, leaving the header's \"Close\" control shown with no menu visible until the next hover. Trace this precisely through `useMegaMenuMotion.ts` and `list-menu-popover.tsx`'s actual reducer/effect code and say whether the race is real, whether any existing guard prevents it, and whether the 14 tests in `useMegaMenuMotion.test.ts` exercise this specific interleaving (they operate on the reducer in isolation, per the original finding \u2014 confirm or refute that gap).\n\n3. **useHeaderNav fetch-failure doc/behavior mismatch.** Claim: `useHeaderNav.ts`'s `@returns` doc (around line 45-49) says `items` is `undefined` on fetch failure, but the implementation (~line 78-82) always returns `[]` once `isLoading` is false, including on error, and neither `list-menu.tsx` nor `drawer-menu/index.tsx` reads `isError` at all in non-test code. Verify the doc text, the implementation, and grep all non-test files for real `isError` usage.\n\n4. **Stale \"not wired\" doc comments.** Claim: `header/headerTypes.ts` (~line 17-21), `header/leftBar/index.tsx` (~line 19, 23), and `header/rightBar/index.tsx` (~line 79-80, 84) all contain comments saying `menuExpanded`/`onClose`/`onBack` are \"not wired to any real mega-menu/drawer state on this branch,\" but `header/index.tsx` (~line 156-203) demonstrably wires real state (`useHeaderMenuExpandedState`, `isMegaMenuOpen`/`MegaMenuOpenContext` driven by `list-menu.tsx`'s `activeItemId`). Confirm both the stale comment text and the real wiring.\n\n5. **Stale navGroup.js comment.** Claim: `scripts/contentful/content-types/headerNavItem.js` (~line 29-31) says `navGroup` \"has no local file in this content-types/ directory yet,\" but `scripts/contentful/content-types/navGroup.js` is a real, complete file created by this same PR. Confirm both.\n\n6. **list-menu barrel misexport.** Claim: `overrides/app/components/list-menu/index.ts` is a new file (didn't exist at the base commit) whose `ListMenuPopover` export re-exports from the BASE SFCC path (`@salesforce/retail-react-app/app/components/list-menu/list-menu-popover`) instead of this PR's own local override at `overrides/app/components/list-menu/list-menu-popover.tsx`. Confirm the file is new, confirm the exact export line, confirm the local override file exists and is substantively different from base (not just a thin wrapper), and confirm whether the real consumer (`list-menu.tsx`) imports the override directly (bypassing the broken barrel) or through the barrel.\n\n7. **Missing `_focusVisible` on several new IconButtons.** Claim: `leftBar/index.tsx` (~83-95, hamburger), `rightBar/index.tsx` (~205-215 tablet search, ~242-260 account trigger, ~387-397 mobile search, ~427-445 mobile bag, ~452-464 mobileL2 close) all use `variant=\"unstyled\"` with no explicit `_focusVisible`, while sibling new atoms in the same PR (`zimmNavItem.css.ts` ~47-51, `zimmSearchInput`'s clear button ~103-106, `header.css.ts`'s `logoButton` ~73-74) do set it explicitly. Confirm the inconsistency is real (don't need to resolve the browser-behavior question, just confirm the code asymmetry).\n\n8. **Nested `<nav>` landmark regression.** Claim: `header/leftBar/index.tsx` (~line 99) wraps `children` in `<chakra.nav __css={styles.nav}>`, and at tablet+ `children` resolves to `<ListMenu>`, which itself renders `<nav id=\"list-menu\" aria-label=\"Main navigation\">` (`list-menu.tsx` ~line 77) \u2014 producing a `<nav>` nested inside another `<nav>`. Claim also says the OLD header (at base commit 269d5d4) wrapped the same children in a plain `<Box>`, not a `<nav>`, so this is a new regression. Verify both the current nesting and the base-commit comparison (`git show 269d5d40149b9947111dd87e78d37b92fccd4c99:overrides/app/components/header/index.tsx` or wherever the old wrapping lived).\n\n9. **PopoverFooter onClick on non-interactive element.** Claim: `rightBar/index.tsx` (~line 304) has `<PopoverFooter onClick={handleSignout} ...>` with no `role`/keyboard handling of its own, but the real interactive element is an inner `<Button>` (~line 306) whose click bubbles up. Confirm the structure and assess independently whether this is a live keyboard-trap risk or genuinely low-impact as the original finding claims.\n\n10. **`/login` duplicated literal.** Claim: `header/index.tsx` (~line 215, `navigate('/login')`) and `drawer-menu/index.tsx` (~line 24, `const SIGN_IN_HREF = '/login'`) both hardcode the same route with no shared constant. Confirm both sites and check whether a shared route-constants module already exists anywhere in `overrides/app/` that this should have used instead.\n\n11. **SFCC-96/97 mega-menu/drawer work is separable, not load-bearing for SFCC-52/746.** Claim: `list-menu/list-menu.tsx` (~90-122) branches on `columns` count \u2014 zero columns renders a plain `ZimmNavItem` link, no mega-menu machinery \u2014 and `scripts/contentful/content-types/headerNavItem.js` (~33-39) makes `columns` optional specifically to support flat-nav-only configuration; separately, `drawer-menu/index.tsx`'s L1 nav (`DrawerMenuL1Nav`, ~54-79) alone satisfies vertical-categories-plus-footer-links without any dependency on L2 drill-down (`DrawerMenuL2Nav`, ~86-119). Verify both code paths directly and confirm the claimed independence is real (i.e., check whether L1 truly has zero runtime dependency on L2/drill-down state to render correctly).\n\n12. **`responsive/index.tsx` sitewide breakpoint change.** Claim: this PR adds a NEW override at `overrides/app/components/responsive/index.tsx` that changes the mobile/desktop split used by `HideOnDesktop`/`HideOnMobile` from Chakra's default breakpoint (`lg`, 992px) to `md` (768px), and this override has app-wide blast radius (every consumer of those two exports, not just header/footer). Confirm the file is new (not present at base commit), confirm the actual breakpoint values in both the base Chakra default and this override, and grep the whole `overrides/` tree for how many distinct components import `HideOnDesktop`/`HideOnMobile` to characterize the real blast radius (a count, not just \"many\").\n\n13. **`globalStyles.ts` new `#app-main` rule.** Claim: `overrides/app/theme/globalStyles.ts` (~line 220-238) adds a new global CSS rule targeting `#app-main`, applying grid tokens (sourced from the Tier-1 `gridSystem.ts` edit) to the base `_app`'s main content area, site-wide. Confirm this is new (diff against base commit) and confirm it actually affects the main content area of every page, not just header/footer.\n\n14. **Footer/Contentful files unrelated to SFCC-52/746/747/96/97.** Claim: this PR's diff includes `overrides/app/components/footer/footer.css.ts` (a 946px site-map-wrap breakpoint fix, last commit), `scripts/contentful/content-types/footerConfig.js` (+phoneLabel/whatsAppLabel/emailLabel), `scripts/contentful/content-types/footerNavGroup.js` (DELETED, unified into a new shared `navGroup.js`), and footer copy migrated into the `uiCopy` model alongside header copy \u2014 none of which are required by any of the 5 header/nav tickets. Confirm each file's presence/deletion in the diff and give your own independent read on whether each is plausibly footer-only/unrelated to the header work, or whether it's actually load-bearing for the header changes (e.g. does the header mega-menu genuinely require the shared `navGroup.js` unification, making the `footerNavGroup.js` deletion load-bearing rather than a stray footer edit?).\n\n15. **Comment-count pattern check.** Across findings 4, 5, and (from a separate reviewer) a stale logo-height comment in `header/index.tsx` claiming \"66px\" where the shipped value is actually \"74px\" (HEADER_LOGO_SX ~line 45-56) \u2014 confirm this fourth stale-comment instance too, so I can characterize whether \"comments not updated as the branch evolved\" is a real recurring pattern (4 instances) versus coincidence.\n\nFor each of the 15, give: verdict (CONFIRMED/PLAUSIBLE/UNSUPPORTED), a one-line reason citing file:line, and \u2014 for anything not CONFIRMED \u2014 exactly what would settle it. Do not edit any code. Report only."}
+

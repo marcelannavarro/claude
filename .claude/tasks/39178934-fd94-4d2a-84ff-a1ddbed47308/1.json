@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Build @arche/pack-sfcc (SFCC PWA Kit — Song pack)",
+  "description": "Platform-generic SFCC PWA Kit pack (no client identifiers): TS-only overrides + commerce-sdk-react + Chakra-token conventions, three-layer testing, a css rule doc, a copy-first new-override skill, ast-grep a11y (WCAG), npm build CI (node runtime), overrides component scanner. Wire into CLI + tsconfig; add sfcc to the pack-swap audit.",
+  "activeForm": "Building pack-sfcc",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

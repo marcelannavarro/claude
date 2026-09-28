@@ -1,0 +1,714 @@
+=== zimmProductCard/index.tsx ===
+import React from 'react';
+import { chakra, useMultiStyleConfig, VisuallyHidden } from '@chakra-ui/react';
+import { useHistory, Link as RouteLink } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+import { ZimmProductCardMedia } from '../../molecules/zimmProductCardMedia';
+import type { ZimmProductCardMediaImage } from '../../molecules/zimmProductCardMedia';
+import type { ZimmMediaTileWidths } from '../../atoms/zimmMediaTile';
+import { ZimmProductCardContent } from '../../molecules/zimmProductCardContent';
+import type { ZimmSizeChipValue } from '../../molecules/zimmSizeChipGroup';
+
+// Same `chakra(RouteLink)` wrap `ZimmProductCardContent`'s own `ProductNameLink` already uses
+// (see that molecule's own comment for why a router `Link` is used here rather than a plain
+// anchor). Needed only for the `recentlyViewed` render branch below (SFCC-83, `!config.showContent`)
+// — every other variation's one real link lives inside the composed `ZimmProductCardContent`
+// instead, so this organism has no need for its own link in any other branch.
+const MediaOnlyCardLink = chakra(RouteLink);
+
+/**
+ * SFCC-236 Step 6 — the organism that assembles Step 4's `ZimmProductCardMedia` and Step 5's
+ * `ZimmProductCardContent` into the full product card, across the three confirmed variations.
+ * Figma component set `Product-card`, node `40000223:2822` (20 variants: Size x State x Type x
+ * Unavailable), file `wPiWmZZOVKnrENUWk2XWWm`. The variation matrix below reflects the resolved
+ * `hidden`-attribute reading confirmed against the real assembled Card-content instances:
+ *
+ *   Home      (40000214:6141 default / 40002163:36593 hover)   — image + name only by default;
+ *             bag/attributes/size-selector hidden always; a hover-CAPABLE pointer reveals price
+ *             on hover. Mobile (`40000223:2821`) shows price unconditionally instead — it has no
+ *             Hover variant at all, so a price hidden "by default, revealed on hover" like the
+ *             original build shipped would never be revealed there at all (Fix E, found in the
+ *             full-sweep follow-up audit; confirmed live as a real bug, not just a Figma reading).
+ *             Arrows appear on hover-capable pointers regardless of variation (Media's own
+ *             concern, driven purely by image count).
+ *   PLP/PDP   (40002163:41441 default / 40002163:41459 hover)  — image + name + bag (always) +
+ *             price by default, no attributes, size-selector hidden; hover hides price and
+ *             reveals the size-selector in its place; arrows appear.
+ *   Wishlist  (40002187:58446 default / 40002187:58458 hover)  — image + name + bag (always) +
+ *             attributes (colour+size) + price by default, size-selector hidden; hover hides
+ *             price and reveals the size-selector, confirmed identical to PLP's own hover reveal
+ *             via node `40002187:58460` (the Wishlist hover instance carries no `hidden`
+ *             attribute on "Size Selector" at all) — this is NOT what the SFCC-236 Jira AC text
+ *             says (it only mentions the image switch + arrows for Wishlist hover). It shipped
+ *             matching the design anyway — a judgment call made during implementation, not a
+ *             conflict that was raised on the ticket or separately ratified.
+ *   recentlyViewed (Desktop `40000307:12444` / Tablet `40000730:13363` / Mobile `40000538:25030`,
+ *             SFCC-83) — image only. Every `VARIATION_CONFIG` flag is `false`: no name, price,
+ *             bag, attributes, badge, remove button, or hover image-swap — Figma's `Tag`,
+ *             `Close` and the entire `Card-content` block are `hidden="true"` on all three
+ *             viewports. Arrows stay Media's own concern (driven purely by image count); this
+ *             rail always supplies a single image, so they never appear in practice.
+ *
+ *             `ZimmProductCardContent` is unmounted entirely for this variation, but its own
+ *             name-link is otherwise this card's only keyboard-reachable element — unmounting it
+ *             with nothing in its place would leave zero focusable elements at all, failing
+ *             SFCC-83 AC 4 ("a shopper clicks a recently viewed product tile... navigated to that
+ *             product's PDP"). So a minimal `react-router-dom` `Link` (the same `chakra(RouteLink)`
+ *             wrap as `ZimmProductCardContent`'s own `ProductNameLink`) is composed directly
+ *             around `ZimmProductCardMedia` instead, with the product name as real,
+ *             visually-hidden text via Chakra's `VisuallyHidden` — confined entirely to this
+ *             file; no change to `ZimmProductCardContent` or `ZimmProductCardMedia`. The
+ *             composed image's own `alt` is overridden to `''` on the copies of
+ *             `primaryImage`/`hoverImage` passed into `ZimmProductCardMedia` here (never on the
+ *             shared `ZimmProductCardMediaImage` type, never in the `showContent` branch above):
+ *             without it, the image's real `alt` text would be concatenated onto the anchor's
+ *             accessible name too, per the standard name-from-content computation for a link
+ *             containing an `<img>` — discovered while building this variation (see
+ *             index.test.tsx's own dedicated test) and ratified by Marcel. `alt=''` is the
+ *             standard WCAG technique for a decorative-in-context image inside an
+ *             already-labelled link, so the anchor's accessible name is exactly the product name.
+ *
+ * "Recently Viewed Full History" is not a fourth variation — the AC states it behaves exactly
+ * like PLP, so callers pass `variation: 'plp'` for it. (That is the separate SFCC-84 grid/page
+ * surface, not the `recentlyViewed` rail variation above.)
+ *
+ * Unavailable=True (Fix C, SFCC-236 Step 6 visual audit) is confirmed designed for **every**
+ * variation, not just `plp` — an earlier revision of this paragraph claimed the opposite, before
+ * the Default+Hover Unavailable instances for `home` (40002163:39981 / :39990) and `wishlist`
+ * (40002187:58452 / :58464) were actually checked. The confirmed rule, identical across all three:
+ *   - The PLP/Wishlist size-selector hover-swap is suppressed entirely when unavailable — nothing
+ *     to pick for an out-of-stock item, so price stays visible on hover instead of being replaced
+ *     (`hoverHidesPrice`/`hoverRevealsSizeSelector` are both AND-ed with `!isUnavailable` below).
+ *     Home's own hover-reveals-price behaviour is unaffected — its Unavailable Hover reference
+ *     still reveals price exactly as the in-stock case does.
+ *   - "Notify me" is hover-gated on hover-capable devices (hidden by default, revealed on
+ *     hover/focus-visible, confirmed via every Desktop Unavailable+Hover reference) but
+ *     unconditionally visible on touch (confirmed via the Mobile Unavailable references —
+ *     Mobile has no Hover variant at all, so whatever they show is the only state a touch
+ *     pointer ever sees, and all of them show notify-me plainly).
+ * `isUnavailable` and `onNotifyMe` are threaded through uniformly to `ZimmProductCardContent`
+ * (the only one of the two composed children with an `isUnavailable` concept at all —
+ * `ZimmProductCardMedia` has no such prop); this organism does not itself restrict `showNotifyMe`
+ * to any one variation — a caller that never passes `onNotifyMe` simply gets no notify-me button.
+ *
+ * Fix F (full-sweep follow-up audit, after the above was already built and approved): the
+ * Desktop-only "price stays, notify-me is simply added on hover" behaviour above is NOT what
+ * Mobile does. Mobile PLP/Wishlist Unavailable (`40002163:41488`, `40002187:58475`) both have
+ * `Price` `hidden="true"` and only "Notify me" visible — a genuine SWAP, unlike Desktop's additive
+ * treatment — where Mobile Home Unavailable (`40002163:41204`) keeps price visible alongside
+ * notify-me, unchanged from Desktop. `sizeSelectorUnavailable` (already computed below for the
+ * size-chip permanent-hide) drives this too, in zimmProductCard.css.ts, since it is already
+ * exactly "PLP/Wishlist and unavailable" — the same condition, no new variable needed.
+ *
+ * The bag icon also has two Mobile-breakpoint hides, both viewport-width concerns unrelated to
+ * hover capability (see zimmProductCard.css.ts's own responsive rules, keyed off the same
+ * `breakpoints` token `zimmProductCardContent.css.ts` already uses for its padding steps):
+ *   - `hideBagOnMobile` — PLP only, unconditional. Figma's Mobile PLP/PDP Card-content instances
+ *     (`40002163:41479` available / `40002163:41488` unavailable) both have the bag icon's
+ *     `Icons` frame `hidden="true"` regardless of stock status, where Desktop's own PLP instance
+ *     leaves it visible.
+ *   - `hideBagOnMobileWhenUnavailable` (Fix G, same follow-up audit) — Wishlist only, and only
+ *     when unavailable. Wishlist's Mobile instance shows the bag when available
+ *     (`40002187:58470`) and hides it only when unavailable (`40002187:58473`) — narrower than
+ *     PLP's own unconditional rule, so it needs its own flag rather than reusing
+ *     `hideBagOnMobile`. `index.tsx` combines both into one `bagHiddenOnMobile` boolean before
+ *     the recipe ever sees it — the recipe only needs "hide this on mobile for this render", not
+ *     which of the two reasons applies.
+ *
+ * Closed 2026-09-20 (SFCC image-sizing/LCP follow-up): `ZimmProductCardMedia`'s `priority` prop
+ * (its LCP eager-load escape hatch) now has a real passthrough — see `ZimmProductCardBaseProps`'s
+ * own `priority` field below. Previously flagged here as a known gap ("every card composed via
+ * this organism lazy-loads its primary image... a PLP page placing this organism above the fold
+ * would want it") rather than silently added; this closes it.
+ *
+ * Badge (feature addition, not a "Fix" like the ones above — the underlying design gap was
+ * genuinely closed, not misread): `ZimmProductCardContent`'s docblock used to claim no Figma
+ * design existed for SFCC-236's badge AC. It does — the "Tag" overlay, confirmed present and
+ * pixel-identical on every Size/Type variant checked (nodes 40002163:41442, 40002096:12223,
+ * 40002187:58447, 40002163:41478, 40004599:89266, 40004638:120485) — it was just nested one
+ * level deeper (inside "Image Group", i.e. `ZimmProductCardMedia`'s domain) than the first pass
+ * looked. Per Dani Rivett's scope note on the ticket, the badge shows on PLP and Wishlist (and
+ * therefore Recently Viewed Full History, which already reuses the `plp` variation) and is
+ * suppressed on Home — driven by `VARIATION_CONFIG.showBadge` below, the same table-driven
+ * mechanism as every other variation decision in this file. Figma's own Home node still shows
+ * the Tag layer un-hidden, contradicting that scope note — treating the confirmed written
+ * requirement as authoritative over the file's possibly-stale layer visibility here, flagged
+ * rather than silently picked.
+ *
+ * Badge count (confirmed after the above shipped, via a Dev Mode Connect Note on the separate
+ * "Product Cards" Figma file — QQ427wHWEUjsjP7H8v48Rs, node 3448:35976 — distinct from the
+ * design-system component-set file cited throughout this docblock): "only 1 product badge will
+ * show up on these product cards - depending on the configured hierarchy, the highest priority
+ * badge will be shown," with that priority logic owned by SFCC-225. This confirms `badge?:
+ * string` (a single value, not a list) is the correct, final shape for this prop — not a
+ * placeholder pending a possible future move to an array. SFCC-225's own already-merged SCAPI
+ * hook writes `c_productBadges` as an array sorted by `badgePriorityOrder`, so whatever mapper
+ * eventually feeds this prop (none exists yet — no page consumes this organism) just needs
+ * `c_productBadges[0]?.productBadge`, not any re-sorting of its own.
+ *
+ * Hover image-swap on Home (same Dani-vs-AC contradiction as the Badge note above, resolved the
+ * same direction): Dani's comment also says "we don't want the hover action (model photo) on
+ * the homepage," but the AC update three days later frames the tile-image hover-swap as an
+ * unconditional Core Component behaviour with no Home exclusion — and the code as first shipped
+ * followed the AC, passing `swapOnHover` to `ZimmProductCardMedia` unconditionally with no
+ * variation gate at all. Treated the comment as more authoritative than the AC text here too:
+ * `VARIATION_CONFIG.showHoverImageSwap` now suppresses the swap for `home` specifically. This
+ * is unrelated to, and does not affect, Home's own
+ * `hoverRevealsPrice` — that is a separate mechanism (a style flag consumed by this organism's
+ * own recipe), not `swapOnHover`.
+ *
+ * Correction (SFCC-83, 2026-09-08): the paragraph above frames this as choosing Dani's comment
+ * over a still-conflicting AC at ship time — that's not accurate. Jasmijn's 2026-08-17 AC edit
+ * (see the changelog) removed the unconditional-core-hover-swap language before this shipped,
+ * aligning the AC with Dani's note rather than leaving the two in conflict. Implementing per
+ * Dani's note therefore also means implementing per the (already-corrected) AC — this was never
+ * really an override of a live disagreement, just following the AC as it stood by the time this
+ * was written. The shipped behaviour (`showHoverImageSwap: false` for `home`) is unaffected; only
+ * this paragraph's framing of why was wrong.
+ *
+ * RESOLVED (SFCC-83, 2026-09-07): both quotes above, from Dani's scope note (Jira comment 13880
+ * on SFCC-236), truncate at the same point. In full, her instruction is no badge and no
+ * hover-image-swap on "the Homepage or on the Recently Viewed product carousel" — the Badge note
+ * above and this Hover image-swap note each only implemented and discussed the Homepage half. The
+ * Recently Viewed carousel half is now built: a dedicated `recentlyViewed` `VARIATION_CONFIG`
+ * entry was added (both `showBadge` and `showHoverImageSwap` false, sourced from comment 13880 —
+ * see the variation-matrix paragraph above for the full entry and the rest of its flags), rather
+ * than a rail caller reaching for the closest existing option, `variation: 'plp'`, which would
+ * have shipped exactly the opposite of what Dani asked for on that surface.
+ *
+ * Comment 13880 asks for the identical suppression on a second surface too — "editorial and
+ * landing pages" — which has no ticket, design or AC anywhere today. That surface is deliberately
+ * left unscoped, not silently folded into `recentlyViewed`: when it is scoped, it needs its own
+ * `VARIATION_CONFIG` row (both flags `false`) rather than reusing `recentlyViewed` (this variation
+ * is named for the one confirmed surface — reusing it for editorial/landing would misdescribe
+ * what it's for) or `plp` (which would ship the badge Dani ruled out for that surface too).
+ * SFCC-236's own Variation extensibility AC makes that a one-row addition when the time comes.
+ *
+ * Fix I (SFCC-236, found via live mobile-device testing on this branch, same round that found
+ * Fix H): multi-image cards did not respond to a real touch swipe at all — the slide indicator
+ * rendered correctly (so the image data/gallery logic was fine), but swiping the image never
+ * paged it. Root cause and CSS fix are `zimmProductCard.css.ts`'s own Fix I (docblock point 2):
+ * `ZimmProductCardMedia` was the one interactive region never lifted above the stretched-link
+ * overlay, so a swipe gesture starting on the image landed on the invisible overlay `<a>` first
+ * and never reached the real scroll container underneath. Lifting Media above the overlay fixes
+ * the swipe, but has a side effect: a plain tap/click on the image used to "work" by landing on
+ * that same overlay and navigating to the PDP — once Media sits on top, the tap no longer reaches
+ * it, and Media itself had no click behaviour of its own. `handleMediaClick` below restores that
+ * navigation deliberately, via `useHistory().push(href)` rather than depending on the overlay by
+ * accident: this repo is pinned to react-router-dom v5.3.4 (`package.json`), which has no
+ * `useNavigate` — `useHistory()` + `history.push()` is the correct v5 primitive, already
+ * established in this codebase (`footer/index.tsx`, `zimmColourSwatchGroup/index.tsx`,
+ * `pages/product-detail/index.tsx`) and the same one the base SFCC `product-list` page itself
+ * uses. `href` needed no new prop plumbing — this organism already destructures it from its own
+ * base props (above) and previously only forwarded it to `ZimmProductCardContent`. The handler
+ * guards against the two arrow buttons and the remove/close button — all real `<button>`
+ * descendants of `ZimmProductCardMedia` — via `(event.target as HTMLElement).closest('button')`,
+ * so paging and `onRemove` keep firing on their own and never also navigate. No custom drag-vs-tap
+ * detection is needed for the swipe/tap split itself: browsers natively suppress the synthetic
+ * `click` event after a real drag/scroll on the same element, so a swipe pages the gallery without
+ * ever reaching this handler, while a plain tap (no movement) still fires it exactly as the old
+ * overlay click did.
+ */
+
+/** Re-exported under this organism's own name so a page-level caller never has to reach into a
+ *  molecule's type — the shape itself is Media's own `ZimmProductCardMediaImage`, not a
+ *  redeclaration (a hand-copied duplicate would silently drift from its source). */
+export type ZimmProductCardImage = ZimmProductCardMediaImage;
+
+/** `ZimmProductCardContent`'s own already-derived heading-level type (`'h1' | 'h2' | 'h3'`,
+ *  itself derived from `ZimmProductName`'s `as` prop) — read via `ComponentProps` off the
+ *  component this organism actually forwards it to, rather than a hand-typed duplicate union. */
+type ZimmProductCardHeadingLevel = React.ComponentProps<typeof ZimmProductCardContent>['headingLevel'];
+
+/**
+ * Exported alongside `ZimmProductCardProps` (not just kept module-private) so a test/fixture can
+ * build a properly *narrowed* per-variation props object — e.g.
+ * `ZimmProductCardBaseProps & ZimmProductCardWishlistVariation` — instead of a value typed as the
+ * full union. This matters for real, not just for convenience: TypeScript's excess-property
+ * check on a *union* target is weak (a property valid on any one member is not flagged as excess
+ * on a fresh literal discriminated toward a different member), so proving "the wishlist-only
+ * fields don't exist on Home" needs an assignment to Home's own narrow shape specifically, not to
+ * the union alias — see index.test.tsx's `@ts-expect-error` cases and its overloaded
+ * `buildCardProps` helper.
+ */
+export type ZimmProductCardBaseProps = {
+  /** Stable per-card identifier. Not used for any layout/behavioural decision — exposed as a
+   *  `data-product-id` attribute on the root element as a DOM hook for QA automation/analytics,
+   *  the same kind of caller-facing marker `data-testid` already serves in this build's other
+   *  components, without overloading that attribute's own testing-only convention. */
+  id: string;
+  /** PDP destination, pre-site-prefixed by the caller — forwarded straight to
+   *  `ZimmProductCardContent`'s own `href` (see that component's own JSDoc on trust level). */
+  href: string;
+  name: string;
+  headingLevel: ZimmProductCardHeadingLevel;
+  primaryImage: ZimmProductCardImage;
+  /** Forwarded straight to `ZimmProductCardMedia`'s own same-named prop — see that component's
+   *  JSDoc for the full cascading-onError-fallback contract this exists for. */
+  primaryImageFallbacks?: ZimmProductCardImage[];
+  hoverImage?: ZimmProductCardImage;
+  images?: ZimmProductCardImage[];
+  currentPrice?: string;
+  originalPrice?: string;
+  isPriceLoading?: boolean;
+  isUnavailable?: boolean;
+  /** Only meaningful when `isUnavailable` is true. See the module docblock for why this is not
+   *  restricted to the `plp` variation at the type level. */
+  onNotifyMe?: () => void;
+  /**
+   * Merchandiser-configured badge label (e.g. "Runway", "Exclusive"). Always a single value —
+   * confirmed via a Figma Dev Mode Connect Note that only the single highest-priority badge is
+   * ever shown, never a list (see the module docblock's "Badge count" note). Not restricted to
+   * any variation at the type level, same reasoning as `onNotifyMe` above — whether it actually
+   * renders is `VARIATION_CONFIG.showBadge`'s job (PLP/Wishlist show it, Home suppresses it; see
+   * the module docblock's "Badge" note).
+   */
+  badge?: string;
+  /**
+   * SFCC image-sizing/LCP follow-up — forwarded straight to `ZimmProductCardMedia`'s own
+   * same-named `priority` prop (its LCP eager-load escape hatch — see that prop's own JSDoc).
+   * Not restricted to any variation at the type level, same reasoning as `badge` above: whether
+   * a card sits above the fold is a page-composition concern, not a variation concern. Omitted
+   * (or `false`) lazy-loads the primary image, this component's unchanged default.
+   */
+  priority?: boolean;
+  /**
+   * SFCC image-sizing follow-up — forwarded straight to `ZimmProductCardMedia`'s own same-named
+   * `widths` prop. Not restricted to any variation at the type level, same reasoning as `badge`
+   * above: PLP, Wishlist, Home, and the Recently Viewed rail each reuse this organism at a
+   * different real grid/rail width, so whichever page composes it supplies its own. Omitted
+   * renders the raw, unparameterized source exactly as before this prop existed.
+   */
+  imageWidths?: ZimmMediaTileWidths;
+  /** Forwarded straight to `ZimmProductCardMedia`'s own same-named `quality` prop — see that
+   *  prop's own JSDoc for the `null`-omits-`&q=` contract. Only used when `imageWidths` is also
+   *  given. */
+  imageQuality?: number | null;
+};
+
+export type ZimmProductCardPlpVariation = {
+  variation: 'plp';
+  onAddToBag?: () => void;
+  sizeChipValues?: ZimmSizeChipValue[];
+  selectedSizeChipValue?: string;
+  onSizeChipSelect?: (value: string) => void;
+};
+
+export type ZimmProductCardHomeVariation = {
+  variation: 'home';
+  // No additions — Home never shows the bag, attributes, or size chips (see VARIATION_CONFIG).
+};
+
+export type ZimmProductCardWishlistVariation = {
+  variation: 'wishlist';
+  /** Required, not optional — the Wishlist AC always shows the attributes line. */
+  colour: string;
+  size: string;
+  /** Required — a wishlist card with no way to remove itself is a spec violation. */
+  onRemove: () => void;
+  /** Bag is always visible for Wishlist per the confirmed matrix above. */
+  onAddToBag?: () => void;
+  /** Same trio `ZimmProductCardPlpVariation` declares, and for the same reason: confirmed via the
+   *  real Figma Wishlist Hover instance (node 40002187:58458) during the SFCC-236 Step 6 visual
+   *  audit that Wishlist's hover reveal is a genuine, populated size-selector swap identical to
+   *  PLP's — not a PLP-only affordance. `index.tsx`'s render body already forwarded these
+   *  unconditionally to `ZimmProductCardContent` for every variation (via the
+   *  `ZimmProductCardVariationFields` cast below); this type previously just didn't expose them
+   *  to a Wishlist caller, which is what let the Wishlist story ship without ever populating them. */
+  sizeChipValues?: ZimmSizeChipValue[];
+  selectedSizeChipValue?: string;
+  onSizeChipSelect?: (value: string) => void;
+};
+
+/**
+ * SFCC-83 — the Recently Viewed rail tile. Image only: every `VARIATION_CONFIG` flag is `false`,
+ * so this variation adds no fields of its own — see `VARIATION_CONFIG`'s own `recentlyViewed`
+ * row and the module docblock's matching paragraph for the confirmed Figma reading.
+ */
+export type ZimmProductCardRecentlyViewedVariation = {
+  variation: 'recentlyViewed';
+  // No additions — the rail tile is image-only; see VARIATION_CONFIG and the module docblock.
+};
+
+export type ZimmProductCardProps = ZimmProductCardBaseProps &
+  (
+    | ZimmProductCardPlpVariation
+    | ZimmProductCardHomeVariation
+    | ZimmProductCardWishlistVariation
+    | ZimmProductCardRecentlyViewedVariation
+  );
+
+type ZimmProductCardVariation =
+  | ZimmProductCardPlpVariation['variation']
+  | ZimmProductCardHomeVariation['variation']
+  | ZimmProductCardWishlistVariation['variation']
+  | ZimmProductCardRecentlyViewedVariation['variation'];
+
+/**
+ * Widened, not narrowed: every variation-specific field is optional here regardless of which
+ * branch is actually active, purely so the component body below can destructure once with no
+ * `if`/`switch` on `props.variation` — the extensibility AC requires every layout/visibility
+ * decision to come from `VARIATION_CONFIG`, keyed by the discriminant, never a branching
+ * statement. The exported `ZimmProductCardProps` discriminated union above is what actually
+ * enforces correct usage at every call site (proven by the `@ts-expect-error` cases in
+ * index.test.tsx) — this cast only relaxes internal access inside this file; it changes nothing
+ * about what a caller may legally pass in.
+ */
+type ZimmProductCardVariationFields = Partial<
+  Omit<ZimmProductCardPlpVariation, 'variation'> &
+    Omit<ZimmProductCardWishlistVariation, 'variation'> &
+    Omit<ZimmProductCardHomeVariation, 'variation'>
+>;
+
+type ZimmProductCardVariationConfig = {
+  showBag: boolean;
+  showAttributes: boolean;
+  showSizeChips: boolean;
+  /** PLP/Wishlist: price is visible by default and hides on hover. */
+  hoverHidesPrice: boolean;
+  /** Home only: price is hidden by default and reveals on hover. */
+  hoverRevealsPrice: boolean;
+  /** PLP/Wishlist: the size-chip picker is hidden by default and reveals on hover. */
+  hoverRevealsSizeSelector: boolean;
+  showRemove: boolean;
+  /** PLP only (found during the SFCC-236 Step 6 visual audit): Figma's Mobile Card-content
+   *  instance has the bag icon's `Icons` frame `hidden="true"`, unlike Desktop and unlike
+   *  Wishlist's own Mobile instance (bag stays visible there on every breakpoint). A viewport-
+   *  width concern, not a hover one — see zimmProductCard.css.ts's own responsive rule. */
+  hideBagOnMobile: boolean;
+  /** Wishlist only (found during the follow-up full-sweep visual audit against every variant x
+   *  state node): unlike PLP's unconditional `hideBagOnMobile`, Wishlist's Mobile Card-content
+   *  instance shows the bag icon when available (`40002187:58470`) and hides it
+   *  (`Icons` frame `hidden="true"`) only when unavailable (`40002187:58473`) — narrower than
+   *  `hideBagOnMobile`, and combined with it (not replacing it) in the `bagHiddenOnMobile`
+   *  derivation below, since the two are mutually exclusive per variation today but there is no
+   *  reason to assume that stays true forever. */
+  hideBagOnMobileWhenUnavailable: boolean;
+  /** Shown on PLP/Wishlist, suppressed on Home — see the module docblock's "Badge" note. */
+  showBadge: boolean;
+  /**
+   * Allows `ZimmProductCardMedia`'s primary/hover image crossfade for this variation. Suppressed
+   * on Home per Dani Rivett's scope note, overriding the AC's unconditional framing — see the
+   * module docblock's "Hover image-swap on Home" note. `false` here means a supplied
+   * `hoverImage` is simply never swapped to, regardless of pointer capability.
+   */
+  showHoverImageSwap: boolean;
+  /**
+   * Whether `ZimmProductCardContent` mounts at all. Every other flag in this type only ever
+   * hides a SUB-PART of Content (the bag, the attributes row, the size chips...) while Content
+   * itself always renders regardless — this is the one flag that suppresses the whole component.
+   * `false` only for `recentlyViewed` (SFCC-83): the rail tile is image-only, per Figma's
+   * `Card-content` `hidden="true"` on all three viewports. See `index.tsx`'s own render body for
+   * how a keyboard-reachable link is preserved even with Content fully unmounted.
+   */
+  showContent: boolean;
+};
+
+/**
+ * The extensibility AC's actual mechanism: every layout/visibility decision this organism makes
+ * reads from this table, keyed by `variation` — adding a future variation means adding a union
+ * member above and one row here, touching no JSX. `index.tsx`'s render body contains no
+ * `switch`/`if` on `props.variation` anywhere (verify with
+ * `grep -n 'variation ===\|switch (variation)' index.tsx` — zero hits).
+ */
+const VARIATION_CONFIG: Record<ZimmProductCardVariation, ZimmProductCardVariationConfig> = {
+  home: {
+    showBag: false,
+    showAttributes: false,
+    showSizeChips: false,
+    hoverHidesPrice: false,
+    hoverRevealsPrice: true,
+    hoverRevealsSizeSelector: false,
+    showRemove: false,
+    hideBagOnMobile: false,
+    hideBagOnMobileWhenUnavailable: false,
+    showBadge: false,
+    showHoverImageSwap: false,
+    showContent: true,
+  },
+  plp: {
+    showBag: true,
+    showAttributes: false,
+    showSizeChips: true,
+    hoverHidesPrice: true,
+    hoverRevealsPrice: false,
+    hoverRevealsSizeSelector: true,
+    showRemove: false,
+    hideBagOnMobile: true,
+    hideBagOnMobileWhenUnavailable: false,
+    showBadge: true,
+    showHoverImageSwap: true,
+    showContent: true,
+  },
+  wishlist: {
+    showBag: true,
+    showAttributes: true,
+    showSizeChips: true,
+    hoverHidesPrice: true,
+    hoverRevealsPrice: false,
+    hoverRevealsSizeSelector: true,
+    showRemove: true,
+    hideBagOnMobile: false,
+    hideBagOnMobileWhenUnavailable: true,
+    showBadge: true,
+    showHoverImageSwap: true,
+    showContent: true,
+  },
+  recentlyViewed: {
+    showBag: false,
+    showAttributes: false,
+    showSizeChips: false,
+    hoverHidesPrice: false,
+    hoverRevealsPrice: false,
+    hoverRevealsSizeSelector: false,
+    showRemove: false,
+    // Moot — there is no bag on any viewport for this variation (Card-content is hidden
+    // wholesale below), so this flag never actually applies. Figma nodes: Desktop 40000307:12444,
+    // Tablet 40000730:13363, Mobile 40000538:25030 — Card-content `hidden="true"` on all three.
+    hideBagOnMobile: false,
+    hideBagOnMobileWhenUnavailable: false,
+    showBadge: false,
+    showHoverImageSwap: false,
+    showContent: false,
+  },
+};
+
+const messages = defineMessages({
+  // Interpolated with the product name, matching ZimmProductPrice's WAS/NOW pattern — Media's
+  // own `removeLabel` prop is a plain string, so the interpolation happens here, at the one call
+  // site that actually knows the product name.
+  removeFromWishlist: {
+    id: 'product_card.remove.from_wishlist',
+    defaultMessage: 'Remove {name} from wishlist',
+  },
+});
+
+const ZIMM_PRODUCT_CARD_RECIPE = 'ZimmProductCard';
+
+/**
+ * Organism — the full product card, composing `ZimmProductCardMedia` and `ZimmProductCardContent`
+ * across the `home` / `plp` / `wishlist` variations. See the module docblock above for the
+ * confirmed Figma variation matrix and this component's own recipe (`zimmProductCard.css.ts`) for
+ * the stretched-link and hover-reveal mechanics that live entirely in CSS, not in this render
+ * body — both children are always rendered in full, with every one of their own sub-parts; CSS
+ * alone decides what is visible for a given variation and pointer capability.
+ *
+ * @param props see `ZimmProductCardProps` — a discriminated union on `variation`.
+ */
+export const ZimmProductCard = (props: ZimmProductCardProps) => {
+  const {
+    id,
+    href,
+    name,
+    headingLevel,
+    primaryImage,
+    primaryImageFallbacks,
+    hoverImage,
+    images,
+    currentPrice,
+    originalPrice,
+    isPriceLoading,
+    isUnavailable,
+    onNotifyMe,
+    badge,
+    variation,
+    priority,
+    imageWidths,
+    imageQuality,
+  } = props;
+
+  const { onAddToBag, sizeChipValues, selectedSizeChipValue, onSizeChipSelect, colour, size, onRemove } =
+    props as ZimmProductCardVariationFields;
+
+  const intl = useIntl();
+  const history = useHistory();
+  const config = VARIATION_CONFIG[variation];
+
+  // Was `Boolean(isUnavailable) && Boolean(onNotifyMe)` — changed 2026-09-08, Marcel's explicit
+  // decision: show the button whenever a size/product is unavailable even with no real handler
+  // wired yet. The real Notify Me feature (PRD-018–021: a slide-out form submitting to a
+  // back-in-stock capture target) doesn't exist anywhere in this codebase yet and needs its own
+  // story — this deliberately ships the button inert (visible, clicking does nothing) rather than
+  // waiting for that story to land. `ZimmProductCardContent`'s own mirrored co-requirement
+  // (`showNotifyMeButton`) changed the same way, for the same reason — see that file's own note.
+  const showNotifyMe = Boolean(isUnavailable);
+
+  // Fix C (SFCC-236 Step 6 visual audit): confirmed against the real Figma Default+Hover
+  // instances for every variation × Unavailable=True (including the Mobile/no-hover variants,
+  // which show the only state a touch pointer ever sees) that `isUnavailable` suppresses the
+  // size-selector hover-swap entirely — there is nothing to pick for an out-of-stock item, so
+  // price stays visible on hover instead of being replaced. Home's own hover-reveals-price
+  // behaviour is untouched by this — Home's Unavailable Hover reference (node 40002163:39990)
+  // still reveals price on hover exactly as the in-stock case does; only the PLP/Wishlist
+  // hide-and-swap needs suppressing.
+  //
+  // Suppressing `hoverRevealsSizeSelector` alone is not enough to reproduce that reference: it
+  // only stops the organism adding its OWN hide/reveal pair, which leaves the size-chip wrapper
+  // at Content's own natural (visible) default — briefly shipped that way mid-fix and caught by
+  // re-checking the real Storybook render against Figma, which confirms size chips stay hidden
+  // in BOTH states when unavailable, not just "not swapped in on hover". `sizeSelectorUnavailable`
+  // carries that permanent hide separately, unconditional (not gated by hover-capability at all —
+  // this isn't a pointer-type concern, unlike everything else in this recipe).
+  //
+  // Follow-up (full-sweep visual audit against every variant x state node, not just the sampled
+  // set the first pass checked): `sizeSelectorUnavailable` ALSO drives a mobile-only price hide
+  // in the recipe now (Fix F) — confirmed via `get_metadata` that Mobile PLP/Wishlist Unavailable
+  // hide price and show notify-me in its place (`40002163:41488`, `40002187:58475`), the OPPOSITE
+  // of Desktop's additive treatment (price stays, notify-me is simply added on hover). Nothing
+  // extra is computed here for it — the recipe reads the same `sizeSelectorUnavailable` boolean
+  // for both the size-chip permanent-hide and this new price rule, since both only ever apply to
+  // the same PLP/Wishlist-and-unavailable case.
+  const hoverHidesPrice = config.hoverHidesPrice && !isUnavailable;
+  const hoverRevealsSizeSelector = config.hoverRevealsSizeSelector && !isUnavailable;
+  const sizeSelectorUnavailable = config.hoverRevealsSizeSelector && Boolean(isUnavailable);
+
+  // Fix G (same follow-up audit): Wishlist-only. `hideBagOnMobile` alone only covers PLP's own
+  // unconditional mobile hide; Wishlist's bag stays visible on mobile UNLESS unavailable
+  // (`40002187:58470` vs `40002187:58473`). Combined into one boolean here rather than exposing
+  // both conditions to the recipe — it only needs to know "hide this on mobile for this render",
+  // not why.
+  const bagHiddenOnMobile = config.hideBagOnMobile || (config.hideBagOnMobileWhenUnavailable && Boolean(isUnavailable));
+
+  const removeLabel = config.showRemove ? intl.formatMessage(messages.removeFromWishlist, { name }) : undefined;
+  const resolvedBadge = config.showBadge ? badge : undefined;
+
+  const styles = useMultiStyleConfig(ZIMM_PRODUCT_CARD_RECIPE, {
+    hoverHidesPrice,
+    hoverRevealsPrice: config.hoverRevealsPrice,
+    hoverRevealsSizeSelector,
+    sizeSelectorUnavailable,
+    // Same Fix C audit: notify-me is hover-gated on hover-capable devices (hidden by default,
+    // revealed on hover/focus-visible — every Desktop Unavailable+Hover reference shows it
+    // appearing only there) but unconditionally visible on touch (every Mobile Unavailable
+    // reference — the only state a touch pointer ever sees, per the "Mobile has no Hover variant"
+    // finding — shows it plainly, with no hover to reveal it). This flag is deliberately keyed off
+    // `showNotifyMe` itself, not `variation`: the confirmed behaviour is identical across all
+    // three variations, and the recipe's selector simply matches nothing when notify-me isn't
+    // mounted at all.
+    hoverRevealsNotifyMe: showNotifyMe,
+    hideBagOnMobile: bagHiddenOnMobile,
+  });
+
+  // Fix I — see the module docblock's own "Fix I" paragraph for the full narrative. Guards the
+  // two arrow buttons and the remove/close button (all real <button> descendants of
+  // ZimmProductCardMedia) so paging/onRemove keep firing on their own and never also navigate.
+  // Fix L (CodeRabbit finding on PR #85, verified correct before fixing): a real <a> lets the
+  // browser handle Cmd/Ctrl-click (new tab), Shift-click (new window), and non-primary-button
+  // clicks natively — this handler only ever replaces the in-page navigation an UNMODIFIED,
+  // primary-button click used to reach via the stretched-link overlay (see Fix I). Bailing out on
+  // any of those instead of forcing an in-tab `history.push` regardless of what the shopper
+  // actually asked for; a no-op here is a real gap (it doesn't open a new tab the way a real link
+  // would) but is strictly better than silently overriding an explicit "open elsewhere" signal.
+  const handleMediaClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    history.push(href);
+  };
+
+  return (
+    <chakra.div __css={styles.root} data-testid="product-card" data-product-id={id}>
+      {config.showContent ? (
+        <>
+          <ZimmProductCardMedia
+            primaryImage={primaryImage}
+            primaryImageFallbacks={primaryImageFallbacks}
+            hoverImage={hoverImage}
+            images={images}
+            swapOnHover={config.showHoverImageSwap && Boolean(hoverImage)}
+            showControls
+            badge={resolvedBadge}
+            onRemove={onRemove}
+            removeLabel={removeLabel}
+            onClick={handleMediaClick}
+            priority={priority}
+            widths={imageWidths}
+            quality={imageQuality}
+          />
+          <ZimmProductCardContent
+            name={name}
+            headingLevel={headingLevel}
+            href={href}
+            currentPrice={currentPrice}
+            originalPrice={originalPrice}
+            isPriceLoading={isPriceLoading}
+            showAttributes={config.showAttributes}
+            colour={colour}
+            size={size}
+            showBag={config.showBag}
+            isUnavailable={isUnavailable}
+            onAddToBag={onAddToBag}
+            showSizeChips={config.showSizeChips}
+            sizeChipValues={sizeChipValues}
+            selectedSizeChipValue={selectedSizeChipValue}
+            onSizeChipSelect={onSizeChipSelect}
+            showNotifyMe={showNotifyMe}
+            onNotifyMe={onNotifyMe}
+          />
+        </>
+      ) : (
+        // recentlyViewed only (config.showContent === false): ZimmProductCardContent never
+        // mounts, so its own name-link — otherwise this card's only keyboard-reachable element —
+        // is replaced by this minimal Link wrapping Media directly. See the module docblock's own
+        // `recentlyViewed` paragraph for the full rationale. No `onClick` on Media here: a real
+        // `<Link>` containing the image needs no click-passthrough workaround at all — that
+        // mechanism exists only to route around the OTHER variations' invisible stretched-overlay
+        // `<a>`, which this branch has no need for since the link directly wraps the image
+        // instead of sitting behind it.
+        <MediaOnlyCardLink
+          to={href}
+          display="block"
+          // Every other interactive control in this component family (zimmColourSwatch,
+          // zimmNavItem, zimmSizeChip, zimmButton, Media's own close/arrowButton, Content's
+          // nameLink/bagButton/notifyMeButton) carries an explicit focus-ring rule from the same
+          // registered tokens (zimmTokens.ts:68-69) — this link is no exception, even though it's
+          // a plain sx override rather than a recipe part (overrideStyling.md hierarchy point 4:
+          // sx for a one-off gap, referencing already-registered tokens, not a new recipe).
+          sx={{
+            _focusVisible: {
+              outline: 'var(--zimm-focus-ring)',
+              outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+            },
+          }}
+        >
+          <VisuallyHidden>{name}</VisuallyHidden>
+          <ZimmProductCardMedia
+            // alt overridden to '' on these two copies only — never on the shared
+            // ZimmProductCardMediaImage type, never in the showContent branch above. The
+            // VisuallyHidden name immediately above already supplies this link's accessible name;
+            // without this override the image's own real alt text would be concatenated onto it
+            // too (standard name-from-content computation for a link containing an <img>),
+            // producing a redundant, doubled-up announcement instead of just the product name.
+            // alt="" is the standard WCAG technique for exactly this case — a decorative-in-context
+            // image inside an already-labelled link.
+            primaryImage={{ ...primaryImage, alt: '' }}
+            // Same alt='' override as primaryImage above, applied per-candidate — whichever one
+            // actually ends up rendered (see ZimmProductCardMedia's own cascading-fallback
+            // contract) must carry the same decorative-in-context treatment, not just the first.
+            primaryImageFallbacks={primaryImageFallbacks?.map((image) => ({ ...image, alt: '' }))}
+            hoverImage={hoverImage ? { ...hoverImage, alt: '' } : undefined}
+            // images is deliberately NOT forwarded here (found during this step's own Tester
+            // pass): ZimmProductCardMedia's gallery mode activates purely off images.length > 1,
+            // independent of any VARIATION_CONFIG flag. If this variation ever received a real
+            // multi-image gallery, it would nest carousel arrow <button>s inside this branch's own
+            // wrapping <Link> (invalid nested-interactive HTML), let a "Next image" click bubble
+            // up and also fire this Link's own PDP navigation (a real double-navigation bug), and
+            // concatenate every slide's own un-blanked alt text onto the link's accessible name —
+            // the same bug just fixed for primaryImage/hoverImage above, multiplied across every
+            // slide. This variation's entire design intent is single-image (AC 3), so the fix is
+            // simply never forwarding images here — ZimmProductCardMedia already defaults to
+            // single-image mode with no images prop supplied.
+            swapOnHover={config.showHoverImageSwap && Boolean(hoverImage)}
+            showControls
+            badge={resolvedBadge}
+            priority={priority}
+            widths={imageWidths}
+            quality={imageQuality}
+          />
+        </MediaOnlyCardLink>
+      )}
+    </chakra.div>
+  );
+};
+
+export default ZimmProductCard;

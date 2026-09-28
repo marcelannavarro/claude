@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Verify Shadow DOM → render-function migration",
+  "description": "Deep-dive agent: confirm runtime.js mechanics, spot-check components across tiers, verify zero Shadow DOM remains, confirm the four \"known breakage\" components are actually fixed.",
+  "activeForm": "Verifying Shadow DOM migration",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

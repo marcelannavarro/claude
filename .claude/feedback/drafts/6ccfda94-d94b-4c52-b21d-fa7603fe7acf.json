@@ -1,0 +1,31 @@
+{
+  "draft_id": "6ccfda94-d94b-4c52-b21d-fa7603fe7acf",
+  "created_at": "2026-09-25T08:33:55.460Z",
+  "source_session_id": "bad4ca0d-db64-47ee-b18c-8601052cd7b0",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "model": "claude-opus-5",
+  "cli_version": "2.1.282",
+  "os": "darwin arm64",
+  "request_ids": [
+    "req_011CfPr3rS4AGtN2DmDfE2JM",
+    "req_011CfPr6MtesQZJmVGXwNfrP",
+    "req_011CfPr9d3p4HfFUmP7seAoe"
+  ],
+  "type": "bug",
+  "title": "Bash tool call reported as user-rejected still executed (git push, then git commit)",
+  "details": "- **What happened:** Two Bash tool calls returned the standard rejection result (\"The user doesn't want to proceed with this tool use. The tool use was rejected...\") yet their commands actually ran. (1) A compound `git status --porcelain && echo ... && git push -u origin <branch>` was reported rejected; a later `git fetch` revealed the remote branch existed at the exact local HEAD, including a commit created minutes earlier. (2) A compound `git add -A && git commit -F- <<'EOF' ... EOF; git log; git push` was reported rejected; `git log` later showed the commit had landed locally (the `git push` portion had NOT run). Expected: a rejected call performs no side effects.\n- **What the user said:** In case (1) the user had interrupted specifically to prevent the push: \"before we do that, make sure we have the latest base develop\". The push had already happened. User did not comment on case (2); observed by the model.\n- **Repro:** Interrupt/reject a Bash call whose command is a compound `A && B` chain containing a side-effecting git command. Observed twice in one session; in both cases an earlier segment of the chain executed while a later one did not, suggesting the rejection lands mid-chain rather than before execution.\n- **Evidence:** Session on branch `feature/SFCC-11_cart`. Case 1: remote branch appeared at commit `fd3ae184` with no local upstream recorded, and a `Deploy Preview` workflow run was triggered. Case 2: commit `517d2657` present locally, `origin` still at `43ee76b2`. Both recoverable (case 2 was amendable since unpushed), but case 1 was an outward-facing push the user had explicitly interrupted to stop.",
+  "area": "tool permissions",
+  "task_category": "shell",
+  "trigger": "model_judgment",
+  "effort": "max",
+  "thinking_type": "adaptive",
+  "message_count": 1418,
+  "assistant_turn_count": 235,
+  "subagent_count": 0,
+  "transcript_ref": {
+    "session_file": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/bad4ca0d-db64-47ee-b18c-8601052cd7b0.jsonl",
+    "message_range": null,
+    "project_dir_key": "-Users-marcel-a-n-navarro-Dev-zimmermann-pwa"
+  },
+  "status": "queued"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "6",
+  "subject": "Phase 2: provider-sdk + provider-github + tier hooks",
+  "description": "VcsProvider/PmProvider/WikiProvider capability interfaces; GitHub adapter (emit CODEOWNERS + workflows + ensureBranchProtection/ensureTeam/ensureLabels via gh/API with graceful degradation); .claude/settings.json branch-guard + non-blocking tier warnings; arche doctor.",
+  "activeForm": "Building provider-sdk + GitHub provider",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

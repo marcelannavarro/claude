@@ -1,0 +1,250 @@
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+The above error occurred in the <CartDrawerContainer> component:
+
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:133:32)
+    at EnvironmentProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react-env/dist/chunk-23XYWYLU.mjs:24:11)
+    at ColorModeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/color-mode/dist/chunk-4DEUOPYU.mjs:22:5)
+    at ThemeProvider (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:123:32)
+    at ThemeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/system/dist/chunk-3ZTTLJBV.mjs:13:11)
+    at ChakraProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/provider/dist/chunk-TSJH2PS2.mjs:15:5)
+    at ChakraProvider2 (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react/dist/chunk-DGNA6VRZ.mjs:13:5)
+    at QueryClientProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@tanstack/react-query/build/lib/QueryClientProvider.mjs:41:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > footer slot renders ZimmCartButtonGroup
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+The above error occurred in the <CartDrawerContainer> component:
+
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:133:32)
+    at EnvironmentProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react-env/dist/chunk-23XYWYLU.mjs:24:11)
+    at ColorModeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/color-mode/dist/chunk-4DEUOPYU.mjs:22:5)
+    at ThemeProvider (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:123:32)
+    at ThemeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/system/dist/chunk-3ZTTLJBV.mjs:13:11)
+    at ChakraProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/provider/dist/chunk-TSJH2PS2.mjs:15:5)
+    at ChakraProvider2 (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react/dist/chunk-DGNA6VRZ.mjs:13:5)
+    at QueryClientProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@tanstack/react-query/build/lib/QueryClientProvider.mjs:41:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > the messages slot receives no node at all — no empty wrapper attempted
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+The above error occurred in the <CartDrawerContainer> component:
+
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:133:32)
+    at EnvironmentProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react-env/dist/chunk-23XYWYLU.mjs:24:11)
+    at ColorModeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/color-mode/dist/chunk-4DEUOPYU.mjs:22:5)
+    at ThemeProvider (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:123:32)
+    at ThemeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/system/dist/chunk-3ZTTLJBV.mjs:13:11)
+    at ChakraProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/provider/dist/chunk-TSJH2PS2.mjs:15:5)
+    at ChakraProvider2 (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react/dist/chunk-DGNA6VRZ.mjs:13:5)
+    at QueryClientProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@tanstack/react-query/build/lib/QueryClientProvider.mjs:41:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > isOpen is read straight from props — passing false renders the drawer closed
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+The above error occurred in the <CartDrawerContainer> component:
+
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:133:32)
+    at EnvironmentProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react-env/dist/chunk-23XYWYLU.mjs:24:11)
+    at ColorModeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/color-mode/dist/chunk-4DEUOPYU.mjs:22:5)
+    at ThemeProvider (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:123:32)
+    at ThemeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/system/dist/chunk-3ZTTLJBV.mjs:13:11)
+    at ChakraProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/provider/dist/chunk-TSJH2PS2.mjs:15:5)
+    at ChakraProvider2 (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react/dist/chunk-DGNA6VRZ.mjs:13:5)
+    at QueryClientProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@tanstack/react-query/build/lib/QueryClientProvider.mjs:41:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > onClose is forwarded verbatim to ZimmCartDrawer, not wrapped or replaced
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+    at useCommerceApi (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11)
+    at useCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46)
+    at useCurrentCustomer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30)
+    at useWishList (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48)
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:333:30)
+    at renderWithHooks (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+The above error occurred in the <CartDrawerContainer> component:
+
+    at CartDrawerContainer (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/cart/cartDrawerContainer.tsx:133:32)
+    at EnvironmentProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react-env/dist/chunk-23XYWYLU.mjs:24:11)
+    at ColorModeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/color-mode/dist/chunk-4DEUOPYU.mjs:22:5)
+    at ThemeProvider (/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@emotion/react/dist/emotion-element-e8f4cc37.development.cjs.js:123:32)
+    at ThemeProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/system/dist/chunk-3ZTTLJBV.mjs:13:11)
+    at ChakraProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/provider/dist/chunk-TSJH2PS2.mjs:15:5)
+    at ChakraProvider2 (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@chakra-ui/react/dist/chunk-DGNA6VRZ.mjs:13:5)
+    at QueryClientProvider (file:///Users/marcel.a.n.navarro/Dev/zimmermann-pwa/node_modules/@tanstack/react-query/build/lib/QueryClientProvider.mjs:41:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ ❯ overrides/app/pages/cart/cartDrawerContainer.test.tsx (19 tests | 19 failed) 76ms
+   × CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > renders exactly one mocked ProductItem per basket line 19ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > ZimmCartItemActions' productId/productName come from cartItemMapper.selectCartItemProps' own output, not a second mapping 4ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > the fetched full Product record is merged into the product prop ProductItem receives, keyed by productId (not itemId) 10ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > capBasketQuantities is called once with the current basket after mount (from an effect, not the render body) 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > does not call notifyMaxQuantityReached when no correction was needed 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > calls notifyMaxQuantityReached once the render guard reports a real correction 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > does not call notifyMaxQuantityReached when the guard reports itself skipped (mutation-in-flight) 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > clicking Remove calls the real removeItemFromBasket mutation with this basket/item 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > clicking Move to Wishlist (registered shopper) calls the real createCustomerProductListItem mutation 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > already-in-wishlist short-circuits to that status without calling the create mutation 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > every rendered line gets isGuest and a real onGuestWishlistClick that opens the shared auth drawer 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > a resumed wishlist-move waits for merge-then-cap to settle (pass criterion 4) > isGuest stays true after auth-success while mutations are in flight, and flips to false only once they drain 5ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > a resumed wishlist-move waits for merge-then-cap to settle (pass criterion 4) > steady state — a shopper already registered when this container mounts is never treated as a waiting guest 3ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > empty basket renders ZimmCartEmptyState, not an empty children array (pass criterion 5) > zero items: renders ZimmCartEmptyState, no ProductItem, inside the real ZimmCartDrawer 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > empty basket renders ZimmCartEmptyState, not an empty children array (pass criterion 5) > non-zero items: renders the real mapped item list, not ZimmCartEmptyState 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > footer slot renders ZimmCartButtonGroup 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > the messages slot receives no node at all — no empty wrapper attempted 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > isOpen is read straight from props — passing false renders the drawer closed 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+   × CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > onClose is forwarded verbatim to ZimmCartDrawer, not wrapped or replaced 2ms
+     → Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > renders exactly one mocked ProductItem per basket line
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > ZimmCartItemActions' productId/productName come from cartItemMapper.selectCartItemProps' own output, not a second mapping
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > one ProductItem per real basket line, mapped via cartItemMapper (pass criterion 1) > the fetched full Product record is merged into the product prop ProductItem receives, keyed by productId (not itemId)
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > capBasketQuantities is called once with the current basket after mount (from an effect, not the render body)
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > does not call notifyMaxQuantityReached when no correction was needed
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > calls notifyMaxQuantityReached once the render guard reports a real correction
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > render guard — useCartMergeAndCap's second call site (pass criterion 2) > does not call notifyMaxQuantityReached when the guard reports itself skipped (mutation-in-flight)
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > clicking Remove calls the real removeItemFromBasket mutation with this basket/item
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > clicking Move to Wishlist (registered shopper) calls the real createCustomerProductListItem mutation
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > already-in-wishlist short-circuits to that status without calling the create mutation
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > secondaryActions is a real, wired ZimmCartItemActions (pass criterion 3) > every rendered line gets isGuest and a real onGuestWishlistClick that opens the shared auth drawer
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > a resumed wishlist-move waits for merge-then-cap to settle (pass criterion 4) > isGuest stays true after auth-success while mutations are in flight, and flips to false only once they drain
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > a resumed wishlist-move waits for merge-then-cap to settle (pass criterion 4) > steady state — a shopper already registered when this container mounts is never treated as a waiting guest
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > empty basket renders ZimmCartEmptyState, not an empty children array (pass criterion 5) > zero items: renders ZimmCartEmptyState, no ProductItem, inside the real ZimmCartDrawer
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > empty basket renders ZimmCartEmptyState, not an empty children array (pass criterion 5) > non-zero items: renders the real mapped item list, not ZimmCartEmptyState
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > footer slot renders ZimmCartButtonGroup
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > footer renders ZimmCartButtonGroup; messages slot is genuinely omitted (pass criterion 6) > the messages slot receives no node at all — no empty wrapper attempted
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > isOpen is read straight from props — passing false renders the drawer closed
+ FAIL  overrides/app/pages/cart/cartDrawerContainer.test.tsx > CartDrawerContainer > this container owns no isOpen/onClose state itself (pass criterion 7) > onClose is forwarded verbatim to ZimmCartDrawer, not wrapped or replaced
+Error: Missing required client: shopperCustomers. Please initialize shopperCustomers class and provide it in CommerceApiProvider's apiClients prop.
+ ❯ useCommerceApi node_modules/@salesforce/commerce-sdk-react/hooks/useCommerceApi.js:46:11
+ ❯ useCustomer node_modules/@salesforce/commerce-sdk-react/hooks/ShopperCustomers/query.js:77:46
+ ❯ useCurrentCustomer node_modules/@salesforce/retail-react-app/app/hooks/use-current-customer.js:22:30
+     20|         ...(expand && {expand})
+     21|     }
+     22|     const query = useCustomer(
+       |                              ^
+     23|         {parameters},
+     24|         {enabled: !!customerId && isRegistered, ...queryOptions}
+ ❯ useWishList node_modules/@salesforce/retail-react-app/app/hooks/use-wish-list.js:14:48
+ ❯ CartDrawerContainer overrides/app/pages/cart/cartDrawerContainer.tsx:333:30
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  19 failed (19)
+   Start at  10:21:28
+   Duration  2.59s (transform 300ms, setup 207ms, collect 1.47s, tests 76ms, environment 614ms, prepare 53ms)
+

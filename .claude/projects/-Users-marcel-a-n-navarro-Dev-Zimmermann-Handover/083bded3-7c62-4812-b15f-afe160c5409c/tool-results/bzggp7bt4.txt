@@ -1,0 +1,3641 @@
+################################ PR #42 ################################
+#42 — feat(ci): sync GitHub Environment vars to MRT on demand  [MERGED]
+by mani060689  created:2026-07-24T02:17:36Z  merged:2026-07-28T06:16:48Z
+https://github.com/ZimmermannAU/zimmermann-pwa/pull/42
+
+----- BODY -----
+## Summary
+
+- New workflow `sync-env-vars-to-mrt.yml` — triggered manually from GitHub Actions → Run workflow
+- No hardcoded variable names: reads `.env.sample` for the key list, fetches actual values from the selected GitHub Environment via the GitHub API, then intersects the two
+- Only keys that are **set and non-empty** in the GitHub Environment are PATCHed to MRT — missing keys are silently skipped so MRT retains existing values
+- `scope:personal` and `scope:auto` keys (including `ENVIRONMENT_NAME`) are never synced
+- Supports **dry run** mode — shows exactly what would be synced without touching MRT
+
+## How it works
+
+```
+.env.sample  →  parse scope:shared + scope:tier keys
+                        ↓
+GitHub API   →  GET /environments/{target}/variables  (all set vars)
+                        ↓
+intersection →  keys in both + non-empty value
+                        ↓
+MRT API      →  PATCH /projects/zimmermann/target/{target}/env-var/
+```
+
+## Usage
+
+**GitHub Actions → Workflows → "Sync Env Vars to MRT" → Run workflow**
+
+Select target (`dev` / `test` / `sit` / `uat` / `staging` / `prod`) and optionally enable dry run.
+
+## Test plan
+
+- [ ] Run with `dry_run: true` for `dev` — verify output lists the expected keys without calling MRT
+- [ ] Run with `dry_run: false` for `dev` — verify MRT target shows updated values in Runtime Admin
+- [ ] Add a new key to `.env.sample` — verify it appears in the next sync without any workflow change
+- [ ] Leave a key unset in the GitHub Environment — verify it is skipped in the sync log
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+## Summary by CodeRabbit
+
+- **Chores**
+  - Added a manually triggered **“Sync Env Vars to MRT”** GitHub Actions workflow to sync selected configuration keys from the repository’s environment sample to the chosen deployment target.
+  - Supports `target` (dev/test/sit/uat/staging/prod) and `dry_run` to preview changes; skips personal/auto settings, keys missing from the selected environment, and any empty values, and reports synced vs skipped outcomes.
+- **Documentation**
+  - Updated the README with workflow usage, required secrets, and guidance on when to run it after updating a GitHub Environment.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+
+===================== CONVERSATION (issue) COMMENTS =====================
+
+### coderabbitai[bot]  (2026-07-24T02:18:24Z):
+<!-- This is an auto-generated comment: summarize by coderabbit.ai -->
+<!-- review_stack_entry_start -->
+
+[![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/ZimmermannAU/zimmermann-pwa/pull/42?utm_source=github_walkthrough&utm_medium=github&utm_campaign=change_stack)
+
+<!-- review_stack_entry_end -->
+<!-- This is an auto-generated comment: review paused by coderabbit.ai -->
+
+> [!NOTE]
+> ## Reviews paused
+> 
+> It looks like this branch is under active development. To avoid overwhelming you with review comments due to an influx of new commits, CodeRabbit has automatically paused this review. You can configure this behavior by changing the `reviews.auto_review.auto_pause_after_reviewed_commits` setting.
+> 
+> Use the following commands to manage reviews:
+> - `@coderabbitai resume` to resume automatic reviews.
+> - `@coderabbitai review` to trigger a single review.
+> 
+> Use the checkboxes below for quick actions:
+> - [ ] <!-- {"checkboxId": "7f6cc2e2-2e4e-497a-8c31-c9e4573e93d1"} --> ▶️ Resume reviews
+> - [ ] <!-- {"checkboxId": "e9bb8d72-00e8-4f67-9cb2-caf3b22574fe"} --> 🔍 Trigger review
+
+<!-- end of auto-generated comment: review paused by coderabbit.ai -->
+<!-- walkthrough_start -->
+
+<details>
+<summary>📝 Walkthrough</summary>
+
+## Walkthrough
+
+Adds a manually triggered GitHub Actions workflow that parses eligible variables, retrieves values from a selected GitHub Environment, supports dry runs, and synchronises non-empty values to MRT.
+
+### Changes
+
+**Environment variable synchronisation**
+
+|Layer / File(s)|Summary|
+|---|---|
+|**Workflow configuration** <br> `.github/workflows/sync-env-vars-to-mrt.yml`, `README.md`|Defines target and dry-run inputs, permissions, environment and credential wiring, runtime setup, and usage documentation.|
+|**Variable discovery** <br> `.github/workflows/sync-env-vars-to-mrt.yml`|Parses scoped `.env.sample` keys and retrieves paginated variables from the selected GitHub Environment.|
+|**Workflow synchronisation** <br> `.github/workflows/sync-env-vars-to-mrt.yml`|Filters missing or empty values, supports dry runs and empty payloads, and PATCHes the MRT endpoint with Basic authentication while handling errors and timeouts.|
+
+**Estimated code review effort:** 4 (Complex) | ~45 minutes
+
+### Sequence Diagram(s)
+
+```mermaid
+sequenceDiagram
+  participant GitHubActions
+  participant EnvSample
+  participant GitHubAPI
+  participant MRTAPI
+  GitHubActions->>EnvSample: Parse eligible variable keys
+  GitHubActions->>GitHubAPI: Fetch selected Environment variables
+  GitHubAPI-->>GitHubActions: Return paginated variable values
+  GitHubActions->>GitHubActions: Build filtered MRT payload
+  GitHubActions->>MRTAPI: PATCH synchronised variables
+  MRTAPI-->>GitHubActions: Return HTTP result
+```
+
+**Suggested reviewers:** `marcelannavarro`, `timlavelle`
+
+</details>
+
+<!-- walkthrough_end -->
+<!-- pre_merge_checks_walkthrough_start -->
+
+<details>
+<summary>🚥 Pre-merge checks | ✅ 5</summary>
+
+<details>
+<summary>✅ Passed checks (5 passed)</summary>
+
+|         Check name         | Status   | Explanation                                                                                                           |
+| :------------------------: | :------- | :-------------------------------------------------------------------------------------------------------------------- |
+|      Description Check     | ✅ Passed | Check skipped - CodeRabbit’s high-level summary is enabled.                                                           |
+|         Title check        | ✅ Passed | The title clearly describes the main change: an on-demand CI workflow that syncs GitHub Environment variables to MRT. |
+|     Docstring Coverage     | ✅ Passed | No functions found in the changed files to evaluate docstring coverage. Skipping docstring coverage check.            |
+|     Linked Issues check    | ✅ Passed | Check skipped because no linked issues were found for this pull request.                                              |
+| Out of Scope Changes check | ✅ Passed | Check skipped because no linked issues were found for this pull request.                                              |
+
+</details>
+
+</details>
+
+<!-- pre_merge_checks_walkthrough_end -->
+<!-- tips_start -->
+
+---
+
+
+
+
+<sub>Comment `@coderabbitai help` to get the list of available commands.</sub>
+
+<!-- tips_end -->
+
+### mani060689  (2026-07-24T02:29:32Z):
+Addressed all three CodeRabbit findings in c5ca8a1:
+
+- **`variables: read` permission** — added to the workflow-level `permissions` block so `GH_TOKEN` can read GitHub Environment variables via the REST API.
+- **Dead `while True` / `page` scaffolding** — removed. The `--paginate` flag already returns all pages in one `subprocess.run` call; the loop wrapper was misleading and served no purpose.
+- **MRT request timeout** — added `timeout=30` to `urlopen` and an explicit `except TimeoutError` handler that exits 1, so a stalled endpoint fails the job promptly instead of hanging the runner indefinitely.
+
+### mani060689  (2026-07-24T02:31:19Z):
+Follow-up on the `variables: read` fix — that permission scope doesn't exist in GitHub Actions (`actions`, `checks`, `contents`, `deployments`, `id-token`, `issues`, `packages`, `pages`, `pull-requests`, `security-events`, `statuses` are the valid scopes). Replaced with `actions: read` in cbbfb67, which is the correct scope for reading Actions environment variables via the REST API.
+
+### mani060689  (2026-07-24T02:39:47Z):
+@coderabbitai please re review
+
+### coderabbitai[bot]  (2026-07-24T02:39:59Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: be8d328d-0db7-46db-a446-4eb3d680a9e3 -->
+`@mani060689`: Re-reviewing the latest changes, including the updated `actions: read` permission and timeout handling.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Review finished.
+
+> Note: CodeRabbit is an incremental review system and does not re-review already reviewed commits. This command is applicable only when automatic reviews are paused.
+
+</details>
+
+### mani060689  (2026-07-24T02:49:22Z):
+@coderabbitai review new changes
+
+
+### coderabbitai[bot]  (2026-07-24T02:49:31Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: 8f21ad32-3f19-4d3d-b0f1-f4a9ec354d8c -->
+`@mani060689`: Reviewing the new changes in `#42`.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Review finished.
+
+> Note: CodeRabbit is an incremental review system and does not re-review already reviewed commits. This command is applicable only when automatic reviews are paused.
+
+</details>
+
+### marcelannavarro  (2026-07-27T07:29:51Z):
+@coderabbitai full-reivew
+
+### coderabbitai[bot]  (2026-07-27T07:30:02Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: b9e60771-e691-417a-a426-ded59f0fbab3 -->
+`@marcelannavarro`: Starting a full review of the changes in `#42`.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Full review finished.
+
+</details>
+
+===================== REVIEW SUMMARIES =====================
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-24T02:21:00Z):
+**Actionable comments posted: 2**
+
+<details>
+<summary>🧹 Nitpick comments (1)</summary><blockquote>
+
+<details>
+<summary>.github/workflows/sync-env-vars-to-mrt.yml (1)</summary><blockquote>
+
+`109-123`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _💤 Low value_
+
+**Dead loop scaffolding around the paginated fetch.**
+
+`--paginate` already returns all pages in one call and the loop always `break`s on the first iteration, so the `while True` wrapper and the unused `page` variable are misleading. Consider flattening this to a single call for clarity.
+
+
+
+<details>
+<summary>♻️ Suggested simplification</summary>
+
+```diff
+-          all_vars = {}
+-          page = 1
+-          while True:
+-              result = subprocess.run(
+-                  ['gh', 'api', f'/repos/{REPO}/environments/{TARGET}/variables',
+-                   '--paginate', f'--jq', '.variables[] | {(.name): .value}'],
+-                  capture_output=True, text=True
+-              )
+-              if result.returncode != 0:
+-                  print(f'GitHub API error: {result.stderr}', file=sys.stderr)
+-                  sys.exit(1)
+-              # gh --jq outputs one JSON object per line when iterating
+-              for line in result.stdout.strip().splitlines():
+-                  if line:
+-                      all_vars.update(json.loads(line))
+-              break  # --paginate handles all pages in one call
++          all_vars = {}
++          result = subprocess.run(
++              ['gh', 'api', f'/repos/{REPO}/environments/{TARGET}/variables',
++               '--paginate', '--jq', '.variables[] | {(.name): .value}'],
++              capture_output=True, text=True
++          )
++          if result.returncode != 0:
++              print(f'GitHub API error: {result.stderr}', file=sys.stderr)
++              sys.exit(1)
++          # gh --jq outputs one JSON object per line when iterating
++          for line in result.stdout.strip().splitlines():
++              if line:
++                  all_vars.update(json.loads(line))
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/sync-env-vars-to-mrt.yml around lines 109 - 123, Remove
+the unnecessary while True wrapper and unused page variable around the paginated
+gh API call. Keep the existing subprocess error handling and JSON-line
+aggregation in the single fetch path, preserving --paginate to retrieve all
+pages.
+```
+
+</details>
+
+<!-- cr-comment:v1:fadad76b2aac1f284cc461cd -->
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.github/workflows/sync-env-vars-to-mrt.yml:
+- Around line 188-194: Update the MRT PATCH request in the
+urllib.request.urlopen call to pass an explicit finite timeout, ensuring stalled
+endpoints fail promptly while preserving the existing HTTPError handling and
+success output.
+- Around line 36-48: Update the workflow permissions for the sync job to include
+variables: read alongside contents: read, so the GH_TOKEN used by the sync flow
+can read repository environment variables through the GitHub API. Keep the
+existing job configuration and secret mappings unchanged.
+
+---
+
+Nitpick comments:
+In @.github/workflows/sync-env-vars-to-mrt.yml:
+- Around line 109-123: Remove the unnecessary while True wrapper and unused page
+variable around the paginated gh API call. Keep the existing subprocess error
+handling and JSON-line aggregation in the single fetch path, preserving
+--paginate to retrieve all pages.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `c5133793-9be2-4f1b-aeaf-ef8c843af177`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 0c86fd005e819cb5db25a704743641dd27396d70 and c0b82ab4bcaec05f34c915c708e6772f25762ca6.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (1)</summary>
+
+* `.github/workflows/sync-env-vars-to-mrt.yml`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### mani060689  [COMMENTED]  (2026-07-24T02:28:55Z):
+
+
+### mani060689  [COMMENTED]  (2026-07-24T02:28:56Z):
+
+
+### coderabbitai[bot]  [COMMENTED]  (2026-07-24T02:29:09Z):
+
+
+### coderabbitai[bot]  [COMMENTED]  (2026-07-24T02:29:10Z):
+
+
+### coderabbitai[bot]  [DISMISSED]  (2026-07-24T02:29:39Z):
+
+
+### coderabbitai[bot]  [DISMISSED]  (2026-07-24T02:34:18Z):
+**Actionable comments posted: 1**
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.github/workflows/sync-env-vars-to-mrt.yml:
+- Line 38: Remove the unsupported variables permission from the workflow
+permissions block. Update the workflow’s authentication to use the separately
+stored GH_ENV_READ_TOKEN, configured with Environments: read access, instead of
+relying on secrets.GITHUB_TOKEN for the environment-variable REST request.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `c0f09c09-c847-4920-94b6-af077c1ca9f1`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between c0b82ab4bcaec05f34c915c708e6772f25762ca6 and 070de3339e77776c6996761f99ad30c7c88becd4.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (1)</summary>
+
+* `.github/workflows/sync-env-vars-to-mrt.yml`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### coderabbitai[bot]  [DISMISSED]  (2026-07-24T02:51:50Z):
+
+
+### coderabbitai[bot]  [DISMISSED]  (2026-07-24T03:39:58Z):
+
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-27T07:33:07Z):
+**Actionable comments posted: 1**
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In `@README.md`:
+- Around line 78-84: Update the GH_ENV_READ_TOKEN entry in the required
+repository secrets table to direct maintainers to create a fine-grained personal
+access token scoped only to this repository, with read access to GitHub
+Environments; remove the classic PAT and repo-scope instructions while retaining
+the service-account guidance where applicable.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `949f030e-fbbe-4eb7-9d47-2db405eb4654`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 0c86fd005e819cb5db25a704743641dd27396d70 and d6f08c0c00d3c5027b7aaa51587038ee55966221.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (2)</summary>
+
+* `.github/workflows/sync-env-vars-to-mrt.yml`
+* `README.md`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### marcelannavarro  [CHANGES_REQUESTED]  (2026-07-27T12:28:43Z):
+## Review: Requesting Changes
+
+I'm requesting changes on a few items before merge. Two are verified against the live repo and are really yours to call, since you own the CI/CD and env-governance model this touches. (As a Tier 1 workflow it'll also need a second tier-1-approver — GitHub won't let you self-approve.)
+
+### Must Resolve Before Merge
+
+**1. Any write-access contributor can push to `prod` MRT, ungated.**
+The job uses `environment: ${{ inputs.target }}`, which *can* enforce approval — but I checked, and `prod`'s `protection_rules` are empty, so a run targeting `prod` won't pause for review. Anyone who can trigger a workflow can PATCH values into the production MRT runtime with no gate. That's a privilege gap versus your own model: `npm run env -- push` is restricted to tier-1-approvers, but this gives write-access devs an ungated path to the same targets. Add required-reviewer protection to the `prod` (and `staging`) environments — the `environment:` wiring already supports it — and document it as a prerequisite. Oversight or intentional? Either way it needs to be in place before this is a prod path.
+
+**2. It syncs CI/tooling secrets into the MRT storefront runtime.**
+The workflow selects all `scope:shared` + `scope:tier` keys, but `scope` encodes *sharing* (team-wide vs per-tier), not "belongs on MRT." I pulled the live environments to confirm the consequence: the `shared`/`dev` environments contain `CODERABBIT_API_KEY` (a secret, for the CodeRabbit CLI), `JIRA_URL`, and `CONFLUENCE_URL` — all `scope:shared`, so they're in the syncable set and would be PATCHed into the MRT runtime, which never uses them. Any set `E2E_*` / `PWA_E2E_USER_PASSWORD` / `RETAIL_APP_HOME` (all `scope:tier`) would go too. Fix: sync from an explicit allowlist of real runtime vars, or add an `mrt:` axis to `.env.sample` so tooling/test creds are excluded. It correctly skips `scope:personal`/`auto` already — the gap is that shared/tier still includes non-runtime tooling.
+
+### Should-Fix
+- `GH_ENV_READ_TOKEN` is a classic `repo`-scope PAT — full read/write to all repo content, when it only needs to read Environments. Regenerate it as a fine-grained token scoped to *Environments: read* (or a GitHub App), and set `GH_TOKEN` on the fetch step only rather than the whole job. (CodeRabbit flagged this one too.)
+- The timeout fix catches `TimeoutError` (the hang — good, and valid on Py 3.12) but not `urllib.error.URLError` (DNS/connection-refused), which would surface as an uncaught traceback. Add a `URLError` handler after the existing `HTTPError` one for a clean failure.
+- *(Optional)* The fetched values transit `GITHUB_OUTPUT` (`vars={json…}`) unmasked; with `ACTIONS_STEP_DEBUG` on they'd print to logs. Given GitHub Environment Variables are plaintext-by-design here it's low, but for prod secrets consider handing off via a temp file instead of a step output.
+
+### CodeRabbit Cross-Check
+I re-ran a full CodeRabbit review to verify. It's a different picture from #41: its only open finding is the fine-grained-PAT note above (Minor), and its earlier findings — the MRT timeout and the invalid `variables:` permission (which was CodeRabbit correcting its own earlier advice) — are already fixed. So CodeRabbit reads this PR as ≈ready.
+
+It did not surface either must-fix, which is expected: it doesn't inspect Environment protection rules (so it can't see the ungated `prod` path, #1), and it can't query the live environment contents or reason about the `scope`-vs-MRT distinction (so it doesn't see `CODERABBIT_API_KEY` landing in MRT, #2). One adjustment on what it did flag: it marked the timeout resolved, but the fix left the `URLError` case uncovered — hence the should-fix above.
+
+### mani060689  [COMMENTED]  (2026-07-28T04:41:06Z):
+**Addressing marcelannavarro review — commit d501409:**
+
+**Must Fix #1 — Ungated prod path:** Resolved by removing `prod` from the workflow's target choices entirely. Production MRT env vars must now be updated manually in the MRT console by a tier-1-approver. Documented in the README and in a workflow comment. This is simpler and safer than environment protection rules — no automated path to prod at all.
+
+**Must Fix #2 — CI/tooling vars synced to MRT:** Resolved by introducing a `# mrt:true` tag in `.env.sample`. The workflow now filters on this tag instead of `scope:shared|tier`, so only genuine runtime vars (Commerce, Contentful, integrations, analytics/observability) are included. `CODERABBIT_API_KEY`, `JIRA_URL`, `CONFLUENCE_URL`, `BROWSERSTACK_*`, `E2E_*`, and `RETAIL_APP_HOME` are not tagged and are never synced.
+
+**Should Fix — Fine-grained PAT:** README updated to direct maintainers to create a fine-grained token with **Environments: read** on this repo only, instead of a classic `repo`-scope PAT. `GH_TOKEN` is also now scoped to the fetch step only rather than the whole job env.
+
+**Should Fix — URLError handler:** Added `urllib.error.URLError` handler after `HTTPError` for clean DNS/connection-refused failures.
+
+**Optional (values in GITHUB_OUTPUT):** Left as-is — GitHub Environment Variables are plaintext-by-design (noted in `.env.sample` header), so masking adds ceremony without a meaningful security improvement here.
+
+### coderabbitai[bot]  [APPROVED]  (2026-07-28T04:41:32Z):
+
+
+### marcelannavarro  [APPROVED]  (2026-07-28T05:35:18Z):
+LGTM!
+
+===================== INLINE REVIEW COMMENTS =====================
+
+--- coderabbitai[bot] on .github/workflows/sync-env-vars-to-mrt.yml:48  (2026-07-24T02:20:59Z):
+_🔒 Security & Privacy_ | _🟡 Minor_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🌐 Web query:
+
+`Can the default GITHUB_TOKEN read repository environment variables via the GitHub REST API, and what permission scope is required?`
+
+💡 Result:
+
+Yes, the default GITHUB_TOKEN can be used to read repository variables via the GitHub REST API, provided it has been granted the necessary permissions [1]. To read these variables, you must explicitly configure the permissions scope in your GitHub Actions workflow file using the permissions key [2][3]. Specifically, you need to grant the variables permission [1]. To do this, add the following configuration to your workflow or job: permissions: variables: read If you also need to modify (create or update) these variables, you would set the permission to write: permissions: variables: write Without explicitly granting these permissions, the GITHUB_TOKEN will typically return a 404 Not Found or a Resource not accessible by integration error when attempting to interact with repository variables, as the default permissions for the GITHUB_TOKEN are often restricted [1]. Note that these permissions apply to the variables defined in your repository or environment settings, which are distinct from the environment variables managed via the env key in your workflow YAML file [1][4].
+
+Citations:
+
+- 1: https://stackoverflow.com/questions/77273776/in-github-actions-how-do-i-modify-an-env-variable-in-the-repository-settings-f
+- 2: https://docs.github.com/en/actions/tutorials/authenticate-with-github_token
+- 3: https://docs.github.com/actions/reference/authentication-in-a-workflow
+- 4: https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-variables
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+# Inspect the workflow around the cited lines
+file=".github/workflows/sync-env-vars-to-mrt.yml"
+nl -ba "$file" | sed -n '1,120p'
+
+# Search for the exact API call and token usage
+rg -n "environments/.*/variables|GH_TOKEN|GITHUB_TOKEN|permissions:" .github/workflows/sync-env-vars-to-mrt.yml
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 205
+
+---
+
+🌐 Web query:
+
+`GitHub Actions environment variables REST API GITHUB_TOKEN permission scope read repository environment variables`
+
+💡 Result:
+
+The default GITHUB_TOKEN provided in GitHub Actions workflows cannot be used to read or modify repository environment variables via the GitHub REST API [1][2][3]. Attempts to use the GITHUB_TOKEN for these endpoints typically result in a "403 Resource not accessible by integration" error or similar authorization failures, as these operations require higher administrative privileges than the GITHUB_TOKEN possesses [3]. To interact with repository environment variables via the REST API, you must use an alternative authentication method with appropriate permissions [1][3]: 1. Fine-Grained Personal Access Token (PAT): You can create a PAT with the necessary "Variables" permission (set to read and write) and "Metadata" permission (set to read-only) [2]. If the repository is private, ensure the token also has the required repository access [1][2]. If you are part of an organization, the PAT may require approval by an organization owner [2]. 2. GitHub App: Alternatively, you can use a GitHub App to generate an installation access token within your workflow [4][5][3]. This is often the recommended approach for secure automation, as it allows you to grant the specific permissions required without relying on user-bound credentials [4][5]. In summary, the GITHUB_TOKEN is limited in scope and intentionally restricted from modifying environment-level or repository-level variables, necessitating the use of a PAT or GitHub App for these specific API operations [1][3].
+
+Citations:
+
+- 1: http://chamindac.blogspot.com/2026/06/enable-updating-github-environment.html
+- 2: https://stackoverflow.com/questions/77273776/in-github-actions-how-do-i-modify-an-env-variable-in-the-repository-settings-f
+- 3: https://stackoverflow.com/questions/77882485/github-actions-resource-not-accessible-by-integration
+- 4: https://docs.github.com/en/actions/tutorials/authenticate-with-github_token
+- 5: https://github.com/github/docs/blob/main/content/apps/creating-github-apps/authenticating-with-a-github-app/making-authenticated-api-requests-with-a-github-app-in-a-github-actions-workflow.md
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+file=".github/workflows/sync-env-vars-to-mrt.yml"
+
+# Read the relevant section without relying on unavailable tools like nl
+sed -n '1,120p' "$file" | cat -n
+
+# Pull just the lines mentioning the token / API call if present
+grep -nE 'environments/.*/variables|GH_TOKEN|GITHUB_TOKEN|permissions:' "$file" || true
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 5209
+
+---
+
+🌐 Web query:
+
+`site:docs.github.com GitHub REST API environment variables GITHUB_TOKEN permissions environments variables`
+
+💡 Result:
+
+In GitHub Actions, the GITHUB_TOKEN is a built-in, short-lived authentication token automatically generated for each workflow job [1]. It is specifically designed for secure authentication with the GitHub REST API and other GitHub services within the scope of your repository [2][1]. Permissions and Usage The GITHUB_TOKEN is essentially a GitHub App installation access token [1]. It is limited to the repository where the workflow is running [3][1]. To use it for REST API requests, you must set it as an environment variable (often named GH_TOKEN for GitHub CLI or passed in an Authorization header for curl) [4][5][6]. You can explicitly control the permissions granted to this token using the permissions key in your workflow YAML file [2][6]. This adheres to the principle of least privilege, ensuring that the token only has the access necessary for the specific job [2][7]. Configuration Examples To use the token with curl: jobs: use_api: runs-on: ubuntu-latest permissions: issues: write # Grant specific permissions steps: - env: GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} run: | curl -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/${{ github.repository }}/issues To use with GitHub CLI (gh): jobs: use_api: runs-on: ubuntu-latest permissions: contents: read steps: - env: GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} run: | gh api /repos/${{ github.repository }} Security Best Practices - Always grant the minimum required permissions using the permissions key [2][7]. - The token is available in the github.token context, but it is best practice to pass it explicitly via secrets.GITHUB_TOKEN [2][6][1]. - If your workflow requires access to resources outside the current repository or requires permissions beyond what GITHUB_TOKEN provides, use a personal access token (PAT) or a GitHub App installation token instead [2][3]. - The GITHUB_TOKEN expires at the end of the job or after its maximum lifetime (6 hours for GitHub-hosted runners) [1].
+
+Citations:
+
+- 1: https://docs.github.com/en/actions/concepts/security/github_token
+- 2: https://docs.github.com/actions/reference/authentication-in-a-workflow
+- 3: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github
+- 4: https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api?apiVersion=2026-03-10
+- 5: https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api?apiVersion=2022-11-28
+- 6: https://docs.github.com/en/actions/tutorials/authenticate-with-github_token
+- 7: https://docs.github.com/en/actions/reference/security/secure-use
+
+---
+
+🌐 Web query:
+
+`site:docs.github.com "/repos/{owner}/{repo}/environments/{environment_name}/variables" permissions GitHub token`
+
+💡 Result:
+
+To access and manage environment variables via the GitHub REST API at /repos/{owner}/{repo}/environments/{environment_name}/variables, the following permissions and access requirements apply: General Access Requirements Authenticated users must have collaborator access to the repository to create, update, or read environment variables [1]. Personal Access Tokens (Classic) For personal access tokens (classic), you need the 'repo' scope to perform operations against these endpoints [1]. Fine-grained Personal Access Tokens For fine-grained personal access tokens, specific repository permissions are required. While the GitHub REST API documentation provides access to these endpoints, you should check the X-Accepted-GitHub-Permissions header in the REST API response for the precise permission set required for your specific request [2]. Generally, repository-level "variables" permissions (typically read or write, depending on the action) are required [2]. GitHub Apps For GitHub Apps, the app must be granted appropriate repository permissions via its installation to access environment variables, consistent with the requirements for classic tokens [3]. You can verify the exact permissions required for any specific call by inspecting the X-Accepted-GitHub-Permissions header returned by GitHub when you attempt a request [2].
+
+Citations:
+
+- 1: https://docs.github.com/en/rest/actions/variables
+- 2: https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens
+- 3: https://docs.github.com/en/rest/authentication/endpoints-available-for-github-app-installation-access-tokens?apiVersion=2026-03-10
+
+---
+
+
+
+</details>
+
+**Grant `variables: read` for this job.** `contents: read` doesn’t cover `gh api /repos/{REPO}/environments/{TARGET}/variables`, so `gh_vars` will be blocked unless this token gets variable read access or you switch to a PAT/GitHub App token with that permission.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/sync-env-vars-to-mrt.yml around lines 36 - 48, Update the
+workflow permissions for the sync job to include variables: read alongside
+contents: read, so the GH_TOKEN used by the sync flow can read repository
+environment variables through the GitHub API. Keep the existing job
+configuration and secret mappings unchanged.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:capybara -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:d39b0d8c0bce06b4a3d89d35 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commit c5ca8a1
+
+--- coderabbitai[bot] on .github/workflows/sync-env-vars-to-mrt.yml:197  (2026-07-24T02:20:59Z):
+_🩺 Stability & Availability_ | _🟠 Major_ | _⚡ Quick win_
+
+**Add a timeout to the MRT PATCH call.**
+
+`urllib.request.urlopen(req)` has no timeout, so a stalled MRT endpoint will hang the runner indefinitely (until the job's overall timeout, if any). Pass an explicit `timeout` so the step fails fast on network issues.
+
+
+
+<details>
+<summary>🛡️ Proposed fix</summary>
+
+```diff
+           try:
+-              resp = urllib.request.urlopen(req)
++              resp = urllib.request.urlopen(req, timeout=30)
+               print(f'\nMRT response: {resp.status} {resp.reason}')
+               print(f'Synced {len(payload)} env vars to MRT target: {TARGET}')
+           except urllib.error.HTTPError as e:
+               print(f'MRT API error {e.code}: {e.read().decode()}', file=sys.stderr)
+               sys.exit(1)
++          except urllib.error.URLError as e:
++              print(f'MRT connection error: {e.reason}', file=sys.stderr)
++              sys.exit(1)
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+          try:
+              resp = urllib.request.urlopen(req, timeout=30)
+              print(f'\nMRT response: {resp.status} {resp.reason}')
+              print(f'Synced {len(payload)} env vars to MRT target: {TARGET}')
+          except urllib.error.HTTPError as e:
+              print(f'MRT API error {e.code}: {e.read().decode()}', file=sys.stderr)
+              sys.exit(1)
+          except urllib.error.URLError as e:
+              print(f'MRT connection error: {e.reason}', file=sys.stderr)
+              sys.exit(1)
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/sync-env-vars-to-mrt.yml around lines 188 - 194, Update
+the MRT PATCH request in the urllib.request.urlopen call to pass an explicit
+finite timeout, ensuring stalled endpoints fail promptly while preserving the
+existing HTTPError handling and success output.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:capybara -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:c5b0b0be70e185ee1c68e1a1 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commit c5ca8a1
+
+--- mani060689 on .github/workflows/sync-env-vars-to-mrt.yml:48  (2026-07-24T02:28:54Z):
+Fixed in c5ca8a1 — added `variables: read` to the workflow-level `permissions` block alongside the existing `contents: read`.
+
+--- mani060689 on .github/workflows/sync-env-vars-to-mrt.yml:197  (2026-07-24T02:28:56Z):
+Fixed in c5ca8a1 — added `timeout=30` to `urlopen` and an explicit `except TimeoutError` handler that exits 1 so stalled MRT endpoints fail promptly rather than hanging the runner.
+
+--- coderabbitai[bot] on .github/workflows/sync-env-vars-to-mrt.yml:48  (2026-07-24T02:29:09Z):
+`@mani060689`, thanks for addressing this by adding `variables: read` alongside `contents: read`.
+
+<!-- <review_comment_addressed> -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- coderabbitai[bot] on .github/workflows/sync-env-vars-to-mrt.yml:197  (2026-07-24T02:29:10Z):
+`@mani060689`, thanks for fixing this. The explicit timeout prevents the runner from waiting indefinitely on a stalled MRT endpoint, and the timeout handler correctly fails the step.
+
+<!-- <review_comment_addressed> -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- coderabbitai[bot] on .github/workflows/sync-env-vars-to-mrt.yml:38  (2026-07-24T02:34:18Z):
+_🎯 Functional Correctness_ | _🔴 Critical_ | _⚡ Quick win_
+
+**Remove the unsupported `variables` permission.**
+
+`variables` is not a valid GitHub Actions `GITHUB_TOKEN` permission, and actionlint rejects it. The environment-variable REST endpoint instead documents `Environments: read` for fine-grained tokens, so this workflow needs a separately authorised PAT or GitHub App token rather than `secrets.GITHUB_TOKEN` with this invalid scope. ([docs.github.com](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?ref=cloud-tech-simplified))
+
+<details>
+<summary>Proposed fix</summary>
+
+```diff
+ permissions:
+   contents: read
+-  variables: read
+
+-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++      GH_TOKEN: ${{ secrets.GH_ENV_READ_TOKEN }}
+```
+
+Store `GH_ENV_READ_TOKEN` with `Environments: read` access.
+</details>
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 actionlint (1.7.12)</summary>
+
+[error] 38-38: unknown permission scope "variables". all available permission scopes are "actions", "artifact-metadata", "attestations", "checks", "contents", "deployments", "discussions", "id-token", "issues", "models", "packages", "pages", "pull-requests", "repository-projects", "security-events", "statuses"
+
+(permissions)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/sync-env-vars-to-mrt.yml at line 38, Remove the
+unsupported variables permission from the workflow permissions block. Update the
+workflow’s authentication to use the separately stored GH_ENV_READ_TOKEN,
+configured with Environments: read access, instead of relying on
+secrets.GITHUB_TOKEN for the environment-variable REST request.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:luna -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:fb4d942f4ed5283666940735 -->
+
+_Source: Linters/SAST tools_
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- coderabbitai[bot] on README.md:84  (2026-07-27T07:33:07Z):
+_🔒 Security & Privacy_ | _🟡 Minor_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+git branch --show-current
+printf '\n--- README excerpt ---\n'
+sed -n '70,92p' README.md
+
+printf '\n--- candidate references ---\n'
+rg -n "GH_ENV_READ_TOKEN|Environment variables|Environments: read|fine-grained|classic" -S README.md .github . 2>/dev/null | head -n 200
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 5706
+
+---
+
+🌐 Web query:
+
+`GitHub fine-grained PAT environment variables read repository environments API support classic PAT repo scope docs`
+
+💡 Result:
+
+GitHub fine-grained personal access tokens (PATs) fully support the REST API endpoints related to repository environments, including reading and managing environment variables [1][2]. Unlike classic PATs, which use broad OAuth scopes like repo [3][4], fine-grained PATs utilize a granular permission model based on specific repository access and explicit permissions [5][6][7]. To interact with repository environments and their associated variables using a fine-grained PAT, you must grant the token the appropriate repository permissions in the "Environments" category (typically "Read and write") [8]. Key support details: - Environment Management: Fine-grained PATs support endpoints for listing, creating, and deleting environments [1][2]. - Environment Variables: Fine-grained PATs support endpoints for reading, creating, updating, and deleting environment variables [1][2]. - Compatibility: Official GitHub documentation explicitly includes these endpoints in the list of operations available to fine-grained PATs [9][10][1][2]. - Recommendation: GitHub recommends using fine-grained PATs over classic PATs whenever possible due to their increased security through limited scope and expiration features [5][7]. When migrating from classic PATs, note that fine-grained PATs do not use or return the X-OAuth-Scopes header used by classic tokens for scope detection [6]. Instead, permission enforcement occurs directly at the API level based on the configuration of the fine-grained token [6].
+
+Citations:
+
+- 1: https://docs.github.com/en/rest/authentication/endpoints-available-for-fine-grained-personal-access-tokens?apiVersion=2022-11-28
+- 2: https://docs.github.com/en/enterprise-cloud@latest/rest/authentication/endpoints-available-for-fine-grained-personal-access-tokens
+- 3: https://docs.github.com/en/rest/deployments/environments
+- 4: https://docs.github.com/en/enterprise-server@3.19/rest/deployments/environments
+- 5: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens.md
+- 6: https://github.com/github/github-mcp-server/blob/main/docs/scope-filtering.md
+- 7: https://github.blog/security/application-security/introducing-fine-grained-personal-access-tokens-for-github/
+- 8: http://chamindac.blogspot.com/2026/06/enable-updating-github-environment.html
+- 9: https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens?apiVersion=2026-03-10
+- 10: https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+# Read the GitHub docs page sections if accessible via CLI might not be; use a focused textual probe against local repo references first.
+rg -n "environment variables|environments|fine-grained|classic PAT|repo scope|GH_ENV_READ_TOKEN" README.md .github -S
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 2402
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+git branch --show-current
+printf '\n--- README excerpt ---\n'
+sed -n '78,86p' README.md
+
+printf '\n--- references ---\n'
+rg -n "GH_ENV_READ_TOKEN|Environment variables|environments|fine-grained|classic" -S README.md .github .
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 8595
+
+---
+
+
+
+</details>
+
+**Use a fine-grained PAT scoped to this repository.** The workflow only needs read access to GitHub Environments, so the docs should point maintainers to a fine-grained token with the Environments permission instead of a classic `repo` PAT.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@README.md` around lines 78 - 84, Update the GH_ENV_READ_TOKEN entry in the
+required repository secrets table to direct maintainers to create a fine-grained
+personal access token scoped only to this repository, with read access to GitHub
+Environments; remove the classic PAT and repo-scope instructions while retaining
+the service-account guidance where applicable.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:terra -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:87aa3737a3eb1a210afa0613 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commit d501409
+
+################################ PR #43 ################################
+#43 — feat(contentful): add Contentful Studio live preview and Experience pages  [OPEN]
+by mani060689  created:2026-07-28T05:43:50Z  merged:null
+https://github.com/ZimmermannAU/zimmermann-pwa/pull/43
+
+----- BODY -----
+## Summary
+
+- Adds `/preview` route (`ContentfulPreview`) for Contentful Studio live preview — gated to non-prod environments (returns 404 when `CONTENTFUL_PREVIEW_ACCESS_TOKEN` is absent, so the route is inert on staging/prod)
+- Adds `?preview` query-param support on Experience pages, falling back to delivery mode silently when no CPA token is configured
+- Extracts `ExperienceFetch` child component to fix a React hooks violation (conditional `useFetchBySlug` call)
+- Adds `<Seo noIndex />` on both preview paths so draft content is never indexed
+- Adds shared constants to `overrides/app/config/contentful.ts`
+- Updates `.docs/integration/02-contentful.md` §3/§4/§9 to document the deliberate client-side CPA token tradeoff
+
+## Changed files
+
+| File | Tier | Owner | Reviewer required? |
+|------|------|-------|-------------------|
+| `overrides/app/pages/contentfulPreview/index.tsx` | Tier 4 | Squad B | No |
+| `overrides/app/pages/experience/index.tsx` | Tier 4 | Squad B | No |
+| `overrides/app/config/contentful.ts` | Tier 1 | Integration/SI Partner | Yes — Tier 1 change (read-only config addition) |
+| `.docs/integration/02-contentful.md` | Tier 4 | — | No |
+
+> **Tier 1 note:** `overrides/app/config/contentful.ts` is Tier 1 (runtime/integration config). This PR only adds new exported constants — no existing config logic is modified. CODEOWNERS will auto-request `@ZimmermannAU/tier-1-approvers` review.
+
+## Security note — CPA token tradeoff
+
+The Contentful Preview API token is used client-side by the Live Preview SDK (required for `postMessage`-based real-time updates). The safety mechanism is:
+1. Token only set in MRT on dev/test/sit/uat — never staging or prod
+2. Both preview routes return 404 when token is absent
+3. Both preview routes are `noindex`
+
+This is documented in `.docs/integration/02-contentful.md` §9.
+
+## Test checklist
+
+- [ ] `npx tsc --noEmit` passes ✅
+- [ ] `/preview?entry=<id>` returns 404 on staging/prod (no token), renders on dev
+- [ ] `?preview` on an Experience page falls back to delivery when no token
+- [ ] `<Seo noIndex />` present on preview paths — verify `<meta name="robots" content="noindex">` in page source
+- [ ] No console errors
+- [ ] WCAG 2.2 AA — no new interactive elements introduced
+
+## Jira
+
+https://zimmermannworkboard.atlassian.net/browse/SFCC-49
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+## Summary by CodeRabbit
+
+* **New Features**
+  * Added a Contentful editor preview route at `/preview` with live updates and `noindex`, returning “Not found” when preview access isn’t enabled.
+  * Added `?preview` mode to Experience pages with live updates, improved error states, and locale fallback support.
+  * Added Contentful client handling for Delivery and Preview API access.
+* **Documentation**
+  * Updated Contentful Preview API guidance for client-side preview, access controls, and `noindex` behaviour.
+* **Chores**
+  * Refreshed supporting project metadata.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+
+===================== CONVERSATION (issue) COMMENTS =====================
+
+### github-actions[bot]  (2026-07-28T05:44:00Z):
+## 🟡 Tier 2 Protected Files Detected
+
+This PR modifies shared components or hooks that are used across multiple features or squads.
+This is **not a merge block** — but it requires a second-developer review before merging.
+
+**Files affected:**
+- `overrides/app/routes.tsx`
+
+**Required before merge:**
+- [ ] A developer from the **other squad** (not the PR author's squad) has reviewed and approved
+- [ ] The UI Designer has been notified if `overrides/app/theme/components/` is included
+- [ ] The Integration / SI Partner has been notified if `translations/` is included
+- [ ] No prop signature or export changes have been made without updating all consumers
+
+**Why this matters:** These files are imported by components in both Squad A and Squad B.
+A breaking change here — even a small one — will affect both squads simultaneously.
+
+_This comment is auto-generated by the Protected File Guard workflow._
+
+### coderabbitai[bot]  (2026-07-28T05:44:04Z):
+<!-- This is an auto-generated comment: summarize by coderabbit.ai -->
+<!-- review_stack_entry_start -->
+
+[![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/ZimmermannAU/zimmermann-pwa/pull/43?utm_source=github_walkthrough&utm_medium=github&utm_campaign=change_stack)
+
+<!-- review_stack_entry_end -->
+<!-- This is an auto-generated comment: review paused by coderabbit.ai -->
+
+> [!NOTE]
+> ## Reviews paused
+> 
+> It looks like this branch is under active development. To avoid overwhelming you with review comments due to an influx of new commits, CodeRabbit has automatically paused this review. You can configure this behavior by changing the `reviews.auto_review.auto_pause_after_reviewed_commits` setting.
+> 
+> Use the following commands to manage reviews:
+> - `@coderabbitai resume` to resume automatic reviews.
+> - `@coderabbitai review` to trigger a single review.
+> 
+> Use the checkboxes below for quick actions:
+> - [ ] <!-- {"checkboxId": "7f6cc2e2-2e4e-497a-8c31-c9e4573e93d1"} --> ▶️ Resume reviews
+> - [ ] <!-- {"checkboxId": "e9bb8d72-00e8-4f67-9cb2-caf3b22574fe"} --> 🔍 Trigger review
+
+<!-- end of auto-generated comment: review paused by coderabbit.ai -->
+No actionable comments were generated in the recent review. 🎉
+
+<details>
+<summary>ℹ️ Recent review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `9e50c39f-5cec-4e01-bea1-6b69cb3637a0`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between c0e264b30dab8a4c6d33fddab07db011488fb805 and 51c0290aa98c48b51c2168aaafad21371fe82899.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (5)</summary>
+
+* `.claude/registry/hooks.md`
+* `.claude/registry/pages.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+
+</details>
+
+<details>
+<summary>🚧 Files skipped from review as they are similar to previous changes (3)</summary>
+
+* .claude/registry/hooks.md
+* overrides/app/pages/experience/index.tsx
+* overrides/app/pages/contentfulPreview/index.tsx
+
+</details>
+
+</details>
+
+---
+<!-- walkthrough_start -->
+
+<details>
+<summary>📝 Walkthrough</summary>
+
+## Walkthrough
+
+Adds Contentful live preview support through a shared client hook, updated Experience rendering, and a dedicated `/preview` route. It also adds Contentful configuration constants, response typing, tests, documentation, and registry metadata.
+
+### Changes
+
+**Contentful live preview**
+
+|Layer / File(s)|Summary|
+|---|---|
+|**Contentful client hook and configuration** <br> `overrides/app/config/contentful.ts`, `overrides/app/hooks/useContentfulClient.ts`, `overrides/app/hooks/useContentfulClient.test.ts`|Selects Preview or Delivery clients. Blocks preview without a CPA token. Tests cover client modes and incomplete configuration.|
+|**Experience page with preview support** <br> `overrides/app/pages/experience/index.tsx`|Uses site locale and the shared client hook. Handles preview access and configuration errors. Renders live preview content with no-index SEO.|
+|**Dedicated preview route** <br> `overrides/app/pages/contentfulPreview/index.tsx`, `overrides/app/routes.tsx`|Adds `/preview` before `/:slug`. Resolves entries, fetches Experiences, validates parameters, and renders live preview content.|
+|**Server response status type** <br> `overrides/app/types/vendor.d.ts`|Adds chainable `status(code)` support to `ServerResponse`.|
+|**Documentation and registries** <br> `.docs/integration/02-contentful.md`, `.claude/registry/*`|Documents CPA token handling, environment restrictions, preview gating, no-index behaviour, live updates, and registry changes.|
+
+**Estimated code review effort:** 4 (Complex) | ~50 minutes
+
+### Sequence Diagram(s)
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant ExperiencePage
+    participant ContentfulPreview
+    participant useContentfulClient
+    participant Contentful
+    Browser->>ExperiencePage: Request Experience with preview parameter
+    ExperiencePage->>useContentfulClient: Resolve preview client
+    useContentfulClient->>Contentful: Create Preview client
+    Contentful-->>useContentfulClient: Return client
+    ExperiencePage->>Contentful: Fetch preview Experience
+    Contentful-->>ExperiencePage: Return Experience data
+    Browser->>ContentfulPreview: GET /preview?entry=entryId
+    ContentfulPreview->>Contentful: Resolve entry and content type
+    Contentful-->>ContentfulPreview: Return entry metadata
+    ContentfulPreview->>Contentful: Fetch Experience
+    Contentful-->>ContentfulPreview: Return Experience data
+```
+
+**Possibly related PRs**
+
+- [ZimmermannAU/zimmermann-pwa#41](https://github.com/ZimmermannAU/zimmermann-pwa/pull/41): Extends the same Contentful Live Preview implementation across the preview route, Experience page, configuration, and client hook.
+
+**Suggested reviewers:** `hardiacn`
+
+</details>
+
+<!-- walkthrough_end -->
+<!-- pre_merge_checks_walkthrough_start -->
+
+<details>
+<summary>🚥 Pre-merge checks | ✅ 5</summary>
+
+<details>
+<summary>✅ Passed checks (5 passed)</summary>
+
+|         Check name         | Status   | Explanation                                                                                                                  |
+| :------------------------: | :------- | :--------------------------------------------------------------------------------------------------------------------------- |
+|      Description Check     | ✅ Passed | Check skipped - CodeRabbit’s high-level summary is enabled.                                                                  |
+|         Title check        | ✅ Passed | The title clearly summarises the main change: adding Contentful Studio live preview support for Contentful Experience pages. |
+|     Docstring Coverage     | ✅ Passed | No functions found in the changed files to evaluate docstring coverage. Skipping docstring coverage check.                   |
+|     Linked Issues check    | ✅ Passed | Check skipped because no linked issues were found for this pull request.                                                     |
+| Out of Scope Changes check | ✅ Passed | Check skipped because no linked issues were found for this pull request.                                                     |
+
+</details>
+
+</details>
+
+<!-- pre_merge_checks_walkthrough_end -->
+<!-- finishing_touch_checkbox_start -->
+
+<details>
+<summary>✨ Finishing Touches</summary>
+
+<details>
+<summary>📝 Generate docstrings</summary>
+
+- [ ] <!-- {"checkboxId": "7962f53c-55bc-4827-bfbf-6a18da830691"} --> Create stacked PR
+- [ ] <!-- {"checkboxId": "3e1879ae-f29b-4d0d-8e06-d12b7ba33d98"} --> Commit on current branch
+
+</details>
+
+</details>
+
+<!-- finishing_touch_checkbox_end -->
+<!-- This is an auto-generated comment: all tool run failures by coderabbit.ai -->
+
+> [!WARNING]
+> There were issues while running some tools. Please review the errors and either fix the tool's configuration or disable the tool if it's a critical failure.
+> 
+> <details>
+> <summary>🔧 ESLint</summary>
+> 
+> > If the error stems from missing dependencies, add them to the package.json file. For unrecoverable errors (e.g., due to private dependencies), disable the tool in the CodeRabbit configuration.
+> 
+> <details>
+> <summary>overrides/app/pages/contentfulPreview/index.tsx</summary>
+> 
+> ESLint skipped: missing config or dependency (missing-dependency). The ESLint configuration references a package that is not available in the sandbox.
+> 
+> </details>
+> 
+> <details>
+> <summary>overrides/app/pages/experience/index.tsx</summary>
+> 
+> ESLint skipped: the ESLint configuration for this file references a package that is not available in the sandbox.
+> 
+> </details>
+> 
+> </details>
+
+<!-- end of auto-generated comment: all tool run failures by coderabbit.ai -->
+<!-- tips_start -->
+
+---
+
+
+
+
+<sub>Comment `@coderabbitai help` to get the list of available commands.</sub>
+
+<!-- tips_end -->
+
+### coderabbitai[bot]  (2026-07-28T05:50:14Z):
+<!-- This is an auto-generated comment: autofix status by CodeRabbit -->
+> [!NOTE]
+> Autofix is a beta feature. Expect some limitations and changes as we gather feedback and continue to improve it.
+
+## Fixes Applied Successfully
+
+Fixed 8 file(s) based on 3 unresolved review comments.
+
+
+
+**Files modified:**
+- `.claude/registry/components.md`
+- `.claude/registry/hooks.md`
+- `.claude/registry/pages.md`
+- `.claude/registry/routes.md`
+- `.claude/registry/utils.md`
+- `.docs/integration/02-contentful.md`
+- `overrides/app/pages/contentfulPreview/index.tsx`
+- `overrides/app/types/vendor.d.ts`
+
+**Commit:** `4a11982756e17850778a534ea3a4275184eeb3fd`
+
+The changes have been pushed to the `feature/storefront-preview-contentful` branch.
+
+**Time taken:** `9m 19s`
+<!-- autofix-run-id: a3e9b365-f905-4e9b-bf67-974e554bef7e -->
+
+### mani060689  (2026-07-28T06:15:49Z):
+@coderabbitai full-review
+
+### coderabbitai[bot]  (2026-07-28T06:15:59Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: db8333e7-a32c-45dc-a006-5f3ef8bd1aa7 -->
+`@mani060689` I’ll re-review the complete pull request, including the latest autofix changes.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Full review finished.
+
+</details>
+
+### coderabbitai[bot]  (2026-07-28T06:25:59Z):
+<!-- This is an auto-generated comment: autofix status by CodeRabbit -->
+> [!NOTE]
+> Autofix is a beta feature. Expect some limitations and changes as we gather feedback and continue to improve it.
+
+## Fixes Applied Successfully
+
+Fixed 2 file(s) based on 2 unresolved review comments.
+
+
+
+**Files modified:**
+- `overrides/app/pages/experience/index.tsx`
+- `overrides/app/types/vendor.d.ts`
+
+**Commit:** `bf81428e629ab175029ca50b16d577368310d86f`
+
+The changes have been pushed to the `feature/storefront-preview-contentful` branch.
+
+**Time taken:** `1m 54s`
+<!-- autofix-run-id: df8620bd-b274-47a2-86b8-a19be64f5ad2 -->
+
+### marcelannavarro  (2026-07-29T02:46:25Z):
+@coderabbitai full-review
+
+### coderabbitai[bot]  (2026-07-29T02:46:39Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: 354c255c-4b6d-4861-ba05-5644b9ce631d -->
+`@marcelannavarro` I’ll re-review the complete pull request, including the latest autofix changes.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Full review finished.
+
+</details>
+
+### marcelannavarro  (2026-07-29T07:05:24Z):
+## Review: Requesting Changes
+
+I'm requesting changes on one item before merge, plus a couple of should-fixes. The must-fix is verified against the live branch and is really yours to call, since you own both the code and the integration doc it touches.
+
+### Must Resolve Before Merge
+
+**1. The `?preview` no-token path is a three-way mismatch between the two preview routes and the doc.**
+CodeRabbit flagged that `.docs/integration/02-contentful.md` still says `?preview` Experience pages "fall back to Delivery API mode" with no token, and it's right that the code no longer does that. But the more important half is what the code *does* do now, which CodeRabbit didn't reach: in `experience/index.tsx` (L100–108), `previewUnavailable` short-circuits to an explicit "Preview is not enabled in this environment" message rendered at **HTTP 200 with no `<Seo noIndex/>`**. Its sibling `/preview` route handles the same no-token condition properly — `res.status(404)` + `noindex` (`contentfulPreview/index.tsx` L168–179). So the two preview entry points disagree, and on prod (where the CPA token is deliberately absent) `/<real-slug>?preview` becomes an indexable 200 — the missing half of the `noindex` gate from my #41 review. The doc compounds it: §9 (L128) even asserts "Both preview paths are `noindex`," which the code currently contradicts.
+
+Fix: bring the `previewUnavailable` branch in line with `/preview` — add `<Seo noIndex/>` and a 404 via `useServerContext()` (the file already imports `Seo`; it doesn't yet import `useServerContext`, so that's the one addition) — then update the three doc references (the §3 diagram comment, the §4 CPA row, and the §9 bullet at L128) to describe the real behaviour: both paths fail explicitly, both `noindex`, no delivery fallback.
+
+### Should-Fix
+
+- Both pages duplicate the `getContentfulConfig()` → `useMemo(createClient)` block. Extract a single `useContentfulClient` hook — it's also the natural home for the token/host logic. (CodeRabbit has flagged this repeatedly.)
+- The new files don't pass `npm run lint` — ~100 Prettier errors (semicolons / brace-spacing). Run `npm run lint:fix` before merge.
+- (Optional) `contentfulPreview/index.tsx` L117 keeps `locale` in the `getEntry` effect's deps, but the effect only resolves the entry's content type, which is locale-independent — so a locale change triggers a redundant refetch + spinner flash on the `/preview` route. Harmless (the `active` guard covers the race) and editor-only; worth the one-token trim only since you're already in the file. Your call.
+
+### marcelannavarro  (2026-07-31T07:32:08Z):
+@coderabbitai full-review
+
+### coderabbitai[bot]  (2026-07-31T07:40:42Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: 90057227-cccb-476e-9c38-dc285d47cfc9 -->
+`@marcelannavarro` I will re-review the complete pull request, including the current preview-route handling, documentation, and formatting changes.
+
+<details>
+<summary>✅ Action performed</summary>
+
+Full review finished.
+
+</details>
+
+### marcelannavarro  (2026-07-31T08:54:14Z):
+@coderabbitai review
+
+### coderabbitai[bot]  (2026-07-31T08:54:19Z):
+<!-- This is an auto-generated reply by CodeRabbit -->
+<!-- CodeRabbit review command invocation: f005489e-b4d1-423e-886d-125e718ed2c2 -->
+<details>
+<summary>✅ Action performed</summary>
+
+Review finished.
+
+> Note: CodeRabbit is an incremental review system and does not re-review already reviewed commits. This command is applicable only when automatic reviews are paused.
+
+</details>
+
+===================== REVIEW SUMMARIES =====================
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-28T05:48:21Z):
+**Actionable comments posted: 4**
+
+<details>
+<summary>🧹 Nitpick comments (5)</summary><blockquote>
+
+<details>
+<summary>overrides/app/config/contentful.ts (1)</summary><blockquote>
+
+`24-27`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _💤 Low value_
+
+**Semicolon style is inconsistent with the rest of this file.**
+
+Lines 12–22 terminate statements with semicolons; the new exports don't. Worth confirming Prettier/ESLint is happy across `overrides/` since the two new page files also use the semicolon-less style.
+
+
+
+
+<details>
+<summary>♻️ Align with file style</summary>
+
+```diff
+-export const CONTENTFUL_FALLBACK_LOCALE = 'en-US'
+-export const CONTENTFUL_PREVIEW_HOST = 'preview.contentful.com'
+-export const CONTENTFUL_DELIVERY_HOST = 'cdn.contentful.com'
+-export const CONTENTFUL_LIVE_PREVIEW_ORIGIN = 'https://app.contentful.com'
++export const CONTENTFUL_FALLBACK_LOCALE = 'en-US';
++export const CONTENTFUL_PREVIEW_HOST = 'preview.contentful.com';
++export const CONTENTFUL_DELIVERY_HOST = 'cdn.contentful.com';
++export const CONTENTFUL_LIVE_PREVIEW_ORIGIN = 'https://app.contentful.com';
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/config/contentful.ts` around lines 24 - 27, Update the new
+exports in the contentful configuration, including CONTENTFUL_FALLBACK_LOCALE,
+CONTENTFUL_PREVIEW_HOST, CONTENTFUL_DELIVERY_HOST, and
+CONTENTFUL_LIVE_PREVIEW_ORIGIN, to use semicolons consistent with the
+surrounding declarations and file style.
+```
+
+</details>
+
+<!-- cr-comment:v1:ddde7369a88279a10401b4ed -->
+
+</blockquote></details>
+<details>
+<summary>overrides/app/routes.tsx (1)</summary><blockquote>
+
+`37-42`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _💤 Low value_
+
+**Routing is correct; remember the review process for this file.**
+
+`exact: true` ahead of `/:slug` gives the right precedence. Note that changes here need a non-author developer PR review and coordination between both squads before merging to `develop`.
+
+As per coding guidelines: "Changes to `overrides/app/routes.tsx` require a non-author developer PR review before merging to `develop` and coordination between both squads."
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/routes.tsx` around lines 37 - 42, Keep the routing unchanged:
+retain the exact /preview route before /:slug. Before merging changes to
+overrides/app/routes.tsx into develop, obtain review from a non-author developer
+and coordinate with both squads.
+```
+
+</details>
+
+<!-- cr-comment:v1:b2ac536806b338bc0e409685 -->
+
+_Source: Coding guidelines_
+
+</blockquote></details>
+<details>
+<summary>overrides/app/pages/contentfulPreview/index.tsx (2)</summary><blockquote>
+
+`97-116`: _🚀 Performance & Scalability_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Drop `locale` from the effect dependencies.**
+
+The effect only resolves the entry's content type, which is locale-independent. Keeping `locale` in the deps resets `experienceTypeId` to `null` and re-fetches on every locale change, flashing the spinner unnecessarily.
+
+
+
+
+<details>
+<summary>♻️ Proposed change</summary>
+
+```diff
+-    }, [client, entryId, locale])
++    }, [client, entryId])
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx` around lines 97 - 116,
+Remove locale from the dependency array of the useEffect that fetches the
+Contentful entry type, keeping client and entryId as dependencies. Preserve the
+existing reset, fetch, cleanup, and error-handling behavior so locale changes do
+not trigger an unnecessary refetch or loading-state reset.
+```
+
+</details>
+
+<!-- cr-comment:v1:85d1c9e36b2b5e2b12fdcaf6 -->
+
+---
+
+`81-92`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _💤 Low value_
+
+**Delivery-host fallback here is unreachable.**
+
+`ContentfulPreview` already returns early unless `previewAccessToken` is set, so `token` is always the preview token and `host` always `CONTENTFUL_PREVIEW_HOST`. Dropping the dead branch removes an easy source of future confusion about which host a preview uses.
+
+
+
+
+<details>
+<summary>♻️ Simplified client creation</summary>
+
+```diff
+-    const {spaceId, environment, previewAccessToken, accessToken} = getContentfulConfig() ?? {}
+-    const token = previewAccessToken || accessToken
+-
+     const client = useMemo(() => {
+-        if (!spaceId || !token) return null
++        if (!spaceId || !previewAccessToken) return null
+         return createClient({
+             space: spaceId,
+             environment,
+-            accessToken: token,
+-            host: previewAccessToken ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST,
++            accessToken: previewAccessToken,
++            host: CONTENTFUL_PREVIEW_HOST,
+         })
+-    }, [spaceId, environment, previewAccessToken, token])
++    }, [spaceId, environment, previewAccessToken])
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx` around lines 81 - 92, The
+client creation in ContentfulPreview should use the preview configuration
+exclusively: remove the accessToken fallback from token selection and set host
+directly to CONTENTFUL_PREVIEW_HOST. Update the useMemo dependencies to remove
+values no longer used, while preserving the existing early-return validation for
+spaceId and previewAccessToken.
+```
+
+</details>
+
+<!-- cr-comment:v1:ba70240ebaad1ac0465f3221 -->
+
+</blockquote></details>
+<details>
+<summary>overrides/app/pages/experience/index.tsx (1)</summary><blockquote>
+
+`59-73`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Live preview provider block is duplicated with `contentfulPreview/index.tsx`.**
+
+The same `Seo noIndex` + `ContentfulLivePreviewProvider` configuration appears in both pages. Extracting a small shared wrapper (e.g. `overrides/app/components/contentful/livePreviewShell`) keeps the provider options in one place. Also worth adding the required `.stories.tsx` / Vitest coverage for this branching logic.
+
+As per coding guidelines: "Apply DRY, KISS, and SOLID: avoid repeated logic, extract shared utilities or hooks when patterns recur" and "Every UI component requires a `.stories.tsx`; logic-heavy features require a `.test.ts` or story `play`."
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 59 - 73, Extract the
+duplicated preview wrapper from the page component’s isPreview branch and
+contentfulPreview/index.tsx into a shared live-preview shell component,
+centralizing the Seo noIndex and ContentfulLivePreviewProvider configuration
+while preserving locale, targetOrigin, inspector mode, live updates, and child
+content. Add the required component story and Vitest or story-play coverage for
+the preview/non-preview branching.
+```
+
+</details>
+
+<!-- cr-comment:v1:bdfda8dd0d2b13d68076381b -->
+
+_Source: Coding guidelines_
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.claude/registry/pages.md:
+- Around line 13-22: Update the generated page registry by removing the stale
+EnvSelector and ProductList entries, since their referenced override files are
+absent; alternatively, add the matching page files before regenerating. Keep all
+valid page entries unchanged.
+
+In @.docs/integration/02-contentful.md:
+- Around line 77-80: The documentation’s token table and security section
+incorrectly describe all preview requests as returning 404 when the CPA token is
+absent. Update both references to state that the /preview route returns 404,
+while Experience pages using ?preview fall back to Delivery mode without the
+token.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx`:
+- Around line 164-172: Update the previewAccessToken guard in the contentful
+preview page to use the app’s proper not-found handling, or explicitly set the
+response status to 404 while preserving Seo noIndex for the preview-only path.
+Do not leave the current “Not found.” JSX as a successful 200 response.
+
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 88-92: Update the preview handling in the page component around
+effectivePreview, token, and host so an explicit preview request without
+previewAccessToken renders a clear “preview unavailable in this environment”
+state. Do not fall back to delivery credentials or host in that case; preserve
+the existing delivery path for non-preview requests and ensure the unavailable
+state does not present published content as preview data.
+
+---
+
+Nitpick comments:
+In `@overrides/app/config/contentful.ts`:
+- Around line 24-27: Update the new exports in the contentful configuration,
+including CONTENTFUL_FALLBACK_LOCALE, CONTENTFUL_PREVIEW_HOST,
+CONTENTFUL_DELIVERY_HOST, and CONTENTFUL_LIVE_PREVIEW_ORIGIN, to use semicolons
+consistent with the surrounding declarations and file style.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx`:
+- Around line 97-116: Remove locale from the dependency array of the useEffect
+that fetches the Contentful entry type, keeping client and entryId as
+dependencies. Preserve the existing reset, fetch, cleanup, and error-handling
+behavior so locale changes do not trigger an unnecessary refetch or
+loading-state reset.
+- Around line 81-92: The client creation in ContentfulPreview should use the
+preview configuration exclusively: remove the accessToken fallback from token
+selection and set host directly to CONTENTFUL_PREVIEW_HOST. Update the useMemo
+dependencies to remove values no longer used, while preserving the existing
+early-return validation for spaceId and previewAccessToken.
+
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 59-73: Extract the duplicated preview wrapper from the page
+component’s isPreview branch and contentfulPreview/index.tsx into a shared
+live-preview shell component, centralizing the Seo noIndex and
+ContentfulLivePreviewProvider configuration while preserving locale,
+targetOrigin, inspector mode, live updates, and child content. Add the required
+component story and Vitest or story-play coverage for the preview/non-preview
+branching.
+
+In `@overrides/app/routes.tsx`:
+- Around line 37-42: Keep the routing unchanged: retain the exact /preview route
+before /:slug. Before merging changes to overrides/app/routes.tsx into develop,
+obtain review from a non-author developer and coordinate with both squads.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+✅ Autofix completed
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `7a09e58c-cf77-46dd-85c5-a575dad8681c`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 0c86fd005e819cb5db25a704743641dd27396d70 and 3f7eeb2937ac39c517a7517f55dec60ff06b7c36.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (9)</summary>
+
+* `.claude/registry/components.md`
+* `.claude/registry/hooks.md`
+* `.claude/registry/pages.md`
+* `.claude/registry/routes.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/config/contentful.ts`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+* `overrides/app/routes.tsx`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-28T06:22:15Z):
+**Actionable comments posted: 2**
+
+<details>
+<summary>🧹 Nitpick comments (1)</summary><blockquote>
+
+<details>
+<summary>overrides/app/pages/experience/index.tsx (1)</summary><blockquote>
+
+`84-119`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _🏗️ Heavy lift_
+
+**Consider extracting shared Contentful-client resolution logic.**
+
+`ExperiencePage`'s client/token/host resolution (spaceId/environment/previewAccessToken/accessToken → useMemo(createClient)) closely mirrors the same logic in `ContentfulPreviewPage` (`overrides/app/pages/contentfulPreview/index.tsx`, Lines 82-93), just with a different preview-gate. Extracting a shared hook (e.g. `useContentfulClient`) would remove the duplication and reduce the risk of the two implementations drifting further apart.
+
+
+
+As per coding guidelines: "Apply DRY, KISS, and SOLID: avoid repeated logic, extract shared utilities or hooks when patterns recur."
+
+
+
+Also applies to: 71-151
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 84 - 119, Extract the
+repeated Contentful configuration, token, host, and memoized createClient logic
+from ExperiencePage and ContentfulPreviewPage into a shared useContentfulClient
+hook. Reuse that hook in both pages while preserving ExperiencePage’s
+previewUnavailable gate and existing client-missing behavior, and keep
+page-specific preview handling outside the shared hook.
+```
+
+</details>
+
+<!-- cr-comment:v1:1c709201a69dc03ca470b8d4 -->
+
+_Source: Coding guidelines_
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 88-116: Move the useMemo call in the component above the
+previewUnavailable early return so it executes unconditionally on every render.
+Keep its existing client-creation logic and dependencies unchanged, while
+preserving the current Preview-unavailable and missing-configuration UI
+branches.
+
+In `@overrides/app/types/vendor.d.ts`:
+- Around line 37-40: Update the ambient `res` type in `vendor.d.ts` so its
+`status` method returns the response object type rather than `void`, enabling
+standard Express-style chaining such as `res.status(...).send(...)` while
+preserving the existing `set` signature.
+
+---
+
+Nitpick comments:
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 84-119: Extract the repeated Contentful configuration, token,
+host, and memoized createClient logic from ExperiencePage and
+ContentfulPreviewPage into a shared useContentfulClient hook. Reuse that hook in
+both pages while preserving ExperiencePage’s previewUnavailable gate and
+existing client-missing behavior, and keep page-specific preview handling
+outside the shared hook.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+✅ Autofix completed
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `bc3d36af-93c9-4d09-acb8-feffc8cef7d1`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 0c86fd005e819cb5db25a704743641dd27396d70 and 4a11982756e17850778a534ea3a4275184eeb3fd.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (11)</summary>
+
+* `.claude/registry/components.md`
+* `.claude/registry/hooks.md`
+* `.claude/registry/pages.md`
+* `.claude/registry/routes.md`
+* `.claude/registry/utils.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/config/contentful.ts`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+* `overrides/app/routes.tsx`
+* `overrides/app/types/vendor.d.ts`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-29T02:53:34Z):
+**Actionable comments posted: 1**
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.docs/integration/02-contentful.md:
+- Around line 54-60: Update the three preview-behavior references in the
+architecture diagram comment, Authentication table CPA row, and Security and
+privacy bullet to match the current implementation: `/preview` returns a 404
+without a CPA token, while Experience pages using `?preview` render an explicit
+“Preview is not enabled in this environment” message; remove all references to
+delivery-mode fallback.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `0541a234-0ef1-476d-91a6-f34fa24e3fa9`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 0c86fd005e819cb5db25a704743641dd27396d70 and bf81428e629ab175029ca50b16d577368310d86f.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (11)</summary>
+
+* `.claude/registry/components.md`
+* `.claude/registry/hooks.md`
+* `.claude/registry/pages.md`
+* `.claude/registry/routes.md`
+* `.claude/registry/utils.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/config/contentful.ts`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+* `overrides/app/routes.tsx`
+* `overrides/app/types/vendor.d.ts`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-31T07:44:40Z):
+**Actionable comments posted: 2**
+
+<details>
+<summary>🧹 Nitpick comments (1)</summary><blockquote>
+
+<details>
+<summary>overrides/app/hooks/useContentfulClient.ts (1)</summary><blockquote>
+
+`38-47`: _🔒 Security & Privacy_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Consider returning a null client when preview is unavailable.**
+
+The doc comment states that callers "must never fall back to delivery" when `previewUnavailable` is `true`. However, the hook itself still builds and returns a working client using the delivery host and CDA token in that case. Correctness relies entirely on every caller checking `previewUnavailable` before using `client`. If a future caller forgets that check, it silently renders delivery content under a "preview" label instead of failing.
+
+Make the hook enforce its own contract by returning `client: null` when `previewUnavailable` is `true`.
+
+<details>
+<summary>♻️ Proposed fix</summary>
+
+```diff
+   const client = useMemo(() => {
+-    if (!spaceId || !token) return null;
++    if (!spaceId || !token || previewUnavailable) return null;
+     return createClient({ space: spaceId, environment, accessToken: token, host });
+-  }, [spaceId, environment, token, host]);
++  }, [spaceId, environment, token, host, previewUnavailable]);
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/hooks/useContentfulClient.ts` around lines 38 - 47, Update the
+client creation logic in the hook so it returns client: null whenever
+previewUnavailable is true, preventing the delivery client from being created
+during unavailable preview mode. Preserve the existing client creation behavior
+for valid preview requests and non-preview requests, and ensure the useMemo
+dependencies include the preview-unavailability state.
+```
+
+</details>
+
+<!-- cr-comment:v1:d882f691745b00dc2308d04d -->
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.claude/registry/components.md:
+- Line 59: Regenerate the component registry so the Register entry reflects a
+consumer count of 7 instead of 3. Update the generated output through the
+registry generation workflow rather than manually editing the markdown.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx`:
+- Around line 157-163: Add <Seo noIndex /> to the missing-entry branch in the
+preview page component, alongside its existing error UI, so requests without an
+entry query parameter remain non-indexable like the previewUnavailable branch.
+
+---
+
+Nitpick comments:
+In `@overrides/app/hooks/useContentfulClient.ts`:
+- Around line 38-47: Update the client creation logic in the hook so it returns
+client: null whenever previewUnavailable is true, preventing the delivery client
+from being created during unavailable preview mode. Preserve the existing client
+creation behavior for valid preview requests and non-preview requests, and
+ensure the useMemo dependencies include the preview-unavailability state.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `ccf9af7f-9653-424a-9fe9-a9bcfa66c120`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between bf81428e629ab175029ca50b16d577368310d86f and c0e264b30dab8a4c6d33fddab07db011488fb805.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (8)</summary>
+
+* `.claude/registry/components.md`
+* `.claude/registry/hooks.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/config/contentful.ts`
+* `overrides/app/hooks/useContentfulClient.test.ts`
+* `overrides/app/hooks/useContentfulClient.ts`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+
+</details>
+
+<details>
+<summary>🚧 Files skipped from review as they are similar to previous changes (2)</summary>
+
+* overrides/app/pages/experience/index.tsx
+* overrides/app/config/contentful.ts
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### coderabbitai[bot]  [CHANGES_REQUESTED]  (2026-07-31T07:51:14Z):
+**Actionable comments posted: 3**
+
+<details>
+<summary>♻️ Duplicate comments (2)</summary><blockquote>
+
+<details>
+<summary>.claude/registry/components.md (1)</summary><blockquote>
+
+`59-59`: _📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Regenerate the `Register` row from the source graph.**
+
+Line 59 lowers the generated consumer count from `6` to `3`. The previous review identified `7` consumers. Confirm the current count and regenerate the registry instead of hand-editing this file.
+
+```shell
+#!/usr/bin/env bash
+set -euo pipefail
+
+rg -nP --glob '*.{js,jsx,ts,tsx}' \
+  --glob '!**/node_modules/**' \
+  '(?<![\w$])Register(?![\w$])|components/register' \
+  app overrides
+
+rg -n -C 8 'countConsumers|components\.md' scripts/generateRegistry.mjs
+```
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.claude/registry/components.md at line 59, Regenerate the Register row in
+the component registry from the current source graph rather than editing the
+generated file manually. Use the Register/component-register references under
+app and overrides to confirm the consumer count, then run the existing registry
+generation flow in scripts/generateRegistry.mjs so the row reflects the
+authoritative count.
+```
+
+</details>
+
+<!-- cr-comment:v1:8e429514b613a423bab09241 -->
+
+</blockquote></details>
+<details>
+<summary>overrides/app/pages/contentfulPreview/index.tsx (1)</summary><blockquote>
+
+`157-163`: _🔒 Security & Privacy_ | _🟠 Major_ | _⚡ Quick win_
+
+**Missing-`entry` branch still lacks `Seo noIndex`.**
+
+This branch returns HTTP 200 with no `<Seo noIndex />`, unlike the `previewUnavailable` branch above (Lines 143-155), which sets both `res.status(404)` and `Seo noIndex`. If a CPA token is configured (e.g. on staging), a request to `/preview` without an `entry` parameter is indexable. A prior review comment flagged this exact branch; it does not carry the "✅ Addressed" marker that the other two comments on this file have, so it appears unresolved.
+
+
+
+
+<details>
+<summary>🐛 Proposed fix</summary>
+
+```diff
+   if (!entryId) {
+     return (
+-      <Box p={8}>
+-        <Text color="red.500">Missing &quot;entry&quot; query parameter.</Text>
+-      </Box>
++      <>
++        <Seo noIndex />
++        <Box p={8}>
++          <Text color="red.500">Missing &quot;entry&quot; query parameter.</Text>
++        </Box>
++      </>
+     );
+   }
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx` around lines 157 - 163,
+Update the missing-entry branch in the content preview component to render <Seo
+noIndex /> alongside its existing error UI, matching the previewUnavailable
+branch’s non-indexable behavior while preserving the current response and
+message.
+```
+
+</details>
+
+<!-- cr-comment:v1:0c5a7d2cadda496ad23b3a9b -->
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🧹 Nitpick comments (2)</summary><blockquote>
+
+<details>
+<summary>overrides/app/pages/experience/index.tsx (2)</summary><blockquote>
+
+`44-48`: _🚀 Performance & Scalability_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Add a live-region hint for the error message.**
+
+The "Page not found." `Text` has no `role="alert"` or `aria-live` attribute, so screen reader users are not notified when the view transitions from the loading Spinner to this error state. Add `role="alert"` to the error `Text` (or its wrapping `Box`) to announce the change.
+
+
+
+As per coding guidelines: "Ensure UI components are accessible and mobile-friendly," and "Follow WCAG 2.2 AA."
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 44 - 48, Add a
+live-region announcement to the “Page not found.” error state by applying
+role="alert" to the error Text or its wrapping Box in the page-not-found render
+path. Preserve the existing message and layout.
+```
+
+</details>
+
+<!-- cr-comment:v1:e33dad60600b48b450a0de08 -->
+
+_Source: Coding guidelines_
+
+---
+
+`78-79`: _📐 Maintainability & Code Quality_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Centralise Contentful locale resolution.** `@salesforce/retail-react-app@10.0.0` provides `useMultiSite` as JavaScript and exposes no importable return type. Move the shared local context shape to `overrides/app/types/` and extract a `useContentfulLocale` hook that preserves `?locale` precedence in `contentfulPreview`.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 78 - 79, Centralize
+Contentful locale resolution by adding a shared local context type under the app
+types area and implementing a useContentfulLocale hook that derives the locale
+from useMultiSite without importing a return type from the JavaScript package.
+Update the experience page to use this hook, preserving contentfulPreview’s
+existing ?locale precedence and CONTENTFUL_FALLBACK_LOCALE fallback behavior.
+```
+
+</details>
+
+<!-- cr-comment:v1:dbaa22ddb408b50683504d5e -->
+
+_Source: Coding guidelines_
+
+</blockquote></details>
+
+</blockquote></details>
+
+<details>
+<summary>🤖 Prompt for all review comments with AI agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+Inline comments:
+In @.docs/integration/02-contentful.md:
+- Line 73: Update the Live preview description near the Contentful preview route
+to remove the duplicated “only” in the CPA token statement, placing a single
+“only” before the dev/test/sit/uat environment list while preserving the rest of
+the explanation.
+
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 108-114: Update the client-missing branch in the page component to
+return a 404 response and render the Seo component with noIndex, matching the
+existing previewUnavailable handling. Preserve the current missing-configuration
+message while ensuring this state cannot be indexed.
+- Around line 42-48: Update the not-found branch in the experience page
+component to call useServerContext(), set res.status(404) when error ||
+!experience is true, and then render the existing “Page not found.” response.
+Match the status-handling approach used by the previewUnavailable branch.
+
+---
+
+Duplicate comments:
+In @.claude/registry/components.md:
+- Line 59: Regenerate the Register row in the component registry from the
+current source graph rather than editing the generated file manually. Use the
+Register/component-register references under app and overrides to confirm the
+consumer count, then run the existing registry generation flow in
+scripts/generateRegistry.mjs so the row reflects the authoritative count.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx`:
+- Around line 157-163: Update the missing-entry branch in the content preview
+component to render <Seo noIndex /> alongside its existing error UI, matching
+the previewUnavailable branch’s non-indexable behavior while preserving the
+current response and message.
+
+---
+
+Nitpick comments:
+In `@overrides/app/pages/experience/index.tsx`:
+- Around line 44-48: Add a live-region announcement to the “Page not found.”
+error state by applying role="alert" to the error Text or its wrapping Box in
+the page-not-found render path. Preserve the existing message and layout.
+- Around line 78-79: Centralize Contentful locale resolution by adding a shared
+local context type under the app types area and implementing a
+useContentfulLocale hook that derives the locale from useMultiSite without
+importing a return type from the JavaScript package. Update the experience page
+to use this hook, preserving contentfulPreview’s existing ?locale precedence and
+CONTENTFUL_FALLBACK_LOCALE fallback behavior.
+```
+
+</details>
+
+<details>
+<summary>🪄 Autofix (Beta)</summary>
+
+Fix all unresolved CodeRabbit comments on this PR:
+
+- [ ] <!-- {"checkboxId": "4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9"} --> Push a commit to this branch (recommended)
+- [ ] <!-- {"checkboxId": "ff5b1114-7d8c-49e6-8ac1-43f82af23a33"} --> Create a new PR with the fixes
+
+</details>
+
+---
+
+<details>
+<summary>ℹ️ Review info</summary>
+
+<details>
+<summary>⚙️ Run configuration</summary>
+
+**Configuration used**: Organization UI
+
+**Review profile**: CHILL
+
+**Plan**: Pro
+
+**Run ID**: `229dca24-510e-4748-b178-cab366d80a4b`
+
+</details>
+
+<details>
+<summary>📥 Commits</summary>
+
+Reviewing files that changed from the base of the PR and between 5a73dba205b2d556329f790eed86941e5125694c and c0e264b30dab8a4c6d33fddab07db011488fb805.
+
+</details>
+
+<details>
+<summary>📒 Files selected for processing (13)</summary>
+
+* `.claude/registry/components.md`
+* `.claude/registry/hooks.md`
+* `.claude/registry/pages.md`
+* `.claude/registry/routes.md`
+* `.claude/registry/utils.md`
+* `.docs/integration/02-contentful.md`
+* `overrides/app/config/contentful.ts`
+* `overrides/app/hooks/useContentfulClient.test.ts`
+* `overrides/app/hooks/useContentfulClient.ts`
+* `overrides/app/pages/contentfulPreview/index.tsx`
+* `overrides/app/pages/experience/index.tsx`
+* `overrides/app/routes.tsx`
+* `overrides/app/types/vendor.d.ts`
+
+</details>
+
+</details>
+
+<!-- This is an auto-generated comment by CodeRabbit for review status -->
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T08:13:24Z):
+
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T08:43:57Z):
+
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T08:45:18Z):
+
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T08:46:02Z):
+
+
+### coderabbitai[bot]  [COMMENTED]  (2026-07-31T08:46:23Z):
+
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T08:46:27Z):
+
+
+### coderabbitai[bot]  [COMMENTED]  (2026-07-31T08:46:46Z):
+
+
+### marcelannavarro  [COMMENTED]  (2026-07-31T09:07:18Z):
+
+
+### coderabbitai[bot]  [APPROVED]  (2026-07-31T09:07:28Z):
+
+
+### coderabbitai[bot]  [COMMENTED]  (2026-07-31T09:07:35Z):
+
+
+===================== INLINE REVIEW COMMENTS =====================
+
+--- coderabbitai[bot] on .claude/registry/pages.md:22  (2026-07-28T05:48:20Z):
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+fd -t f 'index.tsx' overrides/app/pages -d 3
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 332
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+echo "## pages.md excerpt"
+sed -n '1,40p' .claude/registry/pages.md
+
+echo
+echo "## matching page files"
+fd -t f 'index.tsx' overrides/app/pages -d 4 || true
+fd -t f 'index.jsx' app/pages -d 4 || true
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 2590
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+echo "## locate EnvSelector/ProductList refs"
+rg -n "EnvSelector|ProductList|my-new-route|contentfulPreview|experience" .claude/registry/pages.md overrides app -g '!**/node_modules/**' || true
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 6415
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+python3 - <<'PY'
+from pathlib import Path
+p = Path('.claude/registry/pages.md')
+for i, line in enumerate(p.read_text().splitlines(), 1):
+    if 10 <= i <= 25:
+        print(f"{i}: {line}")
+PY
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 1815
+
+---
+
+
+
+</details>
+
+**Drop the stale EnvSelector/ProductList rows**  
+`.claude/registry/pages.md` is listing `overrides/app/pages/envSelector/index.tsx` and `overrides/app/pages/product-list/index.tsx`, but there are no matching page files on this branch. Remove those entries or add the missing pages before committing the generated registry.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.claude/registry/pages.md around lines 13 - 22, Update the generated page
+registry by removing the stale EnvSelector and ProductList entries, since their
+referenced override files are absent; alternatively, add the matching page files
+before regenerating. Keep all valid page entries unchanged.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:ee2de59cfb5232f72a2bac36 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Confirmed as addressed by @marcelannavarro
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- coderabbitai[bot] on .docs/integration/02-contentful.md:80  (2026-07-28T05:48:20Z):
+_🎯 Functional Correctness_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Distinguish `/preview` 404s from Experience-page fallback**
+
+The token table and security section currently say both `/preview` and `?preview` routes return 404 when the CPA token is absent. The stated behaviour is narrower: `/preview` should 404, while `?preview` Experience pages should fall back to Delivery mode.
+
+Please update both references so the integration contract is unambiguous.
+
+
+
+
+
+
+
+Also applies to: 128-128
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.docs/integration/02-contentful.md around lines 77 - 80, The documentation’s
+token table and security section incorrectly describe all preview requests as
+returning 404 when the CPA token is absent. Update both references to state that
+the /preview route returns 404, while Experience pages using ?preview fall back
+to Delivery mode without the token.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:triton:luna -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:7f4b41ce52586ff0ac19bea3 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits a4c8e56 to 4a11982
+
+--- coderabbitai[bot] on overrides/app/pages/contentfulPreview/index.tsx:172  (2026-07-28T05:48:20Z):
+_🎯 Functional Correctness_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+# Check how other pages signal a 404 status in this project
+rg -n --hidden -g '!node_modules' 'getProps|res\.status|PageNotFound' overrides/app | head -40
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 1491
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+# Inspect the preview page around the reported lines.
+FILE='overrides/app/pages/contentfulPreview/index.tsx'
+wc -l "$FILE"
+sed -n '1,260p' "$FILE"
+
+# Find explicit not-found handling patterns used in the codebase.
+rg -n --hidden -g '!node_modules' 'PageNotFound|notFound|res\.status\(404\)|status\(404\)' overrides/app
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 6765
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+FILE='overrides/app/pages/contentfulPreview/index.tsx'
+echo "--- file line count ---"
+wc -l "$FILE"
+echo "--- file excerpt ---"
+sed -n '1,260p' "$FILE"
+echo "--- not-found patterns ---"
+rg -n --hidden -g '!node_modules' 'PageNotFound|notFound|res\.status\(404\)|status\(404\)' overrides/app
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 6837
+
+---
+
+
+
+</details>
+
+**Render a proper not-found response here**
+This branch only renders a “Not found.” message, so it still behaves like a 200 page. Swap it to the app’s not-found handling, or set the response status explicitly and keep `Seo noIndex` on the preview-only path.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx` around lines 164 - 172,
+Update the previewAccessToken guard in the contentful preview page to use the
+app’s proper not-found handling, or explicitly set the response status to 404
+while preserving Seo noIndex for the preview-only path. Do not leave the current
+“Not found.” JSX as a successful 200 response.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:ca36d485e4c601020e1b6bd2 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits a4c8e56 to 4a11982
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:92  (2026-07-28T05:48:20Z):
+_🎯 Functional Correctness_ | _🟠 Major_ | _⚡ Quick win_
+
+**Silent fallback to delivery mode contradicts the fail-explicitly rule.**
+
+When `?preview` is requested but no `previewAccessToken` exists, the page quietly renders published content without live preview and without `Seo noIndex`. An editor sees a page that looks fine but isn't preview data. Render an explicit "preview unavailable in this environment" state instead of substituting delivery mode.
+
+As per coding guidelines: "External systems must fail independently; never silently substitute another checkout, payment, or commerce flow when an integration is unavailable—show an explicit error."
+
+
+
+
+
+<details>
+<summary>🛠️ Suggested explicit state</summary>
+
+```diff
+-    const effectivePreview = isPreview && !!previewAccessToken
+-    const token = effectivePreview ? previewAccessToken : accessToken
+-    const host = effectivePreview ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST
++    const previewUnavailable = isPreview && !previewAccessToken
++    const effectivePreview = isPreview && !!previewAccessToken
++    const token = effectivePreview ? previewAccessToken : accessToken
++    const host = effectivePreview ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST
+```
+
+```diff
++    if (previewUnavailable) {
++        return (
++            <Box p={8}>
++                <Text color="red.500">
++                    Preview is not enabled in this environment.
++                </Text>
++            </Box>
++        )
++    }
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+    const previewUnavailable = isPreview && !previewAccessToken
+    // Use preview host only when explicitly in preview mode AND a preview token is available.
+    // Falls back to delivery mode silently when no token is set (non-prod gate).
+    const effectivePreview = isPreview && !!previewAccessToken
+    const token = effectivePreview ? previewAccessToken : accessToken
+    const host = effectivePreview ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST
+
+    if (previewUnavailable) {
+        return (
+            <Box p={8}>
+                <Text color="red.500">
+                    Preview is not enabled in this environment.
+                </Text>
+            </Box>
+        )
+    }
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 88 - 92, Update the
+preview handling in the page component around effectivePreview, token, and host
+so an explicit preview request without previewAccessToken renders a clear
+“preview unavailable in this environment” state. Do not fall back to delivery
+credentials or host in that case; preserve the existing delivery path for
+non-preview requests and ensure the unavailable state does not present published
+content as preview data.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:6325bc7cf945f8f552abc934 -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commit b745824
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:116  (2026-07-28T06:22:13Z):
+_🩺 Stability & Availability_ | _🔴 Critical_ | _⚡ Quick win_
+
+**Rules-of-Hooks violation: `useMemo` is called after a conditional early return.**
+
+When `previewUnavailable` is `true`, the function returns at Line 95-103 before reaching the `useMemo` call at Line 105. If `isPreview` flips between renders of the same mounted instance (e.g. an editor navigates from `/slug?preview` to `/slug` without a full route remount), this component will call a different number of hooks across renders, which React explicitly disallows and will throw a "Rendered fewer hooks than expected" error at runtime.
+
+Move the `useMemo` call above the `previewUnavailable` check so hooks are always called unconditionally, in the same order.
+
+
+
+Based on coding guidelines: "Call React hooks only at the top level of components or custom hooks; never conditionally, in loops, or in nested functions."
+
+
+<details>
+<summary>🐛 Proposed fix</summary>
+
+```diff
+     const previewUnavailable = isPreview && !previewAccessToken
+     // Use preview host only when explicitly in preview mode AND a preview token is available.
+     // Falls back to delivery mode silently when no token is set (non-prod gate).
+     const effectivePreview = isPreview && !!previewAccessToken
+     const token = effectivePreview ? previewAccessToken : accessToken
+     const host = effectivePreview ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST
+
+-    if (previewUnavailable) {
+-        return (
+-            <Box p={8}>
+-                <Text color="red.500">
+-                    Preview is not enabled in this environment.
+-                </Text>
+-            </Box>
+-        )
+-    }
+-
+     const client = useMemo(() => {
+         if (!spaceId || !token) return null
+         return createClient({space: spaceId, environment, accessToken: token, host})
+     }, [spaceId, environment, token, host])
+
++    if (previewUnavailable) {
++        return (
++            <Box p={8}>
++                <Text color="red.500">
++                    Preview is not enabled in this environment.
++                </Text>
++            </Box>
++        )
++    }
++
+     if (!client) {
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+    const previewUnavailable = isPreview && !previewAccessToken
+    // Use preview host only when explicitly in preview mode AND a preview token is available.
+    // Falls back to delivery mode silently when no token is set (non-prod gate).
+    const effectivePreview = isPreview && !!previewAccessToken
+    const token = effectivePreview ? previewAccessToken : accessToken
+    const host = effectivePreview ? CONTENTFUL_PREVIEW_HOST : CONTENTFUL_DELIVERY_HOST
+
+    const client = useMemo(() => {
+        if (!spaceId || !token) return null
+        return createClient({space: spaceId, environment, accessToken: token, host})
+    }, [spaceId, environment, token, host])
+
+    if (previewUnavailable) {
+        return (
+            <Box p={8}>
+                <Text color="red.500">
+                    Preview is not enabled in this environment.
+                </Text>
+            </Box>
+        )
+    }
+
+    if (!client) {
+        return (
+            <Box p={8}>
+                <Text color="red.500">Contentful configuration is missing — cannot render this page.</Text>
+            </Box>
+        )
+    }
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 88 - 116, Move the
+useMemo call in the component above the previewUnavailable early return so it
+executes unconditionally on every render. Keep its existing client-creation
+logic and dependencies unchanged, while preserving the current
+Preview-unavailable and missing-configuration UI branches.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:83fad623d9976e08fa0e0fde -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits a4c8e56 to bf81428
+
+--- coderabbitai[bot] on overrides/app/types/vendor.d.ts:40  (2026-07-28T06:22:14Z):
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+# Look for existing res typings shipped by pwa-kit-react-sdk and any chained .status(...) usage in the repo
+rg -nP '\bres\.status\(' overrides/app
+fd -t f 'hooks' node_modules/@salesforce/pwa-kit-react-sdk/ssr/universal 2>/dev/null
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 2047
+
+---
+
+🌐 Web query:
+
+`@salesforce/pwa-kit-react-sdk SSR response status return type typings res.status code returns Response or void`
+
+💡 Result:
+
+In the Salesforce PWA Kit React SDK, the `res` object accessed during server-side rendering (SSR) is the standard Express.js response object [1][2]. Consequently, `res.status(code)` follows the Express.js API, which returns the response object itself (`this`) to allow for method chaining (e.g., `res.status(404).send(...)`) [2]. If you are encountering a situation where `res.status(code)` appears to return `void` or you are having trouble with typings in TypeScript, please consider the following: 1. Express.js API: The `res.status()` method in Express is designed to return the response object [2]. If your environment suggests it returns `void`, there may be a discrepancy in your project's `@types/express` definitions or the version of Express being used. 2. SSR Context: During SSR, you can access `res` via the `getProps` method in your components [3][2]. As demonstrated in official documentation, you can set the status using `res.status(404)` directly [2]. 3. Alternative Approaches: - For redirects with specific status codes, use the `RedirectWithStatus` component provided by the SDK instead of manually manipulating the response object [4][5]. - For error handling, throwing an `HTTPError` (from `@salesforce/pwa-kit-react-sdk/ssr/universal/errors`) is the recommended way to manage status codes [3][2], as it allows the SDK's rendering pipeline to handle the response appropriately [3]. If you are seeing type errors, ensure your project is correctly configured to use the Express types that match your server-side implementation.
+
+Citations:
+
+- 1: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/rendering.html
+- 2: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/routing.html
+- 3: https://deepwiki.com/SalesforceCommerceCloud/pwa-kit/2.1-pwa-kit-react-sdk
+- 4: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/pwa-redirects.html
+- 5: https://medium.com/@vlkn-ulkr/salesforce-pwa-kit-how-to-redirect-with-custom-status-a4acd73ee6ef
+
+---
+
+
+
+</details>
+
+**Make `res.status()` chainable in the ambient type**
+
+In `overrides/app/types/vendor.d.ts`, `status()` should return the response object, not `void`. The SSR `res` here follows the standard Express API, so the current type is narrower than the runtime contract and blocks valid chaining like `res.status(404).send(...)`.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/types/vendor.d.ts` around lines 37 - 40, Update the ambient
+`res` type in `vendor.d.ts` so its `status` method returns the response object
+type rather than `void`, enabling standard Express-style chaining such as
+`res.status(...).send(...)` while preserving the existing `set` signature.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:9f2c5839242a37a7d9084a0b -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits a4c8e56 to bf81428
+
+--- coderabbitai[bot] on .docs/integration/02-contentful.md:60  (2026-07-29T02:53:33Z):
+_🎯 Functional Correctness_ | _🟠 Major_ | _⚡ Quick win_
+
+**Doc describes stale "delivery mode fallback" behaviour for `?preview` Experience pages — no longer matches the code.**
+
+These sections state that Experience pages with `?preview` "fall back to Delivery API mode" when no CPA token is present. That was true before the fix, but the current `overrides/app/pages/experience/index.tsx` no longer does this: when `isPreview && !previewAccessToken`, `previewUnavailable` now short-circuits and renders an explicit "Preview is not enabled in this environment" error — it never reaches the delivery-mode client/render path. Only the `/preview` route's 404 behaviour is still accurate.
+
+Please update all three references (the architecture diagram comment, the Authentication table's CPA row, and the Security and privacy bullet) to state that both `/preview` and `?preview` now fail explicitly (404 for `/preview`, an explicit "preview unavailable" message for `?preview`) rather than describing a delivery-mode fallback for Experience pages.
+
+
+
+
+
+Also applies to: 72-80, 128-128
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.docs/integration/02-contentful.md around lines 54 - 60, Update the three
+preview-behavior references in the architecture diagram comment, Authentication
+table CPA row, and Security and privacy bullet to match the current
+implementation: `/preview` returns a 404 without a CPA token, while Experience
+pages using `?preview` render an explicit “Preview is not enabled in this
+environment” message; remove all references to delivery-mode fallback.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:1e09d651b769d51974041324 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits c0b82ab to c0e264b
+
+--- coderabbitai[bot] on .claude/registry/components.md:59  (2026-07-31T07:44:39Z):
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+rg -nP \
+  --glob '*.{js,jsx,ts,tsx}' \
+  --glob '!.claude/registry/**' \
+  '(?<![\w$])Register(?![\w$])|components/register' .
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 165
+
+---
+
+🏁 Script executed:
+
+```shell
+set -euo pipefail
+
+printf '%s\n' '--- candidate files ---'
+fd -i -t f 'generateRegistry|components\.md|register' . | head -80
+
+printf '%s\n' '--- generator references ---'
+rg -n -C 4 'consumer|consumers|components/register|Register|registry' scripts .claude/registry . --glob '!node_modules/**' --glob '!dist/**' --glob '!build/**' | head -240
+
+printf '%s\n' '--- registry row and nearby rows ---'
+sed -n '50,65p' .claude/registry/components.md
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 24152
+
+---
+
+🏁 Script executed:
+
+```shell
+set -euo pipefail
+
+printf '%s\n' '--- consumer-count implementation ---'
+sed -n '180,225p' scripts/generateRegistry.mjs
+sed -n '560,600p' scripts/generateRegistry.mjs
+
+printf '%s\n' '--- registry cache files ---'
+find .claude/registry -maxdepth 1 -type f -printf '%f\n' | sort
+if [ -f .claude/registry/.overrideCache.json ]; then
+  printf '%s\n' '--- cached Register entry ---'
+  jq '.components["app/components/register/index.jsx"] // .components["app/components/register/"] // .. | objects | select(.hash? and (.consumers? != null))' .claude/registry/.overrideCache.json
+fi
+
+printf '%s\n' '--- source paths and references ---'
+find . -type f \( -path '*/app/components/register/index.jsx' -o -path '*/app/*' \) -not -path './node_modules/*' -not -path './.git/*' | head -40
+rg -n -P --hidden \
+  --glob '*.{js,jsx,ts,tsx}' \
+  --glob '!node_modules/**' \
+  --glob '!.git/**' \
+  '(?<![\w$])Register(?![\w$])|components/register|register/index' . | head -160
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 5604
+
+---
+
+🏁 Script executed:
+
+```shell
+set -euo pipefail
+
+printf '%s\n' '--- consumer-count implementation ---'
+sed -n '180,225p' scripts/generateRegistry.mjs
+sed -n '560,600p' scripts/generateRegistry.mjs
+
+printf '%s\n' '--- registry cache files ---'
+find .claude/registry -maxdepth 1 -type f -printf '%f\n' | sort
+if [ -f .claude/registry/.overrideCache.json ]; then
+  printf '%s\n' '--- cached Register entry ---'
+  jq '.. | objects | select(.consumers? != null and ((.path? // .rel? // "") | test("register"; "i")))' .claude/registry/.overrideCache.json
+fi
+
+printf '%s\n' '--- source paths and references ---'
+find . -type f \( -path '*/app/components/register/index.jsx' -o -path '*/app/*' \) -not -path './node_modules/*' -not -path './.git/*' | head -40
+rg -n -P --hidden \
+  --glob '*.{js,jsx,ts,tsx}' \
+  --glob '!node_modules/**' \
+  --glob '!.git/**' \
+  '(?<![\w$])Register(?![\w$])|components/register|register/index' . | head -160
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 5079
+
+---
+
+🏁 Script executed:
+
+```shell
+set -euo pipefail
+
+printf '%s\n' '--- countConsumers definition and callers ---'
+rg -n -C 12 'function countConsumers|countConsumers\(' scripts/generateRegistry.mjs
+
+printf '%s\n' '--- cache entries containing register ---'
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+for name in ('.claude/registry/.baseCache.json', '.claude/registry/.overrideCache.json'):
+    path = Path(name)
+    if not path.exists():
+        continue
+    data = json.loads(path.read_text())
+    print(f'[{name}]')
+    def walk(value, location=()):
+        if isinstance(value, dict):
+            if any('register' in str(v).lower() for v in value.values() if isinstance(v, str)):
+                print(location, value)
+            for key, child in value.items():
+                walk(child, location + (str(key),))
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                walk(child, location + (str(index),))
+    walk(data)
+PY
+
+printf '%s\n' '--- exact available Register paths ---'
+find . -type f -iname '*register*' -not -path './.git/*' -not -path './node_modules/*' -print
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 4487
+
+---
+
+🏁 Script executed:
+
+```shell
+set -euo pipefail
+
+printf '%s\n' '--- generator-equivalent Register count ---'
+matches=$(
+  grep -rl 'register' overrides/app \
+    --include='*.js' --include='*.jsx' --include='*.ts' --include='*.tsx' 2>/dev/null |
+    grep -v '\.test\.' |
+    grep -v 'register\.' || true
+)
+if [ -n "$matches" ]; then
+  printf '%s\n' "$matches"
+  printf 'count=%s\n' "$(printf '%s\n' "$matches" | wc -l)"
+else
+  printf '%s\n' 'count=0'
+fi
+
+printf '%s\n' '--- component merge and output logic ---'
+sed -n '597,670p' scripts/generateRegistry.mjs
+
+printf '%s\n' '--- tracked status for generated files ---'
+git status --short -- .claude/registry/components.md .claude/registry/.baseCache.json
+```
+
+Repository: ZimmermannAU/zimmermann-pwa
+
+Length of output: 3247
+
+---
+
+
+
+</details>
+
+**Regenerate the component registry.**
+
+The `Register` consumer count must be `7`, not `3`. Do not hand-edit the generated markdown.
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.claude/registry/components.md at line 59, Regenerate the component registry
+so the Register entry reflects a consumer count of 7 instead of 3. Update the
+generated output through the registry generation workflow rather than manually
+editing the markdown.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:triton:luna -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:6b2fe38adf517b0b13345d66 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- coderabbitai[bot] on overrides/app/pages/contentfulPreview/index.tsx:167  (2026-07-31T07:44:40Z):
+_🔒 Security & Privacy_ | _🟠 Major_ | _⚡ Quick win_
+
+**Add `<Seo noIndex />` to the missing-`entry` branch.**
+
+This branch returns HTTP 200 with no `<Seo noIndex />`. If a preview token is configured in an environment (for example, a staging environment used by editors) and a request hits this route without an `entry` query parameter, the response is indexable. This is the same class of gap already fixed on the `previewUnavailable` branch above (lines 143-155), just on a different path.
+
+The PR intent states that `<Seo noIndex />` applies to all preview paths. This branch is missed.
+
+<details>
+<summary>🐛 Proposed fix</summary>
+
+```diff
+   if (!entryId) {
+     return (
+-      <Box p={8}>
+-        <Text color="red.500">Missing &quot;entry&quot; query parameter.</Text>
+-      </Box>
++      <>
++        <Seo noIndex />
++        <Box p={8}>
++          <Text color="red.500">Missing &quot;entry&quot; query parameter.</Text>
++        </Box>
++      </>
+     );
+   }
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+  if (!entryId) {
+    return (
+      <>
+        <Seo noIndex />
+        <Box p={8}>
+          <Text color="red.500">Missing &quot;entry&quot; query parameter.</Text>
+        </Box>
+      </>
+    );
+  }
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/contentfulPreview/index.tsx` around lines 157 - 163, Add
+<Seo noIndex /> to the missing-entry branch in the preview page component,
+alongside its existing error UI, so requests without an entry query parameter
+remain non-indexable like the previewUnavailable branch.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:c6febb8b87f20d9431599491 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits c686912 to 51c0290
+
+--- coderabbitai[bot] on .docs/integration/02-contentful.md:73  (2026-07-31T07:51:13Z):
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Remove the duplicated `only` in the Live Preview description.**
+
+Line 73 states that the token is “only set on dev/test/sit/uat only”. Use one `only` and place it before the environment list.
+
+<details>
+<summary>Proposed wording</summary>
+
+```diff
+- the token is only set on dev/test/sit/uat only (never staging or prod) MRT environments
++ the token is set only on dev/test/sit/uat MRT environments (never staging or prod)
+```
+
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+- **Live preview.** When an editor opens preview in Contentful Studio, the `/preview` route renders the entry inside Studio's iframe. The `@contentful/live-preview` SDK subscribes to `postMessage` events from Studio for real-time content updates. The CPA token is set only on dev/test/sit/uat MRT environments (never staging or prod), this is required by the SDK and is acceptable because: (a) the token is only set on dev/test/sit/uat only (never staging or prod) MRT environments, (b) the route returns a 404 when no preview token is present, and (c) the route is `noindex`. The MRT proxy approach was considered but deferred in favour of the simpler client-side SDK integration.
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 LanguageTool</summary>
+
+[uncategorized] ~73-~73: Possible missing article found.
+Context: ...subscribes to `postMessage` events from Studio for real-time content updates. The CPA ...
+
+(AI_HYDRA_LEO_MISSING_THE)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.docs/integration/02-contentful.md at line 73, Update the Live preview
+description near the Contentful preview route to remove the duplicated “only” in
+the CPA token statement, placing a single “only” before the dev/test/sit/uat
+environment list while preserving the rest of the explanation.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:triton:luna -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:1f310c4ae68e11a518f195b9 -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+✅ Addressed in commits c686912 to 51c0290
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:54  (2026-07-31T07:51:13Z):
+_🎯 Functional Correctness_ | _🟠 Major_ | _⚡ Quick win_
+
+**Set HTTP 404 on the genuine not-found path.**
+
+When `error || !experience` is true, the response still returns HTTP 200 with an indexable "Page not found." message. The `previewUnavailable` branch in this same file (Lines 94-106) already sets `res.status(404)` via `useServerContext()` for the equivalent situation. Apply the same treatment here so search engines do not index a missing-slug page as valid content.
+
+`ExperienceFetch` does not currently receive `res`. Call `useServerContext()` inside the component (hooks can be called from any component, not just the top-level page) and set the status before returning.
+
+
+
+<details>
+<summary>🐛 Proposed fix</summary>
+
+```diff
++import { useServerContext } from '`@salesforce/pwa-kit-react-sdk/ssr/universal/hooks`';
++
+ const ExperienceFetch = ({ client, slug, locale, isPreview }: ExperienceFetchProps) => {
+   const { experience, isLoading, error } = useFetchBySlug({
+     client: client as any,
+     slug,
+     experienceTypeId: EXPERIENCE_TYPE_ID,
+     localeCode: locale,
+   });
++  const { res } = useServerContext();
+
+   if (isLoading) {
+     return (
+       <Box p={8} display="flex" justifyContent="center">
+         <Spinner size="xl" />
+       </Box>
+     );
+   }
+
+   if (error || !experience) {
++    if (res) {
++      res.status(404);
++    }
+     return (
+-      <Box p={8}>
+-        <Text color="red.500">Page not found.</Text>
+-      </Box>
++      <>
++        <Seo noIndex />
++        <Box p={8}>
++          <Text color="red.500">Page not found.</Text>
++        </Box>
++      </>
+     );
+   }
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+  if (error || !experience) {
+    if (res) {
+      res.status(404);
+    }
+    return (
+      <>
+        <Seo noIndex />
+        <Box p={8}>
+          <Text color="red.500">Page not found.</Text>
+        </Box>
+      </>
+    );
+  }
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 42 - 48, Update the
+not-found branch in the experience page component to call useServerContext(),
+set res.status(404) when error || !experience is true, and then render the
+existing “Page not found.” response. Match the status-handling approach used by
+the previewUnavailable branch.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:f76f06e8562381e5f39bb1ee -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:128  (2026-07-31T07:51:13Z):
+_🎯 Functional Correctness_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Missing-configuration state is still indexable HTTP 200.**
+
+When `client` is `null`, this branch renders "Contentful configuration is missing" but leaves the response at HTTP 200 with no `noindex`. Search engines can index this internal error message if it is ever hit in production due to misconfiguration. Apply the same 404 + `Seo noIndex` treatment used for `previewUnavailable` above.
+
+
+
+<details>
+<summary>🐛 Proposed fix</summary>
+
+```diff
+   if (!client) {
++    if (res) {
++      res.status(404);
++    }
+     return (
+-      <Box p={8}>
+-        <Text color="red.500">Contentful configuration is missing — cannot render this page.</Text>
+-      </Box>
++      <>
++        <Seo noIndex />
++        <Box p={8}>
++          <Text color="red.500">Contentful configuration is missing — cannot render this page.</Text>
++        </Box>
++      </>
+     );
+   }
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+  if (!client) {
+    if (res) {
+      res.status(404);
+    }
+    return (
+      <>
+        <Seo noIndex />
+        <Box p={8}>
+          <Text color="red.500">Contentful configuration is missing — cannot render this page.</Text>
+        </Box>
+      </>
+    );
+  }
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@overrides/app/pages/experience/index.tsx` around lines 108 - 114, Update the
+client-missing branch in the page component to return a 404 response and render
+the Seo component with noIndex, matching the existing previewUnavailable
+handling. Preserve the current missing-configuration message while ensuring this
+state cannot be indexed.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:medusa:beignet -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:45944364bf5ef539e1703ae2 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Confirmed as addressed by @marcelannavarro
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro on .claude/registry/components.md:59  (2026-07-31T08:13:24Z):
+@coderabbitai Not a hand-edit, this column is generated by scripts/generateRegistry.mjs, and the count is a substring `grep "register"`, not an import graph. Neither value is correct: the true count of Register-component consumers in overrides is 0 (verified, nothing imports it). The matches it's counting are registerServiceWorker, @cf-register annotations, and "registers experience components" comments, unrelated to the base Register account component. Regenerating would show 7 (equally wrong, +unrelated churn), so this is a generator-heuristic limitation to fix in the tooling, not here.
+
+--- marcelannavarro on overrides/app/pages/contentfulPreview/index.tsx:167  (2026-07-31T08:43:57Z):
+@coderabbitai Fixed in c686912, added <Seo noIndex/> to the !entryId branch, so every exit path on the editor-only /preview route is now noindex (the previewUnavailable 404+noindex path, this missing-entry path, and the main render). Kept HTTP 200 since the route exists and this is just a missing query param, not a not-found.
+
+--- marcelannavarro on .docs/integration/02-contentful.md:73  (2026-07-31T08:45:18Z):
+@coderabbitai Fixed in 51c0290, collapsed the duplicated "only" ("only set on … only" → "set only on …").
+
+--- marcelannavarro on overrides/app/pages/experience/index.tsx:54  (2026-07-31T08:46:02Z):
+@coderabbitai Fixed in c686912, added <Seo noIndex/> so the not-found state isn't indexed. I intentionally did NOT set res.status(404) here: useFetchBySlug resolves client-side (useState/useEffect), so this branch never executes during SSR (SSR renders the loading spinner at 200) and `res` from useServerContext is undefined client-side, a 404 here would be dead code. A real HTTP 404 for a missing slug needs SSR prefetch (getProps on the page), tracked as a separate follow-up.
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:54  (2026-07-31T08:46:23Z):
+`@marcelannavarro`, agreed. `useFetchBySlug` resolves after hydration, so `res.status(404)` in `ExperienceFetch` cannot change the SSR response. `<Seo noIndex />` is the correct minimal fix for the current client-side not-found state.
+
+I withdraw this finding. Would you like me to create a follow-up issue for SSR prefetch and a true missing-slug HTTP 404?
+
+<!-- <review_comment_withdrawn> -->
+
+---
+
+<details>
+<summary>✏️ Learnings added</summary>
+
+```
+Learnt from: marcelannavarro
+Repo: ZimmermannAU/zimmermann-pwa PR: 43
+File: overrides/app/pages/experience/index.tsx:42-54
+Timestamp: 2026-07-31T08:46:17.392Z
+Learning: In `overrides/app/pages/experience/index.tsx`, `useFetchBySlug` resolves missing Experience content client-side after hydration. The SSR response renders the loading state, so `useServerContext().res.status(404)` in `ExperienceFetch` cannot produce a true HTTP 404 for `error || !experience`. The current not-found branch must render `<Seo noIndex />`; a true HTTP 404 requires SSR prefetch, such as page `getProps`.
+```
+
+> Note: Learnings are effective only in the context of similar code segments. To apply general coding guidelines, please configure [review instructions](https://docs.coderabbit.ai/guides/review-instructions). You can manage existing learnings in the [app](https://app.coderabbit.ai/learnings).
+
+</details>
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro on overrides/app/pages/experience/index.tsx:128  (2026-07-31T08:46:26Z):
+@coderabbitai Fixed in c686912, added <Seo noIndex/> + res.status(500). Used 500 rather than 404: a missing Contentful config is a server misconfiguration, not a missing page (404 would wrongly tell crawlers the URL doesn't exist). This branch is synchronous, so unlike the not-found path the status is set correctly during SSR.
+
+--- coderabbitai[bot] on overrides/app/pages/experience/index.tsx:128  (2026-07-31T08:46:46Z):
+`@marcelannavarro`, confirmed. `500` is the correct status for missing Contentful configuration. The updated branch also renders `<Seo noIndex />`, so the error response is not indexable. This addresses the original HTTP 200 concern.
+
+<!-- <review_comment_addressed> -->
+
+---
+
+<details>
+<summary>✏️ Learnings added</summary>
+
+```
+Learnt from: marcelannavarro
+Repo: ZimmermannAU/zimmermann-pwa PR: 43
+File: overrides/app/pages/experience/index.tsx:114-128
+Timestamp: 2026-07-31T08:46:40.438Z
+Learning: In `overrides/app/pages/experience/index.tsx`, a missing Contentful client configuration is a synchronous SSR server-misconfiguration state. It must set `res.status(500)` and render `<Seo noIndex />`; it must not use HTTP 404 because the requested page may exist.
+```
+
+> Note: Learnings are effective only in the context of similar code segments. To apply general coding guidelines, please configure [review instructions](https://docs.coderabbit.ai/guides/review-instructions). You can manage existing learnings in the [app](https://app.coderabbit.ai/learnings).
+
+</details>
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro on .claude/registry/pages.md:22  (2026-07-31T09:07:18Z):
+@coderabbitai Resolved by regeneration. The phantom override rows this flagged are gone, there's no envSelector page at all, and product-list is now correctly listed as a Base page (app/pages/product-list/index.jsx, which exists in the base package) rather than the non-existent overrides/app/pages/product-list/index.tsx. Current generator output is accurate; no phantom rows remain.
+
+--- coderabbitai[bot] on .claude/registry/pages.md:22  (2026-07-31T09:07:35Z):
+`@marcelannavarro`, confirmed. The current registry has no `EnvSelector` row. It lists `ProductList` as the Base page at `app/pages/product-list/index.jsx`. The finding is resolved.
+
+<!-- <review_comment_addressed> -->
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+

@@ -1,0 +1,9 @@
+{
+  "id": "6",
+  "subject": "Expensive gates + handoff",
+  "description": "Run build-storybook+a11y suite, test:story (BrowserStack, scoped to SFCC-91), test:max-file-size, cr review --uncommitted once. Write handoff.md and present to Marcel.",
+  "activeForm": "Running expensive gates and writing handoff",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

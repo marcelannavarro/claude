@@ -1,0 +1,700 @@
+
+
+################################################################################
+### SESSION: ZIMM - Design2Dev  [2026-08-14]  (28 unique turns)
+################################################################################
+
+--- turn 1 | ZIMM - Design2Dev | 2026-08-14  [dup across sessions: ZIMM - FED Alignment] ---
+we are now go for building and as part of this we are to integrate into the develop branch foundational design elements from the Figma-To-React handover workflow that was developed
+
+with this said, execute an in-depth analysis for the feature/design-tokens-implementation-to-dev branch
+
+--- turn 2 | ZIMM - Design2Dev | 2026-08-14  [dup across sessions: ZIMM - FED Alignment] ---
+aside from the changes specific to this branch - is this branch up to date with the latest from develop? and then walk me through the diff
+
+for context: the expected diff is mainly focused/intended on/to bringing in MASTER design files that will serve as foundational design files for the UI build that will be commencing - by master that means design files that serve an actual foundational design purpose and not something totally irrelevant
+
+--- turn 3 | ZIMM - Design2Dev | 2026-08-14  [dup across sessions: ZIMM - FED Alignment] ---
+what are diffs that fall outside of this main scope, list them down, and then technicalities aside (like TIER-related concerns, the change is a documentation, etc.) - which of these items listed/flagged as out of scope genuinely provide value to the goal of introducing foundational design to the develop branch to aid and guide ui build as we commence FED build
+
+--- turn 4 | ZIMM - Design2Dev | 2026-08-14  [dup across sessions: ZIMM - FED Alignment] ---
+So now my concern is these files that are being flagged as out of scope, how out of scope are they? How essential? How important? Or how much is it needed for these to be taken out? Are these being flagged as out of scope because of technicalities, of specific rules, or is it because they are genuinely and totally not usable or do not contribute at all to the goal of migrating foundational design aspects into the developed branch to aid in the UI build that is commencing. I want to know if these flags are out of complete and utter necessity or if they are just being flagged out of technicalities.
+
+--- turn 5 | ZIMM - Design2Dev | 2026-08-14 ---
+before we proceed any further - in the github repo, there are new branches being pushed that are heavily connected to F2R - let's get those branches locally and see if they provide any clarification or resolve to the current state of the feature/design-tokens-implementation-to-dev branch
+
+--- turn 6 | ZIMM - Design2Dev | 2026-08-14 ---
+let's step back, this is good stuff but a little too much to comprehend as of now, go for ELI5 but i'm the FED Lead
+
+indicate where the source is from - Han's is superior to Jersey's
+
+--- turn 7 | ZIMM - Design2Dev | 2026-08-14 ---
+let's address the blockers one by one - hit me
+
+--- turn 8 | ZIMM - Design2Dev | 2026-08-14 ---
+i'm leaning towards han's stance - but what would the net effect of that move be? what will be affected with the removal of the fonts?
+
+--- turn 9 | ZIMM - Design2Dev | 2026-08-14 ---
+drop the 8 unused weights (the font files) - then for the 2 fonts, they are to be dropped as well (the font files) for this new commit that we will do prior to the PR, as they are dropped, clean up where there will be effects of the removal
+
+--- turn 10 | ZIMM - Design2Dev | 2026-08-14 ---
+does this gitignore from han:
+# Monotype Desktop EULA prohibits server installation / redistribution
+02-design/library/assets/Font Futura OTF/
+02-design/library/assets/Font Futura WOFF2/
+
+mean that the fonts we previously had in overrides/app/static/fonts/ were wrongly implemented in nature? do we have any references regarding font licensing in the codebase? confluence? jira?
+
+--- turn 11 | ZIMM - Design2Dev | 2026-08-14 ---
+i went into the full EULA: "Create + Pitch
+We recommend that you print this Monotype Fonts: Create + Pitch End User License Agreement (the “Create + Pitch EULA” or the “Agreement”) for further reference. 
+
+This Create + Pitch EULA becomes a binding contract between you and Monotype when you click on the area marked “ACCEPT LICENSE AGREEMENT” or similar language. Please read this entire Agreement before you agree to be bound by its terms and conditions. 
+
+This is an agency prototyping license with limited distribution rights solely for the purpose of sharing samples of work created using the Software (for example, printed materials) or embedding the Software (for example, an application) with clients by whom you have been engaged with respect to the design process, but no one else. This is not a distribution license.  
+
+If you or your client wish to publicly distribute any materials created through Use of the Software, or materials that embed any portion of the Software, you or your client must obtain a separate distribution license from Monotype. You agree to use reasonable efforts to promote the Software to your clients and to cooperate with Monotype, in good faith, if your clients require a license to the Software. This includes making your clients aware that the Software is available for licensing by Monotype, providing clients with Monotype’s contact information or other materials that Monotype may provide to you from time to time, and providing Monotype with non-confidential information about clients who inquire about the Software, including information about such clie
+
+…[97455 chars elided from middle of pasted block]…
+
+rts in any action related to such agreement.
+
+This Agreement will not be governed by the United Nations Convention on Contracts for the International Sale of Goods, the application of which is expressly excluded. 
+
+(v250730)"
+
+also look into:
+
+* /Users/marcel.a.n.navarro/Dev/Zimmermann-Handover/02-design/library/assets (this is the initial version of F2R from the AU design team)
+* Han's work at the f2r-component-registry branch
+* and Jersey's work at the f2r-implementation-workflow branch
+
+
+what do these conclude with regards to having the fonts in the PWA Kit repo: overrides/app/static/fonts/
+
+--- turn 12 | ZIMM - Design2Dev | 2026-08-14 ---
+the f2r-implementation-workflow branch is neglectable - the focus is on han's f2r-component-registry and the current feature/design-tokens-implementation-to-dev
+
+what is the current state of feature/design-tokens-implementation-to-dev with regards to the fonts?
+
+--- turn 13 | ZIMM - Design2Dev | 2026-08-14 ---
+prepare and adjust the feature/design-tokens-implementation-to-dev particularly the existing current changes to reflect the concluded decision on the fonts
+
+--- turn 14 | ZIMM - Design2Dev | 2026-08-14 ---
+sidetask: move .docs/temp/pdpComponentReview.md to local they do not belong to the repo
+
+--- turn 5 | ZIMM - Design2Dev | 2026-08-14 ---
+what's the final verdict on this?
+
+--- turn 10 | ZIMM - Design2Dev | 2026-08-14 ---
+does this gitignore from han:
+# Monotype Desktop EULA prohibits server installation / redistribution
+02-design/library/assets/Font Futura OTF/
+02-design/library/assets/Font Futura WOFF2/
+
+mean that the fonts we previously had in overrides/app/static/fonts/ were illegal in nature?
+
+--- turn 14 | ZIMM - Design2Dev | 2026-08-14 ---
+sidetask: move .docs/temp/pdpComponentReview.md and .docs/temp/pdpComponentStories.md to local they do not belong to the repo
+
+--- turn 15 | ZIMM - Design2Dev | 2026-08-14 ---
+the 9 current changes seem to be overdone, particularly some of the documentation/comments - run a v&v audit to the current existing changes with regards to the font findings, adjust anything that needs changing
+
+--- turn 16 | ZIMM - Design2Dev | 2026-08-14 ---
+hey claude let's take a step back, i have discarded all changes made, aside from the removal of the 10 font files, things seem to have gotten out of hand
+
+main goal: for blocker #1, the decision is clear the fonts are not to be committed into the codebase, with that settled, let's look into the full diff that the feature/design-tokens-implementation-to-dev branch has ahead of the develop branch and adjust accordingly now that we have removed the 10 font files and have confirmed the correct handling of the fonts
+
+with this said: execute an in-depth analysis and audit of the diff that the feature/design-tokens-implementation-to-dev branch has to the develop branch, then create a plan to adjust the diff as needed/appropriate with given the conclusion with the fonts
+
+--- turn 17 | ZIMM - Design2Dev | 2026-08-14 ---
+phase 1 scope confirmed, execute
+
+--- turn 18 | ZIMM - Design2Dev | 2026-08-14 ---
+now phase 2, 5 items
+
+let's start with item #1
+
+what is the problem and how do we fix is
+
+--- turn 1 | ZIMM - Design2Dev | 2026-08-14 ---
+we are now go for building and as part of this we are to integrate into the develop branch foundational design elements from the Figma-To-React handover workflow that was developed
+
+with this said, pull this branch from the remote https://github.com/ZimmermannAU/zimmermann-pwa/tree/feature/design-tokens-implementation-to-dev so i could have it locally
+
+--- turn 2 | ZIMM - Design2Dev | 2026-08-14 ---
+aside from the changes specific to this branch - is this branch up to date with the latest from develop?
+
+--- turn 3 | ZIMM - Design2Dev | 2026-08-14 ---
+walk me through the diff
+
+--- turn 4 | ZIMM - Design2Dev | 2026-08-14 ---
+the expected diff is mainly focused/intended on/to bringing in MASTER design files that will serve as foundational design files for the UI build that will be commencing - by master that means design files that serve an actual foundational design purpose and not something totally irrelevant
+
+what are diffs that fall outside of this main scope?
+
+--- turn 5 | ZIMM - Design2Dev | 2026-08-14 ---
+technicalities aside (like TIER-related concerns, the change is a documentation, etc.) - which of these items listed/flagged as out of scope genuinely provide value to the goal of introducing foundational design to the develop branch to aid and guide ui build as we commence FED build
+
+--- turn 6 | ZIMM - Design2Dev | 2026-08-14 ---
+Recheck the branch and the changes that come with it.
+
+Then: So now my concern is these files that are being flagged as out of scope, how out of scope are they? How essential? How important? Or how much is it needed for these to be taken out? Are these being flagged as out of scope because of technicalities, of specific rules, or is it because they are genuinely and totally not usable or do not contribute at all to the goal of migrating foundational design aspects into the developed branch to aid in the UI build that is commencing. I want to know if these flags are out of complete and utter necessity or if they are just being flagged out of technicalities.
+
+--- turn 7 | ZIMM - Design2Dev | 2026-08-14 ---
+so we're good to PR?
+
+
+################################################################################
+### SESSION: ZIMM - Tash Ad Hoc  [2026-08-07]  (38 unique turns)
+################################################################################
+
+--- turn 1 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+# Task: Zimmermann Outstanding Items — Discovery, Confluence Update & Status Compilation
+
+You have access to the **codebase**, **Confluence**, and **Jira**. You will help me catch up on and action a set of items from a chat with Natasha Lay and Hardi Sempuno (Hardi has since rolled off the project).
+
+## 🛑 CRITICAL RULE #1 — Approval Gate
+
+**You MUST NOT make any writes, edits, commits, PRs, Confluence page updates, or Jira ticket changes until I have explicitly reviewed and approved your plan of action.**
+
+Your workflow is strictly:
+1. **Discover** (read-only investigation across codebase, Confluence, Jira)
+2. **Report findings + propose a plan** (in a structured summary)
+3. **Wait for my explicit approval** ("approved", "go ahead", or revised instructions)
+4. **Execute** only after approval, and only within the approved scope
+
+If unsure whether an action counts as a "write," pause and ask.
+
+## 🛑 CRITICAL RULE #2 — Provenance, Not Proximity
+
+**Documentation living in the codebase (e.g., under `vendor/`) is a downstream artifact — it is NOT a valid source for the Confluence "Zimm Provided" page.**
+
+Third-party / vendor docs (from Zimmermann, Sparro, Tell No Lies, etc.) originated *outside* the codebase — via email, Teams, SharePoint, OneDrive, direct file share, or a vendor portal — and were then extracted/copied into the repo. The Confluence page must reference the **original provided documents** and their original source of delivery, not the repo-embedded copies.
+
+**What this means in practice:**
+- Use the codebase (`vendor/`, `openItems.md`) as a **signal** — it tells you
+
+…[5867 chars elided from middle of pasted block]…
+
+ks.
+
+---
+
+## 🚫 Do Not
+
+- Do not treat the codebase as a source citation for the Confluence page. `vendor/` paths are not valid provenance.
+- Do not add any Confluence entry for an artifact whose original delivery source you cannot confirm.
+- Do not send messages to Natasha, Hardi, or anyone else on my behalf.
+- Do not close, reassign, or comment on Jira tickets without approval.
+- Do not modify code in `vendor/` or elsewhere — this is a docs/status task.
+- Do not assume Hardi's recollections are 100% accurate — verify against artifacts and original sources.
+
+Begin with the Discovery Phase now.
+
+--- turn 2 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+ask me one-by-one regarding the action items in the proposed plan of action
+
+--- turn 3 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+plan b save to /Documents
+
+question: with these latest updates, how are the repo docs looking? are they up-to-date? behind? is there any action to do for the codebase?
+
+--- turn 4 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+hold off on the codebase drifts - let's first execute on the 3-branch plan
+
+--- turn 5 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+simplify the placeholders in the confluence page - they're overcomplicated
+
+propose to me again before executing
+
+--- turn 6 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+what are the other changes did you make in the confluence page aside from the placeholders for mulesoft and sparro?
+
+--- turn 7 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+execute the simplifaction of the placeholders
+
+--- turn 8 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+i restored to version 14, there were changes that happened that weren't mean to be touched
+
+for the updates to the confluence page, i could do them manually, just provide me what i need to do/add into the page
+
+--- turn 9 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+create a short message to Tash for the GC as i update her that i made updates to the confluence page as necessary based on what we had on the codebase but i don't have access to the files as i may not have been part of the email thread but i had sources that point to the specific files which i specific into the page
+
+--- turn 10 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+for the Plan B — Outstanding-items list for Natasha - how viable is it to have this into confluence as a new page? is there no existing page for this, i wouldn't want to introduce redundancy into confluence; if none, then where would this page fall under?
+
+--- turn 11 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+side track: are these the files missing for MuleSoft?
+
+/Users/marcel.a.n.navarro/Downloads/Find+In+Store+Integration.pdf /Users/marcel.a.n.navarro/Downloads/DC+Stock+Upload+Integration.pdf /Users/marcel.a.n.navarro/Downloads/Store+Stock+Upload+Integration.pdf '/Users/marcel.a.n.navarro/Downloads/Customer Order Transactions Sync_0994ca0c340941df8f400018e2c9eca6-150626-0310-160.pdf' /Users/marcel.a.n.navarro/Downloads/Inventory+Sync+from+Newstore+to+Magento_Adobe.pdf '/Users/marcel.a.n.navarro/Downloads/Magento Experience Integration_9c41958a732f49b88e0f87af815138b9-150626-0312-166.pdf' '/Users/marcel.a.n.navarro/Downloads/Customer Order Transactions Sync_8117da1859d44641b1f464f08e8b8555-150626-0311-162.pdf' '/Users/marcel.a.n.navarro/Downloads/Orders Process Integration_908c7d74ea394b368f22c3b52dd8189b-150626-0312-164.pdf'
+
+--- turn 12 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+go for poppler
+
+--- turn 13 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+which of the files do i attach to the confluence page?
+
+--- turn 14 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+why Customer Order Transactions Sync_…160.pdf and not Customer Order Transactions Sync_…162.pdf
+
+--- turn 15 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+check the status of the confluence page - confirm status
+
+--- turn 16 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+back to Branch B - key outstanding actions we are waiting on Zimmermann (actions or questions)
+
+
+are the contents of /Users/marcel.a.n.navarro/Documents/zimmermann-outstanding-items.md aligned with the task of outlinining key outstanding actions we are waiting on Zimmermann (actions or questions)
+
+--- turn 17 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+first - perform an in-depth analysis of /Users/marcel.a.n.navarro/Documents/zimmermann-outstanding-items.md to ensure it's aligned with the codebase, confluence, and jira
+
+report back when done
+
+--- turn 18 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+[SYSTEM task-notification block, 9580 chars — background subagent result pasted back]
+[head: <task-notification> <task-id>a310992d9f6e7c819</task-id> <tool-use-id>toolu_01HZLH1bYQ2w719k8eQiJeap</tool-use-id> <output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/fe57bf89-de04-4adf-8afa-4316e3b6b6f5/tasks/a310992d9f6e7c819.ou…]
+[USER TEXT AFTER NOTIFICATION]: (none)
+
+--- turn 19 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+the discrepancies and omissions are negligible for now - the focus is making sure that the contents of the /Users/marcel.a.n.navarro/Documents/zimmermann-outstanding-items.md and the codebase are accurately aligned as we report them to tash - await further instructions
+
+--- turn 20 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+confirm that the /Users/marcel.a.n.navarro/Documents/zimmermann-outstanding-items.md 
+
+are aligned with the task of:
+
+"Hey Hardi and Angelo, can you please outline:
+
+1. Key outstanding actions we are waiting on Zimmermann (actions or questions)
+
+thanks so much."
+
+--- turn 21 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+execute V2 re-cut with the goal of fulfilling the task assigned by tash
+
+--- turn 22 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+explain - briefly, ELI5 - why the items that were cut were removed from the list for Tash
+
+--- turn 23 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+what was removed from the initial list? and why?
+
+--- turn 24 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+create a short message to tash as i send her the work for: "Hey Hardi and Angelo, can you please outline:
+
+1. Key outstanding actions we are waiting on Zimmermann (actions or questions)
+
+thanks so much."
+
+/Users/marcel.a.n.navarro/Documents/zimmermann-key-actions-awaiting.md
+
+do a final in-depth review of the document against the codebase, confluence, and jira before i send it over to Tash
+
+--- turn 25 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+revise this as needed:
+
+Didomi Notice IDs and GTM container IDs are flagged 🔴 hard-blocker, but our own 7.1b tracker annotates both with "Would this come via Addingwell? Maybe not required?" So we'd be firmly asking Zimmermann for two things we're not 100% sure we need. Consider softening those two to "provide per-env IDs, or confirm they route via Addingwell instead." Small wording change; prevents a "why are you asking us for this?" reply.
+
+--- turn 26 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+add a disclaimer to the message to tash that these are based on the what we have in the codebase particularly the docs etc. and have been checked against confluence and jira for confirmation
+
+--- turn 27 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+as the FED Lead for this project - while i am Claude-enabled and assisted - i have to make sure that i learn from the work i do - given the work that we did for Zimmermann Outstanding Items, create an .MD file in learning/educational format for the work that we did here to make sure that i learn from it and expand my knowledge of the project and overall
+
+--- turn 28 | ZIMM - Tash Ad Hoc | 2026-08-07  [dup across sessions: ZIMM - US Intl] ---
+re-create in ELI5 BUT I'M THE FRONT END DEVELOPMENT LEAD format - not dumbed down but simplified enough to understand without too much jargon and technical terms giving me a hard time - move to /Desktop/(create a folder where my learnings will live)
+
+--- turn 29 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+good with the proposed verbose taxonomy and delivery shape
+
+for copilot - i need your help with the prompt i will run to copilot specced to the findings we need but do run an in-depth and full-sweep of everything zimmermann and third-party related whether it's back-and-forths, documentation handover, conversations, questions, etc.
+
+--- turn 30 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+add into this prompt to deliver a list of documents i need to download and collate so i could refer to you those as well
+
+--- turn 31 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+i want to run this prompt 3x to be as recursive as possible, with this said create 2 follow up prompts: for the 2nd run and final run
+
+--- turn 32 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+consideration for the final pass' prompt from co-pilot: Two things I'd flag for pass 3: (1) I still can't find the Crazy Egg / Optimizely / Didomi vendor files — the trail points to Miranda Zaknich's Didomi console access rather than a document, so pass 3 should chase Miranda's messages/exports specifically; and (2) the Booksy/Booxi identity needs a human decision, not more searching.
+
+--- turn 33 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+go ahead and save the prompts
+
+--- turn 34 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+the results have returned: /Users/marcel.a.n.navarro/Dev/zimmPWAPass.md
+
+what's next for this workflow? the documents? extract the list of documents so i could gather them
+
+--- turn 35 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+i've tried my best to collect everything i could - look into /Downloads - grab the files we need, and move them into /Dev/ZimmActions
+
+--- turn 36 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+i moved the zimmPWAPass.md into the /ZimmActions folder
+
+from this point - what's our progress in terms of completing this task?
+
+--- turn 37 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+these would just have to follow: "A few docs still to gather — RAID Log, Tim's Global-e SFCC deck, Measmerize PPT, Omneo Data Dictionary (login-gated).", "The "Needs a Human" list (10 items) — Booxi identity, Vimeo/Measmerize consent, Miranda console access, NewStore EU status, etc. These are real project follow-ups, mostly Zimmermann/vendor-side — tracked, not ours to close." 
+
+execute these: Fold the sweep's new findings into Tash's list (recommended before you send): SOW hard-dates (MuleSoft 24 Jul, Data Dictionary 14 Aug, Adyen/GiveX 25 Aug, SIT/RAML 9 Sep), NewStore Connector for GiveX, gift-card-provider decision, Booksy-vs-Booxi, and the new names Zendesk/Klarna/Zenkraft. → not done yet.
+
+1. (Optional) Verify the collated docs + upgrade Confluence provenance with the real originals now in ZimmActions.
+
+--- turn 45 | ZIMM - Tash Ad Hoc | 2026-08-07 ---
+align zimmermann-key-actions-awaiting.md with openItems.md's level of "So it's mostly dependencies FED is waiting on other teams/vendors for — heavy on integration/middleware, not FED-owned work."
+
+
+################################################################################
+### SESSION: ZIMM - SFCC-237  [2026-08-13]  (75 unique turns)
+################################################################################
+
+--- turn 1 | ZIMM - SFCC-237 | 2026-08-13 ---
+let's work on https://zimmermannworkboard.atlassian.net/browse/SFCC-237
+
+first - execute an in-depth and full on gathering of all useful knowledge and information relevant to this task from our sources - do an in-depth search in each: codebase, codebase docs, codebase configs, confluence, and JIRA
+
+--- turn 2 | ZIMM - SFCC-237 | 2026-08-13 ---
+look into the actual spike task ticket at: https://zimmermannworkboard.atlassian.net/browse/SFCC-237
+
+execute an in-depth analysis of the spike task ticket
+
+for this TSD, we shall strictly implement the prescribed template at: https://zimmermannworkboard.atlassian.net/wiki/x/AYABFQ
+
+--- turn 3 | ZIMM - SFCC-237 | 2026-08-13 ---
+here are additional documentations: /Users/marcel.a.n.navarro/Dev/mrt-administration.md /Users/marcel.a.n.navarro/Dev/mrt-overview.md - execute an in-depth analysis into these as well - report back when done
+
+--- turn 4 | ZIMM - SFCC-237 | 2026-08-13 ---
+additional information:
+
+* as per the former Integration Lead, Mani - "you cannot run multiple separate or independent Node.js application processes (like auxiliary microservices or distinct integration apps) inside a single Salesforce Managed Runtime (MRT) environment. MRT is strictly designed to host one unified application bundle generated from an official PWA Kit template."
+
+
+we did quick searches and arrived with quick answers:
+
+* question: is it possible to run multi-MRT node apps (for integrations) for SFCC PWA Kit, specifically to "Dedicated MRT node application per integration"
+   * No, running a dedicated, separate Salesforce Managed Runtime (MRT) Node.js application per integration is not natively supported or how MRT is architected for the SFCC PWA Kit. Salesforce Managed Runtime is strictly designed to host unified PWA Kit storefront projects (combining React, Node, and Express into a single SSR app server per environment/project) rather than serving as a general-purpose, multi-app microservices hosting platform. [[1](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/mrt-overview.html)]
+Understanding MRT Constraints
+      * Single App Model: Each MRT project/environment maps to one deployed bundle running a unified Express server designed to render your storefront. [[1](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/mrt-overview.html)]
+      * Not a PaaS for Microservices: You cannot spin up isolated, concurrent Node worker apps or independent sidecars inside MRT just for back-end integrations.
+      * Al
+
+…[2761 chars elided from middle of pasted block]…
+
+lication codebase. [[1](https://developer.salesforce.com/docs/commerce/commerce-solutions/guide/managed-runtime-administration.html), [2](https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/multiple-sites.html), [3](https://www.dreamfactory.com/resources/whitepapers/implementing-the-twelve-factor-app-methodology)]
+
+
+additional references:
+/Users/marcel.a.n.navarro/Dev/b2c-commerce-integration.md
+/Users/marcel.a.n.navarro/Dev/development-workflows-difference-with-pwa-kit.md
+/Users/marcel.a.n.navarro/Dev/mrt-administration.md
+/Users/marcel.a.n.navarro/Dev/mrt-overview.md
+
+--- turn 5 | ZIMM - SFCC-237 | 2026-08-13 ---
+we only have 2 options for this spike task TSD, and we know that option b is not platform-supported but we'll still include it in the spiek task TSD because it's the alternative that's being explored, and yes it's not a live contender, we'll instead be invalidating it
+
+how are we looking in terms of building the spike task TSD - are there any gaps that need to be addressed? or are we ready for build?
+
+--- turn 6 | ZIMM - SFCC-237 | 2026-08-13 ---
+for spike tasks and TSDs - actual testing is a critical aspect to prove the case of the options and ultimately the recommendation
+
+for this spike task TSD - what and how can we test this extensively to ensure full coverage
+
+--- turn 7 | ZIMM - SFCC-237 | 2026-08-13 ---
+this seems good but too technical to understand at the moment - go for ELI5 - but i'm the FED Lead
+
+--- turn 8 | ZIMM - SFCC-237 | 2026-08-13 ---
+i'd like to go implement these tests prior to writing the TSD - but first, let's run an in-depth V&V to this 4-step testing plan to ensure that our strategy covers the angles needed to back this spike task TSD
+
+--- turn 9 | ZIMM - SFCC-237 | 2026-08-13 ---
+given this - tell me, in detaill, all about the practical/hands-on testing we are planning to execute/do in ELI5 but i'm the FED Lead approach
+
+--- turn 10 | ZIMM - SFCC-237 | 2026-08-13 ---
+for tests 1-3 how do we execute these? will we be testing locally?
+
+--- turn 11 | ZIMM - SFCC-237 | 2026-08-13 ---
+for tests 1-3 these are to prove the safeguards in the single MRT app approach right? do we have anything setup/wired-up right now? or is the idea of isolation in the single MRT app theoretical as of now?
+
+--- turn 12 | ZIMM - SFCC-237 | 2026-08-13 ---
+when i did initial looking into the current single mrt app architecture for this spike task - what was found was isolation/separation of concerns of the integrations from each other against a single app causing full app failure, etc.- where was that sourced/rooted from?
+
+--- turn 13 | ZIMM - SFCC-237 | 2026-08-13 ---
+run an full-on, complete, in-depth, unbiased, intensive, and exhaustive v&v to confirm the current state of the codebase, codebase docs, codebase configs, confluence, and jira with regards to the 4-layer findings
+
+--- turn 14 | ZIMM - SFCC-237 | 2026-08-13 ---
+yes, track everything under SFCC-681 going forward - so what's our status for execution of this spike task TSD?
+
+--- turn 15 | ZIMM - SFCC-237 | 2026-08-13 ---
+we should run the practical/hands-on testing prior to writing the TSD no?
+
+--- turn 16 | ZIMM - SFCC-237 | 2026-08-13 ---
+what has been done?
+
+--- turn 17 | ZIMM - SFCC-237 | 2026-08-13 ---
+for our testing, the 3 tests + the three quick Runtime Admin look-arounds
+
+are all these local and will not touch anything live?
+
+also, i read something about the safeguards being setup but not wired up? what's that about?
+
+--- turn 18 | ZIMM - SFCC-237 | 2026-08-13 ---
+scope-wise - is adding proper handling a part of this spike?
+
+--- turn 19 | ZIMM - SFCC-237 | 2026-08-13 ---
+how do we go about the 4 tests (1-3 + the MRT tests)? one at a time? with my understanding being a critical part of the testing process
+
+do not run anything yet, await further instructions
+
+--- turn 20 | ZIMM - SFCC-237 | 2026-08-13 ---
+go for test 1
+
+--- turn 21 | ZIMM - SFCC-237 | 2026-08-13 ---
+from test 1s findings/results - what does this mean for this spike task TSD? what does this tell us? what does it imply?
+
+--- turn 22 | ZIMM - SFCC-237 | 2026-08-13 ---
+go for test 2
+
+--- turn 23 | ZIMM - SFCC-237 | 2026-08-13 ---
+run a longer block to confirm the test further
+
+--- turn 24 | ZIMM - SFCC-237 | 2026-08-13 ---
+go for test 3
+
+--- turn 25 | ZIMM - SFCC-237 | 2026-08-13 ---
+given the completion of the 3 main tests and prior to the MRT look-arounds, what do the tests tell/teach/prove - i must understand and grasp these prior to moving on
+
+--- turn 26 | ZIMM - SFCC-237 | 2026-08-13 ---
+how does the "2. The "safeguards set up but not wired up" thing — and a correction to what fixing it actually needs
+This is overrides/app/ssr/connectionPools.ts — seven undici connection pools, fully written, one per integration (SCAPI, MuleSoft, Google Places, etc.), each meant to give that integration its own capped set of network connections so a slow or flooded one can't starve the others. That's the "safeguard." It's real code, not a plan on paper.
+
+The "not wired up" part: nothing anywhere else in the codebase actually uses them. Every real network call in the SSR layer uses plain fetch() with no reference to any of these seven pools — confirmed by grepping the whole repo (zero hits outside that one file) and by the file's own git history (one commit, the day it was created, no follow-up ever). So today, all integrations share one undivided pool of connections — the fire doors are built and sitting in a box, not installed." relate to these 3 tests and findings?
+
+--- turn 27 | ZIMM - SFCC-237 | 2026-08-13 ---
+i'm unconvinced that tests 1-3 are uncovered in the current codebase - execute an in-depth, intensive, and recursive deep dive analysis into the codebase, codebase docs and config, confluence and JIRA with regards to coverage for the 3 test aspects we just tested for
+
+--- turn 28 | ZIMM - SFCC-237 | 2026-08-13 ---
+in terms of scope - is this still within the scope of this spike task TSD?
+
+--- turn 29 | ZIMM - SFCC-237 | 2026-08-13 ---
+for test 1b - what is the purpose of and what will it prove
+
+--- turn 30 | ZIMM - SFCC-237 | 2026-08-13 ---
+run an in-depth v&v/audit/check of everything we have so far (codebase, codebase docs and config, confluence, JIRA, exisiting findings for this spike task TSD) to help with the steer on the decision on how to handle test 1b
+
+--- turn 31 | ZIMM - SFCC-237 | 2026-08-13 ---
+build this revised, lower-risk version of Test 1b
+
+--- turn 32 | ZIMM - SFCC-237 | 2026-08-13 ---
+what does test 1b tell us
+
+--- turn 33 | ZIMM - SFCC-237 | 2026-08-13 ---
+let's move to the runtime admin checks - what do i need to do
+
+--- turn 34 | ZIMM - SFCC-237 | 2026-08-13 ---
+inside what organization should i run it - accenture or zimmermann?
+
+--- turn 35 | ZIMM - SFCC-237 | 2026-08-13 ---
+that would be the Zimmermann org - now what
+
+--- turn 36 | ZIMM - SFCC-237 | 2026-08-13 ---
+what's next
+
+--- turn 37 | ZIMM - SFCC-237 | 2026-08-13 ---
+here's what i can access
+
+--- turn 38 | ZIMM - SFCC-237 | 2026-08-13 ---
+additional info:
+
+--- turn 39 | ZIMM - SFCC-237 | 2026-08-13 ---
+DEV ENV
+
+--- turn 40 | ZIMM - SFCC-237 | 2026-08-13 ---
+DEV:
+Environment Variables
+Add sensitive data (API keys, for example) to your app in a more secure way than including them directly in your code. Any changes result in a redeploy. Learn more.
+Value
+COMMERCE_API_CLIENT_ID
+
+****************eb1c
+
+COMMERCE_API_OCAPI_HOST
+
+****************.com
+
+COMMERCE_API_ORGANIZATION_ID
+
+****************_002
+
+COMMERCE_API_SHORT_CODE
+
+****************7hks
+
+COMMERCE_API_SITE_ID
+
+****************nnAU
+
+CONTENTFUL_DELIVERY_TOKEN
+
+****************tQec
+
+CONTENTFUL_ENVIRONMENT_ID
+
+****************
+
+CONTENTFUL_HOST
+
+****************.com
+
+CONTENTFUL_PREVIEW_TOKEN
+
+****************tZU4
+
+CONTENTFUL_SPACE_ID
+
+****************slxu
+
+EINSTEIN_API_SITE_ID
+
+****************nnAU
+
+GTM_CONTAINER_ID
+
+****************PJ5D
+
+MEASMERIZE_BRAND_CODE
+
+****************e58e
+
+OPTIMIZELY_PROJECT_ID
+
+****************9200
+
+PUBLIC__app__features__shopperContext__enabled
+
+****************
+
+PWA_KIT_SLAS_CLIENT_SECRET
+
+****************lcSA
+
+STOREFRONT_PREVIEW_DEBUG
+
+****************
+
+Salesforce logo
+Privacy Policy
+
+Contact Us
+
+
+Environment Settings
+General
+Name
+A descriptive name for this environment.
+
+DEV
+
+Environment ID
+You can't edit the environment ID after the environment is created.
+
+dev
+Production Environment
+Mark as production to prioritize monitoring of your environment. Learn more
+
+Disabled
+
+
+B2C Commerce Instance
+B2C Commerce Instance for this environment.
+
+bkzk_002
+
+Site IDs
+Unique identifiers for this environment connecting data to specific customer facing URLs.
+
+ZimmermannAU
+ZimmermannUK
+ZimmermannUS
+ZimmermannEU
+ZimmermannEUIntl
+ZimmermannHK
+ZimmermannME
+ZimmermannU
+
+…[1485 chars elided from middle of pasted block]…
+
+settings in the bundle. Learn more
+
+Proxy: https://zimmermann-dev.sfdc-8tgtt5-ecom1.exp-delivery.com/mobify/proxy/api/*
+
+Destination: https://qmyt7hks.api.commercecloud.salesforce.com/*
+
+Proxy: https://zimmermann-dev.sfdc-8tgtt5-ecom1.exp-delivery.com/mobify/proxy/ocapi/*
+
+Destination: https://bkzk-002.dx.commercecloud.salesforce.com/*
+
+Proxy User Agent
+Control how much your backend can see about the shoppers making requests. Learn more
+
+Infrastructure
+Delete Environment
+Delete `DEV`
+Deleting this environment is permanent and cannot be undone.
+
+Delete
+Salesforce logo
+Privacy Policy
+
+Contact Us
+
+--- turn 41 | ZIMM - SFCC-237 | 2026-08-13 ---
+DEV1:
+
+Environment Variables
+Add sensitive data (API keys, for example) to your app in a more secure way than including them directly in your code. Any changes result in a redeploy. Learn more.
+Value
+COMMERCE_API_CLIENT_ID
+
+****************eb1c
+
+COMMERCE_API_OCAPI_HOST
+
+****************.com
+
+COMMERCE_API_ORGANIZATION_ID
+
+****************_002
+
+COMMERCE_API_SHORT_CODE
+
+****************7hks
+
+COMMERCE_API_SITE_ID
+
+****************nnAU
+
+EINSTEIN_API_SITE_ID
+
+****************
+
+PWA_KIT_SLAS_CLIENT_SECRET
+
+****************lcSA
+
+Salesforce logo
+Privacy Policy
+
+Contact Us
+
+
+Environment Settings
+General
+Name
+A descriptive name for this environment.
+
+DEV1
+
+Environment ID
+You can't edit the environment ID after the environment is created.

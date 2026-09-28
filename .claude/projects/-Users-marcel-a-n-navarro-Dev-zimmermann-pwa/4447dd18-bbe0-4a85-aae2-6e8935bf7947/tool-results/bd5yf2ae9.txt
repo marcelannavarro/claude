@@ -1,0 +1,483 @@
+total 5416
+drwx------@ 27 marcel.a.n.navarro  wheel      864 Aug 22 21:58 .
+drwx------@  4 marcel.a.n.navarro  wheel      128 Aug 22 14:21 ..
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    25710 Aug 22 21:58 FINDINGS-CONSOLIDATED.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    96509 Aug 22 14:35 bs.log
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    39383 Aug 22 14:40 code-state.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    36175 Aug 22 14:41 conventions.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     2133 Aug 22 14:48 cycles.mjs
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     3295 Aug 22 14:49 cycles2.mjs
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     3227 Aug 22 14:49 cycles2.mjs.bak
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    27507 Aug 22 14:34 detect.log
+drwxr-xr-x@  3 marcel.a.n.navarro  wheel       96 Aug 22 14:39 devlog
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     8321 Aug 22 14:39 devlog.zip
+drwxr-xr-x@  3 marcel.a.n.navarro  wheel       96 Aug 22 14:40 devlog1
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     7830 Aug 22 14:40 devlog1.zip
+-rw-r--r--@  1 marcel.a.n.navarro  wheel  1605624 Aug 22 14:49 pdp-desktop.png
+-rw-r--r--@  1 marcel.a.n.navarro  wheel   206157 Aug 22 14:54 pdp-mobile.png
+-rw-r--r--@  1 marcel.a.n.navarro  wheel     4833 Aug 22 14:38 pr57-body.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    38702 Aug 22 14:44 pr57-review.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    84473 Aug 22 14:31 pr57-threads.json
+-rw-r--r--@  1 marcel.a.n.navarro  wheel   160371 Aug 22 14:36 pr57comments.json
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    66044 Aug 22 14:35 pw.log
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    30057 Aug 22 14:59 req-figma.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    28437 Aug 22 14:36 req-jira.md
+-rw-r--r--@  1 marcel.a.n.navarro  wheel   100889 Aug 22 14:34 storybook.log
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    26545 Aug 22 14:37 tier1.log
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    94858 Aug 22 14:32 top.png
+-rw-r--r--@  1 marcel.a.n.navarro  wheel    31923 Aug 22 14:34 vitest.log
+=== CODE-STATE ===
+# SFCC-89 — PDP UI: Static Product Information — Code State Audit
+
+**Branch:** `feature/SFCC-89_pdp-ui-static-product-information` @ `d526ad1`
+**Base:** `develop` (merge-base `cd68e97`)
+**PR:** #57 by JhoanDelaCruz — `+1702 / -99`, 30 files, **CHANGES_REQUESTED**
+**Audited:** 2026-08-22 — read-only, no files modified.
+
+---
+
+## 1. Commit narrative
+
+23 commits. The story arc is: stub → live API → styling rework → E2E → code-quality churn.
+
+| # | SHA | What it did |
+|---|---|---|
+| 1 | `31603d0` | `feat(pdp): add static product information and breadcrumb navigation` — the original build |
+| 2 | `ff3bcaf` | sync develop (design token foundation) |
+| 3 | `4760116` | sync `feature/SFCC-mrt-preview-environments` |
+| 4 | `49c5b20` | sync again (19-char slug fix) |
+| 5 | `523dc00` | `feat(pdp): replace stub product data with live Commerce Cloud` — **stubs existed until here** |
+| 6 | `61c98f3` | wire breadcrumb to live category API, `aria-hidden` on separator |
+| 7 | `47ad72b` | remove duplicate breadcrumb category, name the anonymous `routes.tsx` default export |
+| 8 | `12a7c3c` | sync develop (token architecture + styling rules) |
+| 9 | `a11bfba` | restyle `PdpProductInfo` with zimm tokens, wire `c_sizeFit` |
+| 10 | `5a56e72` | apply overrideStyling token hierarchy, add E2E testids |
+| 11 | `156043e` | code-quality: tokens, named exports, **extract `ZimmPageToolbar` atom** |
+| 12 | `6c986d0` | add Playwright spec |
+| 13 | `d3403ff` | +5 E2E scenarios, fix env ordering |
+| 14 | `279a899` | fix E2E flakiness (async SFCC timing) |
+| 15 | `b94617c` | add 20s SFCC API gate to `goToProduct()` |
+| 16 | `4d7c129` | skip 3 E2E tests pending sandbox provisioning |
+| 17 | `c73b1b4` | code-quality: discriminated union, stories, E2E skips, env docs |
+| 18 | `7e9b7d2` | code-quality: column constant, fixture site maps, registry |
+| 19 | `0068e1a` | **sanitize SFCC HTML fields** (adds `isomorphic-dompurify` to package.json), extract model line |
+| 20 | `0ec26f9` | add `ProductWithSizeFit` type, revert breadcrumb regression, require heading |
+| 21 | `cf17c3d` | teach `extractTsProps` to parse discriminated-union Props types |
+| 22 | `d904c63` | merge develop |
+| 23 | `3e1686b` | **move `PdpProductInfo` styling into a theme config** |
+| 24 | `d526ad1` | breadcrumbs toolbar padding 40px h / 32px v |
+
+**Read of the arc:** ~9 of 24 commits are reactive code-quality/CodeRabbit churn rather than feature work. The last two commits (`3e1686b`, `d526ad1`) are the author *starting* to migrate styling into theme recipes — that migration was done for `PdpProductInfo` only and never applied to `Breadcrumb`, `ZimmPageToolbar`, or the page itself. The branch is mid-refactor.
+
+---
+
+## 2. File inventory, by purpose, with tier
+
+### Tier 1 — FROZEN (`.claude/rules/frozenFiles.md`)
+
+| File | Change | Owner |
+|---|---|---|
+| `package.json` | +1 dependency: `isomorphic-dompurify@^3.19.0` | Integration / SI Partner (#integration) |
+| `package-lock.json` | +575 / -… (transitive tree for the above) | same |
+
+`frozenFiles.md` > *Runtime & Integration Config* lists **`package.json (root)`** explicitly. This branch modifies it. **See §4.1.**
+
+### Tier 2 — PROTECTED (`.claude/rules/protectedFiles.md`)
+
+| File | Change | Owner |
+|---|---|---|
+| `overrides/app/routes.tsx` | +`/product/:productId` route, named the default export, prettier | *Global Shell* — Both Squads |
+| `overrides/app/theme/components/index.ts` | registers `ZimmPdpProductInfo` | *Theme Component Styles* — **UI Designer** |
+| `overrides/app/theme/components/pdpProductInfo.ts` | NEW, 91 lines | *Theme Component Styles* — **UI Designer** |
+
+### Untiered — new application code
+
+| File | Lines | Purpose |
+|---|---|---|
+| `overrides/app/pages/product-detail/index.tsx` | 95 | NEW page; **shadows the base SFCC PDP** |
+| `overrides/app/pages/product-detail/index.stories.tsx` | 97 | Storybook `Pages/PDP` |
+| `overrides/app/pages/product-detail/index.test.ts` | 28 | Vitest — but tests a *util*, not the page |
+| `overrides/app/components/breadcrumb/index.tsx` | 86 | NEW; **shadows base `app/components/breadcrumb`** |
+| `overrides/app/components/breadcrumb/index.stories.tsx` | 77 | `Layout/Breadcrumb`, 4 stories + `play` |
+| `overrides/app/components/pdpProductInfo/index.tsx` | 69 | NEW Zimmermann component |
+| `overrides/app/components/pdpProductInfo/index.stories.tsx` | 37 | `Commerce/PdpProductInfo`, 2 stories + `play` |
+| `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx` | 73 | NEW atom |
+| `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.stories.tsx` | 61 | `Layout/PageToolbar`, 4 stories |
+| `overrides/app/components/ui-kits/atoms/.gitkeep` | 0 | now redundant — dir has content |
+| `overrides/app/utils/productData.ts` | 9 | `extractModelLine()` |
+| `overrides/app/types/commerce.ts` | 10 | `ProductWithSizeFit` |
+| `overrides/app/types/index.ts` | 1 | barrel |
+| `overrides/app/types/vendor.d.ts` | +11 | adds `MemoryRouter`, `match`, `NavLink` ambient decls |
+
+### Untiered — tooling / test infra
+
+| File | Change |
+|---|---|
+| `scripts/generateRegistry.mjs` | +72/-… — union-type prop parsing, consumer-count matcher rewrite, PDP moved Squad B → Squad A |
+| `.claude/registry/{components,hooks,pages,routes,utils}.md` | regenerated (derived; auto-staged by `scripts/hooks/pre-commit`) |
+| `.env.sample` | +3 `scope:tier` E2E SKU vars |
+| `e2e/features/pdp/SFCC-89_*.feature` | NEW — 10 Gherkin scenarios |
+| `e2e/tests/zimm/pdp/SFCC-89_*.spec.js` | NEW — 10 Playwright tests |
+| `e2e/fixtures/products.js` | +74 — 3 new fixture factories, per-site SKU maps |
+| `e2e/support/pages/ProductPage.js` | +33 — new locators, `goToProduct()` rewritten |
+
+### NOT touched (verified clean)
+
+`.github/workflows/`, `config/`, `.storybook/`, `overrides/app/theme/foundation/`, `overrides/app/ssr.js`, `overrides/app/ssr/`, `worker/main.js`, `mobify.config.js`, `.claude/rules/`, `AGENTS.md`, `CODEOWNERS`, `coderabbit.yaml`, `semgrep.yml`, `vitest.config.*`, `playwright.config.*`, and every Tier 2 shared-product/commerce component (`product-tile/`, `image-gallery/`, `display-price/`, `swatch-group/`, `order-summary/`, …).
+
+---
+
+## 3. Component-by-component assessment
+
+### 3.1 `overrides/app/pages/product-detail/index.tsx` — **Override of base PDP**
+
+- **Renders:** a two-column grid — a grey placeholder `<Box>` where the image gallery belongs, and an options column containing `PdpProductInfo`; below it a `ZimmPageToolbar variant="breadcrumbs"` wrapping `Breadcrumb`.
+- **Props:** none (route component). Reads `useParams<{productId}>`.
+- **Data fetching:** YES, and correctly so — it is a page. `useProduct` (`:25`), then `useCategory` gated on `product?.primaryCategoryId` (`:28-31`).
+- **Story:** yes (`index.stories.tsx`) — but see §4.6, it does not render this component.
+- **Test:** `index.test.ts` exists but tests `extractModelLine` from `../../utils/productData`. **The page has zero test coverage.**
+- **Exports:** `PDP_OPTIONS_COLUMN_WIDTH`, named `ProductDetail`, default. `getTemplateName` preserved (`:92`).
+
+### 3.2 `overrides/app/components/breadcrumb/index.tsx` — **Override of base SFCC breadcrumb**
+
+- **Renders:** `<nav aria-label="Breadcrumb"><ol>` with a hardcoded `Home` crumb, mapped category links, `/` text separators (`aria-hidden`), and a non-link terminal crumb with `aria-current="page"`.
+- **Props:** `categories: readonly BreadcrumbCategory[]` (**required**), `currentPage?: string`.
+- **Data fetching:** no. Correct per `components.md` > Composition.
+- **Story:** yes — 4 stories, one with a `play` asserting focus order and `aria-current`. Good quality.
+- **Test:** no Vitest (not needed — the `play` covers it).
+- **a11y:** genuinely good — `nav`/`ol`/`li` semantics, `aria-current`, `aria-hidden` separators, keyboard order asserted.
+
+### 3.3 `overrides/app/components/pdpProductInfo/index.tsx` — Zimmermann-authored
+
+- **Renders:** `h1` name, `p` price, sanitized-HTML description, optional sanitized model info, optional `Style Code: {styleCode}`.
+- **Props:** `name: string`, `price: string`, `description?`, `modelInfo?`, `styleCode?`.
+- **Data fetching:** no. Correct.
+- **Story:** yes — 2 stories, one with `play` asserting the optional fields are absent.
+- **Test:** no direct test.
+- **Best file on the branch.** All styling in the theme recipe consumed via `useMultiStyleConfig('ZimmPdpProductInfo')` (`:27`), only the two conditional margins at the call site with an explanatory comment block (`:14-20`). `dangerouslySetInnerHTML` correctly wrapped in `DOMPurify.sanitize()` at `:43` and `:54` — satisfies `conventions.md` and the `semgrep.yml` rule.
+
+### 3.4 `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx`
+
+- **Renders:** a padded, `background.07` wrapper; `breadcrumbs` variant wraps children at `opacity 0.8`; the other two render an `h2` heading + optional CTA link.
+- **Props:** discriminated union `ZimmPageToolbarProps` — good use of `typescript.md`'s discriminated-union rule.
+- **Data fetching:** no.
+- **Story:** yes — 4 stories, no `play` (purely visual — correct per `testing.md`).
+- **Test:** no.
+- **Location** matches the decided `ui-kits/{atoms,molecules,organisms}/<camelCase>/` structure.
+- Dead branch: `: null` at `:67` is unreachable — the union has exactly 3 variants, all handled.
+
+### 3.5 `overrides/app/utils/productData.ts`
+
+- Pure function, no hook imports, JSDoc'd, registered in the util registry. Compliant with `conventions.md` > Utilities.
+- **Its test lives in the wrong folder** — `conventions.md` > Utilities + `testing.md` > File layout both require co-location: it should be `overrides/app/utils/productData.test.ts`.
+
+### 3.6 Theme recipe `overrides/app/theme/components/pdpProductInfo.ts`
+
+- Key is `ZimmPdpProductInfo` — **`Zimm`-prefixed, no collision** with any base SFCC component name. `extendTheme` deep-merge trap avoided.
+- **Registered** in `overrides/app/theme/components/index.ts:4,10`. Runtime destructuring will not throw.
+- Multi-part config (`parts` + `baseStyle`) matching the `useMultiStyleConfig` call.
+- Well documented: every `var(--zimm-*)` escape has a written rationale and a stated exit path.
+
+---
+
+## 4. Rule violations
+
+### 4.1 🔴 Tier 1 file modified without documented approval — `package.json`
+
+`AGENTS.md` Hard Rule #2 + Hard Rule #7; `.claude/rules/frozenFiles.md` > *Runtime & Integration Config* names `package.json (root)`.
+
+```diff
+  "contentful": "^11.12.4",
++ "isomorphic-dompurify": "^3.19.0"
+```
+`package.json:118`
+
+Three compounding problems:
+
+1. **The PR body itself says this is blocked.** It reads: *"DOMPurify is not in `package.json` and needs integration team approval (Hard Rule #7). ... Please raise a follow-up ticket and get integration team approval before the next sprint."* Commit `0068e1a` then added it anyway. No approval is recorded anywhere in the PR.
+2. **The PR body's own tier table omits `package.json` entirely** — it lists 15 files, all classified Tier 2/3/4. Tier 1 is not mentioned.
+3. **Size.** Installed footprint is **16 MB** (`isomorphic-dompurify`), pulling **jsdom (12 MB)** for the SSR path. It is imported at module scope in `pdpProductInfo/index.tsx:2`, i.e. on the PDP critical path and in the SSR bundle. `AGENTS.md` > Performance > *Bundle size*: "Do not introduce large dependencies without confirming with the user"; > *Dependencies*: "check `package.json` for what is already installed ... present the recommendation ... and wait for user approval before installing anything." No existing sanitizer was evaluated — grep confirms this is the first `sanitize`/`DOMPurify` usage anywhere in `overrides/`.
+   **Unverified risk:** `test:max-file-size` budgets are `main.js ≤ 180 kB` / `vendor.js ≤ 550 kB`. I did not run a build (too slow for this audit) — this needs checking before merge.
+
+CodeRabbit independently flagged this as Major on `package.json:118`: *"Obtain Integration / SI Partner approval before merging this dependency change."* Still open.
+
+### 4.2 🔴 Hard Rule #10 — change spans three protection tiers
+
+`AGENTS.md` Hard Rule #10: *"Never touch more than one protection tier in a single change without stopping to confirm scope with the developer."* This PR touches Tier 1 (`package.json`, `package-lock.json`), Tier 2 (`routes.tsx`, both theme files), and untiered code. The PR body's tier table omits **both** Tier 1 files **and both** Tier 2 theme files (`theme/components/index.ts`, `theme/components/pdpProductInfo.ts` — owner: **UI Designer**, who has not been notified per `protectedFiles.md`).
+
+### 4.3 🟠 The base SFCC PDP is silently replaced
+
+`overrides/app/pages/product-detail/` shadows `node_modules/@salesforce/retail-react-app/app/pages/product-detail/`, **and** `overrides/app/routes.tsx:37-40` registers `/product/:productId` *before* the `..._routes` spread — so the override wins the route match over base `routes.jsx:110`.
+
+The base PDP that this replaces imports and renders: `ProductView` (image gallery, swatch group, quantity picker, **add-to-cart**, wishlist), `RecommendedProducts` (×3 zones), `InformationAccordion`, `Island`, Einstein/DataCloud/ActiveData analytics, `useServerContext` + `HTTPNotFound`/`HTTPError` for correct SSR status codes, `Helmet` for document metadata, and `MAX_CACHE_AGE`/`STALE_WHILE_REVALIDATE` cache headers.
+
+The override renders **none of it** — the gallery is a grey `<Box>` placeholder at `index.tsx:56`.
+
+This may well be the intended scope of a story called "static product information," but as written, merging to `develop` removes **add-to-bag from the storefront**. `AGENTS.md` > Rules > *Minimal changes*: "Do not remove or replace existing base template functionality unless explicitly instructed." Nothing in the PR body acknowledges this.
+
+Related, independently flagged by CodeRabbit at `product-detail/index.tsx:90`: **no `<Seo>` / `Helmet`** — no `<title>`, no meta description, no canonical on a product page. `AGENTS.md` opening line: "Must be robust and secure and **SEO-friendly**." `overrides/app/components/seo/` is Tier 2 and available.
+
+Also absent vs. base: no `useServerContext().res.status(404)` for an unknown SKU. `product-detail/index.tsx:65-66` renders a plain error `<Text>` with an HTTP 200. Bad for SEO and for `graceful degradation`.
+
+### 4.4 🟠 The `Breadcrumb` override breaks the SFCC bridge contract
+
+`.claude/rules/overrideStyling.md` > *The SFCC bridge pattern (shared components only)*: if a component is used internally by SFCC's own base components, its **default export must stay a faithful, undecorated port** — full original prop surface, brand styling behind a named export.
+
+Base `app/components/breadcrumb` **is** a shared internal dependency — two base consumers:
+- `node_modules/@salesforce/retail-react-app/app/components/product-view/index.jsx:75` → `<Breadcrumb categories={category} />`
+- `node_modules/@salesforce/retail-react-app/app/pages/product-list/partials/page-header.jsx:20` → `<Breadcrumb categories={category.parentCategoryTree} />` (**the PLP breadcrumb**)
+
+The override is not a faithful port. Divergences that now apply to the PLP:
+
+| Base | Override | Impact |
+|---|---|---|
+| `({categories, ...rest})`, `...rest` spread onto the root | `{categories, currentPage}`, no rest spread (`index.tsx:47`) | pass-through props silently dropped |
+| `categories: PropTypes.array` (optional) | `categories: readonly …[]` **required** (`index.tsx:14`) | narrower contract than base |
+| `className="sf-breadcrumb"`, `data-testid="sf-crumb-item"` | neither | any selector keyed on these breaks (none in-repo today) |
+| `useStyleConfig('Breadcrumb')` — theme-driven | styles hardcoded in the component (`index.tsx:22-35`) | breaks the branch's own theme-recipe pattern |
+| `<ChevronRightIcon>` separator | literal `/` text (`index.tsx:39`) | **PLP breadcrumb visual changes**, unreviewed by design |
+| Chakra `Breadcrumb`/`BreadcrumbItem`/`BreadcrumbLink` | raw `Box`/`Text` | loses Chakra's breadcrumb a11y primitives |
+| imports `categoryUrlBuilder` from `app/utils/url` | reimplements it inline (`index.tsx:10-11`) | DRY (`conventions.md`); silently diverges if base changes |
+
+*Checked and NOT a finding:* base `categoryUrlBuilder` ignores its locale argument (`node_modules/.../app/utils/url.js:90`), so the inline copy is behaviourally identical — **no locale-prefix regression**. Base also uses raw `RouteLink`, so no `Link`-component regression either.
+
+CodeRabbit flagged the related import issue at `breadcrumb/index.tsx:4` (Major, still open): the file imports `Box, Text` from `@chakra-ui/react` while the rest of the codebase (`zimmPageToolbar/index.tsx:3`, `product-detail/index.tsx:5`) uses `@salesforce/retail-react-app/app/components/shared/ui`. Inconsistent, and per the `shared/ui` barrel behaviour this bypasses the project's own UI surface.
+
+### 4.5 🟠 Styling-layer boundary — `var(--zimm-*)` in component JSX
+
+`.claude/rules/overrideStyling.md` — the hierarchy is `textStyle` → semantic token strings → **theme recipe** → `sx` → `.scss`. `var(--zimm-*)` belongs in `theme/components/*.ts`, not JSX. The author applied this correctly to `PdpProductInfo` (commit `3e1686b`) and then stopped.
+
+Remaining instances:
+
+| File:line | Code |
+|---|---|
+| `overrides/app/components/breadcrumb/index.tsx:33` | `transition: 'opacity var(--zimm-motion-duration-fast) var(--zimm-motion-easing-standard)'` |
+| `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx:58` | `transition: 'color var(--zimm-motion-duration-fast) …, opacity …'` |
+| `overrides/app/pages/product-detail/index.tsx:52` | `columnGap={{base: 0, md: 'var(--zimm-scale-4500)'}}` |
+| `overrides/app/pages/product-detail/index.tsx:61` | `pl={{base: 'var(--zimm-scale-800)', md: 0}}` |
+| `overrides/app/pages/product-detail/index.tsx:62` | `pr={{base: 'var(--zimm-scale-800)', md: 'var(--zimm-scale-3500)'}}` |
+| `overrides/app/pages/product-detail/index.tsx:63` | `pt={{base: 'var(--zimm-scale-400)', md: 0}}` |
+| `overrides/app/pages/product-detail/index.tsx:69-71` | `Skeleton height="var(--zimm-scale-800)"` / `-500` / `-5xl` |
+| `overrides/app/pages/product-detail/index.stories.tsx:48,54-56,84-86` | same values, duplicated |
+
+**All 15 distinct vars used are verified to exist** in `overrides/app/theme/foundation/zimmTokens.ts` — no dangling-var bug. (`--zimm-scale-5xl` exists at `zimmTokens.ts:147`; `-700`/`-1100`/`-3500`/`-4500` at `:162,165,169,170`.)
+
+Additionally: `overrides/app/components/breadcrumb/index.tsx:22-35` hardcodes `BASE_STYLE`/`LINK_PROPS` objects in the component rather than a theme recipe, and `zimmPageToolbar/index.tsx:28-33` hardcodes a `PADDING` map. Both are level-3 candidates (own theme config) per `overrideStyling.md`. Neither has a `theme/components/*.ts` file.
+
+### 4.6 🟠 The `Pages/PDP` story does not render the page
+
+`overrides/app/pages/product-detail/index.stories.tsx:43-65` defines a `PageShell` that **hand-duplicates the entire JSX of `ProductDetail`** — the grid, the aspect ratios, the padding, the toolbar. It imports only `PDP_OPTIONS_COLUMN_WIDTH` from the real page.
+
+The comment at `:12-15` explains why (no `CommerceApiProvider` in the Storybook preview) and that is a legitimate constraint — but the chosen workaround means the story can drift arbitrarily far from the page it claims to document, and it silently violates DRY (`conventions.md` > General). `components.md` > Storybook: "Pages get a story showing the full assembly." This one shows a *copy* of the assembly.
+
+The correct fix is either a `CommerceApiProvider` decorator in the preview, or extracting the layout into a presentational `PdpLayout` component that both the page and the story consume.
+
+### 4.7 🟡 Hardcoded user-facing strings — no i18n
+
+11 active locales; `translations/` is Tier 2. Base SFCC uses `useIntl`/`FormattedMessage` throughout, including `API_ERROR_MESSAGE`. The new code hardcodes English:
+
+| File:line | String |
+|---|---|
+| `breadcrumb/index.tsx:55` | `Home` |
+| `breadcrumb/index.tsx:51` | `aria-label="Breadcrumb"` |
+| `pdpProductInfo/index.tsx:59` | `Style Code: {styleCode}` |
+| `product-detail/index.tsx:66` | `Unable to load product information.` |
+
+`product-detail/index.tsx:3` already imports `useIntl` and uses it for `formatNumber` at `:44` — so the infrastructure is present and simply not used for copy.
+
+### 4.8 🟡 `PDP_OPTIONS_COLUMN_WIDTH = '360px'` — raw px in a component file
+
+`overrides/app/pages/product-detail/index.tsx:14`. `overrideStyling.md`: "**Never**: a raw hex/px/rem/em literal in a component file." The same file also permits a shipped placeholder *if* commented — and it is: `// Provisional — no matching zimm token; pending designer sign-off.` **Documented exception, acceptable, but it must not become permanent.**
+
+### 4.9 🟡 Comment/code mismatch on breadcrumb assembly
+
+`overrides/app/pages/product-detail/index.tsx:33` says:
+
+> `// ancestors (parentCategoryTree) + leaf category → full breadcrumb path.`
+
+The code at `:35-40` uses `category.parentCategoryTree` **only** — the leaf `category` is never appended. In practice SFCC's `parentCategoryTree` usually includes the category itself (base `page-header.jsx:20` relies on exactly that), so this is probably harmless — but the comment describes a concatenation the code does not perform. Verify against the live API and fix whichever is wrong.
+
+Also `:29` passes `id: product?.primaryCategoryId ?? null` — `null` rather than omitting the parameter when the query is disabled. `tsc` accepts it; still smells.
+
+### 4.10 🟡 E2E fixture is not genuinely multi-site
+
+`e2e/fixtures/products.js:22-29`:
+```js
+const STANDARD_PRODUCT_SKU_BY_SITE = { au: '8637DS241-3' };
+const standardProduct = () => ({
+  sku: process.env.E2E_STANDARD_PRODUCT_SKU || STANDARD_PRODUCT_SKU_BY_SITE[activeSiteKey()] || 'ZIM-TEST-001',
+  ...
+});
+```
+Only `au` is populated; every other storefront silently falls through to the non-existent `ZIM-TEST-001` and the whole PDP suite fails (rather than skipping) on the other 7 sites. `testing.md` > *Multi-region fixtures*: "Build SITE_ID-keyed fixtures from day one — do not retrofit. A test that hardcodes a region or currency cannot survive the rollout." CodeRabbit flagged this as Major (`products.js:29`, still open).
+
+Separately, the SKU choices look fragile: `standardProduct = 8637DS241-3` is documented as *"no model copy (`c_sizeFit` absent)"*, while `MODEL_COPY_SKU_BY_SITE.au = 8637DS241` (the master) is documented as *having* `c_sizeFit`. SFCC variants normally inherit master custom attributes — the "model copy is NOT shown" test at `spec.js:42-51` may be asserting something that isn't true. Unverifiable without hitting the sandbox; flag for Squad A.
+
+### 4.11 🟡 E2E spec filename missing the priority segment
+
+`testing.md` > File layout: `SFCC-NNN_short-description.<priority>.spec.ts`. Actual: `e2e/tests/zimm/pdp/SFCC-89_pdp-static-product-information.spec.js` — **no `.p0.`/priority segment**. Consequence: it will never be picked up by the Digital SIT gate's `.p0.` filter. Tags (`@pdp`, `@SFCC-89`) are correct on all 10 tests, so BrowserStack story-scoping and `--grep` scoping do work.
+
+`.js` vs `.ts` is **not** a violation — `testing.md` allows `e2e/tests/**/*.spec.{ts,js}`, the TypeScript-only rule is scoped to `overrides/`, and the file header at `:6-8` explains that `playwright.config.js`'s `testMatch` only covers `*.spec.js` (and `playwright.config.*` is Tier 1, so the author correctly did not change it).
+
+### 4.12 🟡 No `e2e_pdp` allow-list group in `qa.yml`
+
+`testing.md` > *Change-scoped E2E*: "Adding a new area's first spec: give it its own allow-list group in `qa.yml`'s `detect-changes` job." `.github/workflows/qa.yml` still has only `e2e_homepage` (`:97-101`, `:123`, `:139`). A PDP-only change therefore falls back to the full suite — **no coverage lost**, just the optimisation missed. `.github/workflows/` is Tier 1, so the author was right not to touch it unilaterally; this needs a follow-up with Integration.
+
+### 4.13 🟡 Squad ownership reassigned inside a feature PR
+
+`scripts/generateRegistry.mjs:169-184` moves `app/pages/product-detail/` from `SQUAD_B_PATHS` to `SQUAD_A_PATHS`. This is consistent with `overrideStyling.md`'s note that PDP "is claimed by `.claude/rules/squadA.md` (draft, scope still settling)" — but it is a governance change riding inside a feature PR, and it rewrites the ownership column of `.claude/registry/pages.md` and `routes.md`. CodeRabbit flagged it (`registry/pages.md:20`, "Correct the ProductDetail ownership record"). Needs an explicit squad-lead sign-off, not a silent constant edit.
+
+### 4.14 ✅ Checks that PASSED (explicitly verified, not assumed)
+
+| Trap | Result |
+|---|---|
+| **Chakra scale registration** — bare named token on a sizing/font-size prop | **CLEAN.** Zero instances in the new code. Every sizing prop is either numeric (`minW={0}`), a percentage (`width="40%"`), or a raw `var()` string (which passes through untouched). Every `space`-mapped prop (`mx`, `mb`, `pt/pb/pl/pr`, `marginBottom`) uses a key from the registered `space` scale. Typography goes through `textStyle` (registered) or raw `var(--zimm-font-size-*)`. The known live bug at `header/index.tsx:302` is untouched by this branch. |
+| **Theme recipe name collision** | **CLEAN.** `ZimmPdpProductInfo` is `Zimm`-prefixed; no base SFCC component of that name; `extendTheme` deep-merge trap avoided. |
+| **Theme recipe registration** | **CLEAN.** Registered in `theme/components/index.ts:4,10`. |
+| **Dangling `--zimm-*` vars** | **CLEAN.** All 15 distinct vars resolve in `foundation/zimmTokens.ts`. |
+| **All colour/textStyle tokens** | **CLEAN.** `background.02`, `background.07`, `text.default`, `text.secondary`, `status.error` all exist in `foundation/colour.ts:50-82`; `caption`, `heading3`, `linkLg`, `body2` all exist in `foundation/typography.ts`; `.zimm-focus-visible` exists at `globalStyles.ts:328`. |
+| **TypeScript-only under `overrides/`** | **CLEAN.** No new `.js`/`.jsx` under `overrides/`. The three that exist (`ssr.js`, `main.jsx`, `request-processor.js`) are pre-existing and Tier-1-exempt. |
+| **`dangerouslySetInnerHTML` sanitization** | **CLEAN.** Both call sites wrapped in `DOMPurify.sanitize()` (`pdpProductInfo/index.tsx:43,54`) — satisfies `conventions.md` and `semgrep.yml`. |
+| **Container/presentational separation** | **CLEAN.** All three components are prop-driven; data fetching is confined to the page. |
+| **Story coverage** | **CLEAN.** All three exported components + the page have `.stories.tsx`, correctly categorised per `components.md` (`Layout/`, `Commerce/`, `Pages/`), each with a `Default` export, `play` functions only where there's interaction. |
+| **`scripts/auditTokenUsage.mjs`** | **DOES NOT EXIST.** `overrideStyling.md` instructs running it before any PR touching `overrides/app/components/**` or `overrides/app/theme/components/**`. The script is not in `scripts/`. That is a pre-existing repo/doc mismatch, not this branch's fault — but the rule cannot be satisfied by anyone today. |
+
+---
+
+## 5. Verification command results (verbatim)
+
+### `npx tsc --noEmit` — **PASS**
+```
+TSC_EXIT=0
+```
+No diagnostics emitted.
+
+### `npm run lint` — **FAIL** (22 errors, 3 warnings)
+
+**Attributable to this branch (5 problems in 3 files):**
+```
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/components/breadcrumb/index.tsx
+  10:61  error  Delete `⏎·`  prettier/prettier
+
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/index.stories.tsx
+  20:134  error  Delete `\`                        prettier/prettier
+  20:134  error  Unnecessary escape character: \"  no-useless-escape
+
+/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/overrides/app/pages/product-detail/index.tsx
+  16:1   error  Delete `⏎`                                                                                                                                                               prettier/prettier
+  38:52  error  Replace `⏎··········(p):·p·is·BreadcrumbCategory·=>·Boolean(p.id)·&&·Boolean(p.name),⏎········` with `(p):·p·is·BreadcrumbCategory·=>·Boolean(p.id)·&&·Boolean(p.name)`  prettier/prettier
+```
+
+**Pre-existing, not this branch** (files absent from the diff): `overrides/app/components/contentful/experiences/definitions.ts` (17 prettier errors), `overrides/app/components/header/index.tsx` (3 unused-var warnings).
+
+```
+✖ 25 problems (22 errors, 3 warnings)
+  21 errors and 0 warnings potentially fixable with the `--fix` option.
+error: Command failed: …/eslint --resolve-plugins-relative-to …/@salesforce/pwa-kit-dev "overrides/**/*.{ts,tsx}"
+```
+
+> **Note:** the PR body claims *"`npm run lint` passes (pre-existing Contentful stories prettier errors unrelated to this branch)"*. That is **not accurate at HEAD** — 5 of the errors are in this branch's own files. All 5 are auto-fixable with `npm run lint:fix`.
+
+### `npx vitest run --reporter=dot` — **PASS**
+```
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+·····················stderr | overrides/app/theme/index.test.tsx > rendered output > textStyle applies the brand type style end to end
+Could not parse CSS stylesheet
+stderr | overrides/app/theme/index.test.tsx > rendered output > Button renders square and uppercase from the theme override
+Could not parse CSS stylesheet
+·····························································································································
+
+ Test Files  4 passed (4)
+      Tests  146 passed (146)
+   Start at  14:32:58
+   Duration  14.60s
+```
+The two `Could not parse CSS stylesheet` lines are pre-existing jsdom noise from `theme/index.test.tsx`, not from this branch. This branch contributes **5 of the 146** tests (all in `product-detail/index.test.ts`, all covering `extractModelLine`).
+
+### `node scripts/auditTokenUsage.mjs` — **NOT RUN**
+Script does not exist in the repo (see §4.14).
+
+### Not run
+`npm run build` / `npm run test:max-file-size` — too slow for this audit. **This is the one gap:** the bundle-size impact of `isomorphic-dompurify` is unverified against the `main.js ≤ 180 kB` / `vendor.js ≤ 550 kB` budgets.
+
+---
+
+## 6. What is incomplete / stubbed
+
+### Deliberately stubbed
+- **Image gallery** — `product-detail/index.tsx:56` is a grey `<Box>` with a hard-coded aspect ratio. Comment: `{/* Gallery column — images out of scope, placeholder maintains layout */}`.
+- **`PDP_OPTIONS_COLUMN_WIDTH = '360px'`** (`:14`) — provisional, pending designer sign-off.
+- **`BODY_TEXT` font weight** (`theme/components/pdpProductInfo.ts:23-27`) — `FONT_REGULAR` vs `FONT_MEDIUM` unresolved pending UI-designer sign-off; the whole block is meant to collapse into a single `textStyle` once typography.ts (Tier 1) gains the entry.
+- **`SPACE_DESCRIPTION_TO_META` (44px) / `SPACE_MODEL_INFO_TO_STYLE_CODE` (28px)** (`pdpProductInfo.ts:47,50`) — numeric `--zimm-scale-*` aliases with no named `spacing.ts` key; flagged in-file to confirm against Figma and promote if reusable.
+- **`Pages/PDP` story** (`index.stories.tsx:12-15`) — "Wire up `ProductDetail` once `CommerceApiProvider` is added to the Storybook preview."
+
+### Missing entirely (no TODO, no acknowledgement)
+- **No `<Seo>`/`Helmet`** — no title, description, or canonical on a PDP. Flagged by CodeRabbit, unaddressed.
+- **No add-to-cart, swatches, quantity picker, wishlist, recommendations, information accordion** — all present in the base PDP this replaces.
+- **No 404 status** for an unknown SKU (base uses `useServerContext` + `HTTPNotFound`).
+- **No responsive handling on `ZimmPageToolbar`'s padding** — `PADDING` (`:28-33`) is a flat, non-responsive map; every other layout value on the branch is responsive (`{base, md}`). 40px/80px insets applied unconditionally on a 375px viewport is very likely wrong.
+- **No test for the page** — the breadcrumb-assembly + graceful-degradation logic at `product-detail/index.tsx:35-45` is exactly the "data mapping / integration boundary / graceful degradation" case `testing.md` says to cover, and it has none.
+- **`extractModelLine` regex is brittle** — `productData.ts:7` `/<li>\s*(Model is[^<]*?)\s*<\/li>/i` fails on `<li class="…">`, on `<LI>`-with-attributes, and on any nested markup. CodeRabbit flagged it (`productData.ts:8`, open). No test covers the attribute case.
+- **`.gitkeep`** at `ui-kits/atoms/.gitkeep` is now redundant.
+- **Dead `: null` branch** at `zimmPageToolbar/index.tsx:67`.
+
+### E2E skips (2 hard + 1 conditional, of 10)
+- `spec.js:88-97` "Loading state" — `test.skip(true, …)`, requires network interception (not permitted in this project's E2E layer). Reasonable; deferred to the Storybook `Loading` story.
+- `spec.js:114-122` "Breadcrumb degrades gracefully" — same reason, deferred to the `HomeOnly` story.
+- `spec.js:144-148` "Description not rendered" — conditional `test.skip(!noDescProduct.sku, …)`; with `NO_DESCRIPTION_SKU_BY_SITE.au = '8637DS241-1'` populated this **will run on `au`** and skip elsewhere.
+
+> The PR body describes a different, older state: *"Tests 1, 3, 5, and 9 … are skipped … Tests 6, 7, and 8 require click-through navigation infrastructure or BrowserStack setup."* That no longer matches the code.
+
+### PR body accuracy (worth fixing before re-review)
+- Claims lint passes — it does not (§5).
+- Says DOMPurify is blocked pending approval — it was added anyway (§4.1).
+- Lists paths that don't exist: `overrides/app/ui-kits/atoms/zimmPageToolbar.tsx` (actual: `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx`).
+- Tier table omits `package.json` (Tier 1), `package-lock.json` (Tier 1), `theme/components/index.ts` + `theme/components/pdpProductInfo.ts` (Tier 2, UI Designer), `scripts/generateRegistry.mjs`, `.claude/registry/*`, `types/commerce.ts`, `types/index.ts`, `utils/productData.ts`, `pages/product-detail/index.test.ts`.
+- Says "9 scenarios" — there are 10.
+
+### Open CodeRabbit findings at HEAD
+Latest review `2026-08-21T18:14:38Z` is **after** HEAD (`2026-08-21T04:31 +08:00` = `2026-08-20T20:31Z`), so it applies to the current code. Still-open items:
+
+| Severity | Location | Finding |
+|---|---|---|
+| 🟠 Major | `package.json:118` | Obtain Integration/SI approval before merging the dependency |
+| 🟠 Major | `e2e/fixtures/products.js:29` | Remove the cross-site standard-product fallback |
+| 🟠 Major | `scripts/generateRegistry.mjs:502` | Version the consumer-count caches with the matcher |
+| 🟡 Minor | `product-detail/index.tsx:90` | Set PDP document metadata (Helmet/Seo) |
+| 🟡 Minor | `product-detail/index.tsx:40` | `parentCategoryTree` / `levels` semantics |
+| 🟡 Minor | `utils/productData.ts:8` | Accept `<li>` attributes when extracting model copy |
+| 🟡 Minor | `spec.js:49` | Prove the E2E scenarios use valid fixtures |
+| 🟡 Minor | `generateRegistry.mjs:404` | (union-parse edge case) |
+
+Per `AGENTS.md` > *Responding to a CodeRabbit PR review*, **every** finding needs an explicit in-thread reply whether or not it is fixed. Worth checking on takeover whether the earlier (18 Aug / 20 Aug) findings got replies or just fix-commits.
+
+---
+
+## 7. Honest overall assessment
+
+**Verdict: a solid *component* base sitting on an unsafe *integration*. Keep the components, rework the page and the two override-shadow decisions.**
+
+### What is genuinely good — keep it
+- **`PdpProductInfo` + its theme recipe is exemplary.** Correct `useMultiStyleConfig` pattern, `Zimm`-prefixed and registered, every escape hatch documented with a written exit path. This is the pattern the rest of the branch should be migrated to.
+- **Accessibility was taken seriously and is real, not claimed.** `h1` for the product name, `nav`/`ol`/`li` breadcrumb semantics, `aria-current="page"`, `aria-hidden` separators, and a Storybook `play` that actually asserts tab order (`breadcrumb/index.stories.tsx:46-52`).
+- **Storybook coverage is complete and correctly categorised** — all four surfaces, `play` functions only where there's interaction.
+- **Gherkin-first E2E workflow followed** — `.feature` before spec, correct `@pdp`/`@SFCC-89` tags on all 10 tests, sensible page-object locators using accessible selectors first.
+- **The `generateRegistry.mjs` consumer-count fix is a real, well-reasoned improvement** (specifier anchoring instead of substring grep, plus a single file-walk instead of N subprocesses). It happens to be unrelated to SFCC-89.
+- **`tsc` and Vitest are green.**
+
+### What makes it not mergeable as-is
+1. **A Tier 1 file was changed after the PR body itself said it was blocked pending approval.** That is the single most serious thing here — not because dompurify is wrong (it's the right call for `dangerouslySetInnerHTML`), but because the process gate was identified and then walked through. It also drags in 16 MB / jsdom on the SSR path with no bundle-budget verification.
+2. **Merging this removes add-to-bag and all SEO metadata from the PDP.** Whether that's in scope for "static product information" is a product question no one has answered in the PR. It cannot merge to `develop` without an explicit answer.
+3. **The `Breadcrumb` override silently restyles the PLP.** It shadows a shared SFCC component and is not a faithful port — the PLP breadcrumb loses its chevron separators and its theme config. Nobody asked for that and the PR body doesn't mention the PLP at all.
+4. **The `Pages/PDP` story is a copy-paste of the page**, so the one artefact reviewers will actually look at is not the thing being reviewed.
+
+### Effort to make it good
+Roughly a day of focused work, and it is mostly *decisions*, not code:
+
+- **10 minutes:** `npm run lint:fix` (all 5 errors auto-fixable); delete the redundant `.gitkeep` and the dead `: null`.
+- **Half a day:** move `Breadcrumb` and `ZimmPageToolbar` styling into `theme/components/*.ts` recipes (the author already knows how — `3e1686b` is the template); `react-intl` the four hardcoded strings; make `ZimmPageToolbar`'s padding responsive; add the missing per-site SKUs or a hard configuration error.
+- **Half a day:** extract a presentational `PdpLayout` so the page and the story stop duplicating; add a Vitest for the breadcrumb-assembly/degradation logic; move `index.test.ts` → `utils/productData.test.ts`.
+- **Blocking, needs humans not code:** Integration sign-off on `isomorphic-dompurify` (or swap for a lighter sanitizer); a product/Squad-A decision on the base-PDP replacement scope; UI Designer notification for the two Tier 2 theme files; a squad-lead call on the PDP ownership move.
+
+### Takeover recommendation
+Do **not** rebase-and-continue on top of this. Land the four blocking decisions first — dependency approval, PDP replacement scope, breadcrumb-shadow strategy, theme-file owner sign-off — because two of them (scope, breadcrumb) may delete or restructure a meaningful slice of the code. The component layer (`PdpProductInfo`, `ZimmPageToolbar`, the stories, the `.feature`) is worth carrying forward almost verbatim.

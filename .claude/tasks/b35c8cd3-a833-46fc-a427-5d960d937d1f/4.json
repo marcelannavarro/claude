@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Compile consolidated visual-audit report",
+  "description": "One findings doc, per user's chosen \"full sweep\" approach: every component × every breakpoint, each delta reported as Figma-value vs live-value, each unverifiable item explicitly flagged rather than guessed at.",
+  "activeForm": "Compiling the consolidated visual-audit report",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

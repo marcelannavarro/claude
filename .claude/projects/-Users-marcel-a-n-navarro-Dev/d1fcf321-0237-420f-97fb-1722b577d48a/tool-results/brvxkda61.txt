@@ -1,0 +1,700 @@
+====================================================================================================
+### [pwa] [2026-08-12] ZIMM - Calendar for Kiera — 25 user turns — d83c8e54-6ba2-47be-a701-ab3725c383b1.jsonl
+====================================================================================================
+
+--- turn 1 ---
+for this meeting:
+"Meeting: Components
+
+Hi crew,
+
+Putting together some time so we can get across Sprint 3 priorities on all things components and our approach / best way forward.
+
+For those in Sydney - we’ll be in the Zimm office.
+
+Thanks,
+Tash"
+
+this is an alignment call for the new approach with User Stories particularly with UI Components, where UI User Stories are broken down into core than having UI User Stories that encompass a group of components, basically broken down and isolated/specified
+
+execute an in-depth analysis/check into the codebase, codebase docs, codebase config, confluence, and JIRA and help me prepare for this meeting
+
+--- turn 2 ---
+<task-notification>
+<task-id>a7051363d20be0366</task-id>
+<tool-use-id>toolu_01WnuSBZUuMGcENswj9uX7NW</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/ca118e83-50ee-4df0-a734-d83474ec83ec/tasks/a7051363d20be0366.output</output-file>
+<status>completed</status>
+<summary>Agent "Confluence research on component story methodology" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Confluence Research Report — Sprint 3 "Component-Based User Stories" Meeting Prep
+
+**Methodology note:** This Confluence MCP tool returns blank `created`/`updated` fields on every `get_page`/`get_page_history` call regardless of page (confirmed across ~15 pages) — a tool limitation, not a data gap. Where an exact date matters, I've substituted: (a) dates written into the page content itself, (b) the page's `version` number as a recency proxy, or (c) `lastModified &gt;=` CQL boundary probes I ran to bracket the true last-edit date. These are flagged inline. No content was created, edited, or commented on.
+
+---
+
+### 1. Existing methodology docs — YES, found, and it's brand new
+
+Two pages, added as the newest children under the "04 Business Documentation" family (id 244252674, siblings 04.0–04.6), sitting **after** 04.6 Consent Management — i.e., the most recently added pages in that entire numbered series:
+
+- **"04.7 Component Inventory"** — id `400195591`, version 13.
+- **"04.71 Writing User Stories for Components"** — id `400195600`, version 2, the sole child of 04.7.
+
+**04.71 is the methodology doc itself.** Full text defines exactly the split the meeting is about:
+- **Level 1 — Component epics**: "the build story for each individual component... variants and configurations, accessibility requirements, and any error or empty states." Splits further by component type: **PWA Kit only** (Button, Textfield, Dropdown, Cart Item — "Write one story, in the PWA Kit epic only") vs. **Contentful + PWA Kit** (Banner, Editorial Cards, Footer, Navigation — "Write two stories: one in the Contentful epic... one in the PWA Kit epic").
+- **Level 2 — Page epics**: "the experience story for a specific page (e.g. PDP, PLP, Checkout)... describe how components work together... written from the customer's perspective... should not repeat the component build detail from Level 1."
+- Includes a quick-reference table (Level / Epic / Focus / Written-from-perspective).
+
+Both pages have **zero comments** (`confluence_get_comments` returned `[]` for both) — not yet socialized with the wider team. Both are confirmed freshly edited: a `lastModified &gt;= "2026-08-10"` probe matched on both IDs, and 04.7's own content contains inline dates "confirmed by Dennis 2026-08-10" and "Sprint 3 for User Story Writing 2026-08-11 - 2026-08-24" (2026-08-11 is today). Author identity is not retrievable via this tool (blank metadata on both), but the timing makes it near-certain this was assembled in the last 1–2 days, directly ahead of the meeting — this is very likely the exact thing being formalized.
+
+**Distinct, older, non-conflicting doc found too:** "Creating User Stories with Claude" (id `274137093`, version 11, self-dated "Last updated: July 2026") — a BA guide for the *mechanics* of drafting/creating Jira stories via Claude (custom fields, Given/When/Then AC format, labels like `HPC-034;Custom;Squad-A`, FE/BE splitting rule, bulk creation). It never addresses component-vs-page epic granularity, and there is **no cross-link** in either direction between it and 04.71. Worth flagging as a doc-consolidation opportunity for the meeting.
+
+Also checked and confirmed silent on this topic: "Definition of Ready" (313589763, v1), "Story Workflow" (247922696, v12), "2.6 Ways of Working" (313458697, v3 — owned by the Scrum Master, "reviewed at the end of each PI," changes are "raised in the Sprint Retrospective"). No hits anywhere in the space for "INVEST," "story splitting," or "story template" as search terms; no hits for "component-based" or "component story" other than 04.7/04.71 themselves.
+
+---
+
+### 2. Design/Figma sign-off status — current, and materially different from the month-old snapshot in places
+
+**04.2 Design Tracker (id `258801666`, version 44)** — still exists, same title. Pinned its true last-edit date via binary search on `lastModified`: matched `&gt;= "2026-07-13"`, empty on `&gt;= "2026-07-14"` and `&gt;= "2026-08-01"`. **Conclusion: last edited exactly 13 July 2026 — untouched for 29 days as of today (11 Aug).** The page's own intro text is stale too ("Phase 2 designs are... planned to be done by mid-July 2026" — already passed). This means your existing 2026-07-13 snapshot is **not** outdated relative to this specific page — nothing has changed on it since.
+
+Per area (Design Status | Zimmermann Sign-off):
+- **Cart &amp; Inventory (Sprint 2)**: Mini-Cart — Pending/Pending. Full Cart Page — Pending/Pending. **Nothing signed off.**
+- **Search &amp; Recommendations (Sprint 2)**: Search Input &amp; Autocomplete, Search Results &amp; Zero-Results, Recommendation Carousels — all Pending/Pending. **Nothing signed off.**
+- **PLP (Sprint 1-2)**: Product Tile, Quick Add &amp; Wishlist Popovers, Breadcrumb navigation, Filter/Sort/View More, Editorial &amp; Content Blocks — **all five rows Pending/Pending.** ⚠️ **This contradicts the prior research pass's claim that "PLP core grid" was Signed Off** — current live content shows zero PLP sign-off. Flag this explicitly and verify live before the meeting; either the earlier note was wrong or conflated something else.
+- **PDP (Sprint 1-2)**: Signed off — Images, Image Gallery, Product Info, Badges, Colour &amp; Size Selection, Complete the Look. Done-but-signoff-Pending — Accordions, Need Assistance. Fully Pending both — Measmerize, Price &amp; Stock, More from the Edit, Recommended for You, Recently Viewed, SEO section. **Anomaly worth a live check**: "Primary CTAs" shows Design Status text "PENDING" but colour-flagged green, sign-off "SIGNED OFF" — yet a 13-07 note says the Notify Me modal design was updated afterward ("misses customer name fields + marketing comms checkbox &amp; success screen — design updated"), i.e. the signed-off state may now be stale relative to the actual Figma file.
+
+**Separately — and this is the more actionable tracker for Sprint 3 — the new 04.7 Component Inventory is current as of yesterday (10 Aug)** and tracks sign-off at the atomic UI-kit level instead of the page/feature level:
+- Mostly **✅ Done (confirmed by Dennis 2026-08-10)**, already tagged "Sprint 3 for User Story Writing": Banner+Pause/Play, Button, Icon Button, Footer+Footer Item/Footer Textfield/Icons, Disclaimer, Textfield, Dropdown, Link, Logo Masthead, Navigation, Product Card Base+Image Carousel/Wishlist Icon, Product Cards with Lookbook, Recently Viewed.
+- Not ready: Drawer ("Incomplete" — "Designs Empty"), Checkbox &amp; Radio ("Not Confirmed"), Navigation Expanded ("In progress"), Title and Link ("Not Confirmed"), Cart Item module ("Not Confirmed"), Editorial Cards module ("Not Confirmed"), PDP Hero/Image Gallery/Product Content/Product Card Group ("Done, minor update required").
+- **Templates** (full-page composition): only **Shell** (Not Confirmed) and **PDP** (Done, "confirmed by Dennis") exist. **No Cart, Search, PLP, or Checkout template rows yet** — consistent with those pages' designs also being least mature on the 04.2 tracker.
+
+**Net for the meeting:** two trackers, different granularity, different currency (04.2 stalled since 13 Jul; 04.7 live as of 10 Aug). Page-level (Level 2) epics for Cart/Search/PLP are blocked — the **Definition of Ready** (id `313589763`) states plainly: "Stories with UI components are not Ready without approved designs." But isolated Level-1 PWA-Kit-only component stories (Button, Dropdown, Textfield, Banner, Footer, etc.) look buildable now per 04.7, independent of their parent pages' unsigned-off status.
+
+---
+
+### 3. Component structure standards — silent on story granularity, but the code structure already implies component-level units
+
+- **Development Standards** (id `261750785`, v2) and **Component Override Strategy** (id `261881857`, v4) — both are pure *code*-structure docs (naming, TS rules, tokens, styling, testing layers, file tiers; override-vs-new-component decision tree with the copy-first/`console.log`-verification pattern; branch naming `feature/{JIRA-KEY}_{short-description}`). Full-text review confirms **neither mentions "user story," "epic," or story-writing granularity anywhere.**
+- They do already imply component-level (not page-level) *build* granularity: "New custom components go under `overrides/app/components/custom/`" with each getting `index.tsx` + required `index.stories.tsx` + conditional `index.test.ts`; "Every component exported from `overrides/app/components/` or `overrides/app/pages/` must have a `.stories.tsx` file." This 1-folder-per-component structure lines up naturally with 04.71's "one component epic per component" — the codebase's unit of organisation already matches the proposed unit of story-writing.
+- **No cross-links exist** between these two docs and 04.7/04.71 in either direction — another documentation-consolidation opportunity to raise.
+
+---
+
+### 4. Who is "Tash," and Sprint 3 content
+
+**"Tash" = Natasha Lay, ACN (Accenture) Delivery Lead, Accenture Onshore, Sydney.** Confirmed via **"1.2 Team Overview"** (id `261586947`, v7), Project Executive Council table: `ACN Delivery Lead | Izzy Chaloner / Tash Lay | Accenture Onshore | Sydney` (a shared/paired row with Izzy Chaloner). The Tash-Lay↔Natasha-Lay identity link is corroborated by two meeting-notes pages listing "Natasha Lay — Accenture" as an attendee: "15-07-2026 Global-e Meeting Notes" (`331218950`) and "24-06-2026 Avalara Meeting Notes" (`275480588`).
+
+She is **not** the Scrum Master/PO/BA you hypothesized — Hazel Cacalda (Accenture Offshore) holds Scrum Master for *both* squads (per Team Overview and both Sprint 3 pages below). Tash's actual role — Delivery Lead — fits organizing a cross-squad "ways of working" alignment meeting even better. **"Meeting Cadences"** (id `322207767`, v3) confirms her standing governance footprint: she's named in the Fortnightly "Project Status Update" forum and the Weekly "Key Outstanding Actions" forum, the latter explicitly scoped "**up to Sprint 3**" — i.e., that cadence is scheduled to wind down at the end of the very sprint you're asking about.
+
+⚠️ Caveat: an earlier `confluence_search_user` lookup returned a "Natasha Lay" (Accenture email) flagged `is_active: false` in the people directory, which sits oddly against her being named as a current Delivery Lead and meeting attendee elsewhere. A later re-check hit an HTTP 429 rate-limit from Confluence's people-search backend rather than a clean answer, so treat that `is_active` flag as unreliable/unverified rather than a real signal. Do **not** confuse with **Natasha Gorrie** — a different, Zimmermann-side (client, not Accenture) Client Services Manager for AU &amp; HK, who appears only in the "2.5 PI 1 Planning Overview" SME list and is unrelated to this meeting.
+
+**Sprint 3 tracking pages** (not in your original list — found via direct title search): **"A - Sprint 3"** (id `396656658`, v3) and **"B - Sprint 3"** (id `396656649`, v5). Both squads run **Tue 11 Aug – Mon 24 Aug 2026**, Scrum Master Hazel Cacalda, both still template-empty: Sprint Goal = "TBD," Committed Stories/Other Tickets tables blank, capacity filled in only (Squad A: 41 net days / 5 people; Squad B: 43 net days / 5 people). Consistent with the sprint having started today and this alignment meeting likely happening before any stories are committed.
+
+**"2.5 PI 1 Planning Overview"** (`309690396`, v20) and child **"Dependencies"** (`310050860`, v8): Dependencies page is almost entirely blank — only 4 rows filled (Contentful CMS Readiness, SFCC MRT API Capabilities, Magento Product Hierarchy vs. SFCC Variation Model, Omneo — all Squad A/Sprint 1, no status or owner filled in); Business and Cross-squad Dependencies tables are empty templates. Nothing there specific to components or story-splitting.
+
+**"Sprint 2 Retrospective"** (`397312007`) exists only as a Confluence **whiteboard**, not a text page — `confluence_get_page` returns no extractable content (whiteboard canvases aren't text-readable via this tool). The only text surfaced via search is generic template boilerplate ("What went well / What didn't go well / What should we try next sprint?"), not actual filled-in notes — I cannot confirm whether component/story-splitting came up in the Sprint 2 retro. Someone with UI access would need to open it directly.
+
+---
+
+### 5. Component inventory — YES, and it's the same 04.7 page from Q1
+
+**"04.7 Component Inventory"** (id `400195591`) is exactly this. It links to the canonical source: Figma **"Zimmermann_Design_System_2026"** (node-id `40000730-13662`).
+
+Structured in an atomic-design-style hierarchy (different labels, same idea — Atom/Molecule/Organism/Template ≈ their Component/Sub-component/Module/Template):
+- **Components** (17 rows incl. sub-components): Banner (+Pause/Play), Button, Icon Button, Checkbox &amp; Radio, Footer (+Footer Item, Footer Textfield, Icons), Disclaimer, Textfield, Dropdown, Link, Logo Masthead, Navigation, Navigation Expanded, Title and Link, Drawer (Incomplete).
+- **Modules**: Cart Item, Editorial Cards, PDP Hero (+Image Gallery, Product Content), Product Card Base (+Image Carousel, Wishlist Icon), Product Card Group, Product Cards with Lookbook, Recently Viewed.
+- **Templates**: Shell, PDP only (Cart/Search/PLP/Checkout not yet built out here).
+
+Each row carries Type / Name / Variants-Configurations / Pages / Status / PWA-Kit-or-Contentful classification, and — critically — a **Sprint Planning** column already pre-populated with `"Sprint 3 for User Story Writing 2026-08-11 - 2026-08-24"` on most ready rows. Someone has already started using this inventory to scope exactly what Sprint 3's isolated component stories will cover — this is the "shared inventory to cut isolated stories against" you were looking for, and it already has Sprint 3 tags applied.
+
+No separate "design system" or "atomic design" Confluence page exists elsewhere in the space (both targeted text searches came back empty/irrelevant) — 04.7 plus the linked Figma file is the complete answer here.
+
+---
+
+### Key items to bring into the meeting
+1. **04.7 + 04.71 (ids 400195591 / 400195600)** are almost certainly the exact proposal being formalized — brand new, zero comments yet, dated right up to today.
+2. **PLP sign-off discrepancy**: current tracker shows 100% Pending, contradicting the earlier "core grid signed off" note — needs a live check before committing PLP-related Sprint 3 stories.
+3. **Two trackers, two currencies**: 04.2 Design Tracker (stale since 13 Jul) vs. 04.7 Component Inventory (live, 10 Aug) — worth deciding which is authoritative going forward.
+4. **DoR gate**: any Level 2 (page) or design-dependent Level 1 (Contentful) story for Cart/Search/PLP is currently blocked by the Definition of Ready's design-approval clause; PWA-Kit-only atomic components are not.
+5. Confirm with Tash (Natasha Lay) directly whether 04.71 is indeed her draft and whether Development Standards / "Creating User Stories with Claude" should be cross-linked to it.</result>
+<usage><subagent_tokens>218212</subagent_tokens><tool_uses>47</tool_uses><duration_ms>539540</duration_ms></usage>
+</task-notification>
+
+--- turn 3 ---
+<task-notification>
+<task-id>a4a43b42149e1ceb2</task-id>
+<tool-use-id>toolu_01Cttks9Cm5U382qmHE6oy9s</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/ca118e83-50ee-4df0-a734-d83474ec83ec/tasks/a4a43b42149e1ceb2.output</output-file>
+<status>completed</status>
+<summary>Agent "JIRA research on Sprint 3 and component stories" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Research Report: Sprint 3 Component Story Decomposition — Ground Truth
+
+**Source note:** Jira via `jira_get_agile_boards`/`jira_get_sprints_from_board`/`jira_get_sprint_issues`/`jira_search`/`jira_get_issue`, cross-checked against Confluence (space key `SFCC`, site `zimmermannworkboard`) via `confluence_search`/`confluence_get_page`. Read-only throughout — no issues modified, commented, or transitioned.
+
+---
+
+### 1. Real sprint ground truth
+
+Board: **"SFCC board"** (id `500`), project `SFCC` ("Adobe SFCC"). Sprints (`jira_get_sprints_from_board`, board 500):
+
+| Sprint | Jira state | Start | End | Confluence sprint-plan page confirms |
+|---|---|---|---|---|
+| SFCC Sprint 1 (id 497) | **closed** | Tue 7 Jul 2026 | Mon 27 Jul 2026 | "Sprint 1" (page 308969507) ✓ |
+| SFCC Sprint 2 (id 567) | **active** | Tue 28 Jul 2026 | Mon 10 Aug 2026 | "Sprint 2" (page 363200513) ✓ |
+| **SFCC Sprint 3 (id 568)** | **future** (not yet started) | **Tue 11 Aug 2026** | **Mon 24 Aug 2026** | "A - Sprint 3" (396656658) / "B - Sprint 3" (396656649), one page per squad, both confirm |
+
+**Today (2026-08-11) is literally the first calendar day of the real Sprint 3.** Per the "Meeting Cadences" page (322207767), Tuesday = "Sprint Planning (First day of Sprint)" — so today is the team's defined Sprint Planning ceremony day. Both Squad A and Squad B Confluence Sprint 3 pages explicitly show **Sprint Status: NOT STARTED**, **Sprint Goal: TBD**, and an **empty Committed Stories table** — the sprint backlog has not been locked in yet.
+
+**Divergence from the local planning doc (dated 2026-06-23) is confirmed and is significant, in two ways:**
+
+- **Numbering/dates are off by one sprint.** The doc's claimed "Sprint 3, 27 Jul–7 Aug" window roughly overlaps the *real Sprint 2* (28 Jul–10 Aug), not Sprint 3. Real Sprint 3 is 11–24 Aug, hasn't started, and its Confluence page has no goal or committed stories yet.
+- **Scope is wrong, not just mislabeled.** Real Sprint 2 (currently active) issues (`jira_get_sprint_issues`, sprint 567, 16 issues) are almost entirely spikes/config/QA work — e.g. SFCC-254 "Environment Setup DEV/TEST/SIT/UAT", SFCC-240 "Spike: Figma-to-React Implementation Workflow", SFCC-237 "Spike: MRT Application Architecture Strategy", SFCC-126 "Global Customer List Setup", SFCC-26 "Product Attributes – PDP" — **zero PDP/PLP/Cart/Search feature-build stories**. Real Sprint 3's currently-tagged issues (14, via native Sprint field — see caveat below) are mostly carried-over spikes plus SFCC-91/89 (PDP UI, 2 stories only), SFCC-52/55 (Header/Footer shell), and Adyen/Feedonomics/Global-e integration stories. **There is no "PDP Part 2 + PLP Part 2 + Cart (Squad A) / Search &amp; Recommendations (Squad B)" sweep anywhere in real Jira data.**
+- **What Sprint 3 actually is, per a live governance doc:** the "04.7 Component Inventory" Confluence page (400195591) tags most design-confirmed components with **"Sprint 3 for User Story Writing 2026-08-11 – 2026-08-24"** in its own "Sprint Planning" column. Real Sprint 3's actual declared purpose is writing/refining component-level user stories against an already-built design-system component inventory — not shipping PDP/PLP/Cart/Search features. This directly explains why a "ways of working" meeting on component-story granularity is happening exactly now.
+
+**Caveat on the "14 issues in Sprint 3":** none of these carry Jira's native Sprint field (`customfield_10020`) pointing anywhere except through board association — cross-referencing confirms they sit in the board's Sprint-3 bucket, but the Confluence sprint page for both squads is still empty, so treat this list as provisional/carried-over, not a committed backlog.
+
+---
+
+### 2. Verifying the decomposition pattern (SFCC-104/108/199, SFCC-83/106, SFCC-195, epic SFCC-1)
+
+All six confirmed real and in progress, at varying refinement stages. **Correction:** epic **SFCC-1** is "Platform Setup &amp; Environments" (status In Progress) — unrelated to components. The actual components epic is **SFCC-2 "PWA Kit Components"** (status: To Do), explicitly scoped in its own description as "the shared UI component library... consumed across all frontend epics," with "page-level layout and feature build... covered in their respective epics" carved out. None of the six example stories below are actually children of SFCC-2 — each sits under its relevant *page/feature* epic instead:
+
+| Key | Summary | Status | Parent epic | SP |
+|---|---|---|---|---|
+| SFCC-104 | Filters &amp; Facets — BM Configuration (Shared) | In Refinement | SFCC-7 Search &amp; Recommendations | — |
+| SFCC-108 | Search Results – Filters &amp; Facets UI Component | In Refinement | SFCC-7 | — |
+| SFCC-199 | PLP UI – Filters &amp; Facets Component | **Ready For Review** | SFCC-6 PLP | — |
+| SFCC-83 | Recently Viewed UI Component (Shared) | Tech design | SFCC-7 | 3 |
+| SFCC-106 | Consent Gating for PWA-Loaded Tracking &amp; Personalisation Components | To Do | SFCC-19 Regional Storefronts (not SFCC-7) | — |
+| SFCC-195 | PDP – Slide Out - Details &amp; Care | **Ready For Review** | SFCC-5 PDP | — |
+
+The pattern holds exactly as described: SFCC-104 (BM config) → SFCC-108 (shared PWA component) → SFCC-199 (PLP page integration), each description explicitly states its dependency chain ("Depends on SFCC-104..."). SFCC-195 is the clearest single-slice example — it covers **only the slide-out shell + one tab** ("Details &amp; Care"); sibling tabs are separately ticketed: SFCC-102 (Size &amp; Fit), SFCC-267 (Shipping &amp; Returns/Assistance), SFCC-266 (EU Environmental Qualities), SFCC-101 (Measmerize/Find My Size). One component, one concern, one story each.
+
+**None of these six tickets appear in Sprint 2 or Sprint 3's issue lists** — they're backlog items at various refinement stages, not yet pulled into a Jira Scrum sprint via the native Sprint field (their `customfield_10020` is null). Note: labels like `SPR-19`...`SPR-32` on SFCC-104/108/199 are **not real sprint markers** — they follow the same reference-code convention as `PRD-`/`REG-`/`HPC-`/`CAI-` labels seen elsewhere (requirement-doc references), not Jira Sprint entities. Don't conflate them with actual sprint numbers.
+
+---
+
+### 3. Current state of component stories — both patterns found side by side
+
+**The isolated/narrow single-component story is already the dominant, near-universal pattern** — not an aspirational future state. Full child-story pulls for the four major page epics show essentially zero broad "whole-page" stories:
+
+- **Cart (SFCC-11), 20 stories** — every one is a single feature/component: SFCC-270 "Cart Item - Product Information Display", SFCC-271 "Cart Item - Quantity Stepper", SFCC-274 "Total Section Component", SFCC-301 "Recommendation Component Slot", SFCC-315 "Bag Overlay Component", SFCC-317 "Disclaimer Component", SFCC-325 "Newsletter Sign Up Component", SFCC-404/405 "Page-Level Error/Success Banner Component", etc.
+- **PLP (SFCC-6), 17 stories** — SFCC-80 "Product Grid Structure", SFCC-189 "Sort Options UI Component (Shared)", SFCC-199 "Filters &amp; Facets Component", six separate "Bottom Zone" editorial-block stories, paired Contentful/PWA stories (SFCC-203/204/218).
+- **PDP (SFCC-5), 18 stories** — SFCC-89 "Static Product Information" (explicitly lists 6 out-of-scope items pushed to separate stories: badges, sale price, wishlist icon, swatches, size selector, CTAs, gallery, accordion, Contentful content), SFCC-91 "Colour Swatches &amp; Variation Selection", SFCC-186 "Product Image Gallery", SFCC-195 "Slide Out - Details &amp; Care", etc.
+- **Search &amp; Recommendations (SFCC-7), 19 stories** — same pattern (BM-config stories paired with UI-component stories, e.g. SFCC-105 "Sort Options BM Config" / SFCC-108 "Filters UI"; five separate Recommendations carousel stories).
+
+**Broad counter-examples that DO still exist (useful contrast for the meeting):**
+- **SFCC-52 "Global Header UI"** and **SFCC-55 "Global Footer UI"** (both 3 SP, Ready for Development) bundle logo + nav + icons (header) / links + newsletter + legal (footer) into one story each — but both descriptions explicitly self-limit to "shell and layout only," carving icon destinations, link wiring, and Omneo integration into separate stories. Partially decomposed, not fully atomic.
+- **SFCC-90 "Homepage Layout &amp; Content Modules UI"** (5 SP, In Refinement) is the clearest surviving **old-style broad story**: one ticket bundles six distinct content modules (hero banner, featured product row, campaign/editorial row, "Shop the Look" hero, top categories row, editorial/boutique duo) with no sub-story split. This is a good concrete "before" example to raise.
+
+**Live evidence the new formalized pattern is being actively rolled out today** — six "EXAMPLE:" tickets, all created 2026-08-11 between 11:56am–12:15pm (i.e., within the last hour of this research), all reported by **Isabel "Izzy" Chaloner** (Delivery Lead), all parented under SFCC-2 "PWA Kit Components":
+
+| Key | Summary | Created |
+|---|---|---|
+| SFCC-691 | EXAMPLE: Title and Link Component — PWA Kit | 11:56:18 |
+| SFCC-692 | EXAMPLE: Title and Link Component — Contentful | 11:56:45 |
+| SFCC-694 | EXAMPLE: Title and Link Component — PDP | 11:57:07 |
+| SFCC-698 | EXAMPLE: Editorial Cards Module — Contentful | 12:14:59 |
+| SFCC-699 | EXAMPLE: Editorial Cards Module — PWA Kit | 12:15:14 |
+| SFCC-700 | EXAMPLE: Editorial Cards Module — PLP | 12:15:28 |
+
+These are literal worked examples of the Contentful-config → PWA-Kit-render → page-integration split (see Q5 for the governing doc). Both example components ("Title and Link", "Editorial Cards") are flagged "🟠 Not Confirmed" in the design-system inventory — i.e., deliberately chosen as *teaching* examples, not real committed work.
+
+**A rougher, earlier precursor** also exists: **SFCC-648 "pdp/size-selector"** and **SFCC-650 "pdp/add-to-bag"** (created 2026-08-07 by Jasmijn Tsang, Lead BA, under SFCC-2), using lowercase code-path-style titles rather than standard "As a... I want..." story format. SFCC-648's description: *"As a Developer, I want a reusable `pdp/size-selector` React component built to the Zimmermann design system spec, so that it can be consumed by PDP and any other page-level stories that require size selection."* These look like an earlier, less formal attempt to split SFCC-92 "PDP — Size Selection &amp; Add to Bag" (currently one bundled Blocked story, 5 SP) into atomic pieces, predating the two governance docs found in Q5.
+
+---
+
+### 4. Who is "Tash"
+
+**Confirmed: Tash = Natasha "Tash" Lay, ACN Delivery Lead (Cover for Izzy/Isabel Chaloner), Accenture Onshore, Sydney.** Triangulated from independent sources:
+
+- Confluence "1.2 Team Overview" (261586947), Project Executive Council table: `ACN Delivery Lead | Izzy Chaloner / Tash Lay | Accenture Onshore | Sydney`.
+- Confluence "7.1a Tool Access Tracker" (259686402): `Tash Lay | Delivery Lead (Cover)`.
+- Confluence "15-07-2026 Global-e Meeting Notes" (331218950) attendee list gives her full first name: `Natasha Lay | Accenture` — confirming Tash is the nickname for Natasha.
+- Confluence "Meeting Cadences" (322207767) lists her by name in two governance forums: **"Project Status Update"** (fortnightly; audience "Rebecca, Emma, Lucy, Simon, Tim, Peter, **Tash**, Izzy, Alrick, Marjo") and **"Key Outstanding Actions"** (weekly, *scoped "up to Sprint 3"*; audience "Izzy, **Tash**, Rebecca, Emma, Lucy") — notably this second forum's own charter runs only through Sprint 3, i.e. exactly now.
+- A live Jira comment on **SFCC-420** (by Hazel Marie Cacalda, Scrum Master) reads: *"The DoR checklist has been completed following **Tash's advice** that Emma has given approval on the epic cartridges and does not require a full review at this stage."* — confirms she's an active decision-maker on process/Definition-of-Ready matters, consistent with a Delivery Lead role.
+
+**Not confirmed:** she is not listed as a Scrum Master (that's Hazel Cacalda, and separately Vivek Joy in one roster snapshot) or as a Business Analyst (Jasmijn Tsang is Lead BA; Bianca Morley is BA). Your prior guess of "Scrum Master, BA, or PO" doesn't quite match — her actual documented role is **Delivery Lead**, which is a natural fit for driving a cross-squad ways-of-working change.
+
+---
+
+### 5. What's queued next
+
+- **Real Sprint 3 backlog is not yet committed.** Both squad Sprint 3 Confluence pages show Sprint Goal: TBD, empty Committed Stories tables, Sprint Status: NOT STARTED — consistent with the Jira board also showing Sprint 3 as "future." Whatever gets formally committed will happen at today's Sprint Planning ceremony (per the team's own cadence table).
+- **The single most relevant document found: "04.71 Writing User Stories for Components"** (Confluence page 400195600, version 2 — much newer than its companion "04.7 Component Inventory" at version 13). This appears to be the actual policy doc behind the meeting. Full rule set:
+  - **Level 1 — Component epics** (the "build" story): "**PWA Kit only**" components (Button, Textfield, Dropdown, Cart Item) get **one** story, in the PWA Kit epic. "**Contentful + PWA Kit**" components (Banner, Editorial Cards, Footer, Navigation) get **two** stories — one in the Contentful epic (content model/authoring/validation) and one in PWA Kit (rendering) — because *"A Contentful component always needs a PWA Kit story too... A PWA Kit-only component does not need a Contentful story."*
+  - **Level 2 — Page epics** (the "experience" story, e.g. PDP/PLP/Checkout): written from the shopper's perspective, describing how components work together on that page; explicitly told **not** to repeat Level-1 component build detail.
+  - This formalizes — rather than replaces — the existing Tim-established shared-config → component → page-integration shape (SFCC-104→108→199 already matches it); it adds a named decision rule (1 vs 2 Level-1 stories, based on whether content authoring is involved) and explicit perspective/audience guidance per level.
+- **"04.7 Component Inventory"** (400195591) is a live Figma-design-system tracker (Components / Modules / Templates, each with Status and a "Sprint Planning" column). Components already marked **"Sprint 3 for User Story Writing"** (i.e., design-confirmed, queued for story-writing this sprint): Banner + Pause/Play, Button, Icon Button, Footer + its 3 sub-components, Disclaimer, Textfield, Dropdown, Link, Logo Masthead, Navigation, PDP Hero, Product Card Base + 2 sub-components, Product Card Group, Product Cards with Lookbook, Recently Viewed. Components **not yet slated** (still design-"Not Confirmed" or "In progress"): Checkbox &amp; Radio, Navigation Expanded, **Title and Link**, Cart Item (module), **Editorial Cards** (module) — notably, the two EXAMPLE ticket sets from Q3 both used components from this "not yet real work" list, reinforcing they're teaching examples rather than committed Sprint 3 output.
+- **Net assessment:** the isolated-component-story approach is not something that "hasn't started being applied" — it's already the default for PDP/PLP/Cart/Search (Q3), and leadership (Izzy Chaloner) is actively producing worked examples today extending the same discipline formally to the shared "PWA Kit Components" epic via a freshly-written two-level framework doc, timed to land right at Sprint 3 Planning.</result>
+<usage><subagent_tokens>223804</subagent_tokens><tool_uses>66</tool_uses><duration_ms>684959</duration_ms></usage>
+</task-notification>
+
+--- turn 4 ---
+with this in mind:
+
+"Heya Angelo! 
+ 
+By any chance did you know what out of the box solution for the calendar on this screen we were thinking of using? Find the Figma screen here:  https://www.figma.com/design/QQ427wHWEUjsjP7H8v48Rs/Zimmermann_Designs?node-id=3193-47937&t=2w8SleTf0dXnF6Xb-0 (screenshot also attached)
+ 
+Thanks heaps!!"
+
+
+execute an in-depth check into the codebase, codebase docs, codebase configs, confluence, and JIRA for information on this question by Kiera
+
+--- turn 5 ---
+<task-notification>
+<task-id>a08640f0bb2384a04</task-id>
+<tool-use-id>toolu_01JoAecVrFMDiPXzj9gejvZg</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/0f890293-1d3d-4726-bb0d-646b77d58f77/tasks/a08640f0bb2384a04.output</output-file>
+<status>completed</status>
+<summary>Agent "JIRA research on calendar component decision" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Jira Research Report — Calendar/Date-Picker for "Find in Boutique" Figma Screen (node 3193-47937)
+
+**Scope note:** All searches ran against `project = SFCC` on zimmermannworkboard.atlassian.net. This was read-only — no issues were modified, commented on, or transitioned. Comment retrieval was validated as working correctly (confirmed comments render fine on SFCC-92, SFCC-241, SFCC-255), so "no comments" reported below for other tickets is a genuine finding, not a tool gap.
+
+---
+
+### 1. Find in Boutique tickets
+
+All hits match the documented **stock-check-only** scope. None mention a calendar, date picker, or appointment time slots.
+
+| Key | Summary | Status | Relevant detail |
+|---|---|---|---|
+| **SFCC-297** | PDP UI — Find in Boutique Button and Slide-In Panel | In Refinement | "modal/flyout UI showing per-boutique stock availability for the selected size, and all boutique availability states." Real-time OMS call is out of scope (→ SFCC-308). **0 comments.** |
+| **SFCC-308** | Inventory – Real-Time Boutique Stock Check for Find in Boutique | To Do | SFCC triggers a real-time inventory call to NewStore OMS via MuleSoft "when a shopper opens the Find in Boutique modal." **0 comments.** |
+| **SFCC-458** | Find in Boutique – Buffer Stock Exclusion Logic | To Do | Confirms buffer stock is NOT applied to Find in Boutique — true physical stock only. **0 comments.** |
+| SFCC-307 | Inventory (Epic) | To Do | Explicitly lists "Real-time boutique stock availability for Find in Boutique (OMS call via MuleSoft)" and "OMS response caching" in scope — no calendar/booking mentioned anywhere. |
+| SFCC-5 | Product Detail Page (Epic) | In Progress | Lists "Find in Boutique modal (per-boutique availability, Google Maps, geolocation)" as in-scope — matches docs exactly. |
+| SFCC-9 | Store Locator (Epic) | To Do | Same stock-check framing repeated at epic level. |
+
+**Conclusion:** every Find in Boutique ticket in Jira matches your local `.docs/prd/` scope exactly (stock check, Google Maps, geolocation). Nothing here explains the calendar/time-slot UI in the screenshot.
+
+---
+
+### 2. Booxi / appointment booking tickets
+
+Found **SFCC-72** and **SFCC-626** as the direct Booxi tickets, plus the parent epic **SFCC-16**. None confirm in-storefront booking, and none discuss a calendar/library approach — comments are empty on all three.
+
+| Key | Summary | Status | Quote |
+|---|---|---|---|
+| **SFCC-72** | Booxi Appointment History Integration | To Do | Full description, verbatim: *"Placeholder story - appointment history sourced from Booxi API."* No labels, **0 comments.** |
+| **SFCC-626** | My Account – Services Page Layout | To Do | *"Personal Styling tile with 'Book an Appointment' link (routes to Booxi — dependency: SFCC-72)... The Appointments section is built as a placeholder to accommodate the Booxi integration (SFCC-72) without requiring structural redesign when it is ready."* Labels: `CRM-165`, `CRM-167` (confirmed these are requirement-tracking labels, not separate Jira issues — direct lookup of `CRM-165` as an issue key returned "not found"). **0 comments.** |
+| SFCC-16 | Customer Account &amp; CRM (Epic) | To Do | *"Appointments section within My Account (Booksy integration — storefront scope and timelines TBC)"* and dependency: *"Booksy — appointment data source for My Account appointments section (scope TBC)."* **0 comments.** |
+
+**Notable discrepancy worth flagging to your team:** SFCC-16 (the epic) spells the vendor **"Booksy"** throughout, while both child stories (SFCC-72, SFCC-626) spell it **"Booxi."** No comment thread anywhere resolves which is the typo. Not directly relevant to the calendar question, but worth a doc-integrity flag since it's the kind of inconsistency AGENTS.md tells you to raise.
+
+Also relevant: **SFCC-525** ("Store Detail – Boutique Services Section", To Do, Squad-B) — the boutique-detail-page version of the same "Book an Appointment" CTA. Its description explicitly says *"the Click and Reserve CTA links to an external reservations flow — the flow itself is out of scope for this epic"* — pattern strongly implies "Book an Appointment" is the same kind of external link-out, not an in-storefront flow. **0 comments.**
+
+**Conclusion:** every Booxi-adjacent ticket confirms the docs' framing — placeholder/link-out/read-only-history only, with scope explicitly marked "TBC" at the epic level. Nothing confirms an in-storefront booking flow has been scoped, and nothing discusses a calendar library.
+
+---
+
+### 3. Calendar / date-picker component tickets (direct search)
+
+- `text ~ "calendar"` and `text ~ "date picker" OR "datepicker"` — **only one hit in the entire project**: **SFCC-386** (see Q4 below).
+- Named-library searches — `react-day-picker`, `react-datepicker`, `react-calendar`, `flatpickr`, `react-dates` — **zero hits**, individually or combined, anywhere in Jira text (summary/description/comments).
+
+**Conclusion: no calendar library of any kind has been named in any SFCC Jira ticket.** This is a clean negative result, not an inference — the fuzzy text search would have caught a mention in any field including comments.
+
+---
+
+### 4. Gift card delivery date picker (GC-005/GC-006)
+
+Confirmed ticket: **SFCC-386** — "Gift Card PDP – Delivery Date Picker (Digital Gift Card, 3-Month Restriction)", status **To Do**, labels `GC-005`, `GC-006`, `Custom`, `Squad-A`.
+
+Full description:
+&gt; "As a Shopper, I want to select a future delivery date for a digital gift card using a calendar picker, so that I can schedule the gift card to be sent on a specific date. This component appears on the Digital Gift Card PDP only, within the purchase form (SFCC-385). It renders as a calendar date picker allowing the customer to navigate between months and select a future delivery date. Dates beyond 3 months from the current date are greyed out and unavailable for selection (GC-006). Surface: PWA Kit / SFCC PDP page. Owned by: SFCC/PWA Kit. Note: this story is currently created in SFCC-17 (Credit Notes &amp; Gift Cards) for speed but should be moved to SFCC-5 (Product Detail Page)... Depends on GC-005, GC-006. Cross-epic dependency: SFCC-5 (PDP epic), SFCC-385 (Gift Card PDP Purchase Form)."
+
+**0 comments.** No separate spike/tech-design ticket exists for it — `labels in ("GC-005","GC-006")` returns only SFCC-386 itself. Checked the parent purchase-form ticket **SFCC-385** ("Gift Card PDP – Purchase Form...", To Do) too — no additional calendar detail, **0 comments**.
+
+**Conclusion:** this ticket is described purely functionally (month navigation, 3-month cutoff) — **no implementation library is named here either.** So even the one calendar UI Jira does confirm is still an open implementation question, not a decided one. It cannot currently answer "what library was chosen" for the Find in Boutique screen, because no library was chosen for GC-005/006 either.
+
+---
+
+### 5. Ticket referencing the specific Figma node (3193-47937)
+
+- Exact phrase `"3193-47937"` → **zero hits**.
+- `"47937"` alone → **zero hits**.
+- `"Zimmermann_Designs"` → matched ~50+ unrelated tickets (JQL full-text search appears to tokenize on the underscore and match "Zimmermann" and/or "Designs" as separate stemmed words across nearly the whole project — not a meaningful signal). I grepped that full result set for `calendar|Booxi|appointment|47937` and found **nothing new** — only the same already-covered "Find in Boutique" tickets appeared, incidentally.
+
+**Conclusion: no ticket in Jira links to or references this specific Figma node.** Nobody has filed a story/spike against this exact screen yet.
+
+---
+
+### Bottom line for the synthesizing session
+
+This is a **genuinely open/undecided question, not a documented decision** — say so plainly:
+
+- No Jira ticket documents a date+time-slot booking calendar anywhere in the "Find in Boutique" or Booxi tickets.
+- No ticket confirms in-storefront Booxi appointment **booking** is in scope — every reference (SFCC-16, SFCC-72, SFCC-626, SFCC-525) is consistent with your docs: placeholder, external link-out, or explicit "scope TBC."
+- **No calendar library — react-day-picker, react-datepicker, react-calendar, flatpickr, react-dates, or any other name — appears anywhere in SFCC Jira**, including in the one ticket that does scope a real calendar UI (SFCC-386, gift card delivery date, GC-005/GC-006), which is also un-implemented and undiscussed (0 comments).
+- No ticket references the Figma node 3193-47937 directly.
+- Comments are empty across literally every directly relevant ticket (SFCC-297, 308, 458, 72, 626, 16, 525, 386, 385) — this is a project where these particular stories haven't been discussed in Jira's comment threads at all yet, calendar or otherwise. Whatever Kiera and Angelo discussed about an "out of the box" solution, **it has not been written into Jira** as of this check (2026-08-11). It may exist only in Confluence, Slack, or verbally — or it may genuinely still be an open question the two of them were actively working through when that conversation happened.
+- One tangential finding worth passing along: the "Kiera" name does appear in Jira, but only in two unrelated threads (SFCC-255 size-selector/"Find My Size" recommendation copy, and SFCC-236 product-card behavior on the Recently Viewed page) — neither is about calendars, Booxi, or Find in Boutique. Don't conflate those with the conversation you're researching.</result>
+<usage><subagent_tokens>178454</subagent_tokens><tool_uses>37</tool_uses><duration_ms>280038</duration_ms></usage>
+</task-notification>
+
+--- turn 6 ---
+<task-notification>
+<task-id>a67e28ca306915d54</task-id>
+<tool-use-id>toolu_018yva5uhaCa14MJnVqdssgq</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/0f890293-1d3d-4726-bb0d-646b77d58f77/tasks/a67e28ca306915d54.output</output-file>
+<status>completed</status>
+<summary>Agent "Confluence research on calendar component decision" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>Research complete. Summary below, organized by the five numbered questions. All findings are read-only — no Confluence content was created, edited, or commented on.
+
+## Cross-cutting note before the detail
+
+Every page fetched returned empty `created`/`updated` timestamp fields from the API (a tool/data limitation, not something I can work around) — so I'm reporting **version numbers** (a proxy for edit history) and content-internal dates (e.g., "downloaded July 3rd, 2026," "Last updated 2026-07-16") where available, instead of true last-modified timestamps.
+
+Also worth flagging up front: Confluence itself is **inconsistent on the vendor's name** — some pages call it "Booksy," others "Booxi," one page hedges with "Booksy / Booxi" together. This isn't a scope signal, just an unresolved naming inconsistency in the client's own source documents that mirrors what you already found locally.
+
+---
+
+## Q1 — Is Booxi's in-storefront booking scope more confirmed/expanded in Confluence?
+
+**No — if anything it's confirmed narrower and more explicit than "maybe expanded."**
+
+- **"Integration Reconciliation — Working Doc (Pre-Jira)"** (id `307134467`, DRAFT status, compiled 2026-07-07) is a reconciliation of all integration sources and states explicitly: *"Booxi | ✅ (in architecture.md) | — (missing from tracker) | ✅ (4 items in openItems.md) | **— not in register at all** | ... Confluence register has no page/row for Booxi."* It lists Booxi among **"Six repo integrations have no Confluence register page at all: Booxi, Transperfect, Google reCAPTCHA, GDPR cartridge, Optimizely Web, Crazy Egg."** No dedicated Booxi TSD, spike, or register page exists anywhere in the space.
+- The **confirmed functional requirements** (id `302022672`, "04.1.11 Customers, Account, CRM Sync," sourced from the Zimmermann Functional Requirements Excel downloaded July 3, 2026) are unambiguous:
+  - **CRM-165**: "The system will display the customer's appointment history within My Account, sourced via the Booksy API" — Status: **Confirmed**
+  - **CRM-166**: "The system will treat Booksy as the system of record for all appointment data" — Status: **Confirmed**
+  - **CRM-167**: "The system will accommodate appointments as a section within the My Account area so that it can be incorporated without structural redesign when ready" — Status: **Confirmed**
+  - None of the three mention booking, scheduling, or creating an appointment — only display of existing history.
+- **"Technical Solution Design – PWA"** (id `256835585`, v11, "Last updated 2026-07-16") is internally inconsistent in wording but resolves the same way: one summary row says *"Booxi | Boutique appointment **booking** (My Account; CRM-165–167)"*, but the more precise per-integration timeout table in the same doc says *"`booxi` | Booxi base URL **(TBD)** | Boutique appointment **read** in My Account (CRM-165–167) | ... My Account only; non-critical-path within that page."* Both cite the same CRM-165–167 IDs, and Booxi's base URL is still literally TBD.
+- **"04.2 Design Tracker"** (id `258801666`) row 13, "Customer Account &amp; CRM" → "Loyalty &amp; Appointments" ("Loyalty page (legacy VIC); loyalty page (new Friend/Muse/Icon); Appointments (Booksy)") shows **Sprint 4, Design Status PENDING, Zimmermann Sign-off PENDING, no Figma link populated**. Per **"1.5 Web Design (UX)"** (id `268075023`), this whole area falls under **Phase 2 (account &amp; loyalty surfaces)**, which the sign-off tracker marks **DRAFT — "Not ready for build."**
+- **Important new find**: **"Store Details"** integration register (id `258441217`) documents the *only* confirmed mechanism for actually **booking** an appointment today: **INT-027, Inside Chat** — *"Live chat widget available on Store Detail page for click-and-collect queries and boutique appointment booking."* Status: Under Review. I.e., the currently-documented booking path is a **human chat handoff**, not a self-service calendar.
+- **"1.4 Third Party Overview"** (id `261849101`) hedges at a summary level: *"Booxi | Boutique appointment history in My Account **(scope TBC)**"* — even though the underlying CRM-165–167 rows say Confirmed. This is an internal Confluence inconsistency, not evidence of expansion.
+
+**Verdict**: No evidence anywhere in Confluence of in-storefront self-service booking being confirmed scope. Every source narrows to read-only history, not-yet-signed-off design, and a live-chat-based booking workaround.
+
+---
+
+## Q2 — Is there a technical decision/spike/evaluation about a calendar/date-picker component?
+
+**No such document exists. This is a genuinely open/undecided question.**
+
+- Broad searches for "calendar," "date picker," "datepicker," "react-day-picker," "react-datepicker," "react-calendar," "flatpickr," "react-dates," "MUI date," "Chakra date," and "out of the box" + component library returned nothing relevant beyond generic uses of the word "date" (meeting dates, sprint dates) and the GC-005/006 requirement text itself.
+- **"04.7 Component Inventory"** (id `400195591`, v13) — the design system's own catalogue — lists Banner, Button, Icon Button, Checkbox &amp; Radio, Footer, Disclaimer, Textfield, Dropdown, Link, Logo Masthead, Navigation, Title and Link, Cart Item, Editorial Cards, PDP Hero, Product Card Base/Group, Recently Viewed. **No Calendar or DatePicker component is listed anywhere.**
+- **"04.71 Writing User Stories for Components"** (id `400195600`) is a generic process guide (Level 1 component epics vs. Level 2 page epics) with no calendar-specific content.
+- The architecture TSD's only UI-library statement is generic: *"UI framework | React 18 + Chakra UI | Component library + theme tokens"* — no calendar/date npm package named anywhere.
+- No page or comment mentions "Kiera," and no page references the Figma node-id `3193-47937` or `node-id=3193` directly.
+
+**Verdict**: If Kiera and Angelo's conversation happened, it was not written back into Confluence anywhere I could find (no matching page, no matching comment on any page checked, including the Design Tracker, the CRM/Appointments page, Store Details, and the Gift Cards page — all returned zero comments).
+
+---
+
+## Q3 — Is there a page specifically about "Find in Boutique"? Does it include a booking step?
+
+**No page is titled exactly "Find in Boutique," but it's thoroughly documented elsewhere, and it never includes a booking/calendar step.**
+
+- **"Find In Store — Boutique Stock Availability"** (id `292487173`) is the MuleSoft-level technical design (JIRA ZMOBLD-218, Technical Owner Surya Veer). Its request/response contract is literally just `{"ProductId": "2350275", "CountryCode": "GB"}` → `[{"StoreId": "...", "qty": 1}]`. **No date/time field exists anywhere in this API.**
+- Functional requirements PRD-018, PRD-028–039 (id `302776322`, "04.1.8 Product, Catalogue and PDP"), the CAI section (id `302415874`, "04.1.5 Cart and Inventory"), and the Order Management section (id `303464449`) all describe Find in Boutique identically: PDP/Cart CTA → side-out/modal with product thumbnail+name+colour+price → size selector → location search + "Use My Location" geolocation → Google Maps directions → results list (name, address, distance, stock status In Stock/Low Stock/Out of Stock, plus per a PRD-035 comment: opening hours, contact details, live open/closed status, map, "view more" button) → Enter-key search, configurable result limit, fully responsive.
+- This matches your local `.docs/prd/pdp.md` / `.docs/integration/03-mulesoft.md` summary exactly — both are sourced from the same "Zimmermann Functional Requirements" Excel, downloaded July 3, 2026.
+
+**Verdict**: Confluence confirms, does not contradict, the local docs. No calendar, date, or appointment concept appears anywhere in Find in Boutique's documentation, functional or technical.
+
+---
+
+## Q4 — Gift card delivery date picker (GC-005/GC-006)
+
+**Confirmed as a requirement; zero technical/library decision on record.**
+
+- **"04.1.13 Gift Cards and Credit Notes"** (id `303693825`, v9, same source Excel):
+  - **GC-005**: "The system will display a date picker calendar for the delivery date field, allowing the customer to navigate between months and select a future delivery date." — Status: **Confirmed**
+  - **GC-006**: "The system will restrict the delivery date selection to within 3 months from the current date; dates beyond 3 months will be greyed out and unavailable for selection." — Status: **Confirmed**
+- **"04.2 Design Tracker"** (id `258801666`) row 16, "Credit Notes &amp; Gift Cards" (Sprint 5): component detail lists *"Gift card PDP (denomination, **date picker**, sender/recipient/message)"* — Design Status **PENDING**, Zimmermann Sign-off **PENDING**. The design for this date picker itself isn't signed off yet either.
+- No spike, evaluation, or decision doc anywhere discusses *how* to implement it — no library named, no build-vs-buy note, nothing beyond these two requirement lines and the one tracker row.
+
+**Verdict**: Same "no technical evaluation on record" situation as Q2 — nothing suggests the team already picked (or even discussed) a library here that could be reused for the boutique screen. The trail is cold on both.
+
+---
+
+## Q5 — Figma-adjacent tech notes for this specific frame
+
+**Nothing found referencing this frame, node-id, or flow by name.**
+
+- No page references node-id `3193-47937` or the "Choose a Date"/"Available Times"/Continue flow.
+- **"1.5 Web Design (UX)"** (id `268075023`) — the page that should hold this — is a largely **unfilled template**: placeholder Figma links (`*[link]*`), a blank "Last updated" field, placeholder background-presentation entries, and an explicit closing checklist of things still needed ("A few fill-ins before you publish..."). Its own tracker marks **Phase 2** (which covers My Account/loyalty, and by extension any Appointments sub-area) as **DRAFT — "Not ready for build,"** with only Login/Register slightly further along ("In Review").
+- **"04.2 Design Tracker"**'s one relevant row (Loyalty &amp; Appointments, Sprint 4) has an **empty Figma Link cell**, PENDING/PENDING status, and no dev-handoff or feasibility note attached.
+- On "SIGNED IN AS ANGELA LEE": I found no dedicated "Angela Lee" persona or test-account page (the "04.3 Personas" page uses generic role-based names). But the Design Tracker's Checkout Entry notes (dated 01-07) show designers instructing generic placeholder copy for an *unrelated* screen: *"If you login as a known customer 'Welcome back, Angela. Email: nnn' and for new users 'Welcome to Zimmermann world, Angela.'"* This suggests "Angela" is a recurring example-customer name the design team reuses across mockups generically, not a signal specific to the appointment flow — but I want to flag this as my own inference from adjacent evidence, not something a page directly confirms.
+
+**Verdict**: This screen sits in a part of Figma that Confluence's own tracking explicitly marks as still in Draft, unsigned-off, and not yet linked into the tracker at all — consistent with no technical decision existing for it yet.
+
+---
+
+## One additional hypothesis worth passing on (my inference, not confirmed by any page)
+
+You noted the Figma layers panel shows this calendar screen grouped under "Find in Boutique" alongside "FIND IN BOUTIQUE modal open" variants. Given every confirmed requirement and the MuleSoft-level TSD are unanimous that Find in Boutique is a stock-check-only flyout with no date/time concept, and given the *actual* appointment feature (Booxi/Booksy, CRM-165–167) is tracked completely separately under "Customer Account &amp; CRM → Loyalty &amp; Appointments" — one plausible explanation is that the designers grouped this screen in Figma by **UI pattern** (both are boutique-related side-out panels) rather than by feature/requirement scope. That would explain why it reads as "under Find in Boutique" visually while actually representing a different, still-undecided feature (Booxi appointment booking, or possibly an entirely new/undocumented concept like a styling or personal-shopping appointment). I could not verify this directly since I don't have Figma access in this session — flagging it only as a hypothesis for whoever synthesizes the final answer.</result>
+<usage><subagent_tokens>267112</subagent_tokens><tool_uses>41</tool_uses><duration_ms>390734</duration_ms></usage>
+</task-notification>
+
+--- turn 7 ---
+before we respond to kiera - take a look into /Users/marcel.a.n.navarro/Dev/pwa-kit-overview.md and /Users/marcel.a.n.navarro/Dev/pwa-kit-special-components.md
+
+and also, look into the chakra aspect of the PWA kit as well
+
+--- turn 8 ---
+create the teams chat - human language - reply to kiera
+
+--- turn 9 ---
+this calendar / date picker - what 3rd party integration is it related to/with
+
+--- turn 10 ---
+will this/these third-party not provide the ui?
+
+--- turn 11 ---
+yes, fold it in
+
+--- turn 12 ---
+this calendar is actually concerned with the find in boutique book a fitting flow modal and is noted for confirmation to see if out of the box
+
+--- turn 13 ---
+it would be helpful to do a sweep of ms teams and outlook email as well for anything related to this 
+
+create the prompt for copilot to look at all things related to this matter
+
+--- turn 14 ---
+<task-notification>
+<task-id>a3c5504c11c64204a</task-id>
+<tool-use-id>toolu_01SBcsxydRGRL7qSxtFPoZ43</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/0f890293-1d3d-4726-bb0d-646b77d58f77/tasks/a3c5504c11c64204a.output</output-file>
+<status>completed</status>
+<summary>Agent "Confluence research on Book a Fitting flow" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Research Report: "Book a Fitting" / Find in Boutique Investigation (Confluence space SFCC)
+
+All searches performed via Confluence CQL/site search across the full SFCC space. No content was created, edited, or commented on — read-only throughout.
+
+---
+
+### 1. "Book a Fitting" / "fitting" — direct search
+
+**Zero hits, across every variant tried:** `fitting`, `"Book a Fitting"`, `text ~ "fitting"`, `fitting appointment`, `fitting room`, `personal fitting`, `made to measure`, `tailor`, `alterations`, `bridal`, `styling appointment`, `appointment type`, `time slot`/`time-slot`, `calendar` (no relevant hits — only unrelated matches like "Scrum Meeting Cadence Calendar" and gift-card delivery-date pickers). I also pulled the full 200+-row **"04.1.11 Customers, Account, CRM Sync"** page (id `302022672`) directly and grepped it locally — the literal string "fitting" does not occur anywhere in it.
+
+The only appointment-related **confirmed** requirements anywhere in Confluence are three rows in that same page:
+
+| Req ID | Requirement | Owner | Status |
+|---|---|---|---|
+| CRM-165 | "The system will display the customer's appointment history within My Account, sourced via the **Booksy** API" | Accenture | Confirmed |
+| CRM-166 | "The system will treat **Booksy** as the system of record for all appointment data" | Zimmermann | Confirmed |
+| CRM-167 | "The system will accommodate appointments as a section within the My Account area so that it can be incorporated **without structural redesign when ready**" | Accenture | Confirmed |
+
+CRM-167's "when ready" phrasing is notable — it explicitly confirms only a placeholder/reserved section, not a built booking experience. The matching **"04.2 Design Tracker"** (id `258801666`) row — "Loyalty &amp; Appointments" → "Appointments (Booksy)", Sprint 4 — has **no Figma link populated** and is Pending/Pending.
+
+**Conclusion:** "Book a Fitting" as a self-service calendar/time-slot booking flow is not a documented or scoped requirement anywhere in Confluence. This is consistent with — and probably explains — Charmaine's Figma sticky note ("Dev team to confirm Out of the box calendar"): there is no confirmed requirement or existing spec for this calendar, so she genuinely doesn't know if it's buildable/native or a vendor-supplied widget.
+
+---
+
+### 2. Charmaine Lew
+
+Confirmed real Confluence user (account id `5d534dfedbb98c0d9c22ed4e`, `charmaine.lew@accenture.com`, `is_active: false` in the directory).
+
+- **Role: Product Designer**, Accenture Onshore, **Melbourne** — per **"1.2 Team Overview"** (id `261586947`), listed under "Squad Oversight" (i.e., supports both delivery squads, not squad-specific) alongside Product Design Leadership (Marjo Kaszonyi, Jon Jackson) and fellow Product Designer Dennis Alvarenga.
+- Attendee (ACN side) on the **PLP Workshop** in **"04.0 Requirements Workshops"** (id `342360068`): "ACN: Jasmijn, Bianca, Charmaine, Tash".
+- Active named contributor in **"04.2 Design Tracker"** (id `258801666`) design-review notes: *"02-07: Charmaine to put was/now on PDP"*; *"01-07: is there a version of the billing address fields? Charmaine to make one version of checkout with this"*; *"24.06 → Hardi: might not be visible — Charmaine not to include in design"* (reCAPTCHA row).
+- **"15-07-2026 Global-e Meeting Notes"** (id `331218950`): *"Charmaine opened by demoing the new Zimmermann website."*
+- Listed in a Leave Tracker attachment (no further detail).
+
+No page authored *solely* by her turned up (creator/contributor CQL queries returned empty for both her and Kiera — this may be a tool/instance limitation rather than proof of authorship absence). But she's clearly an active Product Designer who works primarily in Figma and leaves her fingerprints as an action-owner in Confluence design-review tables rather than as a page author — consistent with her leaving a sticky note directly on the Figma file rather than a Confluence page.
+
+---
+
+### 3. Kiera Rikard-Bell
+
+Confirmed real Confluence user (account id `623a4c25562ab90069f7e510`, `kiera.rikard-bell@accenture.com`, `is_active: false`) — but **zero discoverable content or mentions anywhere in the SFCC space.**
+
+Checked and came up empty: **"1.2 Team Overview"** (full org/squad roster), **"7.1a Tool Access Tracker"** (id `259686402`, the full team roster with per-system access status — every project member with any tool access is listed here), **"04.0 Requirements Workshops"** attendee lists, **"04.2 Design Tracker"** comments (none exist on that page at all), and plain-text searches for "Kiera", "Rikard-Bell", and "Rikard" across the whole space.
+
+**Conclusion:** her role cannot be established from Confluence at all. She may be a Figma-only collaborator (design counterpart, brand-side reviewer, or similar) who was simply never added to any Confluence-tracked roster — or a very recent/peripheral addition. This is a genuine absence, not a missed search term; flagging it as-is rather than guessing her role.
+
+---
+
+### 4. "Find in Boutique" — re-check for sub-flows
+
+Fully re-confirmed, now with the complete requirement set. **"04.1.8 Product, Catalogue and PDP"** (id `302776322`) contains PRD-018 (PDP CTA: *"Add to Bag and Find in Boutique as primary CTAs; Find in Boutique should open as a side out"*) plus **PRD-028 through PRD-039** (12 requirements), covering only: eligibility gating, modal header (thumbnail/name/colour/price), size pre-population, location search input, "Use My Location" geolocation with manual fallback, Google Maps directions, boutique result cards (name, address, distance, per-size stock status, hours, contact, live open/closed, map, "view more"), responsive modal, Enter-key search, configurable result limit. The Design Tracker's parallel "Full Cart Page" row references the same thing: *"Find in Boutique flyout (boutique availability per size)"*.
+
+**Nothing in either place — or in "04.7 Component Inventory" (id `400195591`, which turned out to be a generic design-system primitives tracker: Banner/Button/Drawer/Footer, not a feature-flow tracker) — mentions dates, times, calendars, or booking.** There is no second, documented sub-flow under "Find in Boutique" anywhere in Confluence. As far as Confluence is concerned, "Find in Boutique" remains exactly what my prior pass found: a pure per-boutique stock-check flyout. The Figma "Find in Boutique" grouping containing a "Book a Fitting" screen is undocumented net-new scope relative to Confluence.
+
+---
+
+### 5. Booxi/Booksy — naming conflict and appointment-type scoping
+
+**Significant, previously unflagged finding: Confluence itself is internally inconsistent between "Booksy" and "Booxi" as the vendor name for this same appointment integration.**
+
+Pages using **"Booksy"**: "04.1.17 Third Party Integrations" (id `303890433`, sourced directly from the client's Functional Requirements Excel: *"Boutique Appointments | Booksy | The system will integrate with Booksy via MRT API connection..."*), "04.1.11 CRM Sync" (CRM-165/166), "04.2 Design Tracker", "Final Deliverables.pptx" attachment.
+
+Pages using **"Booxi"**: "1.4 Third Party Overview" (id `261849101`), "2.5 PI 1 Planning Overview" (id `309690396`), "05.7 SFCC Architect Handover Checklist" (id `364544001`), "Technical Solution Design – PWA" (id `256835585` — MRT-mediated, credentials as MRT env vars, base URL "TBD"), "Zimmermann Detailed Architecture" whiteboard, and **"04.6 Consent Management — Business Overview"** (id `299433985`), which is the one place that frames it as an active **booking** tool rather than pure history: *"Booxi (boutique appointment booking) | Required | Functional booking tool."*
+
+One page, **"8.1 Technical Files (Zimm Provided)"** (id `264765445`), literally lists it as **"Booksy / Booxi"** side by side, suggesting whoever compiled it already suspected the naming ambiguity.
+
+Most tellingly, **"Integration Reconciliation — Working Doc (Pre-Jira)"** (id `307134467`, a DRAFT reconciling the repo's `architecture.md`/`projectState.md`/`openItems.md` against Confluence's Integration Register) explicitly flags: *"Booxi | ... | — not in register at all | ... | Confluence register has no page/row for Booxi"* and lists it among *"Six repo integrations [with] no Confluence register page at all: Booxi, Transperfect, Google reCAPTCHA, GDPR cartridge, Optimizely Web, Crazy Egg."* This is an open, unresolved documentation gap already recognized by the project, not something I'm surfacing fresh — but the Booksy/Booxi spelling split specifically doesn't appear to have been called out as its own issue anywhere; the reconciliation doc treats "Booxi" as simply missing a register page, without noting that a *differently-spelled* version of apparently the same vendor already has extensive documentation under "Booksy."
+
+**No appointment-type taxonomy exists anywhere** — I found no page cataloguing "Book a Fitting" alongside "Personal Styling" or any other named appointment type. My "Personal Styling" search only returned generic noise (SKU style codes, product styling images) — I could not independently reconfirm the "My Account – Services Page" reference from the prior pass under any phrasing I tried this time; flagging that as unconfirmed-today rather than re-asserting it.
+
+**Synthesis (inference, not documented fact):** CRM-167's forward-compatible placeholder + 04.6's lone description of Booxi as a "booking tool" hint that a real booking capability is anticipated eventually, and that "Booxi" (not "Booksy") may be the vendor actually intended for booking rather than just history — but Confluence does not resolve this itself, and the Integration Reconciliation doc's own open questions leave vendor identity/scope unsettled. "Book a Fitting" sits ahead of all of this: it isn't tied to either spelling in any confirmed requirement.
+
+---
+
+### Bottom line for the synthesizing session
+
+"Book a Fitting" is genuinely undocumented in Confluence — not a case of searching the wrong terms. Every plausible phrasing came back empty. What Confluence *does* establish: (a) the only confirmed appointment feature is read-only history via "Booksy" (CRM-165/166) with a forward-compatible-only placeholder (CRM-167); (b) "Find in Boutique" is exhaustively scoped as stock-check-only, no booking; (c) there's an unresolved Booksy-vs-Booxi naming split in the project's own documentation, with "Booxi" being the only spelling anyone has associated with actual booking (vs. Booksy = history/system-of-record); (d) Charmaine Lew is a confirmed Accenture Product Designer (Melbourne) actively working these design-tracker items; (e) Kiera Rikard-Bell has no Confluence footprint whatsoever, so her role is unknown from this source. The Figma "Book a Fitting" flow appears to be a design-stage concept running ahead of confirmed requirements — which lines up with Charmaine's own sticky-note uncertainty about whether the calendar is buildable in-house or vendor-supplied "out of the box."</result>
+<usage><subagent_tokens>215938</subagent_tokens><tool_uses>55</tool_uses><duration_ms>443644</duration_ms></usage>
+</task-notification>
+
+--- turn 15 ---
+<task-notification>
+<task-id>ac5d0d99f462a4ae6</task-id>
+<tool-use-id>toolu_017TqjwvVbZsu7PWvpUVwBVe</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/0f890293-1d3d-4726-bb0d-646b77d58f77/tasks/ac5d0d99f462a4ae6.output</output-file>
+<status>completed</status>
+<summary>Agent "JIRA research on Book a Fitting flow" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>I now have comprehensive coverage across full-text search, the separate Acceptance Criteria custom field, user profile lookups, and a recency sweep. Here is the organized research report.
+
+---
+
+## Research Report: "Book a Fitting" / Charmaine Lew / Kiera Rikard-Bell in Jira (project SFCC)
+
+### 1. "Book a Fitting" / "fitting" — direct search results
+
+**No ticket in the SFCC project documents a "Book a Fitting" flow.** Every search angle came up empty or returned false positives:
+
+- `text ~ "fitting"` → 14 hits, all false positives from Jira's stemming (matches "Fit"/"Fitted"/"fits" anywhere in text): PDP slide-out stories, SEO tickets, `Ask Charmaine...` subtasks, spikes, etc. None describe a booking flow.
+- `text ~ "Book a Fitting"` → **one hit**, **SFCC-247** ("Spike: Validate Magento Product Hierarchy Against SFCC Variation Model", Done). This looked significant at first, but reading the full comment shows it's a pure false positive from JQL's term-matching (not true phrase-matching): the comment contains "**price books**" (G3–G7 gap list) and "**Fitted** Blouse" (product example name) — i.e., stemmed "book" + stemmed "fit" appearing independently, nothing about appointment booking. **This is not a real hit.**
+- `text ~ "fitting appointment"` → 0 hits.
+- `summary ~ "fitting"` (narrower) → only SFCC-207 (Charmaine accordion-tabs subtask, matched on "does not seem to **fit** in current design") and SFCC-102 "PDP – Slide Out - **Size &amp; Fit**" — neither is booking-related.
+- `cf[10231] ~ "fitting"` (searching the separate **Acceptance Criteria** custom field, `customfield_10231`, which the default `text ~` search does **not** index) → same false positives (SFCC-266, SFCC-195, SFCC-102, SFCC-90), all stemming noise, nothing new.
+- `cf[10231] ~ "Booxi" OR "Booksy" OR "calendar" OR "appointment"` → **zero hits, project-wide.** No Acceptance Criteria anywhere in SFCC mentions any of these terms.
+- Synonym sweep (`consultation`, `styling session`, `schedule`, `book now`, `reserve a fitting`) → 33 hits, all false positives (Global-e jobs, category scheduling, opening-hours feeds, etc.) — nothing related.
+- Recent-ticket sweep (all PDP/Store Locator children created in the last 14 days) → 33 tickets, all granular Store Detail/Locator UI stories (hours table, map, contact block, etc.) or standard PDP stories (wishlist, Find in Boutique, Shipping &amp; Returns) — no booking/calendar/fitting title.
+
+**Conclusion: "Book a Fitting" is not an existing Jira ticket, story, or AC anywhere in the SFCC project — under any wording I could construct.**
+
+### 2. Charmaine Lew
+
+Confirmed as a **real, resolvable Jira user**: `jira_get_user_profile` succeeded on `charmaine.lew@accenture.com` → display name "Charmaine Lew". She does **not** appear as an assignee or reporter anywhere — she's referenced only as a third-party design contact inside subtask titles/comments authored by the dev team:
+
+- **SFCC-207** — "Ask Charmaine on how accordion tabs work in desktop design (can be up to 7 times, does not seem to fit in current design)" (Done; subtask of **SFCC-195** "PDP – Slide Out - Details &amp; Care", parent epic SFCC-5 PDP). Comment by Dani Rivett: *"Charmaine has added a gradient to show more items horizontally"*.
+- **SFCC-211** — "Ask Charmaine to design error messaging on PDP - max purchase quantity" (Done; subtask of SFCC-196 "PDP UI – Maximum Purchase Quantity").
+- **SFCC-208** — "Discuss the to-be Chat functionality with Rebecca - then with Charmaine on how that should function, where and when chat should appear / position on each page" (To Do; subtask of SFCC-267 "PDP – Slide Out – Shipping &amp; Returns and Assistance").
+- Also turned up (via broader text match, not opened in full) in several other PDP/PLP ticket comment threads: SFCC-203, SFCC-199, SFCC-194, SFCC-150, SFCC-92, SFCC-28.
+
+**Assessment:** Charmaine Lew is an established, actively-engaged UX/UI designer specifically on PDP-related design decisions (accordion behaviour, error messaging, chat placement) around the same period as the Figma comment (subtasks created 2026-07-21, close to the "~12 days ago" comment date). Nothing in these tickets mentions fitting, Booxi, or a calendar — but she is clearly a legitimate, active design authority the frontend lead would expect to see commenting on a PDP-adjacent Figma screen.
+
+### 3. Kiera Rikard-Bell
+
+Also confirmed as a **real, resolvable Jira user**: `kiera.rikard-bell@accenture.com` → display name "Kiera Rikard-Bell". Same pattern as Charmaine — no assignee/reporter role, only referenced by first name in comments:
+
+- **SFCC-255** — "Discuss Size Selector - Recommendation in design review Friday" (In Progress; subtask of **SFCC-101** "PDP – Slide out - Measmerize Widget &amp; Find My Size CTA"). Comment by Jasmijn Tsang: *"had a chat with Kiera and User:712020:c99d37b3-9c93-4347-951d-5ffb32ff1341 yesterday - the idea is now to have 'Recommended: 2' displayed on PDP next to the size selector, replacing 'Find My Size'..."*
+- **SFCC-236** — "Product Card Shared Component" (Ready For Review; under SFCC-2 PWA Kit Components). Comment: *"The product card behaviour on the 'see full recently viewed' page was not specified in the design - I asked Kiera - she recommended to keep the behaviour similar to product card on PLP."*
+- **SFCC-648** — "pdp/size-selector" (To Do; under SFCC-2) also matched the `Kiera` text search, but its description/comments show no visible "Kiera" mention — likely a search artifact, not a genuine reference. Treat as inconclusive.
+
+**Assessment:** This re-confirms (rather than overturns) the prior pass's finding — SFCC-255 and SFCC-236 are about **PDP sizing UX** (size-selector recommendation wording, product-card behaviour), not Find in Boutique or fitting appointments. They remain genuinely separate from a "Book a Fitting" flow. However, her role — giving UX direction on PDP-adjacent shopper-facing copy/behaviour decisions — is entirely consistent with also being the right person to consult on a Find-in-Boutique/Book-a-Fitting screen; there's just no ticket connecting her to that specific flow.
+
+### 4. Find in Boutique epic/tickets — re-pulled, no "Book a Fitting" sibling found
+
+"Find in Boutique" is **not a single epic** — it's a cross-cutting feature split across three different epics, confirmed by re-pulling all three stories plus their parents and issue links:
+
+- **SFCC-297** "PDP UI — Find in Boutique Button and Slide-In Panel" (In Refinement; parent **SFCC-5** PDP epic). Description: *"This story covers the PWA Kit frontend component for Find in Boutique on the PDP. It includes the Find in Boutique button display on eligible products, the modal/flyout UI showing per-boutique stock availability for the selected size, and all boutique availability states. The real-time OMS call to NewStore via MuleSoft and response caching logic are out of scope — covered in SFCC-308."* Its full 12-point Acceptance Criteria (in `customfield_10231`, not previously visible via description alone) is exclusively about: product image/name/colour/price display, a **size selector for stock-checking** (not booking), per-boutique Available/Low Stock/Out of Stock states, expand/collapse boutique details (hours, phone, email, map, directions), geolocation/location search, empty state, and a mobile slide-up panel. **No calendar, no time slots, no booking confirmation step, no signed-in-customer-name display** — nothing resembling the Figma screen.
+- **SFCC-308** "Inventory – Real-Time Boutique Stock Check for Find in Boutique" (To Do; parent **SFCC-307** Inventory epic). Purely the NewStore-via-MuleSoft real-time stock integration layer. Linked to SFCC-297 via "Relates".
+- **SFCC-458** "Find in Boutique – Buffer Stock Exclusion Logic" (To Do; parent **SFCC-15** Order Management epic). Purely about excluding buffer-stock deduction from the Find in Boutique availability figure. Depends on SFCC-297, SFCC-456, SFCC-11.
+- The **SFCC-9** "Store Locator" epic description explicitly scopes Find in Boutique the same way: *"Find in Boutique: real-time stock availability per boutique for a product in context on the store detail page"* (In Scope), and lists *"Find in Boutique slide-out on PDP — covered in SFCC-5"* under Out of Scope (i.e., cross-references SFCC-297, confirming no other Find in Boutique variant exists).
+
+**No child/linked/sibling ticket about booking a fitting exists anywhere under any of these three parent epics.** The feature as ticketed today is stock-check-only, exactly as previously understood.
+
+### 5. Booxi / Booksy / Personal Styling — and a genuine naming inconsistency
+
+"Personal Styling" and "Find in Boutique" are **confirmed as two separate, unrelated concepts** in the current backlog — but a real documentation inconsistency surfaced around the appointment vendor's name:
+
+- **SFCC-16** "Customer Account &amp; CRM" (Epic). Its own description says, in three separate places: *"Appointments section within My Account (**Booksy** integration — storefront scope and timelines TBC)"*; *"**Booksy** — appointment data source for My Account appointments section (scope TBC)"*; *"**Booksy** platform configuration — Zimmermann scope"* (Out of Scope); and *"Appointments section storefront scope and delivery timelines are **TBC** pending further scoping with Zimmermann"* (Assumptions).
+- **SFCC-72** "**Booxi** Appointment History Integration" (To Do; child of SFCC-16). Description: *"Placeholder story - appointment history sourced from Booxi API."* Read-only history only — matches your prior understanding.
+- **SFCC-626** "My Account – Services Page Layout" (To Do; child of SFCC-16). Description: *"...Personal Styling tile with 'Book an Appointment' link (**routes to Booxi** — dependency: SFCC-72), Gift Cards tile..., and Care Guides tile. The Appointments section is built as a **placeholder** to accommodate the Booxi integration (SFCC-72) **without requiring structural redesign when it is ready**."* Acceptance Criteria field is null (unrefined).
+- **SFCC-525** "Store Detail – Boutique Services Section" (To Do; child of **SFCC-9** Store Locator, not SFCC-16). Description: *"...Each service is presented as a tile containing a service heading, a short description, and a CTA link (e.g. 'Book an Appointment' for Personal Styling, 'Make a Reservation' for Click and Reserve)."* Same CTA-link pattern, surfaced on the Store Detail page instead of My Account. Acceptance Criteria field is also null.
+
+**So: the epic (SFCC-16) says "Booksy," while both of its own child stories (SFCC-72, SFCC-626) say "Booxi."** These are two different real-world commercial products (Booxi = retail/luxury appointment-booking and clienteling platform; Booksy = salon/beauty booking app) — this is either a straightforward, uncorrected typo in the epic description, or a genuine unresolved ambiguity about which vendor is actually contracted. Either way, it has never been reconciled in Jira, and it's directly relevant to your Figma sticky-note finding (Charmaine Lew's *"Dev team to confirm Out of the box calendar"*) — that comment reads as exactly this same open question (is the calendar Booxi/Booksy's own out-of-the-box hosted widget, vs. something Zimmermann must build?), still unresolved anywhere in Jira.
+
+**Critically: every "Book an Appointment" reference found (SFCC-16, SFCC-72, SFCC-626, SFCC-525) describes a CTA link that routes externally to Booxi/Booksy** — not an embedded native calendar+time-slot+Continue-button UI. Both stub stories (SFCC-626, SFCC-525) have zero Acceptance Criteria written, and the epic (SFCC-16) explicitly flags the whole Appointments section as **"TBC"**. This "Book an Appointment" concept also lives under **My Account** and the **Store Detail page** — never under PDP or "Find in Boutique."
+
+### Bottom line
+
+"Book a Fitting" as a PDP → Find in Boutique sub-flow with an in-storefront calendar/time-slot/Continue booking UI **does not exist as a ticket, story, AC, or even a passing text mention anywhere in Jira** — this was checked via full-text search, the separate Acceptance Criteria custom field, synonym variations, and a 14-day recency sweep. The closest conceptual relative already ticketed is "Personal Styling → Book an Appointment" (SFCC-16/72/626/525), but that is scoped to My Account and Store Detail pages as an external link/placeholder to Booxi (per SFCC-72/626) or "Booksy" (per SFCC-16 itself) — not PDP/Find-in-Boutique, not an embedded calendar, and explicitly still "TBC." The frontend lead's confirmation that this Figma screen is specifically "Find in Boutique → Book a Fitting" describes a linkage that is genuinely new/undocumented in Jira as of today (2026-08-11) — the Figma comment thread (Charmaine Lew, ~2026-07-30, tagging Kiera Rikard-Bell and the frontend lead, 1 reply not visible to this research) currently appears to be the only record of this decision anywhere, and it lives in Figma, not Jira.</result>
+<usage><subagent_tokens>255295</subagent_tokens><tool_uses>44</tool_uses><duration_ms>447331</duration_ms></usage>
+</task-notification>
+
+--- turn 16 ---
+redraft the Kiera reply
+
+--- turn 17 ---
+remove the good news bad news framing, and this seems to be the answer to kiera's question: "nobody's actually decided *how* yet. Tim flagged in that same thread that we still need a session with Booxi on implementation approach, and I can't see any sign that's happened.
+But here's the useful bit for your actual question — Booxi does have its own ready-made booking widget you can just embed (script + button, opens inline or as a modal, and it's stylable to match brand). So there IS a genuine "out of the box" option here — it's just not decided whether we use their widget as-is, or build our own UI against their API instead. Only the second path would need us to pick a date-picker library ourselves."
+
+if we could convert it into natural language and tailor it to kiera who's a designer
+
+--- turn 18 ---
+this is still oversharing as it's dipping into the integrations discussion instead of mainly concerned with the design as kiera's a designer and not a FED
+
+--- turn 19 ---
+let's put a little "don't quote me on this" element into this because it's limited to what i have access to no?
+
+--- turn 20 ---
+follow up from Kiera:
+
+"Heya Angelo! Sorry I know it's out of hours for you - but was keen to get your take on the add to bag interaction in the navigation.
+ 
+I've been asked to mockup a view of the header similar to the current state, see frame here: https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40001400-15580&t=XpYTqtXDRarM5jls-0
+ 
+I also had suggested going with a more simple option, with the bag changing to the filled state once items had been added to bag, which I think is more clear, see here: https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40001173-20365&t=Wx5mRa9Jhp3kOr6P-0
+ 
+Would you see any issues with their proposed state (adding a number next to the bag). Keen to suss with you before I give my proposed solution.
+ 
+Thanks heaps for your help!!"
+
+--- turn 21 ---
+my take on this:
+
+current option would be a headache to develop not to mention the concern with the number in the icon being something that has to be decided - show actual count if more than 9 items or cap at 9 and show as 9+
+
+the new proposed solution is cleaner but i think it gives off the vibe of being activated rather than being filled - it's in the header and it's the only icon filled, so something like in the nav when an item stands out it visually cues that you're at that current page, makes sense?
+
+while the option to similar current state seems like the perfect middle ground for the approach but still a concern with the count
+
+for the current option and option to similar current state has it been decided if the actual count will be shown or if it will capped at say 9 and any more would be 9+ ?
+
+--- turn 22 ---
+fold it into a reply for Kiera, designer-focused - follow the 3 designs reviewed format for the reply with a thanks for your patience kind of intro
+
+--- turn 23 ---
+for the current option - i don't really care about it being spec'd - put in my feedback on it
+
+--- turn 24 ---
+this "but I think your instinct about it reading as "activated" rather than "filled" is spot on. " it's my instinct and not kiera's
+
+--- turn 25 ---
+remove em-dashes
+
+====================================================================================================
+### [pwa] [2026-07-13] mainSession — 1 user turns — d98b7f37-a824-4cbf-98f2-7db21bad1ae4.jsonl
+====================================================================================================
+
+--- turn 1 ---
+is the use of underscore instead of hyphen not intentional?
+
+====================================================================================================
+### [pwa] [2026-07-22] ZIMM - TSD Template — 13 user turns — da816bea-91c8-4fd0-86ee-ca1b2911c7b4.jsonl
+====================================================================================================
+
+--- turn 1 ---
+check the codebase, confluence, and jira for any and all instances of TSDs / Technical Specification/Solution Document
+
+--- turn 2 ---
+given all the findings/TSDs - do a in-depth analysis into each one, mainly taking note of the approach-structure-foundation - then, out of the findings, create a TSD Template via .MD - ask any clarifications, questions, concerns as needed
+
+execute
+
+--- turn 3 ---
+transfer the files locally to /Documents

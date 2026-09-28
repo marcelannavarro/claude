@@ -1,0 +1,450 @@
+diff --git a/.claude/rules/components.md b/.claude/rules/components.md
+index 6ef1e37..cc2cc8c 100644
+--- a/.claude/rules/components.md
++++ b/.claude/rules/components.md
+@@ -68,6 +68,26 @@ state belongs in a custom hook instead.
+   commerce SDK hooks — the reasoning is the same either way: a component that owns its own
+   data-fetching can't be reused somewhere the data arrives differently (SSR-prefetched,
+   mocked in Storybook, composed from a parent that already has it).
++
++  **Exception — Context-backed, app-wide static-content hooks** (`useIntl`, `useUiCopy`) may
++  be called from any component, including presentational leaves. Both read from a Provider
++  mounted above the route tree, not from a per-page/per-component fetch — so calling one from
++  a leaf doesn't create the SSR/Storybook/parent-composition problem the rule above exists to
++  prevent, and doesn't multiply fetches the way an SDK hook would. `useUiCopy`
++  (`overrides/app/hooks/useUiCopy.ts`, Provider at `overrides/app/components/uiCopyProvider/`)
++  is the reference example — `BottomBar` and `ZimmSubscribeSection` both call it directly
++  for microcopy while still receiving their actual business data as props. This exception is
++  narrow: it covers content that is identical for every consumer regardless of route/context,
++  not anything that varies per page.
++
++  **Their no-Provider behaviour differs, and it matters for tests and stories.** `useUiCopy`
++  degrades to fallback text — `useContext(UiCopyContext) ?? FALLBACK_ONLY` — so a leaf calling
++  it renders with zero setup. `useIntl` **throws** (`react-intl`'s `invariantIntlContext`:
++  _"Could not find required `intl` object"_), and its `IntlProvider` is mounted by the **base
++  SFCC `_app`**, not by `_app-config` — a strictly narrower subtree. `.storybook/preview.tsx`
++  supplies one for stories precisely because of this; any Vitest test rendering a `useIntl`
++  consumer must wrap it too. An earlier revision of this paragraph claimed both hooks degrade
++  gracefully and that both Providers sit in `_app-config`; neither is true of `useIntl`.
+ - **Extract-to-hook threshold.** Pull inline component logic out into a custom hook
+   (`overrides/app/hooks/use<ComponentName><Feature>.ts`) when either is true:
+ 
+diff --git a/.claude/rules/css.md b/.claude/rules/css.md
+index d0d2bea..118134b 100644
+--- a/.claude/rules/css.md
++++ b/.claude/rules/css.md
+@@ -15,17 +15,33 @@ values for spacing, no raw font sizes. Tokens belong in
+ 
+ ```tsx
+ // ❌ hardcoded
+-<Box color="#1A1A1A" padding="16px" fontSize="14px" />
++<Box color="#1A1A1A" padding="16px" />
+ 
+-// ✅ token
+-<Box color="brand.primary" padding={4} fontSize="sm" />
++// ❌ a bare Chakra/theme token string — resolves correctly (theme.colors/theme.space ARE
++// registered from the Zimmermann foundations) but is still not allowed in an override
++// component; see overrideStyling.md's hierarchy point 2 for why
++<Box color="text.default" padding="m" />
++
++// ✅ token, as a raw var(--zimm-*) reference
++<Box color="var(--zimm-color-text-default)" padding="var(--zimm-scale-m)" />
+ ```
+ 
+-**Not currently mechanically enforced.** Unlike the accessibility rules in
+-[components.md](./components.md), there's no `.coderabbit/ast-grep-rules/` rule watching for
+-a raw hex code or `px` value landing in a Chakra prop or `.scss` file yet — this is a strong
+-candidate for the same treatment (ast-grep can pattern-match a hex-colour or `px` literal
+-inside a JSX attribute value) if hardcoded values keep slipping through review.
++Type is its own case, not shown above — set it with `textStyle` (`textStyle="body2"`), never
++a raw `fontSize`, per [overrideStyling.md](./overrideStyling.md) point 1. There's no
++`var(--zimm-*)` substitute for the composite `textStyle` expansion itself, only for its
++individual pieces (`var(--zimm-font-size-*)` etc.), so `textStyle` stays a bare key —
++it's the one entry in the hierarchy that isn't a colour/spacing token.
++
++**The raw-hex/px/rem/em half of this has a script but no CI gate yet.**
++`npm run audit:tokens` (`scripts/auditTokenUsage.mjs`) scans `overrides/app/components/**`
++and `overrides/app/theme/components/**` for exactly this — see
++[overrideStyling.md](./overrideStyling.md)'s `Never` note for the full scope and its
++acknowledged-exception rules. It's not wired into CI (no `.coderabbit/ast-grep-rules/` rule
++either), so nothing blocks a merge that skips running it — that's still a real gap, just not
++an unstarted one.
++The bare-token-vs-`var(--zimm-*)` half above **is** mechanically enforced for recipe files —
++see `theme/components/recipeGuards.test.ts`, which runs on every `npm run test` — though it
++can't see the same mistake made as a JSX/`sx` prop; that half still relies on review.
+ 
+ ---
+ 
+diff --git a/.claude/rules/frozenFiles.md b/.claude/rules/frozenFiles.md
+index 2cf0996..08e49a0 100644
+--- a/.claude/rules/frozenFiles.md
++++ b/.claude/rules/frozenFiles.md
+@@ -24,16 +24,27 @@ overrides/app/theme/foundation/sizes.ts
+ overrides/app/theme/foundation/zimmTokens.ts
+ ```
+ 
+-**No font binaries in this repo.** Futura Round ships under a Monotype *"Font Software For
+-Desktop End User License Agreement"* which forbids "further distribute the Font Software, or
+-any copy thereof" and "Install the Font Software on any server or in any digital asset
+-management system" — so `.woff2`/`.otf` must not be committed here or served from the MRT CDN.
+-Licence: Zimmermann-Handover repo, `02-design/library/assets/Font Futura WOFF2/Licenses/2275/`.
+-Type renders from the fallback stack in `foundation/fonts.ts`. Self-hosting needs Zimmermann's
+-own Monotype Web Page Content entitlement (2 fonts: Regular 400, Medium 500).
+-
+-Per-component theme overrides live in `overrides/app/theme/components/` and are
+-**Tier 2** — see [protectedFiles.md](./protectedFiles.md). `overrides/app/theme/globalStyles.ts`
++**Fonts are self-hosted and served on every tier.** `overrides/app/static/fonts/` holds two
++Futura Round faces — Regular 400 and Medium 500 — declared by
++`overrides/app/theme/fontFace.tsx` and mounted in both `_app-config/index.tsx` and
++`.storybook/preview.tsx`. Only two faces exist because only two are used: all 22 textStyles
++resolve to fontWeight 400 or 500, and `fonts.body === fonts.heading`.
++
++There is **no environment gate** on this, and it is worth stating plainly because an earlier
++revision of this section claimed there was. `ZimmFontFace` mounts unconditionally inside
++`_app-config`'s `ChakraProvider`, and `pwa-kit-dev`'s `staticFolderCopyPlugin` copies
++`overrides/app/static` in both the client and SSR webpack configs — so the `.woff2` are
++published with every bundle and shoppers on every storefront render Futura Round.
++
++`foundation/fonts.ts` already lists `'Futura Round'` first in both stacks, so the `@font-face`
++declaration is the only thing that makes it resolve — no component, recipe or token changes.
++The fallback stack renders roughly 13% wider, which is why serving the real faces matters for
++design-parity review against Figma.
++
++Per-component theme overrides live in `overrides/app/theme/components/` (**Tier 2**) or, per
++the co-location pattern, beside their component as `<name>.css.ts` — governed by that
++component's own CODEOWNERS entry instead, not this Tier — see
++[protectedFiles.md](./protectedFiles.md). `overrides/app/theme/globalStyles.ts`
+ is also **Tier 2** — it composes the `.zimm-*` global class registry from the `--zimm-*`
+ variables defined in `foundation/zimmTokens.ts`, so it is derived styling rather than a
+ brand token source, but it emits CSS on every page and therefore needs a named owner.
+diff --git a/.claude/rules/overrideStyling.md b/.claude/rules/overrideStyling.md
+index 47ed1fb..93783bc 100644
+--- a/.claude/rules/overrideStyling.md
++++ b/.claude/rules/overrideStyling.md
+@@ -13,27 +13,47 @@ companion.
+ 
+ 1. **`textStyle` prop** for anything textual. `textStyle="body2"`, never a raw `fontSize`.
+    All 22 Handover text styles are registered in `theme/foundation/typography.ts`.
+-2. **Semantic colour/spacing token strings** — `color="text.default"`, `bg="background.02"`,
+-   `spacing="m"`, `padding={{ base: 'm', md: 'xl' }}`. These resolve through
+-   `theme.colors`/`theme.space` (both registered — see `theme/index.ts`'s own comment
+-   for which foundation scales are and aren't registered, and why).
+-3. **A component's own theme config** (`theme/components/<name>.ts`) for anything that
+-   needs to vary by variant/size/state and isn't already a Chakra prop — see
+-   "Component-local tokens" below. For an interactive component with existing Chakra
+-   support (buttons, inputs, etc.), this theme config is the single source of truth —
+-   see "One canonical styling surface per component type" below.
++2. **Raw `var(--zimm-*)` CSS custom properties** for colour and spacing — `color="var(--zimm-color-text-default)"`,
++   `bg="var(--zimm-color-bg-02)"`, `gap="var(--zimm-scale-m)"`. **Never** a bare Chakra/theme
++   token string (`color="text.default"`, `gap="m"`) — even though `theme.colors`/`theme.space`
++   ARE registered from the same Zimmermann foundations (see `theme/index.ts`'s own comment on
++   which scales are and aren't registered) and a bare key resolves to the identical value. This
++   is a house-style requirement, not a correctness one: a `var(--zimm-*)` reference is
++   unambiguous at every call site, where a bare key forces a PR reviewer to check
++   `theme/index.ts`'s registered-scale list to know whether it happens to be correct. Mechanically
++   enforced across every recipe file by `theme/components/recipeGuards.test.ts`'s "no
++   override-component style uses a bare token key on a registered scale" test — it walks the
++   registered recipe map only, so it cannot see the same mistake made as a JSX/`sx` prop (see
++   that test's SCOPE note); apply the same discipline there by hand.
++3. **A component's own theme config** — either centralized (`theme/components/<name>.ts`)
++   or, per the co-location pattern below, beside the component as `<name>.css.ts` — for
++   anything that needs to vary by variant/size/state and isn't already a Chakra prop — see
++   "Component-local tokens" and "Co-locating a component's theme file" below. For an
++   interactive component with existing Chakra support (buttons, inputs, etc.), this theme
++   config is the single source of truth — see "One canonical styling surface per component
++   type" below.
+ 4. **`sx` prop** for a one-off Chakra-prop-system gap, per [css.md](./css.md).
+ 5. **Scoped `.scss`** only when `sx` genuinely can't express it (complex pseudo-selectors,
+    keyframes) — same file, same rules as [css.md](./css.md) already documents.
+ 
+ **Never**: a raw hex/px/rem/em literal in a component file — reach for the token
+-instead. The one standing exception is `button.ts`'s provisional height/padding
++instead. The one standing exception is `zimmButton.css.ts`'s provisional height/padding
+ constants (`BTN_HEIGHT_LG`/`BTN_HEIGHT_SM`/`BTN_PADDING_Y`), pending UI-designer
+-sign-off — see Units below. Run `node scripts/auditTokenUsage.mjs` before opening
+-a PR that touches `overrides/app/components/**` or `overrides/app/theme/components/**`
+-— it greps for exactly this. It is not wired into CI yet — that's a reasonable next
+-step once someone owns triaging its false positives (hairline px is expected and
+-not a bug; see below).
++sign-off — see Units below. Run `npm run audit:tokens` (`node scripts/auditTokenUsage.mjs`)
++before opening a PR that touches `overrides/app/components/**` or
++`overrides/app/theme/components/**` — it greps for exactly this, scoped to those two paths
++(`.ts`/`.tsx`/`.scss`, excluding `*.test.ts(x)` and `*.stories.tsx`). A match is downgraded
++from a failure to an acknowledged exception when the surrounding comment block already
++contains `provisional`, `pending`, `placeholder`, or an explicit `audit-allow: <reason>` —
++the exact vocabulary this codebase already uses for its documented raw-value exceptions, so
++existing well-commented code doesn't need a second, separately-maintained allow-list. Built
++2026-08-23 — it is not wired into CI yet, deliberately: someone still needs to own triaging a
++full run's worth of pre-existing findings first (a first run against this repo surfaced 14
++genuine pre-existing violations, none touched by that session, all outside its scope to fix).
++Note this is a *different, broader* check than `recipeGuards.test.ts`'s bare-token-key guard
++mentioned above: that one exists and runs today (`npm run test`), but only catches a bare
++Chakra key standing in for a zimm var — it says nothing about a raw hex/px/rem/em literal,
++which is what `audit:tokens` is for.
+ 
+ ## Units
+ 
+@@ -43,7 +63,7 @@ not a bug; see below).
+   in the source don't round to clean rem numbers, so those keep a trailing `// -0.12px`
+   comment for traceability.
+ - **`px`** for hairline geometry that should _not_ scale: border widths, focus-ring
+-  offsets, and (for now) the provisional button-height constants in `button.ts` that are
++  offsets, and (for now) the provisional button-height constants in `zimmButton.css.ts` that are
+   still pending UI-designer sign-off against Handover.
+ - **`em`** only for breakpoints (`gridSystem.ts` — deliberate, so `.zimm-grid`'s media
+   queries shift with zoom the same way Chakra's responsive props do) and other
+@@ -68,13 +88,14 @@ regression net; treat a failure there as a real drift signal, not test noise.
+ 
+ ## One canonical styling surface per component type
+ 
+-Only one place should define how a given interactive component looks: its
+-`theme/components/<name>.ts` config, consumed via Chakra's component (`<Button>`,
++Only one place should define how a given interactive component looks: its theme config —
++either centralized as `theme/components/<name>.ts` or, per the co-location pattern below,
++beside the component as `<name>.css.ts` — consumed via Chakra's component (`<Button>`,
+ `<Link>` variant, etc.). Don't also give it a `.zimm-*` global class in
+ `globalStyles.ts` — a static CSS class can't express `_hover`/`_active`/`_disabled`/
+ `_focusVisible` states the way a Chakra theme config can, so a class "mirror" is
+ structurally incomplete from the start, and nothing stops its values from disagreeing
+-with the real theme config over time. `button.ts` is the single source of truth for
++with the real theme config over time. `zimmButton.css.ts` (co-located at `overrides/app/components/ui-kits/atoms/zimmButton/`) is the single source of truth for
+ button styling; `globalStyles.ts` has no `.zimm-btn-*` classes — use Chakra's `<Button>`
+ for any button, not a class.
+ 
+@@ -115,19 +136,38 @@ etc. have no local override to miss, so the base path is simply correct for them
+ ## Component-local tokens
+ 
+ When a component needs a spacing/sizing value that already has a `spacing.ts` /
+-`iconSizes` / etc. entry, reference it **by name** in the theme config
+-(`marginBottom: 'xs'`, not `marginBottom: 2` or `marginBottom: '0.5rem'`) — Chakra
+-resolves named scale keys against the registered `theme.space` automatically. See
+-`theme/components/imageGallery.ts` / `swatchGroup.ts` for the pattern: both re-express
+-values the base SFCC theme already had as anonymous Chakra numerics (`marginBottom: 2`)
+-using our named scale instead, at the same responsive steps (`['2xs', '2xs', 'xs',
+-'xs']` instead of `[1, 1, 2, 2]`) — same computed output, now traceable to a brand
+-token.
++`iconSizes` / etc. entry, reference that entry **as a `var(--zimm-*)` custom property**
++— `marginBottom: 'var(--zimm-scale-xs)'`, not `marginBottom: 2`, not
++`marginBottom: '0.5rem'`, and **not** the bare key `marginBottom: 'xs'`. The bare-key
++form resolved correctly against the registered `theme.space` and was what this section
++used to recommend, but hierarchy point 2 above now forbids it and
++`theme/components/recipeGuards.test.ts`'s bare-token guard **fails the build on it** —
++so following the old advice inside a registered recipe breaks `npm run test`.
++
++See `overrides/app/components/footer/footer.css.ts` and
++`.../footer/bottomBar/bottomBar.css.ts` for the pattern in a real recipe. The reason is
++traceability, not parity with the base theme: a `var(--zimm-*)` reference names the
++Figma token it came from, where a raw `2` or `'0.5rem'` names nothing. (Note these
++recipes are deliberately namespaced `ZimmFooter*` so they do **not** inherit the base
++SFCC `Footer` config — their values come from Figma, not from re-expressing base
++numerics. See `recipeGuards.test.ts`'s namespacing guard.)
++
++**Responsive steps are explicit media queries, not Chakra's array shorthand.** A
++co-located recipe keys them off `BP` in `theme/components/footerShared.ts`, in the form:
++
++```ts
++[`@media (min-width: ${BP.tablet})`]: { gap: 'var(--zimm-scale-3xl)' },
++```
++
++The array shorthand (`['2xs', '2xs', 'xs', 'xs']`) is what this section used to
++recommend, and it would put a bare token key back at every step — the guard walks
++responsive arrays and attributes each element to the same prop, so all four fail.
++`footer.css.ts`'s `contentRow` and `linksInner` parts are the reference.
+ 
+ When a component needs a dimension with **no existing foundation entry** (and you don't
+ have a confirmed Figma value for it), leave it inherited from the base SFCC theme rather
+ than inventing a number — don't guess at design values. Follow the precedent already in
+-`header.ts`/`button.ts`: if you do have to ship a placeholder value pending designer
++`header.ts`/`zimmButton.css.ts`: if you do have to ship a placeholder value pending designer
+ sign-off, say so in a comment next to it, the same way those files already do.
+ 
+ ## The SFCC bridge pattern (shared components only)
+@@ -140,13 +180,75 @@ matching what [overrides.md](./overrides.md) already requires for correctness. P
+ Zimmermann-only styling behind a **named export** that wraps the default and adds
+ brand-specific defaults, the same split `product-tile/index.tsx` (`CardBaseline`
+ name + default) and `link/index.tsx` already use. `image-gallery`, `display-price`, and
+-`swatch-group` are all shared internal SFCC dependencies — their default exports are
+-kept API-compatible; brand styling for them lives in their `theme/components/*.ts`
+-config instead of a named-export split, since token-driven theming doesn't require a
+-second export the way `CardBaseline`'s prop-narrowing did.
++`swatch-group` are all shared internal SFCC dependencies. When one of them does get
++overridden, keep its default export API-compatible and put brand styling in a theme
++recipe rather than a named-export split — token-driven theming doesn't require a second
++export the way `CardBaseline`'s prop-narrowing did.
++
++**As of `7b9b5dc`, none of the three is overridden at all** — no component override, no
++theme recipe, nothing registered for them in `theme/components/index.ts`. Verify current
++state before relying on any of this. `protectedFiles.md` and `CODEOWNERS` list those
++paths forward-lookingly, not descriptively. An earlier revision of this paragraph cited
++`theme/components/imageGallery.ts` / `swatchGroup.ts` as holding their styling; neither
++file has ever existed on any branch.
+ 
+ ---
+ 
++## Co-locating a component's theme file
++
++A component's recipe may live beside it as `<name>.css.ts` (e.g.
++`overrides/app/components/footer/footer.css.ts`, or an organism's own
++`overrides/app/components/ui-kits/organisms/<name>/<name>.css.ts`) instead of in
++`theme/components/`. Either way it's still registered in
++`overrides/app/theme/components/index.ts` — Chakra resolves a recipe by the string key
++passed to `useMultiStyleConfig`, not by file path, so co-location is purely an
++organisational choice with no runtime difference.
++
++**Governance follows the file, not the folder.** `theme/components/` is Tier 2, gated to
++the UI designer (protectedFiles.md). A co-located `<name>.css.ts` is deliberately routed
++differently: CODEOWNERS' `overrides/app/components/**/*.css.ts` rule sends it to the
++owning squad(s) only, dropping the Tier 1/2 approver requirement that the surrounding
++directory (e.g. `header/`, `footer/`) otherwise carries. That's intentional — a co-located
++file is for composing a component's own layout from **already-established** tokens
++(spacing, colour, typography scale), not for authoring new raw design values. Authoring an
++actual new token still means editing `theme/foundation/` (Tier 1) or a `theme/components/`
++recipe that's still designer-owned (`header.ts`, `listMenu.ts`, `navConstants.ts` — the
++files that remain in that directory) — both stay behind the full gate.
++
++> **Known inconsistency, flagged not resolved.** This paragraph used to cite `button.ts`'s
++> `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM`/`BTN_PADDING_Y` as the designer-gated example. That file
++> is now `ui-kits/atoms/zimmButton/zimmButton.css.ts`, which the `**/*.css.ts` rule above
++> routes to the squads — so those provisional, unapproved constants are **no longer
++> designer-gated**, while still keying the app-wide `Button` recipe. The example was swapped
++> to `header.ts` (genuinely still gated) so this paragraph stops asserting something false.
++> Whether `zimmButton.css.ts` should be re-gated is an open governance question, not a doc
++> fix, and is deliberately left open here.
++
++**Enforcement gap, partially closed:** the Tier 1/2 human reviewer was, until this rule
++existed, the only thing catching a hardcoded hex/px/rem/em value landing in a theme file.
++`scripts/auditTokenUsage.mjs` (`npm run audit:tokens`, see the `Never` note above) now exists
++and runs correctly against the real codebase — built 2026-08-23. What's still open: it is not
++wired into CI, so it only catches something if a developer or reviewer remembers to run it —
++removing the Tier 1/2 reviewer from co-located `.css.ts` files still removes an *automatic*
++backstop for exactly the files most likely to need it. Wiring `audit:tokens` as a required CI
++check on `overrides/app/components/**/*.css.ts` is the remaining near-term follow-up, not an
++optional nice-to-have — and per the script's own header, someone should triage a full run's
++findings first (14 pre-existing, unrelated violations turned up the day it was built) before
++turning it into a hard gate.
++
++**Cross-file shared values** (a breakpoint or provisional size needed by more than one
++split-out file) go in a small shared module that stays in `theme/components/` — e.g.
++`footerShared.ts`, holding the breakpoints and the one size value `footerNavColumn.css.ts`
++and `bottomBar.css.ts` both need. Don't copy the same literal into two co-located files;
++that's exactly the drift risk "The alias tier is a reference, not a second copy" (above)
++already warns about.
++
++**Reference example:** the footer decomposition (SFCC-55 follow-up) split
++`theme/components/footer.ts`'s 33 parts across `footer/footer.css.ts` (shell),
++`footer/footerNavColumn/footerNavColumn.css.ts`, `footer/bottomBar/bottomBar.css.ts`, and
++three `ui-kits/organisms/`/`ui-kits/molecules/` recipes — with `footerShared.ts` left
++behind in `theme/components/` for the two genuinely cross-file values.
++
+ ## Known gaps (not silently dropped — logged here)
+ 
+ - The f2r `zimm-product-detail-options` prototype spec includes a size-as-dropdown
+@@ -156,8 +258,8 @@ second export the way `CardBaseline`'s prop-narrowing did.
+ - `swatch-group`'s `square`/`circle` variant functions (selected/disabled colour logic,
+   the diagonal disabled-state gradient) are still inherited from the base SFCC theme —
+   real visual design decisions with no Zimmermann Figma spec behind them yet.
+-- `button.ts`'s `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM` (50px/41px) disagree with the
+-  Handover-sourced `actionSizes.height.lg`/`.md` (52px/40px) — flagged in `button.ts`,
++- `zimmButton.css.ts`'s `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM` (50px/41px) disagree with the
++  Handover-sourced `actionSizes.height.lg`/`.md` (52px/40px) — flagged in `zimmButton.css.ts`,
+   pending UI-designer sign-off. `BTN_PADDING_Y` (5px) has no Handover token at all —
+   a gap to fill, not a conflict to resolve.
+ - `overrides/app/pages/product-detail/` is claimed by `.claude/rules/squadA.md`
+diff --git a/.claude/rules/protectedFiles.md b/.claude/rules/protectedFiles.md
+index 1350d1d..08ae80b 100644
+--- a/.claude/rules/protectedFiles.md
++++ b/.claude/rules/protectedFiles.md
+@@ -16,9 +16,14 @@ overrides/app/components/list-menu/
+ overrides/app/components/seo/
+ overrides/app/components/_app/
+ overrides/app/components/_app-config/
++overrides/app/components/uiCopyProvider/
+ overrides/app/routes.tsx
+ ```
+ 
++`uiCopyProvider/` is mounted once inside `_app-config` and provides `useUiCopy()`'s context
++value to every page on every site — the same blast radius as `_app-config` itself, so it
++belongs in this tier alongside it rather than defaulting to Tier 4 by omission.
++
+ ## Shared Product Components (Owner: Squad B — notify Squad A)
+ 
+ ```text
+@@ -50,6 +55,16 @@ files in `overrides/app/theme/components/index.ts`. Foundations live alongside
+ in `overrides/app/theme/foundation/` and are **Tier 1** — see
+ [frozenFiles.md](./frozenFiles.md).
+ 
++A component's own recipe may instead live beside it as `<name>.css.ts` (e.g.
++`overrides/app/components/footer/footer.css.ts`) rather than here — see
++[overrideStyling.md](./overrideStyling.md)'s co-location pattern, introduced with the
++footer decomposition. It's still registered in `overrides/app/theme/components/index.ts`
++either way. A co-located `<name>.css.ts` is **not** governed by this section's Tier 2
++UI-designer gate — CODEOWNERS' `overrides/app/components/**/*.css.ts` rule routes it to
++the owning squad(s) only. This folder's Tier 2 designation still applies to whatever
++hasn't moved to co-location, and to genuinely cross-component shared values (e.g.
++`footerShared.ts`) that a single component's file can't own.
++
+ `globalStyles.ts` is the `.zimm-*` global class registry, composed into
+ `theme/index.ts` as `styles.global`. It is derived from the `--zimm-*` variables in
+ `foundation/zimmTokens.ts` rather than defining brand values itself, so it sits at
+@@ -93,15 +108,26 @@ scripts/switchEnv.mjs
+ 
+ ## Contentful Schema Definitions (Owner: Integration / SI Partner — notify before changing)
+ 
+-These files define and deploy live Contentful content types via `npm run sync:contentful`.
+-The sync script is idempotent but **additive-only** — it cannot delete fields from a published
+-content type. A mistaken field definition pushed to the production Contentful environment is
+-difficult to undo and may break running components.
++These files define the Zimmermann content model, authored once as a single
++organization-scoped Contentful **Environment Template** (`npm run sync:contentful`,
++via `client.environmentTemplate.*` in the `contentful-management` SDK) and installed
++into each environment (`npm run install:contentful -- --target <env>`). This replaced
++an earlier per-environment `sync.js` + migration-file pipeline once Contentful moved to
++recommending organization-level content models over independently-synced
++space/environment content types.
++
++`content-types/*.js` is the sole source of truth per content type (including
++`localized`/`required`/`validations` — there is no longer a separate migration file that
++overrides an inferior default). Field deletion during an install is opt-in
++(`--delete-deleted-fields`), off by default — a mistaken field definition pushed to the
++production Contentful environment is difficult to undo and may break running components.
+ 
+ ```text
+-scripts/contentful/sync.js
++scripts/contentful/buildTemplate.js
++scripts/contentful/setup/installTemplate.mjs
+ scripts/contentful/content-types/
+ ```
+ 
+-Always run against a non-production Contentful environment first. Requires
+-`CONTENTFUL_MANAGEMENT_TOKEN` (local / CI only — never deployed to MRT).
++Always run `install:contentful` against a non-production Contentful environment first.
++Requires `CONTENTFUL_MANAGEMENT_TOKEN` and `CONTENTFUL_ORGANIZATION_ID` (local / CI only —
++never deployed to MRT).
+diff --git a/.claude/rules/testing.md b/.claude/rules/testing.md
+index 2ed66b1..20f1c61 100644
+--- a/.claude/rules/testing.md
++++ b/.claude/rules/testing.md
+@@ -2,6 +2,23 @@
+ 
+ Three layers, three purposes. **Do not duplicate coverage across layers** — pick the cheapest layer that proves the behaviour.
+ 
++**This is not license to skip a component's own test file because its behaviour happens to be
++covered transitively elsewhere.** A component with real logic (branching, prop→JSX mapping
++decisions, event wiring) gets its own `index.test.ts`/`index.test.tsx`, even when the state it
++renders is owned by a hook that already has its own test, or a parent's assembly-level
++Storybook `play` already exercises the rendered result. Resolve the duplication concern by
++**scoping what that file asserts** — mock the hook/child component whose internals are proven
++elsewhere, and test only this component's own contract (given a state, does it render the
++right branch; given a DOM event, does it call the right handler) — not by leaving the
++component with no test of its own. Relying on a *different* component's story to prove *this*
++component's contract means the coverage isn't discoverable from the component's own folder,
++and can silently vanish if that unrelated file changes. See
++`overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx` for the
++resulting pattern (mocks `useSubscribeSection` and `ZimmSubscribeModal`, tests only its own
++render-branch/event-wiring contract). A component with no branching or decision logic at all
++(pure prop interpolation, e.g. `BottomBar`) still doesn't need its own suite — the exemption
++below for single-parent internal components still applies there.
++
+ | Layer | Tool | What it covers | File pattern | CI gate |
+ |---|---|---|---|---|
+ | Unit | Vitest | Pure logic, data mapping, transforms, hook behaviour in isolation | `*.test.ts` co-located with the source | Every PR (`qa.yml`) |

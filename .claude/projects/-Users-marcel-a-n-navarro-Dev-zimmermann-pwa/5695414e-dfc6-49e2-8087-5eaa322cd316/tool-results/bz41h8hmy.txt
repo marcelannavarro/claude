@@ -1,0 +1,630 @@
+total rows: 207
+wishlist/recently-viewed rows: 204
+---
+ID: CRM-001 | SUB: Account Registration & Log In | STATUS: Confirmed
+REQ: The system will provide a login page containing Email and Password fields, enabling customers to authenticate against SFCC using their registered credentials.
+---
+ID: CRM-002 | SUB: Account Registration & Log In | STATUS: Confirmed
+REQ: The system will validate the customer's email and password against SFCC upon submission. The system will permit an unlimited number of login attempts.
+CMT: No limit today, but SFCC OOTB is 3. Confirm if required @Jasmijn Tsang
+---
+ID: CRM-003 | SUB: Account Registration & Log In | STATUS: Confirmed
+REQ: The system will provide a password reset option that directs the customer to a dedicated Reset Password page. The customer will be required to re-enter their email address to initiate the reset flow. The system will trigger a password reset email containing a secure link for the customer to set a new password.
+---
+ID: CRM-004 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will present a Create An Account form containing the following fields - First Name, Last Name, Email Address, Mobile Number (including country prefix), Password and Confirm Password. All fields are mandatory with the exception of Mobile Number, which is optional. ~~For the Middle East storefront, Mobile Number will be mandatory.~~
+---
+ID: CRM-005 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will validate the email address entered during registration against existing SFCC records. If an account already exists for that email address, the system will prompt the customer to log in or reset their password.
+CMT: @Jasmijn Tsang Confirm with design behavior - e.g. reset password for already SFCC account created, or create password for Omneo account
+---
+ID: CRM-006 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will enforce password complexity rules upon account creation and password reset.
+---
+ID: CRM-007 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will present an optional marketing opt-in checkbox during account creation. Once the account has been successfully created, where the customer has opted in, the system will pass this preference to Omneo, which will trigger a welcome email via Emarsys.
+---
+ID: CRM-009 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will display a link to the Privacy Policy relevant to the customer's storefront at the point of registration.
+---
+ID: CRM-010 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will create the customer record in SFCC upon successful registration and will immediately trigger a bidirectional sync to Omneo via webhook, ensuring the customer profile is available across both systems without delay.
+---
+ID: CRM-011 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will maintain a bidirectional sync between SFCC and Omneo. Any update made to a customer record in SFCC will be reflected in Omneo, and any update made in Omneo will be reflected in SFCC.
+---
+ID: CRM-012 | SUB: Account Registration & Log In - Guest Account | STATUS: Confirmed
+REQ: The system will create a customer record in Omneo when a customer begins a guest checkout, regardless of whether the marketing opt-in checkbox is ticked
+CMT: This is confirmed - to keep creating customer accounts also for guest users in Omneo - same behavior as today
+---
+ID: CRM-013 | SUB: Account Registration & Log In - Guest Account | STATUS: Confirmed
+REQ: The system will create the Omneo record with first name and last name set to "unknown" and the customer's email address as the identifier where the marketing opt-in checkbox has not been ticked
+CMT: Name updates if order completes. There should be a fallback to hide the “hi name” if we have no name - confirm with Tessa @Jasmijn Tsang (they don’t want account to say unknown)
+---
+ID: CRM-014 | SUB: Account Registration & Log In - Guest Account | STATUS: Confirmed
+REQ: The system will create the Omneo record with opted-in marketing status where the customer has ticked the marketing opt-in checkbox
+---
+ID: CRM-015 | SUB: Account Registration & Log In - Guest Account | STATUS: Confirmed
+REQ: The system will populate the customer's address and remaining order details in Omneo upon order completion
+---
+ID: CRM-016 | SUB: Account - Password Entry | STATUS: Confirmed
+REQ: The system will display a show/hide password toggle on all password entry fields, allowing the customer to view their password as plain text
+---
+ID: CRM-017 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a persistent navigation panel within the My Account area containing the following sections - My Account, Orders, Returns, Wishlist, Account Details, Address Book, Saved Cards, Gift Cards, Communications Preferences and Logout
+---
+ID: CRM-018 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a Quick Links section within the My Account navigation panel containing links to Shipping, Returns and Privacy
+---
+ID: CRM-019 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will highlight the active navigation item in the My Account navigation panel to reflect the page the customer is currently viewing
+---
+ID: CRM-020 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a personalised welcome message using the customer's first name when a customer lands on the account dashboard. Customer data will be stored locally in SFCC and kept in sync with Omneo as the system of record via a bidirectional webhook.
+---
+ID: CRM-021 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display the customer's loyalty group and status when a customer lands on the account dashboard. Customer data will be stored locally in SFCC and kept in sync with Omneo as the system of record via a bidirectional webhook. The system will only display this section if the customer has an applicable loyalty status.
+---
+ID: CRM-022 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display any active Retail Rewards vouchers applicable to the customer when a customer lands on the account dashboard. The system will retrieve voucher data via a real-time API call to AP21 at the point of log-in. The system will only display this section if the customer has active vouchers.
+CMT: Retail Rewards currently only works with domestic sites. To check if available with Global-E connector and if so, whether would be in scope   * This has not been factored into the plan @Tim Lavelle
+---
+ID: CRM-023 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display the customer's name and email address when a customer lands on the account dashboard. The system will provide a link to the Account Details page where the customer can edit their name and email address. Customer data will be stored locally in SFCC and kept in sync with Omneo as the system of record via a bidirectional webhook
+---
+ID: CRM-024 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display the customer's current newsletter subscription status when a customer lands on the account dashboard. The system will provide a link to the Communication Preferences page where the customer can edit their subscription status. Subscription data will be stored locally in SFCC and kept in sync with Omneo via a bidirectional webhook
+---
+ID: CRM-025 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a static teaser and a link to view the customer's full wishlist when a customer lands on the account dashboard. The system will navigate the customer to the Wishlist page when the view link is selected. Wishlist data will be stored and managed within SFCC
+---
+ID: CRM-026 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display the customer's default shipping address including name, address, country, state, postcode and phone number when a customer lands on the account dashboard, with a link to the Address Book page where the customer can edit their address. Address data will be stored locally in SFCC and kept in sync with Omneo as the system of record via a bidirectional webhook.
+---
+ID: CRM-027 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display the customer's default billing address including name, address, country, state, postcode and phone number when a customer lands on the account dashboard, with a link to the Address Book page where the customer can edit their address. Address data will be stored locally in SFCC and kept in sync with Omneo as the system of record via a bidirectional webhook.
+---
+ID: CRM-028 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a link to the Address Book page where the customer can manage all saved addresses.
+---
+ID: CRM-029 | SUB: My Account Dashboard | STATUS: Confirmed
+REQ: The system will display a summary of the customer's 3 most recent orders when a customer lands on the account dashboard. Order data will be sourced from NewStore OMS via MuleSoft. Each order will display the order number, date, ship to address, grand total and status.
+---
+ID: CRM-030 | SUB: Account Details - Update name/mobile | STATUS: Confirmed
+REQ: The system will allow a customer to edit their first name, last name and mobile number from the Account Details page. The system will sync all profile changes to Omneo via bidirectional webhook upon submission.
+---
+ID: CRM-031 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will allow a customer to change their email address
+---
+ID: CRM-032 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will require the customer to provide their current password as validation before the change can be made
+---
+ID: CRM-033 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will validate that the new email address is not already associated with an existing account
+---
+ID: CRM-034 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will display an inline error if a duplicate email address is detected
+---
+ID: CRM-035 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will send a confirmation email to both the old and new email address upon a successful email change via SFCC
+---
+ID: CRM-036 | SUB: Account Details - update email | STATUS: Confirmed
+REQ: The system will sync all email changes to Omneo via bidirectional webhook
+---
+ID: CRM-037 | SUB: Account Details - update password | STATUS: Confirmed
+REQ: The system will allow a customer to change their password. The system will require the customer to provide their current password, a new password and a confirmation of the new password. Upon a successful password change, the system will send a confirmation email to the customer via SFCC.
+---
+ID: CRM-038 | SUB: Account Details - update email and password | STATUS: Confirmed
+REQ: The system will not permit a customer to change their email address and password at the same time. The system will require a customer to complete one change before initiating the other.
+---
+ID: CRM-039 | SUB: Address Book - Default Address | STATUS: Confirmed
+REQ: The system will display the customer's default shipping address and default billing address if one has already been saved
+---
+ID: CRM-040 | SUB: Address Book - Default Address | STATUS: Confirmed
+REQ: The system will allow the customer to edit their default shipping address and default billing address
+---
+ID: CRM-041 | SUB: Address Book - Default Address | STATUS: Confirmed
+REQ: The system will not allow the customer to remove a default shipping or billing address
+---
+ID: CRM-042 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will allow the customer to view all saved addresses
+---
+ID: CRM-043 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will only display addresses that are not set as a default shipping or billing address in the saved addresses section
+---
+ID: CRM-044 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will allow the customer to edit a saved address
+---
+ID: CRM-045 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will allow the customer to remove a saved address
+---
+ID: CRM-046 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will prompt the customer to confirm before a saved address is removed
+---
+ID: CRM-047 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will allow the customer to promote a saved address to become their default address
+---
+ID: CRM-048 | SUB: Address Book - Saved Address | STATUS: Confirmed
+REQ: The system will not apply a maximum limit to the number of addresses a customer can save to their address book
+CMT: additional limit of 20 addresses (business requirement) - need to refine the behavior
+---
+ID: CRM-049 | SUB: Address Book - New Address | STATUS: Confirmed
+REQ: The system will allow the customer to add a new address using a form with fields appropriate to the storefront locale
+---
+ID: CRM-050 | SUB: Address Book - New Address | STATUS: Confirmed
+REQ: The system will automatically set an address as both the default shipping and default billing address if the customer completes a checkout using that address and no default address has previously been saved to their account
+---
+ID: CRM-051 | SUB: Address Book - Global Addresses | STATUS: Confirmed
+REQ: The system will allow customers to add and edit addresses for any country in the address book
+---
+ID: CRM-052 | SUB: Address Book - Global Addresses | STATUS: Confirmed
+REQ: The system will not restrict address creation or editing based on shipping eligibility
+---
+ID: CRM-053 | SUB: Address Book - Global Addresses | STATUS: Confirmed
+REQ: The system will provide validation on address creation
+---
+ID: CRM-054 | SUB: Address Book - Global Addresses | STATUS: Confirmed
+REQ: The system will block the customer from proceeding at checkout if the saved or entered shipping address is for a destination not supported by that storefront. Shipping destination validation occurs at checkout only
+---
+ID: CRM-055 | SUB: Address Book - Sync | STATUS: Confirmed
+REQ: The system will sync all address book changes including add, edit, remove and default changes to Omneo via bidirectional webhook
+---
+ID: CRM-056 | SUB: Order History - Order List | STATUS: Confirmed
+REQ: The system will display a list of the 50 most recent orders placed by the authenticated customer, including both online and in-store orders
+---
+ID: CRM-057 | SUB: Order History - Order List | STATUS: Confirmed
+REQ: The system will retrieve order data via Mulesoft from NewStore API
+---
+ID: CRM-058 | SUB: Order History - Order List | STATUS: Confirmed
+REQ: The system will display the total number of orders below the order list
+---
+ID: CRM-059 | SUB: Order History - Order List | STATUS: Confirmed
+REQ: The system will include historical orders placed prior to the NewStore migration
+---
+ID: CRM-060 | SUB: Order History - Order Columns | STATUS: Confirmed
+REQ: The system will display the following columns for each order - Order Number, Date Placed, Ship To (recipient first and last name), Grand Total, Status and Actions (View, Track, Return)
+---
+ID: CRM-061 | SUB: Order History - Order Columns | STATUS: Confirmed
+REQ: The system will indicate for each order whether it was placed online or in-store
+---
+ID: CRM-062 | SUB: Order History - Order Status | STATUS: Confirmed
+REQ: The system will display the current order status as returned by NewStore OMS via MuleSoft
+---
+ID: CRM-063 | SUB: Order History - Track Action | STATUS: Confirmed
+REQ: The system will display a Track action for online orders/floor to door only - the system will not display a Track action for in-store purchases
+CMT: No logic in Magento to remove TRACK CTA. Enhancement to implement standardised logic - 15 days from shipment
+---
+ID: CRM-064 | SUB: Order History - Track Action | STATUS: Confirmed
+REQ: The system will direct the customer to the Narvar tracking portal when Track is selected for a domestic order
+---
+ID: CRM-065 | SUB: Order History - Track Action | STATUS: Confirmed
+REQ: The system will direct the customer to Global-e when Track is selected for an international order
+---
+ID: CRM-065a | SUB: Order History - Track Action | STATUS: Confirmed
+REQ: ~~The system will direct the customer to Narvar when Track is selected for an international order via floor to door~~
+CMT: De-scoped as floor to door is not supported for international orders
+---
+ID: CRM-066 | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: The system will display a Return action for online orders only/floor to door where the delivery date is within 15 days
+CMT: 20 days from shipment date - this should be for all return actions. Confirm and update if correct.@Jasmijn Tsang
+---
+ID: CRM-067 | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: The system will suppress the Return action once the 15 day return window from the delivery date has expired
+---
+ID: CRM-068 | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: The system will display a notice to the customer that the return option is only available for 15 days from the date of delivery
+---
+ID: CRM-069 | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: The system will direct the customer to the Narvar returns portal when Return is selected for a domestic order
+---
+ID: CRM-070 | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: The system will direct the customer to Global-e when Return is selected for an international order
+---
+ID: CRM-070a | SUB: Order History - Return Action | STATUS: Confirmed
+REQ: ~~The system will direct the customer to Narvar when Return is selected for an international order, via Floor to Door~~
+CMT: De-scoped as floor to door is not supported for international orders
+---
+ID: CRM-071 | SUB: Order History - Order Detail | STATUS: Confirmed
+REQ: The system will display full order detail page when the customer selects View on an order
+---
+ID: CRM-072 | SUB: Order History - Order Detail | STATUS: Confirmed
+REQ: The system will retrieve order data via MuleSoft for NewStore API
+---
+ID: CRM-073 | SUB: Order Details - Order Summary | STATUS: Confirmed
+REQ: The system will display the order number, placement date and time, and current order status
+---
+ID: CRM-074 | SUB: Order Details - Line Items | STATUS: Confirmed
+REQ: The system will display each line item with product image, product name, colour, size, quantity and line subtotal
+---
+ID: CRM-075 | SUB: Order Details - Line Items | STATUS: Confirmed
+REQ: The system will serve product images from Contentful
+---
+ID: CRM-076 | SUB: Order Details - Order Totals | STATUS: Confirmed
+REQ: The system will display an order totals breakdown including item count, subtotal excluding tax, shipping method and cost, tax amount and grand total
+---
+ID: CRM-077 | SUB: Order Details - Order Totals | STATUS: Confirmed
+REQ: The system will display tax labelled per storefront convention - GST for AU, VAT for UK and EU, excluded for US and HK
+---
+ID: CRM-078 | SUB: Order Details - Order Details | STATUS: Confirmed
+REQ: The system will display the shipping address and billing address as recorded at the time of order placement
+---
+ID: CRM-079 | SUB: Order Details - Order Details | STATUS: Confirmed
+REQ: The system will display the shipping method selected at the time of order placement
+---
+ID: CRM-080 | SUB: Order Details - Order Details | STATUS: Confirmed
+REQ: The system will display the packaging selection made at the time of order placement
+---
+ID: CRM-081 | SUB: Order Details - Order Details | STATUS: Confirmed
+REQ: The system will display the payment method used, showing card type and last four digits. Full card details will not be displayed
+---
+ID: CRM-082 | SUB: Order Details - Order Details | STATUS: Confirmed
+REQ: The system will indicate for each order whether it was placed online or in-store
+---
+ID: CRM-083 | SUB: Order Details - Return Action | STATUS: Confirmed
+REQ: The system will display a Return action for online orders only (home delivery, floor to door) where the delivery date is within 15 days
+---
+ID: CRM-084 | SUB: Order Details - Return Action | STATUS: Confirmed
+REQ: The system will display a message to the customer informing them that the return window has expired if the order is outside the 15 day return period
+---
+ID: CRM-085 | SUB: Order Details - Return Action | STATUS: Confirmed
+REQ: The system will link the customer to the Narvar returns portal for domestic orders
+---
+ID: CRM-086 | SUB: Order Details - Return Action | STATUS: Confirmed
+REQ: The system will link the customer to Global-e for international orders
+---
+ID: CRM-086a | SUB: Order Details - Return Action | STATUS: 
+REQ: ~~The system will link the customer to Narvar for international orders via Floor to Door~~
+CMT: De-scoped as floor to door is not supported for international orders
+---
+ID: CRM-087 | SUB: Return History - Returns List | STATUS: Confirmed
+REQ: The system will display a list of all returns raised by the authenticated customer, including both online and in-store returns
+---
+ID: CRM-088 | SUB: Return History - Returns List | STATUS: Confirmed
+REQ: The system will retrieve return data via the MuleSoft Newstore Returns API
+---
+ID: CRM-089 | SUB: Return History - Returns List | STATUS: Confirmed
+REQ: The system will display the total return count below the returns list
+---
+ID: CRM-090 | SUB: Return History - Returns Columns | STATUS: Confirmed
+REQ: The system will display the following columns for each return - Return Number, Date, Items, Total, Status and Action
+---
+ID: CRM-091 | SUB: Return History - Return Total | STATUS: Confirmed
+REQ: The system will display the refund total per return in the storefront currency
+---
+ID: CRM-092 | SUB: Return History - Return Total | STATUS: Confirmed
+REQ: The system will indicate for each order whether it was returned online or in-store
+---
+ID: CRM-008 | SUB: Account Registration & Log In - Account Registration | STATUS: Confirmed
+REQ: The system will include Google reCAPTCHA verification on the ~~login and~~ registration pages to prevent automated access.
+---
+ID: CRM-093 | SUB: Return History - Return Status | STATUS: Confirmed
+REQ: The system will display the return status as returned by NewStore OMS
+---
+ID: CRM-094 | SUB: Return History - View Action | STATUS: Confirmed
+REQ: The system will display a View action for each return
+---
+ID: CRM-095 | SUB: Return History - View Action | STATUS: Confirmed
+REQ: The system will link the customer to the Narvar returns portal for domestic returns
+---
+ID: CRM-096 | SUB: Return History - View Action | STATUS: Confirmed
+REQ: The system will link the customer to Global-e for international returns
+---
+ID: CRM-096a | SUB: Return History - View Action | STATUS: Confirmed
+REQ: ~~The system will link the customer to Narvar for international returns, via Floor to Door~~
+CMT: De-scoped as floor to door is not supported for international orders
+---
+ID: CRM-097 | SUB: Return History - New Returns | STATUS: Confirmed
+REQ: The system will display a notice to the customer that new returns can only be created from the Orders page and not from the Returns page
+---
+ID: CRM-098 | SUB: Saved Cards - Saved Cards List | STATUS: Confirmed
+REQ: The system will display a list of saved payment cards for the authenticated customer, retrieved from SFCC using Adyen token references stored at the time of payment
+---
+ID: CRM-099 | SUB: Saved Cards - Saved Cards List | STATUS: Confirmed
+REQ: The system will display the following for each saved card - card type, last four digits and expiry date. Full card details will not be displayed or stored
+---
+ID: CRM-100 | SUB: Saved Cards - Saved Cards List | STATUS: Confirmed
+REQ: The system will not enforce a maximum limit on the number of saved cards per customer
+CMT: Max limit of 20
+---
+ID: CRM-101 | SUB: Saved Cards - Expiry | STATUS: Confirmed
+REQ: The system will display expired cards in the My Account saved cards section with a visible error message indicating the card has expired and requires updating
+---
+ID: CRM-102 | SUB: Saved Cards - Expiry | STATUS: Confirmed
+REQ: The system will not display expired cards at checkout
+---
+ID: CRM-103 | SUB: Saved Cards - Expiry | STATUS: Confirmed
+REQ: The system will store the card expiry date alongside the Adyen token in SFCC to enable expiry recognition and display
+---
+ID: CRM-104 | SUB: Saved Cards - Remove Card | STATUS: Confirmed
+REQ: The system will allow the customer to remove a saved card
+---
+ID: CRM-105 | SUB: Saved Cards - Remove Card | STATUS: Confirmed
+REQ: The system will delete the Adyen token reference from SFCC upon removal
+---
+ID: CRM-106 | SUB: Saved Cards - Default Card | STATUS: Confirmed
+REQ: The system will allow the customer to set a saved card as their default payment method
+---
+ID: CRM-107 | SUB: Saved Cards - Default Card | STATUS: Confirmed
+REQ: The system will pre-select the default card at checkout for returning customers
+---
+ID: CRM-108 | SUB: Saved Cards - Add New Card | STATUS: Confirmed
+REQ: The system will allow the customer to add a new card via the Adyen Drop-In component
+---
+ID: CRM-109 | SUB: Saved Cards - Add New Card | STATUS: Confirmed
+REQ: The system will store the Adyen token reference in SFCC upon successful tokenisation
+---
+ID: CRM-110 | SUB: Saved Cards - Global-E International Sites | STATUS: Confirmed
+REQ: The system will not display saved cards on Global-e international storefronts
+---
+ID: CRM-111 | SUB: Saved Cards - Global-E International Sites | STATUS: Confirmed
+REQ: The system will display a message to the customer informing them that saved cards are not available
+---
+ID: CRM-112 | SUB: Saved Cards - Sync | STATUS: Confirmed
+REQ: The system will store and manage saved card data within SFCC and Adyen only
+---
+ID: CRM-113 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will display the Wishlist star icon on each product tile on the PLP
+---
+ID: CRM-114 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will allow logged-in customers to add an in-stock product to their Wishlist from the PLP by clicking the star icon on the product tile
+---
+ID: CRM-115 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will display a size selection popover on the product tile showing available in-stock sizes when the star icon is clicked
+---
+ID: CRM-116 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will save the wishlist item at size level upon the customer selecting a size from the popover
+---
+ID: CRM-117 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will only display in-stock sizes in the PLP size selection popover
+---
+ID: CRM-118 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will allow the customer to remove a product from their Wishlist from the PLP by clicking the active star icon
+---
+ID: CRM-119 | SUB: Wishlist - PLP | STATUS: Confirmed
+REQ: The system will prompt guest customers to log in or create an account when attempting to add an item to the Wishlist from the PLP
+---
+ID: CRM-120 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will allow logged-in customers to add an in-stock product to their Wishlist from the PDP by selecting a size and clicking the star icon
+---
+ID: CRM-121 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will require the customer to select a size before an item can be saved to the Wishlist
+---
+ID: CRM-122 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will display a prompt if the customer attempts to wishlist a product without first selecting a size
+---
+ID: CRM-123 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will only allow in-stock and out-of-stock sizes to be added to the Wishlist
+CMT: @Emma Kirwan I have changed this requirement to allow out of stock & in stock sizes to be added to the wishlist - Based on the enhancement
+---
+ID: CRM-124 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will save wishlist items at size level
+---
+ID: CRM-125 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will display the star icon in an active state on the PDP when the selected size is already saved to the customer's Wishlist
+---
+ID: CRM-126 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will allow the customer to remove a product from their Wishlist from the PDP by clicking the active star icon
+---
+ID: CRM-127 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will only allow one size per product to be saved to the Wishlist
+---
+ID: CRM-128 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will not allow the customer to add a product to the Wishlist in a different size if that product is already saved
+---
+ID: CRM-129 | SUB: Wishlist - PDP | STATUS: Confirmed
+REQ: The system will prompt guest customers to log in or create an account before adding an item to the Wishlist from the PDP
+---
+ID: CRM-130 | SUB: Wishlist - Global | STATUS: Confirmed
+REQ: The system will maintain a single global wishlist per customer visible across all regional storefronts
+---
+ID: CRM-131 | SUB: Wishlist - Global | STATUS: Confirmed
+REQ: The system will display regional availability for each wishlist item - items unavailable in the customer's current region will remain visible but marked as unavailable
+---
+ID: CRM-132 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will display the customer's saved wishlist items on the My Account Wishlist page showing product image, product name, price, sale price or What's Now price where applicable, size and colour for each item
+---
+ID: CRM-133 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will not enforce a maximum limit on the number of items a customer can save to their Wishlist
+---
+ID: CRM-134 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will display a wishlist item in a greyed out unavailable state if the product is not available in the customer's current region, without removing it from the wishlist
+---
+ID: CRM-135 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will display a notification banner at the top of the Wishlist page when an action is performed (item moved to cart, wishlist shared)
+---
+ID: CRM-136 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will allow the customer to add a wishlist item to the shopping bag
+---
+ID: CRM-137 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will remove the item from the Wishlist upon successful add to bag
+---
+ID: CRM-138 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will allow the customer to remove items from the Wishlist page without adding them to the bag
+---
+ID: CRM-139 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will persist the Wishlist globally for registered customers across sessions, devices, store view switches and regions
+---
+ID: CRM-140 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will support a configurable rule for automatic removal of wishlist items after a defined period of inactivity
+CMT: Suggested threshold 18 months -  OOTB SFCC for guest users is 7 days for logged in users we need to define custom logic to clear wishlist
+---
+ID: CRM-141 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will allow the customer to share their Wishlist via email by entering one or more recipient email addresses and an optional message
+---
+ID: CRM-142 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will send a share notification email to the entered recipients containing links to each product in the customer's Wishlist
+---
+ID: CRM-143 | SUB: Wishlist - My Account | STATUS: Confirmed
+REQ: The system will trigger the share Wishlist email to the customer
+---
+ID: CRM-144 | SUB: Back in Stock Notifications | STATUS: Confirmed
+REQ: The system will send back-in-stock notifications for wishlist items to the customer based on the regional availability of the region in which the item was originally added to the wishlist
+---
+ID: CRM-145 | SUB: Back in Stock Notifications | STATUS: Confirmed
+REQ: The system will manage all back-in-stock notification data within SFCC and will not sync back-in-stock notification data to Omneo
+---
+ID: CRM-146 | SUB: Loyalty (Legacy Programme) - Loyalty Status | STATUS: Confirmed
+REQ: The system will source loyalty status from Omneo and sync to SFCC on login
+---
+ID: CRM-147 | SUB: Loyalty (Legacy Programme) - Loyalty Status | STATUS: Confirmed
+REQ: The system will display the customer's loyalty tier on the My Account dashboard as one of three states - VIC, Gold VIC or Platinum VIC
+---
+ID: CRM-148 | SUB: Loyalty (Legacy Programme) - Loyalty Status | STATUS: Confirmed
+REQ: The system will display the customer's current loyalty tier benefit description alongside their tier status
+---
+ID: CRM-149 | SUB: Loyalty (Legacy Programme) - Retail Rewards | STATUS: Confirmed
+REQ: The system will use Omneo as the lookup layer between SFCC and AP21 for Retail Rewards, storing AP21 reward IDs against the customer record in Omneo
+---
+ID: CRM-150 | SUB: Loyalty (Legacy Programme) - Retail Rewards | STATUS: Confirmed
+REQ: The system will retrieve Retail Rewards directly from AP21 via a real-time API call using the reward IDs stored in Omneo
+---
+ID: CRM-151 | SUB: Loyalty (Legacy Programme) - Retail Rewards Vouchers | STATUS: Confirmed
+REQ: The system will display Retail Rewards vouchers on the My Account dashboard for Legacy VIC, Legacy Gold VIC or Legacy Platinum VIC only
+---
+ID: CRM-152 | SUB: Loyalty (Legacy Programme) - Retail Rewards Vouchers | STATUS: Confirmed
+REQ: The system will retrieve voucher data via a real-time API call to AP21 at the point of login
+---
+ID: CRM-153 | SUB: Loyalty (Legacy Programme) - Retail Rewards Vouchers | STATUS: Confirmed
+REQ: The system will only display active vouchers
+---
+ID: CRM-154 | SUB: Loyalty (Legacy Programme) - Retail Rewards Vouchers | STATUS: Confirmed
+REQ: The system will display voucher description, amount issued, amount used, amount remaining and expiry date for each voucher
+---
+ID: CRM-155 | SUB: Loyalty Customer Groups (Legacy Programme) | STATUS: Confirmed
+REQ: The system will allow a customer to be assigned to one or more customer groups simultaneously
+---
+ID: CRM-156 | SUB: Loyalty Customer Groups (Legacy Programme) | STATUS: Confirmed
+REQ: The system will source customer group assignments from Omneo and sync to SFCC on login
+---
+ID: CRM-157 | SUB: Loyalty Customer Groups (New Programme) | STATUS: Confirmed
+REQ: The system will receive new loyalty customer group assignments from Omneo via bidirectional webhook and store locally in SFCC
+---
+ID: CRM-158 | SUB: Loyalty Customer Groups (New Programme) | STATUS: Confirmed
+REQ: The system will support multiple customer group assignments per customer simultaneously
+---
+ID: CRM-159 | SUB: My Account - Loyalty Page (New Programme) | STATUS: Confirmed
+REQ: The system will display a dedicated loyalty page within My Account for customers assigned to a new loyalty tier
+---
+ID: CRM-160 | SUB: My Account - Loyalty Page (New Programme) | STATUS: Confirmed
+REQ: The system will display the benefits available to the customer based on their loyalty tier on this page
+---
+ID: CRM-161 | SUB: My Account - Loyalty Page (New Programme) | STATUS: Confirmed
+REQ: The system will not display retail rewards, special pricing or promotional discounts on the new loyalty page - benefits are experience-led only
+---
+ID: CRM-162 | SUB: My Account - Loyalty Page (New & Legacy Programme) | STATUS: Confirmed
+REQ: The system will support a private marketing URL that grants access to exclusive VIC products without requiring the customer to be logged in or assigned to a customer group
+---
+ID: CRM-163 | SUB: My Account - Loyalty Page (New & Legacy Programme) | STATUS: Confirmed
+REQ: The system will display exclusive VIC products on PLP and PDP with a visible tag identifying them as VIC Exclusive
+---
+ID: CRM-164 | SUB: My Account - Loyalty Page (New & Legacy Programme) | STATUS: Confirmed
+REQ: The system will restrict purchase of exclusive VIC products to customers assigned to an eligible customer group
+---
+ID: CRM-165 | SUB: Appointments | STATUS: Confirmed
+REQ: The system will display the customer's appointment history within My Account, sourced via the Booksy API
+---
+ID: CRM-166 | SUB: Appointments | STATUS: Confirmed
+REQ: The system will treat Booksy as the system of record for all appointment data
+---
+ID: CRM-167 | SUB: Appointments | STATUS: Confirmed
+REQ: The system will accommodate appointments as a section within the My Account area so that it can be incorporated without structural redesign when ready
+---
+ID: CRM-168 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will maintain a single global customer account across all regional storefronts
+---
+ID: CRM-169 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will allow a customer to use the same username and password to log in across all storefronts
+---
+ID: CRM-170 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will maintain a separate shopping bag per storefront - items added in one storefront will not carry over when the customer switches to a different storefront
+---
+ID: CRM-171 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will restore a customer's bag contents when they return to a storefront they previously shopped on
+---
+ID: CRM-172 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will maintain orders, returns, wishlist, account details, address book and communication preferences as global data accessible across all regional storefronts
+---
+ID: CRM-173 | SUB: Global vs Local | STATUS: Confirmed
+REQ: The system will maintain saved cards globally at customer level, however the system will only display cards that were saved against a domestic order. Cards captured via a Global-e international checkout will not be saved to SFCC or Adyen
+---
+ID: CRM-174 | SUB: My Account - Communication Preferences | STATUS: Confirmed
+REQ: The system will display the customer's communication preferences via an Omneo iFrame embedded within the My Account Communications Preferences page
+---
+ID: CRM-175 | SUB: My Account - Communication Preferences | STATUS: Confirmed
+REQ: The system will allow the customer to view and update their communication preferences within the iFrame
+---
+ID: CRM-176 | SUB: My Account - Communication Preferences | STATUS: Confirmed
+REQ: The system will save and sync any preference changes to Omneo via the iFrame
+---
+ID: CRM-177 | SUB: My Account - Communication Preferences | STATUS: Confirmed
+REQ: The system will store communication preference data locally in SFCC, kept in sync with Omneo via bidirectional webhook
+---
+ID: CRM-178 | SUB: Marketing Opt-In - Entry Point - Account Registration | STATUS: Confirmed
+REQ: The system will display a marketing opt-in checkbox on the Create Account form with the label "Discover new arrivals, exclusive offers and personalised experiences"
+---
+ID: CRM-179 | SUB: Marketing Opt-In - Entry Point - Account Registration | STATUS: Confirmed
+REQ: The system will pass the customer's marketing opt-in preference to Omneo on account creation
+---
+ID: CRM-180 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will display a newsletter sign-up form collecting first name, last name and email address
+---
+ID: CRM-181 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will pre-populate all fields for authenticated customers while allowing them to be edited
+---
+ID: CRM-182 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will display a link to the Privacy Policy on the sign-up form
+---
+ID: CRM-183 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will pass the submitted first name, last name and email to Omneo on submission
+---
+ID: CRM-184 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will update the communications preference on the existing Omneo record if the submitted email matches an existing record
+---
+ID: CRM-185 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will create a new guest Omneo record with the submitted email and marketing opt-in flag if the submitted email does not match an existing record
+---
+ID: CRM-186 | SUB: Marketing Opt-In - Entry Point - Newsletter Sign Up (via Footer) | STATUS: Confirmed
+REQ: The system will treat a different email address submitted by a logged-in customer as a separate record in Omneo
+---
+ID: CRM-187 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will display a back in stock notification form collecting first name, last name, email address and size selection
+---
+ID: CRM-188 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will pre-populate the email field for authenticated customers while allowing it to be edited
+---
+ID: CRM-189 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will display a marketing opt-in checkbox with the label "Discover new arrivals, exclusive offers and personalised experiences"
+---
+ID: CRM-190 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will display a link to the Privacy Policy on the Back in Stock form
+---
+ID: CRM-191 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will pass the submitted email and marketing opt-in preference to Omneo on submission
+---
+ID: CRM-192 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will update the communications preference on the existing Omneo record if the submitted email matches an existing record
+---
+ID: CRM-193 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will create a new guest Omneo record with the submitted email and marketing opt-in flag if the submitted email does not match an existing record
+---
+ID: CRM-194 | SUB: Marketing Opt-In - Entry Point - Back in Stock | STATUS: Confirmed
+REQ: The system will treat a different email address submitted by a logged-in customer as a separate record in Omneo
+---
+ID: CRM-195 | SUB: Marketing Opt-In - Entry Point - Guest Checkout | STATUS: Confirmed
+REQ: The system will display a marketing opt-in checkbox on the guest checkout email entry screen with the label "Discover new arrivals, exclusive offers and personalised experiences"
+---
+ID: CRM-196 | SUB: Marketing Opt-In - Entry Point - Guest Checkout | STATUS: Confirmed
+REQ: The system will display a link to the Privacy Policy on the guest checkout screen
+---
+ID: CRM-197 | SUB: Marketing Opt-In - Entry Point - Guest Checkout | STATUS: Confirmed
+REQ: The system will pass the submitted email and marketing opt-in preference to Omneo at the point of order placement
+CMT: Updated requirement: TT: due to the sign up checkbox, we take it earlier and treat it like a newsletter subscription. @Jasmijn Tsang
+---
+ID: CRM-198 | SUB: Marketing Opt-In - Entry Point - Guest Checkout | STATUS: Confirmed
+REQ: The system will create a new guest Omneo record with the submitted email and marketing opt-in flag if the submitted email does not match an existing record
+---
+ID: CRM-199 | SUB: Marketing Opt In - Types | STATUS: Confirmed
+REQ: The system will enrol a customer into both marketing and service communications when they submit a marketing opt-in checkbox at any touchpoint
+---
+ID: CRM-200 | SUB: Marketing Opt In - Types | STATUS: Confirmed
+REQ: The system will allow a customer to update their preference for each communication type individually within the preference centre

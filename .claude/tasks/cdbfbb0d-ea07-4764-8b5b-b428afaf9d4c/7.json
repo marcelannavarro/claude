@@ -1,0 +1,9 @@
+{
+  "id": "7",
+  "subject": "Independent verification pass (subagent)",
+  "description": "Dispatch a fresh-eyes reviewer to check the TSD against rubric A-H and spot-check code-level factual claims against the repo. Collect findings.",
+  "activeForm": "Running independent verification",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

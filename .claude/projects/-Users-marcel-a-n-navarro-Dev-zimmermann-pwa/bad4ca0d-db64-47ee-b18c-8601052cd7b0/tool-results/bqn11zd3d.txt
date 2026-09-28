@@ -1,0 +1,1358 @@
+############################## overrides/app/components/ui-kits/atoms/zimmButton/index.tsx ##############################
+8d7
+<   useMultiStyleConfig,
+38a38,44
+>   /**
+>    * Accessible name, when it has to differ from the visible `label`. Defaults to `label`.
+>    * For a control whose visible text is only meaningful with context — e.g. a size filter
+>    * chip reading "0" that should announce "Add filter: 0" — pass the full phrase here and
+>    * keep `label` as the short visible text.
+>    */
+>   ariaLabel?: string;
+42c48
+<   variant?: 'primary' | 'secondary' | 'social';
+---
+>   variant?: 'primary' | 'secondary';
+62,63c68
+<   /** primary/secondary only. Optional icon rendered after the label. Pass a ZimmIcon or any
+<    *  React node. */
+---
+>   /** Optional icon rendered after the label. Pass a ZimmIcon or any React node. */
+65,91c70
+<   /**
+<    * variant="social" only — matches ZimmSocialButton's own `icon` prop exactly (same name,
+<    * same `React.ReactNode` shape), so migrating a `<ZimmSocialButton icon={...} .../>` call
+<    * site to `<ZimmButton variant="social" icon={...} .../>` needs no prop renaming.
+<    */
+<   icon?: React.ReactNode;
+<   /**
+<    * variant="social" only — sizes the fixed box `icon`'s SVG is forced to fill
+<    * (ZimmSocialButton's recipe; Chakra's createIcon renders at 1em×1em by default, so
+<    * without a fixed box the icon would scale with the button's own responsive font-size
+<    * instead of staying a constant size). Defaults to 'md' (16px), matching the only size
+<    * ever confirmed by Figma for the Apple/Google auth buttons. Ignored for every other
+<    * variant. Reach for this first — only fall back to `iconSx` below when a Figma spec
+<    * genuinely doesn't match one of sm/md/lg/xl.
+<    */
+<   iconSize?: ZimmIconSize;
+<   /**
+<    * variant="social" only — escape hatch for the icon box when `iconSize`'s four token
+<    * values (12/16/20/24px) don't cover a genuinely one-off size. Merges on top of the
+<    * `iconSize`-resolved box (same `sx`-over-`__css` precedence this file's own top-level
+<    * `sx` prop already relies on), so e.g. `iconSx={{ width: '18px', height: '18px' }}`
+<    * overrides just the dimensions without losing the '& svg' fill rule underneath. Prefer
+<    * `iconSize` whenever the value is one of the four registered sizes — this is for the
+<    * genuine gap, not a shortcut around the token scale.
+<    */
+<   iconSx?: SystemStyleObject;
+< };
+---
+> } & ({ role?: never; ariaChecked?: never } | { role: 'checkbox' | 'radio'; ariaChecked: boolean }); // `aria-checked` is a selectable control that never exposes what it is set to. // union so the role and its state cannot be supplied apart: a `role="checkbox"` with no // button and never conveys whether it is currently applied. Modelled as a discriminated // — e.g. a filter chip. Without these a screen reader announces the control as a plain // Toggle semantics, for a button that represents a *selectable state* rather than an action
+108c87,101
+< type ZimmButtonProps = ZimmLabelButtonProps | ZimmIconButtonProps;
+---
+> type ZimmSocialButtonProps = ZimmButtonBaseProps & {
+>   variant: 'social';
+>   /** Icon node rendered to the left of the label (e.g. a brand logo SVG). */
+>   icon: React.ReactNode;
+>   /** Constrains the icon box to one of the four registered icon sizes. Defaults to 'md' (16px). */
+>   iconSize?: ZimmIconSize;
+>   /**
+>    * Inline style overrides for the icon box — use when the required size falls outside the
+>    * four registered `iconSize` steps (e.g. a 24 × 24 brand logo). Merged on top of the
+>    * `iconSize`-derived defaults, so it wins on specificity.
+>    */
+>   iconSx?: React.CSSProperties;
+>   /** Social buttons default to full width. Pass `false` to opt out. */
+>   fullWidth?: boolean;
+> };
+109a103,104
+> export type ZimmButtonProps = ZimmLabelButtonProps | ZimmIconButtonProps | ZimmSocialButtonProps;
+> 
+112c107
+< /** Atom — labelled button (primary/secondary/social) or icon-only button. All visual states
+---
+> /** Atom — labelled button (primary/secondary) or icon-only button. All visual states
+117c112,122
+<   const { label, type = 'button', disabled = false, ariaDisabled = false, inverse = false, onClick, style, sx } = props;
+---
+>   const {
+>     label,
+>     type = 'button',
+>     disabled = false,
+>     ariaDisabled = false,
+>     inverse = false,
+>     onClick,
+>     style,
+>     sx,
+>     ariaLabel,
+>   } = props;
+122,127d126
+<   // Called unconditionally (Rules of Hooks) even though only the variant="social" branch below
+<   // uses it. 'iconSize' only exists on ZimmLabelButtonProps, not ZimmIconButtonProps, hence the
+<   // `in` guard. size defaults to 'md' explicitly — see zimmSocialButton/index.tsx's own comment
+<   // on why this doesn't rely on the recipe's defaultProps.
+<   const iconSizeProp = 'iconSize' in props ? props.iconSize : undefined;
+<   const socialStyles = useMultiStyleConfig('ZimmSocialButton', { size: iconSizeProp ?? 'md' });
+132c131
+<         aria-label={label}
+---
+>         aria-label={ariaLabel ?? label}
+147,154c146,166
+<   const variant = props.variant ?? 'primary';
+<   const ariaDescribedBy = 'ariaDescribedBy' in props ? props.ariaDescribedBy : undefined;
+<   // fullWidth defaults to true for variant="social" (ZimmSocialButton was always full-width,
+<   // Figma-confirmed, no known narrower case) but stays a real, overridable prop — an explicit
+<   // fullWidth={false} still wins. Every other variant is unchanged: opt-in, default false.
+<   const fullWidth = props.fullWidth ?? variant === 'social' ? '100%' : undefined;
+< 
+<   if (variant === 'social') {
+---
+>   if (props.variant === 'social') {
+>     const iconSizeToken = props.iconSize ?? ICON_SIZE_DEFAULT;
+>     // Plain <span> (not chakra.span) so aria-hidden="true" is a guaranteed DOM attribute that
+>     // querySelector can find. chakra.span does not reliably forward aria-* to the DOM element
+>     // in jsdom (the styled-system prop handling swallows it). Styles are also applied inline
+>     // so toHaveStyle() resolves them without needing the Emotion CSS runtime.
+>     const iconBoxStyle: React.CSSProperties = {
+>       display: 'flex',
+>       alignItems: 'center',
+>       justifyContent: 'center',
+>       flexShrink: 0,
+>       width: `var(--zimm-icon-size-${iconSizeToken})`,
+>       height: `var(--zimm-icon-size-${iconSizeToken})`,
+>       ...props.iconSx,
+>     };
+>     // Width as inline style for the same reason — Chakra's width prop becomes a CSS class that
+>     // getComputedStyle doesn't resolve in jsdom; inline style is always queryable by toHaveStyle.
+>     const buttonStyle: React.CSSProperties = {
+>       ...(props.fullWidth !== false ? { width: '100%' } : {}),
+>       ...style,
+>     };
+160,161c172
+<         aria-label={label}
+<         aria-describedby={ariaDescribedBy}
+---
+>         aria-label={ariaLabel ?? label}
+165,166c176
+<         width={fullWidth}
+<         style={style}
+---
+>         style={buttonStyle}
+169,177c179,182
+<         {/* Same container>icon+label DOM shape as ZimmSocialButton itself — reused rather than
+<             reinvented, so this carries over its exact, already-confirmed layout instead of a
+<             new "should be equivalent" structure. */}
+<         <chakra.span __css={socialStyles.container}>
+<           <chakra.span aria-hidden={true} __css={socialStyles.icon} sx={props.iconSx}>
+<             {props.icon}
+<           </chakra.span>
+<           <chakra.span __css={socialStyles.label}>{label}</chakra.span>
+<         </chakra.span>
+---
+>         <span aria-hidden="true" style={iconBoxStyle}>
+>           {props.icon}
+>         </span>
+>         <chakra.span __css={labelStyle}>{label}</chakra.span>
+182,183c187,188
+<   // size/chakraVariant are only meaningful for primary/secondary from here — the social case
+<   // already returned above with literal 'social'/'social'.
+---
+>   const variant = props.variant ?? 'primary';
+>   // adaptive → reuses the 'social' Chakra size entry (same responsive height/padding tokens).
+186a192,196
+>   const ariaDescribedBy = 'ariaDescribedBy' in props ? props.ariaDescribedBy : undefined;
+>   // The props type pairs these two, so no runtime guard is needed to keep aria-checked off a
+>   // plain action button.
+>   const role = 'role' in props ? props.role : undefined;
+>   const ariaChecked = 'ariaChecked' in props ? props.ariaChecked : undefined;
+195c205
+<       aria-label={label}
+---
+>       aria-label={ariaLabel ?? label}
+196a207,208
+>       role={role}
+>       aria-checked={ariaChecked}
+200c212
+<       width={fullWidth}
+---
+>       width={props.fullWidth ? '100%' : undefined}
+--- (end, blank above = identical to ours aside from marked conflicts already resolved) ---
+
+############################## overrides/app/pages/product-list/index.tsx ##############################
+28d27
+<   Heading,
+32a32
+>   useBreakpointValue,
+34,40d33
+<   Modal,
+<   ModalHeader,
+<   ModalBody,
+<   ModalFooter,
+<   ModalContent,
+<   ModalCloseButton,
+<   ModalOverlay,
+46a40,43
+>   Radio,
+>   RadioGroup,
+>   Checkbox,
+>   Skeleton,
+67,69d63
+< import Refinements from '@salesforce/retail-react-app/app/pages/product-list/partials/refinements';
+< import CategoryLinks from './partials/category-links';
+< import SelectedRefinements from '@salesforce/retail-react-app/app/pages/product-list/partials/selected-refinements';
+74d67
+< import StoreInventoryFilter from '@salesforce/retail-react-app/app/pages/product-list/partials/inventory-filter';
+77,79c70,83
+< // Icons — this repo's single source of truth is overrides/app/components/icons, never the
+< // base template path directly.
+< import { FilterIcon, ChevronDownIcon } from '../../components/icons';
+---
+> // SFCC-847 — filter drawer wiring. `ZimmDrawer` shell (SFCC-736) + `ZimmFiltersDrawerContent`
+> // organism. Facet groups are derived from live SFCC productSearchResult.refinements (see
+> // activeRefinements below) — the earlier hardcodedFilterFacets placeholder has been removed.
+> import { ZimmDrawer } from '../../components/ui-kits/atoms/zimmDrawer';
+> import { ZimmFiltersDrawerContent } from '../../components/ui-kits/organisms/zimmFiltersDrawerContent';
+> import type { FilterFacetGroup } from '../../components/ui-kits/organisms/zimmFiltersDrawerContent';
+> import { ZimmSelectedChip } from '../../components/ui-kits/atoms/zimmSelectedChip';
+> import { ZimmButton } from '../../components/ui-kits/atoms/zimmButton';
+> import { ZimmLink } from '../../components/ui-kits/atoms/zimmLink';
+> import { ZimmCheckboxGroup } from '../../components/ui-kits/molecules/zimmCheckboxGroup';
+> import { ZimmSizeFilter } from '../../components/ui-kits/atoms/zimmSizeFilter';
+> import { useFilterDrawerState, buildAppliedRefine } from './useFilterDrawerState';
+> import { flattenRefinementValues } from 'app/utils/refinementValues';
+> import { categoryIdFromPathSegments, categoryUrlBuilder, removeSiteLocaleFromPath } from '../../utils/url';
+102d105
+<   STORE_LOCATOR_IS_ENABLED,
+107,108c110
+< import { PAGE_CONTENT_BLEED_MX } from 'app/constants';
+< import { getConfig } from '@salesforce/pwa-kit-runtime/utils/ssr-config';
+---
+> import { PAGE_CONTENT_BLEED_MX, cssColorGroups } from 'app/constants';
+112d113
+< import LoadingSpinner from '@salesforce/retail-react-app/app/components/loading-spinner';
+161a163,171
+> // Same attributeId OOTB's own Refinements.jsx componentMap keys ColorRefinements on —
+> // used here to gate the colour swatch dot to the colour facet only.
+> const COLOR_REFINEMENT_ATTRIBUTE_ID = 'c_refinementColor';
+> // Same attributeId OOTB's own Refinements.jsx componentMap keys SizeRefinements on — used
+> // here to route the Size facet to ZimmSizeFilter (button/chip grid) instead of
+> // ZimmCheckboxGroup (checkbox design).
+> const SIZE_REFINEMENT_ATTRIBUTE_ID = 'c_size';
+> 
+> 
+169a180,187
+>   clearAll: { id: 'product_list.filter.clear_all', defaultMessage: 'Clear all' },
+>   previousChips: { id: 'product_list.filter.prev_chips', defaultMessage: 'Previous chips' },
+>   nextChips: { id: 'product_list.filter.next_chips', defaultMessage: 'Next chips' },
+>   filters: { id: 'product_list.filter.filters', defaultMessage: 'Filters' },
+>   sortBy: { id: 'product_list.filter.sort_by', defaultMessage: 'Sort by' },
+>   filterBy: { id: 'product_list.filter.filter_by', defaultMessage: 'FILTER BY' },
+>   clear: { id: 'product_list.filter.drawer.clear', defaultMessage: 'CLEAR' },
+>   apply: { id: 'product_list.filter.drawer.apply', defaultMessage: 'APPLY' },
+238a257,326
+> type PageChipDatum = { key: string; label: string; onRemove: () => void };
+> 
+> type SelectedChipRowProps = {
+>   chips: PageChipDatum[];
+>   visibleChips: PageChipDatum[];
+>   offset: number;
+>   canPageLeft: boolean;
+>   canPageRight: boolean;
+>   onOffsetChange: (next: number) => void;
+>   onClearAll: () => void;
+> };
+> 
+> /**
+>  * SFCC-847 — CLEAR ALL + windowed applied-filter chips + paging arrows. Rendered as a
+>  * fragment so the caller owns the surrounding row: the desktop bar places it inline ahead of
+>  * FILTERS/Sort, while mobile gives it its own second row beneath the FILTERS/SORT BY row.
+>  * How many chips fit in the window is the caller's decision (see `chipsPerPage`).
+>  */
+> const SelectedChipRow = ({
+>   chips,
+>   visibleChips,
+>   offset,
+>   canPageLeft,
+>   canPageRight,
+>   onOffsetChange,
+>   onClearAll,
+> }: SelectedChipRowProps) => {
+>   const intl = useIntl();
+>   if (chips.length === 0) return null;
+> 
+>   return (
+>     <>
+>       <Box flexShrink={0} whiteSpace="nowrap">
+>         <ZimmLink label={intl.formatMessage(messages.clearAll)} size="large" onClick={onClearAll} />
+>       </Box>
+> 
+>       <Flex gap="var(--zimm-scale-xs)">
+>         {visibleChips.map((chip) => (
+>           <ZimmSelectedChip
+>             key={chip.key}
+>             label={chip.label}
+>             variant="secondary"
+>             onRemove={() => {
+>               chip.onRemove();
+>               if (offset > 0 && offset >= chips.length - 1) {
+>                 onOffsetChange(offset - 1);
+>               }
+>             }}
+>           />
+>         ))}
+>       </Flex>
+> 
+>       <ZimmButton
+>         variant="icon"
+>         icon="chevron-left"
+>         label={intl.formatMessage(messages.previousChips)}
+>         disabled={!canPageLeft}
+>         onClick={() => onOffsetChange(offset - 1)}
+>       />
+>       <ZimmButton
+>         variant="icon"
+>         icon="chevron-right"
+>         label={intl.formatMessage(messages.nextChips)}
+>         disabled={!canPageRight}
+>         onClick={() => onOffsetChange(offset + 1)}
+>       />
+>     </>
+>   );
+> };
+> 
+248c336
+<   const { isOpen, onOpen, onClose } = useDisclosure();
+---
+>   const filterDrawer = useDisclosure();
+258a347,350
+>   // Derive the parent categoryId from the URL path before any data loads — used to gate the
+>   // parent useCategory fetch below so we always have the sibling list on leaf pages.
+>   const cleanSegments = removeSiteLocaleFromPath(location.pathname).split('/').filter(Boolean);
+>   const parentCategoryIdFromPath = cleanSegments.length > 1 ? cleanSegments.slice(0, -1).join('-') : undefined;
+274d365
+<   const storeLocatorEnabled = getConfig()?.app?.storeLocatorEnabled ?? STORE_LOCATOR_IS_ENABLED;
+277,278c368,370
+<   const [filtersLoading, setFiltersLoading] = useState(false);
+<   const [wishlistLoading, setWishlistLoading] = useState<string[]>([]);
+---
+>   // Offset into the applied-filter chip window, shared by the desktop bar and the mobile row.
+>   // Window size is breakpoint-dependent — see `chipsPerPage`.
+>   const [chipOffset, setChipOffset] = useState(0);
+279a372
+>   const [wishlistLoading, setWishlistLoading] = useState<string[]>([]);
+344,349c437,454
+<   // Apply disallow list to refinements.
+<   if (productSearchResult?.refinements) {
+<     productSearchResult.refinements = productSearchResult.refinements.filter(
+<       ({ attributeId }) => !REFINEMENT_DISALLOW_LIST.includes(attributeId),
+<     );
+<   }
+---
+>   // SFCC-847 — fetch the parent category to reliably get the sibling list on leaf pages.
+>   // category.categories only holds the CURRENT category's children, not its siblings — the
+>   // siblings live in the PARENT category's children array. Without this fetch, the sibling
+>   // list is only available when it was seeded from the parent page's state/localStorage,
+>   // which is unreliable (effect order race, hard refresh, direct URL visit).
+>   // React Query caches the result: if the user navigated from the parent page, this is a
+>   // cache hit with no extra network request. Only fires on leaf pages, never on search pages.
+>   // parentCategoryIdFromPath covers hierarchical URLs (/clothing/dresses → parent='clothing').
+>   // parentCategoryIdFromCategory is the fallback for flat URLs (/clothing-dresses, one segment)
+>   // where the URL gives no parent hint — use category.parentCategoryId once the category loads.
+>   const parentCatIdFromCategory = (category as { parentCategoryId?: string } | undefined)?.parentCategoryId;
+>   const parentCategoryIdForFetch =
+>     parentCategoryIdFromPath ??
+>     (parentCatIdFromCategory && parentCatIdFromCategory !== 'root' ? parentCatIdFromCategory : undefined);
+>   const { data: parentCategory } = useCategory(
+>     { parameters: { id: parentCategoryIdForFetch ?? '' } },
+>     { enabled: !isSearch && !!parentCategoryIdForFetch },
+>   );
+350a456
+> 
+371d476
+<     setFiltersLoading(isRefetching);
+385a491,997
+>   // SFCC-847 — used in applyFilters when the category selection is cleared in the drawer,
+>   // to navigate back to the parent category instead of staying on the leaf page.
+>   const parentCategoryId = (category as { parentCategoryId?: string } | undefined)?.parentCategoryId;
+> 
+>   // SFCC-847 — hierarchical category URL helpers. Categories are served at their slug path
+>   // (/clothing/dresses), never at /category/<id> (that route is excluded in routes.tsx).
+>   // location.pathname IS the current category's correct URL so it's used directly.
+>   // parentCategoryPath strips the last path segment (/clothing/dresses → /clothing).
+>   // siblingCategoryPath replaces the last path segment with the sibling's own last segment
+>   // (derived by stripping the parent-id prefix from the sibling's flat SFCC categoryId).
+>   const currentCategoryPath = location.pathname;
+>   const parentCategoryPath = currentCategoryPath.split('/').slice(0, -1).join('/') || '/';
+> 
+>   // SFCC-847 — every selection in the drawer (category + every refinement facet) is
+>   // buffered locally via useFilterDrawerState rather than applied straight to the URL on
+>   // each click. Matches how the Storybook stories for this drawer already behaved (no
+>   // navigation on selection) and makes APPLY the single moment that actually commits.
+>   // Resyncs from the page's real applied filters every time the drawer opens (see the
+>   // hook's own docblock). Pass searchParams.refine (the URL-derived ground truth) as the
+>   // resync source, NOT productSearchResult.selectedRefinements — the API field only echoes
+>   // back what SFCC decides to include (typically just cgid), so it silently misses applied
+>   // refine params for colour, size, etc. The URL is always authoritative for what's applied.
+>   const {
+>     pendingCategoryIds,
+>     toggleCategoryId,
+>     setPendingCategoryIds,
+>     pendingRefine,
+>     setValues,
+>     removeValue,
+>     clearAll,
+>     resyncPendingRefine,
+>   } = useFilterDrawerState({
+>     isOpen: filterDrawer.isOpen,
+>     categoryId: categoryId,
+>     selectedRefinements: searchParams.refine,
+>   });
+> 
+>   // SFCC-847 — multi-select: toggle a category in/out of the pending selection without
+>   // clearing other refine selections, so colour/size choices persist across category picks.
+>   const handleCategoryToggle = (id: string) => {
+>     toggleCategoryId(id);
+>   };
+> 
+>   // CLEAR resets the entire pending draft — refinements AND category selections. On a
+>   // drilled-in URL (e.g. /clothing/dresses/day-dress) the trail chips come from the URL
+>   // path, not the buffered state, so clearing the buffer alone would leave "Dresses" and
+>   // "Day Dress" visible with no way to remove them via this button. Navigate up to the
+>   // trail root's parent (/clothing) so both are stripped in one action — same target as
+>   // the page-level Clear all chip. The drawer stays open across the navigation so the
+>   // shopper can immediately keep filtering on the newly-loaded category. At the top of
+>   // the hierarchy (no drilled trail) just clear the buffer and let APPLY commit.
+>   const handleClearAll = () => {
+>     clearAll();
+>     setPendingCategoryIds([]);
+>     if (nestedCategoryTrail.length > 0) {
+>       handleChipClearAll();
+>     }
+>   };
+> 
+>   // Discards all pending (unapplied) selections when the drawer is dismissed via the X
+>   // button or backdrop — not via APPLY, which calls filterDrawer.onClose() directly and
+>   // lets the navigation + resync effect own the state transition.
+>   const handleDrawerClose = () => {
+>     filterDrawer.onClose();
+>     clearAll();
+>     setPendingCategoryIds(categoryId ? [categoryId] : []);
+>   };
+> 
+>   // SFCC-847 — matches toggleFilter's own signature exactly (value, attributeId, selected,
+>   // allowMultiple) so OOTB's own CheckboxRefinements (see refinementFacetGroups below) can
+>   // be reused unmodified for the drawer's facet content, instead of hand-rolling a generic
+>   // Checkbox list. The only difference from the page's real toggleFilter is that this writes
+>   // to the buffered pendingRefine instead of navigating immediately — APPLY (below) is what
+>   // actually commits. allowMultiple=false is dead code for CheckboxRefinements specifically
+>   // (it never passes a 4th arg — always multi-select) but kept for signature-fidelity with
+>   // the real toggleFilter, in case a future facet type needs it.
+>   const handleBufferedToggle = (
+>     value: { value: string | number },
+>     attributeId: string,
+>     selected: boolean,
+>     allowMultiple = true,
+>   ) => {
+>     const stringValue = String(value.value);
+>     if (!allowMultiple) {
+>       // Single-select (e.g. price via RadioRefinements): RadioRefinement always calls with
+>       // selected=false regardless of actual state (same OOTB quirk toggleFilter's own
+>       // allowMultiple=false branch already works around) — derive the real current selection
+>       // from pendingRefine instead. Clicking the already-selected value clears it; clicking
+>       // any other value replaces it.
+>       const current = pendingRefine[attributeId]?.[0];
+>       setValues(attributeId, current === stringValue ? [] : [stringValue]);
+>       return;
+>     }
+>     if (selected) {
+>       removeValue(attributeId, stringValue);
+>     } else {
+>       setValues(attributeId, [...(pendingRefine[attributeId] ?? []), stringValue]);
+>     }
+>   };
+> 
+>   // SFCC-847 — secondary prefetch: when a category different from the current page is
+>   // pending, fetch its live refinements so Colour/Size/etc. accordions reflect the
+>   // pending category rather than the page's own facet set. With multi-select, the first
+>   // non-current pending id drives the prefetch (one prefetch at a time is sufficient for
+>   // the loading/error states — full multi-category refinements resolve after APPLY).
+>   const singlePendingId = pendingCategoryIds.find((id) => id !== categoryId) ?? pendingCategoryIds[0];
+>   const pendingCategoryChanged = filterDrawer.isOpen && !!singlePendingId && singlePendingId !== categoryId;
+> 
+>   const { data: pendingCategoryResult, isError: pendingCategoryError } = useProductSearch(
+>     {
+>       parameters: {
+>         limit: 1,
+>         refine: `cgid=${singlePendingId ?? ''}`,
+>       },
+>     },
+>     {
+>       // Only fires when the drawer is open with a single different category pending.
+>       enabled: pendingCategoryChanged,
+>     },
+>   );
+> 
+>   // The refinements driving the non-Category accordions: use the pending category's live
+>   // refinements when a different category is selected (so Colour shows dresses colours, not
+>   // clothing colours). While that prefetch is in flight or has failed, render an empty set
+>   // rather than falling back to the OLD category's refinements — showing Clothing's colours
+>   // for a moment while "Dresses" is already selected would let the shopper pick a value that
+>   // isn't even valid for the category they're navigating to. Only fall back to the current
+>   // page's refinements when no category change is pending at all.
+>   const activeRefinements = (
+>     pendingCategoryChanged ? pendingCategoryResult?.refinements ?? [] : productSearchResult?.refinements ?? []
+>   ).filter(({ attributeId }) => !REFINEMENT_DISALLOW_LIST.includes(attributeId));
+> 
+>   // Commits every buffered selection at once — the drawer's APPLY handler. A category
+>   // change and any refine selections made alongside it (colour/size, etc.) are applied
+>   // together in one navigation: activeRefinements/the checkboxes already reflect the
+>   // PENDING category's own live facet set once pendingCategoryChanged is true (see the
+>   // prefetch above), so whatever the shopper picked there is already valid for the category
+>   // they're navigating to — discarding it here would throw away a selection the drawer
+>   // itself just showed as available. Every attribute this drawer manages (every non-cgid
+>   // attributeId SFCC currently returns) is overwritten from pendingRefine — including
+>   // attributes the shopper unticked back to empty, which simply won't appear in
+>   // pendingRefine and so get deleted — while attributes this drawer doesn't manage (e.g.
+>   // StoreInventoryFilter's `ilids`) are left untouched.
+>   const applyFilters = () => {
+>     filterDrawer.onClose();
+> 
+>     // Union of the OLD category's refinement attributes (productSearchResult, i.e. what's
+>     // currently applied) and the NEW/pending category's (activeRefinements) — not just the
+>     // latter alone. A category-specific attribute that only the OLD category has (e.g. a
+>     // future sleeve-length facet Dresses carries but Tops doesn't) would otherwise survive
+>     // buildAppliedRefine's delete pass untouched, leaking a stale, no-longer-valid refine
+>     // value into the new category's URL. cgid/ilids are excluded — cgid because it's tracked
+>     // separately via the URL path segment, ilids because StoreInventoryFilter isn't one of
+>     // this drawer's managed facets at all (see buildAppliedRefine's own docblock).
+>     const managedAttributeIds = Array.from(
+>       new Set([
+>         ...activeRefinements.map(({ attributeId }) => attributeId),
+>         ...(productSearchResult?.refinements ?? []).map(({ attributeId }) => attributeId),
+>       ]),
+>     ).filter((attributeId) => attributeId !== 'cgid' && attributeId !== 'ilids');
+> 
+>     // Strip attributes from pendingRefine that the pending category doesn't expose. Without
+>     // this, a colour filter applied on Clothing survives a category switch to Dresses (which
+>     // has no Colour facet) and produces 0 results after APPLY. When pendingCategoryError is
+>     // true, activeRefinements is [] so validPendingRefine is also {}, safely clearing stale
+>     // state rather than committing it into an unknown category's URL.
+>     const validPendingRefine = Object.fromEntries(
+>       Object.entries(pendingRefine).filter(([attrId]) =>
+>         activeRefinements.some((r) => r.attributeId === attrId),
+>       ),
+>     );
+>     const searchParamsCopy = {
+>       ...searchParams,
+>       refine: buildAppliedRefine(searchParams.refine, managedAttributeIds, validPendingRefine),
+>     };
+>     delete searchParamsCopy.offset;
+> 
+>     // The category selection is expressed EITHER by the URL path (0 or 1 selected) OR by a
+>     // pipe-joined cgid refine (2+ selected) — never both. Drop any cgid carried over from a
+>     // previous multi-select before branching; the 2+ branch below re-adds its own.
+>     // buildAppliedRefine deliberately leaves cgid alone (it isn't one of the drawer's managed
+>     // refinement attributes — see its docblock), so without this an unticked sub-category
+>     // survives APPLY: /clothing/dresses?cgid=day-dress|denim-dress would keep filtering by
+>     // both even after the shopper unticks one or clears the category entirely.
+>     delete searchParamsCopy.refine.cgid;
+> 
+>     // Multi-select category: the shopper may have toggled several sub-category IDs.
+>     // — 0 selected → go to parent if one exists, otherwise stay on search/category.
+>     // — 1 selected → navigate to that category's canonical URL (existing behaviour).
+>     // — 2+ selected → stay on the CURRENT page and pipe-join the ids as a cgid refine.
+>     //
+>     // Only count IDs that are actually present in the accordion options list as "user
+>     // selections". The current page's categoryId may be in pendingCategoryIds from
+>     // initialization but is not a user action when it doesn't appear in the options
+>     // (e.g. on /clothing, the options are children [Dresses, Tops] — not 'clothing' itself).
+>     // On leaf pages (/clothing/dresses), the current categoryId IS in the siblings list, so
+>     // it counts as a real selection that the user can deselect.
+>     const optionIds = new Set(resolvedCategoryOptions.map((opt) => opt.id));
+>     const selectedIds = pendingCategoryIds.filter((id) => optionIds.has(id));
+>     const categoryIdIsAnOption = !!categoryId && optionIds.has(categoryId);
+>     let appliedUrl: string;
+> 
+>     if (selectedIds.length === 0) {
+>       if (categoryIdIsAnOption) {
+>         // User deselected the current page's category from the sibling list — navigate up.
+>         if (parentCategoryId && parentCategoryId !== 'root') {
+>           delete searchParamsCopy.q;
+>           appliedUrl = `${parentCategoryPath}?${stringifySearchParams(searchParamsCopy)}`;
+>         } else {
+>           appliedUrl = `${currentCategoryPath}?${stringifySearchParams(searchParamsCopy)}`;
+>         }
+>       } else {
+>         // categoryId is not an option (it's a parent page whose children are the options).
+>         // No category sub-selection was made — stay on the current page so other filter
+>         // changes (colour, size) are applied without an unintended category navigation.
+>         appliedUrl = isSearch
+>           ? `/search?${stringifySearchParams(searchParamsCopy)}`
+>           : `${currentCategoryPath}?${stringifySearchParams(searchParamsCopy)}`;
+>       }
+>     } else if (selectedIds.length === 1) {
+>       // Single category — navigate to its canonical URL.
+>       const pendingId = selectedIds[0];
+>       if (pendingId !== categoryId) {
+>         delete searchParamsCopy.q;
+>       }
+>       // All three resolvedCategoryOptions sources carry parentCategoryTree (real from SCAPI,
+>       // or synthetic from the cgid fallback), so categoryUrlBuilder always produces the
+>       // correct hierarchical URL (e.g. /clothing/dresses not /clothing-dresses).
+>       const targetCategory = resolvedCategoryOptions.find((c) => (c as { id?: string }).id === pendingId);
+>       appliedUrl = `${categoryUrlBuilder(targetCategory ?? { id: pendingId })}?${stringifySearchParams(searchParamsCopy)}`;
+>     } else {
+>       // Multiple categories selected — pipe-join ids as cgid refine.
+>       // Choose the base path depending on whether the options are siblings or children:
+>       // — Siblings (categoryId IS one of the options, e.g. /clothing/dresses/denim-dress where
+>       //   the accordion shows sibling sub-categories of Dresses): navigate to parentCategoryPath
+>       //   (/clothing/dresses) so the multi-select lives at the level of their shared parent.
+>       //   Staying on the leaf URL (/clothing/dresses/denim-dress) would produce a duplicate chip
+>       //   for Denim Dress (once from categoryChipTrail, once from the cgid refine values).
+>       // — Children (categoryId is NOT one of the options, e.g. /clothing where the accordion
+>       //   shows Clothing's children): stay on currentCategoryPath (/clothing).
+>       const multiBasePath = categoryIdIsAnOption ? parentCategoryPath : currentCategoryPath;
+>       const multiRefine = {
+>         ...searchParamsCopy.refine,
+>         cgid: selectedIds.join('|'),
+>       };
+>       const multiParams = { ...searchParamsCopy, refine: multiRefine };
+>       delete multiParams.q;
+>       appliedUrl = `${multiBasePath}?${stringifySearchParams(multiParams)}`;
+>     }
+> 
+>     navigate(appliedUrl);
+>   };
+> 
+>   // Category chip — shown only when on a non-root category page (has a real parent).
+>   // Hoisted here (before categoryFacetGroup) so the IIFE below can reference it.
+>   const isCategoryChipActive =
+>     !!categoryId &&
+>     !!parentCategoryId &&
+>     parentCategoryId !== 'root' &&
+>     !!category?.name;
+> 
+>   // SFCC-847 — the full chain of categories the shopper drilled into, one chip each, so a
+>   // previously-selected ancestor stays visible beside the current one:
+>   //   /clothing/dresses/day-dress → [Dresses, Day Dress]
+>   // Previously only the leaf was surfaced, so drilling Clothing → Dresses → Day Dress showed
+>   // "Day Dress" alone and silently dropped "Dresses".
+>   // The first path segment (the top-level category, e.g. Clothing) is deliberately excluded:
+>   // it's the entry context the shopper arrived in rather than a selection they made in the
+>   // drawer, and it has no category page above it to navigate back to.
+>   // Ids are rebuilt from the path via categoryIdFromPathSegments — the same derivation
+>   // categoryPath/index.tsx uses for the route's own categoryId, so a trail id always matches
+>   // what the drawer holds in pendingCategoryIds and what the cgid refine carries.
+>   const categoryNameById = new Map<string, string>();
+>   (category?.parentCategoryTree ?? []).forEach((record) => {
+>     if (record.id && record.name) categoryNameById.set(record.id, record.name);
+>   });
+>   if (category?.id && category.name) categoryNameById.set(category.id, category.name);
+> 
+>   const nestedCategoryTrail = isSearch
+>     ? []
+>     : cleanSegments.slice(1).map((_segment, index) => {
+>         const depth = index + 1;
+>         const id = categoryIdFromPathSegments(cleanSegments.slice(0, depth + 1));
+>         return {
+>           id,
+>           label: categoryNameById.get(id) ?? id,
+>           parentHref: `/${cleanSegments.slice(0, depth).join('/')}`,
+>         };
+>       });
+> 
+>   // A category whose id isn't prefixed by its parent's renders at a single-segment URL despite
+>   // having a real parent (categoryPathSegments' 'badges'/'runway' case). There are no path
+>   // segments to walk there, so fall back to the single leaf chip.
+>   const categoryChipTrail =
+>     nestedCategoryTrail.length > 0
+>       ? nestedCategoryTrail
+>       : isCategoryChipActive && categoryId
+>         ? [{ id: categoryId, label: category?.name ?? categoryId, parentHref: parentCategoryPath }]
+>         : [];
+>   const categoryTrailIds = new Set(categoryChipTrail.map(({ id }) => id));
+> 
+>   // Removing a trail chip navigates to that category's parent page. Any cgid refine is dropped:
+>   // it holds descendants of the category being left, so carrying it up would keep filtering by
+>   // categories that are no longer in scope.
+>   const navigateToTrailParent = (parentHref: string) => {
+>     const next = { ...searchParams, refine: { ...searchParams.refine } };
+>     delete next.offset;
+>     delete next.refine.cgid;
+>     navigate(`${parentHref}?${stringifySearchParams(next)}`);
+>   };
+> 
+>   // SFCC-847 — Category facet group options.
+>   // Priority chain (first non-empty wins):
+>   // 1. category.categories — current category's own children from getCategory (drill-down).
+>   //    /clothing         → [Dresses, Tops, Jackets…]
+>   //    /clothing/dresses → [Midi, Mini, …] (if Dresses has sub-sub-categories)
+>   // 2. parentCategory.categories — siblings from the parent, for leaf pages that have no
+>   //    deeper sub-categories (getCategory result — React Query cache hit if parent was visited).
+>   //    /clothing/dresses (leaf) → [Dresses, Tops, Jackets…] (siblings from Clothing)
+>   // 3. productSearchResult.refinements cgid values — tertiary fallback using what the search
+>   //    index already returned. No extra API call; reliably available even when getCategory
+>   //    doesn't return categories (e.g. the SFCC catalog has sub-categories online in the search
+>   //    index but they're not surfaced by getCategory on this org's configuration).
+>   //    Synthetic parentCategoryTree lets categoryUrlBuilder produce the right nested URL.
+>   const cgidRefinement = productSearchResult?.refinements?.find((r) => r.attributeId === 'cgid');
+>   const cgidCategoryOptions: Array<{ id: string; name?: string; parentCategoryTree?: Array<{ id: string }> }> = (
+>     cgidRefinement?.values ?? []
+>   ).map((v) => ({
+>     id: v.value,
+>     name: v.label,
+>     // Synthetic tree: [parent, self] so categoryUrlBuilder can strip the parent prefix and
+>     // produce /clothing/dresses instead of /clothing-dresses.
+>     parentCategoryTree: categoryId ? [{ id: categoryId }, { id: v.value }] : undefined,
+>   }));
+> 
+>   const resolvedCategoryOptions: Array<{ id: string; name?: string; parentCategoryTree?: ReadonlyArray<{ id?: string }> }> =
+>     category?.categories && category.categories.length > 0
+>       ? category.categories
+>       : parentCategory?.categories && parentCategory.categories.length > 0
+>       ? parentCategory.categories
+>       : cgidCategoryOptions;
+>   // Chip strips for selected sub-categories. categoryChipTrail already emits a chip for every
+>   // category on the URL path, so exclude those ids here to avoid rendering the same chip twice
+>   // — that happens on a multi-select URL whose base is the sibling level
+>   // (e.g. /clothing/dresses?cgid=denim-dress|day-dresses).
+>   const selectedCategoryOptions = resolvedCategoryOptions.filter(
+>     ({ id }) => pendingCategoryIds.includes(id) && !categoryTrailIds.has(id),
+>   );
+>   const categoryFacetGroup: FilterFacetGroup | null =
+>     resolvedCategoryOptions.length > 0
+>       ? {
+>           id: 'category',
+>           label: 'Category',
+>           // Selected chips sit in alwaysVisibleContent so they remain visible while the
+>           // accordion is collapsed. The categoryChipTrail chips keep every previously
+>           // selected category visible per the design requirement.
+>           alwaysVisibleContent: (() => {
+>             const chips: React.ReactElement[] = [];
+>             // One chip per category in the drilled-into path (Dresses, Day Dress…), so the
+>             // ancestor the shopper picked earlier stays visible alongside the current one.
+>             categoryChipTrail.forEach(({ id, label, parentHref }) => {
+>               chips.push(
+>                 <ZimmSelectedChip
+>                   key={`trail-${id}`}
+>                   label={label}
+>                   onRemove={() => {
+>                     // These chips mirror the URL path, which the pending buffer can't express —
+>                     // leaving an ancestor means navigating up, so commit it and close the drawer.
+>                     filterDrawer.onClose();
+>                     navigateToTrailParent(parentHref);
+>                   }}
+>                 />,
+>               );
+>             });
+>             selectedCategoryOptions.forEach(({ id, name }) => {
+>               chips.push(
+>                 <ZimmSelectedChip
+>                   key={id}
+>                   label={name ?? id}
+>                   onRemove={() => {
+>                     setPendingCategoryIds(pendingCategoryIds.filter((v) => v !== id));
+>                   }}
+>                 />,
+>               );
+>             });
+>             return chips.length > 0 ? (
+>               <Flex wrap="wrap" gap="var(--zimm-scale-2xs)">
+>                 {chips}
+>               </Flex>
+>             ) : undefined;
+>           })(),
+>           content: (
+>             <ZimmCheckboxGroup
+>               options={resolvedCategoryOptions.map(({ id, name }) => ({
+>                 value: id,
+>                 label: name ?? id,
+>               }))}
+>               selectedValues={pendingCategoryIds}
+>               onChange={(catId) => handleCategoryToggle(catId)}
+>             />
+>           ),
+>         }
+>       : null;
+> 
+>   // activeRefinements already has REFINEMENT_DISALLOW_LIST filtered out (cgid is filtered
+>   // out explicitly below, same as in applyFilters — activeRefinements itself does not
+>   // exclude it), and reflects the pending category's live facet set when the shopper has
+>   // changed the Category radio — so Colour shows dresses colours when Dresses is pending,
+>   // not the old page's clothing colours.
+>   const refinementFacetGroups: FilterFacetGroup[] = activeRefinements
+>     .filter(({ attributeId }) => attributeId !== 'cgid')
+>     .map((refinement) => {
+>       const selectedValues = pendingRefine[refinement.attributeId] ?? [];
+>       // SFCC-847 — per the design document: Size matches OOTB's own button/chip grid
+>       // (ZimmSizeFilter, which reuses SizeRefinements unmodified — see its own
+>       // docblock), every other facet uses checkbox styling (ZimmCheckboxGroup) —
+>       // neither routes through componentMap's own per-attribute-type dispatch (which would
+>       // send colour to swatches too). The OOTB sidebar and mobile modal are unaffected —
+>       // they still use componentMap via the base Refinements component, unchanged.
+>       // handleBufferedToggle (above) stands in for the page's real toggleFilter, buffering
+>       // into pendingRefine instead of navigating immediately. No `alwaysVisibleContent` chip
+>       // strip on multi-select facets — the checkbox tick itself is the selected indicator,
+>       // matching Figma's Colour/Material variants (audited 2026-09-16). Applied-filter chip
+>       // patterns as a page-level surface belong to SFCC-108 AC #6, not this ticket.
+>       const isSize = refinement.attributeId === SIZE_REFINEMENT_ATTRIBUTE_ID;
+>       const valueToLabel = Object.fromEntries(
+>         flattenRefinementValues(refinement.values).map((rv) => [String(rv.value), rv.label ?? String(rv.value)])
+>       );
+> 
+>       return {
+>         id: refinement.attributeId,
+>         label: refinement.label ?? refinement.attributeId,
+>         alwaysVisibleContent:
+>           selectedValues.length > 0 ? (
+>             <Flex wrap="wrap" gap="var(--zimm-scale-2xs)">
+>               {selectedValues.map((value) => (
+>                 <ZimmSelectedChip
+>                   key={value}
+>                   label={valueToLabel[value] ?? String(value)}
+>                   onRemove={() => handleBufferedToggle({ value }, refinement.attributeId, true)}
+>                 />
+>               ))}
+>             </Flex>
+>           ) : undefined,
+>         content: isSize ? (
+>           <ZimmSizeFilter
+>             filter={refinement}
+>             toggleFilter={handleBufferedToggle}
+>             selectedFilters={selectedValues}
+>           />
+>         ) : (
+>           <ZimmCheckboxGroup
+>             options={(refinement.values ?? []).map((v) => ({
+>               value: String(v.value),
+>               label: v.label ?? String(v.value),
+>               hitCount: v.hitCount,
+>               swatchColour:
+>                 refinement.attributeId === COLOR_REFINEMENT_ATTRIBUTE_ID && v.presentationId
+>                   ? (cssColorGroups[v.presentationId.toLowerCase()] ?? '')
+>                   : undefined,
+>             }))}
+>             selectedValues={selectedValues}
+>             onChange={(value, isCurrentlySelected) =>
+>               handleBufferedToggle({ value }, refinement.attributeId, isCurrentlySelected)
+>             }
+>           />
+>         ),
+>       };
+>     });
+> 
+>   // When a category change is pending and data is still loading, show skeleton placeholders
+>   // for the refinement accordions to prevent the accordion list from disappearing momentarily.
+>   // On a terminal query failure, stop showing the skeleton — render the empty refinement list
+>   // (activeRefinements falls back to [] on error, so the drawer stays usable).
+>   const isLoadingPendingCategoryRefinements =
+>     pendingCategoryChanged && !pendingCategoryResult && !pendingCategoryError;
+>   const skeletonRefinementGroups: FilterFacetGroup[] = isLoadingPendingCategoryRefinements
+>     ? [
+>         {
+>           id: 'skeleton-1',
+>           label: 'Loading...',
+>           content: (
+>             <Stack gap="var(--zimm-scale-m)">
+>               <Skeleton height="32px" />
+>               <Skeleton height="32px" />
+>               <Skeleton height="32px" />
+>             </Stack>
+>           ),
+>         },
+>         {
+>           id: 'skeleton-2',
+>           label: 'Loading...',
+>           content: (
+>             <Stack gap="var(--zimm-scale-m)">
+>               <Skeleton height="32px" />
+>               <Skeleton height="32px" />
+>             </Stack>
+>           ),
+>         },
+>       ]
+>     : [];
+> 
+>   const filterFacetGroups: FilterFacetGroup[] = [
+>     ...(categoryFacetGroup ? [categoryFacetGroup] : []),
+>     ...(isLoadingPendingCategoryRefinements ? skeletonRefinementGroups : refinementFacetGroups),
+>   ];
+> 
+475,541d1086
+<   // Toggles filter on and off
+<   const toggleFilter = (
+<     value: { value: string | number },
+<     attributeId: string,
+<     selected: boolean,
+<     allowMultiple = true,
+<   ) => {
+<     // Special handling for inventory filter
+<     if (attributeId === 'ilids') {
+<       if (!selected) {
+<         setSearchByInventory(value.value);
+<       } else {
+<         setSearchByInventory(null);
+<       }
+<       return;
+<     }
+< 
+<     const searchParamsCopy = { ...searchParams };
+< 
+<     // Remove the `offset` search param if present.
+<     delete searchParamsCopy.offset;
+< 
+<     // If we aren't allowing for multiple selections, simply clear any value set for the
+<     // attribute, and apply a new one if required.
+<     if (!allowMultiple) {
+<       const previousValue = searchParamsCopy.refine[attributeId];
+<       delete searchParamsCopy.refine[attributeId];
+< 
+<       // Note the loose comparison, for "string != number" checks.
+<       if (!selected && value.value != previousValue) {
+<         searchParamsCopy.refine[attributeId] = value.value;
+<       }
+<     } else {
+<       // Get the attibute value as an array.
+<       let attributeValue = searchParamsCopy.refine[attributeId] || [];
+< 
+<       // Ensure that the value is still converted into an array if it's a `string` or `number`.
+<       if (typeof attributeValue === 'string') {
+<         attributeValue = attributeValue.split('|');
+<       } else if (typeof attributeValue === 'number') {
+<         attributeValue = [attributeValue];
+<       }
+< 
+<       // Either set the value, or filter the value out.
+<       if (!selected) {
+<         attributeValue.push(value.value);
+<       } else {
+<         // Note the loose comparison, for "string != number" checks.
+<         attributeValue = attributeValue?.filter((v: string | number) => v != value.value);
+<       }
+< 
+<       // Update the attribute value in the new search params.
+<       searchParamsCopy.refine[attributeId] = attributeValue;
+< 
+<       // If the update value is an empty array, remove the current attribute key.
+<       if (searchParamsCopy.refine[attributeId].length === 0) {
+<         delete searchParamsCopy.refine[attributeId];
+<       }
+<     }
+< 
+<     if (isSearch) {
+<       navigate(`/search?${stringifySearchParams(searchParamsCopy)}`);
+<     } else {
+<       navigate(`${location.pathname}?${stringifySearchParams(searchParamsCopy)}`);
+<     }
+<   };
+< 
+547a1093
+>     delete newSearchParams.offset;
+556,567d1101
+<   // Helper function to create StoreInventoryFilter component
+<   const createStoreInventoryFilter = () => {
+<     if (!storeLocatorEnabled) return null;
+<     return (
+<       <StoreInventoryFilter
+<         key="storeInventoryFilter"
+<         toggleFilter={toggleFilter}
+<         selectedFilters={productSearchResult?.selectedRefinements || {}}
+<       />
+<     );
+<   };
+< 
+596a1131,1241
+>   // ── Page-level applied-filter chip data ──────────────────────────────────────────────────
+>   // Unified list of all currently applied chips: category first, then refinement values.
+>   // Built here (not inside JSX) so the IIFE anti-pattern is avoided.
+>   const pageChips: PageChipDatum[] = [];
+> 
+>   // categoryChipTrail is hoisted above categoryFacetGroup (see above) — used here too, so the
+>   // page bar and the drawer show the same set of category chips.
+>   categoryChipTrail.forEach(({ id, label, parentHref }) => {
+>     pageChips.push({
+>       key: `cgid-${id}`,
+>       label: label.toUpperCase(),
+>       onRemove: () => navigateToTrailParent(parentHref),
+>     });
+>   });
+> 
+>   // Multi-category sub-selection chips — when 2+ sub-categories were applied via the
+>   // drawer they're stored as pipe-separated cgid in refine (not the URL path). Show one
+>   // removable chip per ID; removing the last one drops the refine key entirely.
+>   const refineCgidRaw = searchParams.refine?.cgid;
+>   if (refineCgidRaw != null) {
+>     const refineCgidIds = (
+>       Array.isArray(refineCgidRaw) ? refineCgidRaw.map(String) : String(refineCgidRaw).split('|')
+>     ).filter(Boolean);
+>     refineCgidIds.forEach((id) => {
+>       // Skip any category already emitted as a trail chip above, so a cgid value that repeats
+>       // a URL path segment doesn't render the same chip twice.
+>       if (categoryTrailIds.has(id)) return;
+>       const matched = resolvedCategoryOptions.find((c) => (c as { id?: string }).id === id);
+>       pageChips.push({
+>         key: `cgid-refine-${id}`,
+>         label: (matched?.name ?? id).toUpperCase(),
+>         onRemove: () => {
+>           const remaining = refineCgidIds.filter((v) => v !== id);
+>           const nextRefine = { ...searchParams.refine };
+>           if (remaining.length === 0) {
+>             delete nextRefine.cgid;
+>           } else {
+>             nextRefine.cgid = remaining.join('|');
+>           }
+>           const next = { ...searchParams, refine: nextRefine };
+>           delete next.offset;
+>           navigate(`${currentCategoryPath}?${stringifySearchParams(next)}`);
+>         },
+>       });
+>     });
+>   }
+> 
+>   // Refinement chips — one per applied value, skipping cgid (handled above).
+>   Object.entries(searchParams.refine).forEach(([attributeId, values]) => {
+>     if (attributeId === 'cgid') return;
+>     const valueArray = Array.isArray(values)
+>       ? values
+>       : typeof values === 'string'
+>       ? values.split('|')
+>       : [String(values)];
+>     // Resolve the shopper-facing label from the live refinements (e.g. "Black" not "black").
+>     const refinementValues = flattenRefinementValues(
+>       productSearchResult?.refinements?.find((r) => r.attributeId === attributeId)?.values ?? []
+>     );
+>     valueArray.forEach((value) => {
+>       const matchedLabel = refinementValues.find((rv) => String(rv.value) === String(value))?.label;
+>       pageChips.push({
+>         key: `${attributeId}-${value}`,
+>         label: matchedLabel ?? String(value),
+>         onRemove: () => {
+>           const nextRefine = { ...searchParams.refine };
+>           const current = Array.isArray(nextRefine[attributeId])
+>             ? nextRefine[attributeId]
+>             : String(nextRefine[attributeId]).split('|');
+>           const filtered = (current as string[]).filter((v) => v !== value);
+>           if (filtered.length === 0) {
+>             delete nextRefine[attributeId];
+>           } else {
+>             nextRefine[attributeId] = filtered;
+>           }
+>           const next = { ...searchParams, refine: nextRefine };
+>           delete next.offset;
+>           navigate(
+>             isSearch
+>               ? `/search?${stringifySearchParams(next)}`
+>               : `${currentCategoryPath}?${stringifySearchParams(next)}`,
+>           );
+>         },
+>       });
+>     });
+>   });
+> 
+>   // Annotated because the shared/ui re-export of useBreakpointValue is untyped (`any`), which
+>   // would otherwise leak into the offset arithmetic below.
+>   const chipsPerPage: number = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 3;
+>   const safeChipOffset = Math.min(chipOffset, Math.max(0, pageChips.length - chipsPerPage));
+>   const visiblePageChips = pageChips.slice(safeChipOffset, safeChipOffset + chipsPerPage);
+>   const canChipLeft = safeChipOffset > 0;
+>   const canChipRight = safeChipOffset + chipsPerPage < pageChips.length;
+> 
+>   const handleChipClearAll = () => {
+>     setChipOffset(0);
+>     // Clearing every chip must drop the whole category trail, so navigate to the page above
+>     // its outermost entry (/clothing for /clothing/dresses/day-dress). Going one level up
+>     // instead would leave the ancestor category applied with no chip left to remove it.
+>     const trailRoot = categoryChipTrail[0];
+>     if (trailRoot) {
+>       const cleared = { ...searchParams, refine: {} };
+>       delete cleared.offset;
+>       navigate(`${trailRoot.parentHref}?${stringifySearchParams(cleared)}`);
+>     } else {
+>       resetFilters();
+>     }
+>   };
+>   // ─────────────────────────────────────────────────────────────────────────────────────────
+> 
+616,617c1261
+< 
+<         {/* Header */}
+---
+>         {/* Header — desktop only */}
+619c1263
+<           display={{ base: 'none', lg: 'flex' }}
+---
+>           display={{ base: 'none', md: 'flex' }}
+623,624c1267,1268
+<           spacing={4}
+<           marginBottom={6}
+---
+>           spacing={4} // audit-allow: OOTB layout spacing, no Zimmermann token equivalent
+>           marginBottom={6} // audit-allow: OOTB layout spacing, no Zimmermann token equivalent
+626c1270
+<           <Flex align="left" width="287px">
+---
+>           <Flex align="left" width="287px" /* audit-allow: OOTB sidebar width, no Figma token */>
+635,641c1279,1307
+<           <Box flex={1} paddingTop={'45px'}>
+<             <SelectedRefinements
+<               filters={productSearchResult?.refinements}
+<               toggleFilter={toggleFilter}
+<               handleReset={resetFilters}
+<               selectedFilterValues={productSearchResult?.selectedRefinements}
+<             />
+---
+>           {/* flex={1} is load-bearing: it gives the bar the full remaining width so the spacer
+>               below can push FILTERS | SORT BY to the right edge. */}
+>           <Box flex={1} paddingTop={'45px' /* audit-allow: OOTB layout offset, no Figma token */}>
+>             {/* SFCC-847 — single-row filter bar: CLEAR ALL | chip window | < > | FILTERS | SORT BY */}
+>             <Flex align="center" gap="var(--zimm-scale-xs)" minH="var(--zimm-size-action-height-md)">
+>               <SelectedChipRow
+>                 chips={pageChips}
+>                 visibleChips={visiblePageChips}
+>                 offset={safeChipOffset}
+>                 canPageLeft={canChipLeft}
+>                 canPageRight={canChipRight}
+>                 onOffsetChange={setChipOffset}
+>                 onClearAll={handleChipClearAll}
+>               />
+> 
+>               {/* Spacer pushes FILTERS | SORT to the right */}
+>               <Box flex={1} />
+> 
+>               {/* FILTERS trigger */}
+>               <Box flexShrink={0}>
+>                 <ZimmLink label={intl.formatMessage(messages.filters)} size="large" onClick={filterDrawer.onOpen} />
+>               </Box>
+> 
+>               {/* Vertical separator */}
+>               <Box w="var(--zimm-border-width-default)" h="var(--zimm-icon-size-md)" bg="var(--zimm-color-border-tertiary)" flexShrink={0} />
+> 
+>               {/* Sort By */}
+>               <Sort sortUrls={sortUrls} productSearchResult={productSearchResult} basePath={basePath} />
+>             </Flex>
+643,645d1308
+<           <Box paddingTop={'45px'}>
+<             <Sort sortUrls={sortUrls} productSearchResult={productSearchResult} basePath={basePath} />
+<           </Box>
+648c1311
+<         {/* Filter Button for Mobile */}
+---
+>         {/* Header — mobile only */}
+650c1313
+<           <Stack spacing={6}>
+---
+>           <Stack spacing={4} marginBottom={6} /* audit-allow: OOTB layout spacing, no Zimmermann token equivalent */>
+657,677c1320,1343
+<             <Stack
+<               display={{ base: 'flex', md: 'none' }}
+<               direction="row"
+<               justify="flex-start"
+<               align="center"
+<               spacing={1}
+<               height={12}
+<               borderColor="gray.100"
+<             >
+<               <Flex align="center">
+<                 <Button
+<                   fontSize="sm"
+<                   colorScheme="black"
+<                   variant="outline"
+<                   marginRight={2}
+<                   display="inline-flex"
+<                   leftIcon={<FilterIcon boxSize={5} />}
+<                   onClick={onOpen}
+<                 >
+<                   <FormattedMessage defaultMessage="Filter" id="product_list.button.filter" />
+<                 </Button>
+---
+> 
+>             {/* Row 1: FILTERS | SORT BY */}
+>             <Flex align="center" justify="center" gap="var(--zimm-scale-xs)" minH="var(--zimm-size-action-height-md)">
+>               <Box flexShrink={0}>
+>                 <ZimmLink label={intl.formatMessage(messages.filters)} size="large" onClick={filterDrawer.onOpen} />
+>               </Box>
+>               <Box w="var(--zimm-border-width-default)" h="var(--zimm-icon-size-md)" bg="var(--zimm-color-border-tertiary)" flexShrink={0} />
+>               <Box flexShrink={0}>
+>                 <ZimmLink label={intl.formatMessage(messages.sortBy)} size="large" onClick={() => setSortOpen(true)} />
+>               </Box>
+>             </Flex>
+> 
+>             {/* Row 2: selected chips — only when filters are active */}
+>             {pageChips.length > 0 && (
+>               <Flex align="center" justify="center" gap="var(--zimm-scale-xs)" minH="var(--zimm-size-action-height-md)">
+>                 <SelectedChipRow
+>                   chips={pageChips}
+>                   visibleChips={visiblePageChips}
+>                   offset={safeChipOffset}
+>                   canPageLeft={canChipLeft}
+>                   canPageRight={canChipRight}
+>                   onOffsetChange={setChipOffset}
+>                   onClearAll={handleChipClearAll}
+>                 />
+679,701c1345
+<               <Flex align="center">
+<                 <Button
+<                   maxWidth="245px"
+<                   fontSize="sm"
+<                   marginRight={2}
+<                   colorScheme="black"
+<                   variant="outline"
+<                   display="inline-flex"
+<                   rightIcon={<ChevronDownIcon boxSize={5} />}
+<                   onClick={() => setSortOpen(true)}
+<                 >
+<                   {intl.formatMessage(
+<                     {
+<                       id: 'product_list.button.sort_by',
+<                       defaultMessage: 'Sort By: {sortOption}',
+<                     },
+<                     {
+<                       sortOption: selectedSortingOptionLabel?.label,
+<                     },
+<                   )}
+<                 </Button>
+<               </Flex>
+<             </Stack>
+---
+>             )}
+703,710d1346
+<           <Box marginBottom={4}>
+<             <SelectedRefinements
+<               filters={productSearchResult?.refinements}
+<               toggleFilter={toggleFilter}
+<               handleReset={resetFilters}
+<               selectedFilterValues={productSearchResult?.selectedRefinements}
+<             />
+<           </Box>
+714,733c1350,1354
+<         <Grid templateColumns={{ base: '1fr', md: '280px 1fr' }} columnGap={6}>
+<           <Stack display={{ base: 'none', md: 'flex' }}>
+<             <Island hydrateOn={'visible'}>
+<               <Refinements
+<                 itemsBefore={
+<                   category?.categories
+<                     ? [
+<                         <CategoryLinks key="itemsBefore" category={category} onSelect={onClose} />,
+<                         createStoreInventoryFilter(),
+<                       ].filter(Boolean)
+<                     : [createStoreInventoryFilter()].filter(Boolean)
+<                 }
+<                 isLoading={filtersLoading}
+<                 toggleFilter={toggleFilter}
+<                 filters={productSearchResult?.refinements}
+<                 excludedFilters={['cgid']}
+<                 selectedFilters={searchParams.refine}
+<               />
+<             </Island>
+<           </Stack>
+---
+>         {/* SFCC-847 — single column at every breakpoint: the sidebar Refinements that used
+>             to occupy the 280px column has been removed. The FILTERS drawer now covers that
+>             job across the full viewport range — both the desktop bar and the mobile row open
+>             the same ZimmDrawer, so there is no breakpoint without a filter entry point. */}
+>         <Grid templateColumns="1fr">
+879,933c1500
+<       {/* Modal for filter options on mobile */}
+<       <Modal isOpen={isOpen} onClose={onClose} size="full" motionPreset="slideInBottom" scrollBehavior="inside">
+<         <ModalOverlay />
+<         <ModalContent top={0} marginTop={0}>
+<           <ModalHeader>
+<             <Heading as="h1" fontWeight="bold" fontSize="2xl">
+<               <FormattedMessage defaultMessage="Filter" id="product_list.modal.title.filter" />
+<             </Heading>
+<           </ModalHeader>
+<           <ModalCloseButton />
+<           <ModalBody py={4}>
+<             {filtersLoading && <LoadingSpinner />}
+<             <Refinements
+<               toggleFilter={toggleFilter}
+<               filters={productSearchResult?.refinements}
+<               selectedFilters={searchParams.refine}
+<               itemsBefore={
+<                 category?.categories
+<                   ? [
+<                       <CategoryLinks key="itemsBefore" category={category} onSelect={onClose} />,
+<                       createStoreInventoryFilter(),
+<                     ].filter(Boolean)
+<                   : [createStoreInventoryFilter()].filter(Boolean)
+<               }
+<               excludedFilters={['cgid']}
+<             />
+<           </ModalBody>
+< 
+<           <ModalFooter
+<             // justify="space-between"
+<             display="block"
+<             width="full"
+<             borderTop="1px solid"
+<             borderColor="gray.100"
+<             paddingBottom={10}
+<           >
+<             <Stack>
+<               <Button width="full" onClick={onClose}>
+<                 {intl.formatMessage(
+<                   {
+<                     id: 'product_list.modal.button.view_items',
+<                     defaultMessage: 'View {prroductCount} items',
+<                   },
+<                   {
+<                     prroductCount: productSearchResult?.total,
+<                   },
+<                 )}
+<               </Button>
+<               <Button width="full" variant="outline" onClick={resetFilters}>
+<                 <FormattedMessage defaultMessage="Clear Filters" id="product_list.modal.button.clear_filters" />
+<               </Button>
+<             </Stack>
+<           </ModalFooter>
+<         </ModalContent>
+<       </Modal>
+---
+>       {/* Mobile sort drawer */}
+978a1546,1573
+>       {/* SFCC-847 — desktop filter drawer. Facet groups are derived from live SFCC
+>           productSearchResult.refinements. Every selection (category + refinements) is
+>           buffered locally via useFilterDrawerState — nothing here calls toggleFilter/
+>           navigate on click. CLEAR only resets the buffer (clearAll); APPLY (applyFilters)
+>           is the one action that actually navigates/commits, matching the drawer's own
+>           onApply contract and how the Storybook stories for this organism already behave.
+>           Facet input UI uses Chakra Checkbox/Radio defaults until SFCC-108 delivers
+>           Zimmermann-branded atoms (swatches, size chips). */}
+>       <ZimmDrawer
+>         isOpen={filterDrawer.isOpen}
+>         onClose={handleDrawerClose}
+>         size="large"
+>         hasOverlay={true}
+>         // "FILTER BY" — per Figma (2026-09-14). AC text uses different wording; pending
+>         // confirmation from product/design before merge.
+>         title={intl.formatMessage(messages.filterBy)}
+>       >
+>         <ZimmFiltersDrawerContent
+>           facetGroups={filterFacetGroups}
+>           // All accordions start collapsed per Figma node 40003890:151730 — confirmed
+>           // 2026-09-21. initialExpandedId intentionally omitted.
+>           // One accordion expanded at a time — ZimmAccordion defaults to false.
+>           onClear={handleClearAll}
+>           onApply={applyFilters}
+>           clearLabel={intl.formatMessage(messages.clear)}
+>           applyLabel={intl.formatMessage(messages.apply)}
+>         />
+>       </ZimmDrawer>
+1019c1614
+<         width="240px"
+---
+>         width="240px" // audit-allow: OOTB sort Select width, no Figma token
+--- (end, blank above = identical to ours aside from marked conflicts already resolved) ---
+
+############################## overrides/app/theme/components/index.ts ##############################
+60a61,63
+> import { ZimmTable } from 'app/components/ui-kits/atoms/zimmTable/zimmTable.css';
+> import { ZimmAccordion } from 'app/components/ui-kits/atoms/zimmAccordion/zimmAccordion.css';
+> import { ZimmFiltersDrawerContent } from 'app/components/ui-kits/organisms/zimmFiltersDrawerContent/zimmFiltersDrawerContent.css';
+122a126,128
+>   ZimmTable,
+>   ZimmAccordion,
+>   ZimmFiltersDrawerContent,
+--- (end, blank above = identical to ours aside from marked conflicts already resolved) ---
+

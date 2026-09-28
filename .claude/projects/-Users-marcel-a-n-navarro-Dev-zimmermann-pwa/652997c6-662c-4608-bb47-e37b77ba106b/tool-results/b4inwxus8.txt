@@ -1,0 +1,617 @@
+THREAD [18]  .docs/architecture.md:136
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Use “composed of” in the architecture documentation.**
+
+Change `composed from them` to `composed of them`. This is the clearer standard collocation for components that form a whole.
+
+‹details elided›
+
+</details>
+
+‹details elided›
+
+<!-- fingerprinting:phantom:triton:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:54b0c0788ef8747ce8535699 -->
+
+_Source: Linters/SAST tools_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Not changing this. Two reasons, and the second matters more than the first.
+
+It is prose in an architecture doc, not code or a public string, and the meaning is not ambiguous to anyone reading it. Churning a Tier-adjacent doc line for a collocation preference is not a good trade against the diff noise.
+
+More to the point, the suggested replacement would make the sentence less accurate. `composed of` asserts that the `.zimm-*` classes *consist of* the tokens. They do not — they are *generated using* them. The repo already has settled language for this exact relationship: `overrides/app/theme/foundation/zimmTokens.ts` line 2 reads "All `--zimm-*` variables, derived from the other `foundation/*` files", and `.claude/rules/overrideStyling.md` describes the same arrangement as derivation. So the correct word here, if this line were being rewritten, is `derived from` — not `composed of`.
+
+Flagging that because the LanguageTool rule (COMPOSE_FROM_OF) is a generic collocation check with no view of the semantics, and applying it here would trade an awkward-but-correct phrase for a fluent-but-wrong one.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, agreed. The requested replacement is not accurate for this relationship.
+
+The `.zimm-*` classes are derived from, or generated using, the token definitions. They do not consist of those definitions. This documentation wording does not require a change. I am withdrawing the finding.
+
+🐇
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [19]  overrides/app/components/footer/index.tsx:260
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🔒 Security & Privacy_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Clear pending signup data when the modal closes.**
+
+Line 257 only closes the modal. The captured email remains in `pendingSignupRef.current` after Cancel, Escape, or backdrop dismissal. Clear the pending data in the close handler because no request will use it.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:2382ce8f0f66cc823db18c2e -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Correct finding, and deferring it deliberately rather than disputing it.
+
+You have identified the only unclosed path. Both terminal paths clear the ref — `handleEmailSubmit`'s descoped branch at line 216 and `handleModalSubmit` at line 229, the latter with a comment stating the record holds customer PII and there is no request for it to outlive. The abandonment paths (Cancel, Escape, backdrop) do not, and that is the case where retaining it is least justifiable. The proposed diff is right as written.
+
+Deferring because the modal is not shipped. `enableNameCapture` defaults `false` at both `:190` and `:422`, and the render is gated at `:254`, so `SubscribeModal` never mounts in production — `pendingSignupRef` is written and cleared on the same tick by the descoped path, and `modalOpen` is never set true. Nothing reaches this code today.
+
+The modal itself is HPC-035, which SFCC-55 defers ("footer link destinations, email sign-up Omneo integration, and Cookie Settings behaviour are covered in separate stories"), and it has no Figma design yet — all nine of its theme parts carry no node reference, against 30 references elsewhere in the same file. Its markup and close handling will be rebuilt against a real design, quite possibly on Chakra's own `Modal`, which base SFCC already uses in 28 files and which handles dismissal itself. Hardening the close handler of a component about to be rewritten adds something to undo rather than something to keep.
+
+Recorded here so it travels with HPC-035 rather than being lost: **when `enableNameCapture` is enabled, the close handler must clear `pendingSignupRef`.** Same standing as the `aria-disabled` item on the locale control earlier in this PR — a correct finding, parked against the story that owns the control.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, agreed. The finding remains valid, but it does not affect the shipped SFCC-55 path while `enableNameCapture` remains disabled.
+
+When HPC-035 enables `enableNameCapture`, its modal close handler must clear `pendingSignupRef.current` for Cancel, Escape, and backdrop dismissal. The thread remains open as a deliberate follow-up.
+
+Would you like me to create a GitHub issue for this HPC-035 requirement?
+
+🐇
+
+---
+
+‹details elided›
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [20]  .storybook/main.js:12
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+**Revert the protected Storybook configuration changes.**
+
+The coding guidelines prohibit changes under `.storybook/**`.
+- `.storybook/main.js#L6-L11`: remove the `staticDirs` configuration and its related comments.
+- `.storybook/preview.tsx#L7-L21`: remove the `ZimmFontFace` import, decorator element, and related comments.
+
+As per coding guidelines: `.storybook/**`: Never modify `.storybook/` test or Storybook configuration files.
+
+‹details elided›
+
+‹details elided›
+
+<!-- consolidated_sites_start -->
+<!--
+<consolidated_sites>
+<site>
+<role>anchor</role>
+<file>.storybook/main.js</file>
+<line_range>6-11</line_range>
+</site>
+<site>
+<role>sibling</role>
+<file>.storybook/preview.tsx</file>
+<line_range>7-21</line_range>
+</site>
+</consolidated_sites>
+-->
+<!-- consolidated_sites_end -->
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:bf122549d07fb4acf2fea021 -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+This finding was raised on this PR as #3824358414 and withdrawn in your own reply above (#3831370131, 21 Aug):
+
+> I withdraw this finding. `AGENTS.md` Hard Rule `#2` permits the verified-session exception for Tier 1 files. Hard Rule `#4` identifies the files that remain absolute, and `.storybook/` is not in that list.
+
+That thread was resolved. Neither `.storybook/main.js` nor `.storybook/preview.tsx` has changed since, so declining on the same basis, unchanged:
+
+- `staticDirs` and the `ZimmFontFace` decorator are what make the self-hosted Futura Round faces resolve in Storybook. Without them the fallback stack renders roughly 13% wider (`.claude/rules/frozenFiles.md`), which defeats design-parity review against Figma — the reason Storybook is being used on this branch at all.
+- `.storybook/` is Tier 1, and AGENTS.md's Tier 1 Approval section grants the verified-session exception to Tier 1 files. This session is a verified member of `@ZimmermannAU/tier-1-approvers`.
+- Hard Rule #4's four absolutes are `overrides/app/ssr.js`, `config/default.js`, `config/sites.js` and `worker/main.js`. `.storybook/` is not among them.
+
+Your withdrawal also noted that Hard Rule #8 and the Tier 1 exception text should be reconciled in the governance docs. Agreed — that inconsistency is real and worth fixing. But AGENTS.md is Tier 1 Governance requiring both squad leads and the Integration lead, so it isn't in scope for a footer PR.
+
+--- coderabbitai[bot] ---
+‹details elided›
+
+`@marcelannavarro`, verified. I withdraw this duplicate finding.
+
+`AGENTS.md` Hard Rule `#2` permits the verified-session exception for Tier 1 files. The Tier 1 Approval section permits a verified member of `@ZimmermannAU/tier-1-approvers` to proceed after identifying the Tier 1 file and reason. Hard Rule `#4` lists the files excluded from that exception. `.storybook/` is not one of those files.
+
+The `staticDirs` mapping and `ZimmFontFace` decorator support the required Storybook font parity. The supplied repository state also shows no subsequent uncommitted changes to either Storybook file.
+
+Hard Rule `#8` still conflicts with the Tier 1 exception wording. That governance update is separate from this footer PR.
+
+🐇
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [21]  overrides/app/components/footer/index.stories.content.ts:35
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🎯 Functional Correctness_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Use clearly non-routable placeholder contact values.**
+
+`FooterContainer` in `overrides/app/components/footer/index.tsx` (line 557) passes `FOOTER_FIXTURE` on the production render path, so these three destinations become live anchors in the shipped footer. `tel:+61280808080` and `https://wa.me/61280808080` are plausible real Sydney numbers. A shopper who taps the phone or WhatsApp icon can reach an unrelated third party, and `mailto:care@zimmermann.com` can send customer mail to an unmonitored mailbox.
+
+The nav links are inert because `href: '#'` goes nowhere. The contact channels are not inert; they dial and send. Until HPC-034 supplies real values, either omit the three fields so `ContactIconRow` renders its labelled non-interactive `<span>`, or use a reserved non-routable number.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:e2d8c90f14596d9713afeeec -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Accurate on the substance, and worth stating plainly rather than waving off: `href: '#'` is inert, but `tel:` and `https://wa.me/...` are live destinations, and `FooterContainer` is the default export that base `_app` (`node_modules/@salesforce/retail-react-app/app/components/_app/index.jsx:43`) resolves through the overrides system. So these do render on every page, not only in stories and tests.
+
+Declining for this PR nonetheless:
+
+- SFCC-55 scopes the footer to placeholder content explicitly — "for the purpose of this user story we can include whatever placeholder links we want". The three contact channels are placeholders of the same standing as the nav links, which is what the comment above them records.
+- HPC-034 replaces `FOOTER_FIXTURE` wholesale with the Contentful CDA fetch at this exact seam (see the JSDoc on `FooterContainer`). The fixture has no life beyond that story, so hardening its values isn't work that survives.
+
+The exposure is knowingly accepted for the placeholder window, not overlooked. Recording it here so HPC-034 picks up real values for all three channels — phone, WhatsApp and email — rather than only the nav links.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, acknowledged. The finding remains valid, and the temporary exposure is an explicit SFCC-55 scope decision.
+
+HPC-034 must replace `FOOTER_FIXTURE` with the Contentful CDA fetch and provide production values for `phoneHref`, `whatsAppHref`, and `emailHref`.
+
+🐇
+
+---
+
+‹details elided›
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [22]  overrides/app/hooks/useSubscribeModal.ts:94
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🩺 Stability & Availability_ | _🟠 Major_ | _⚡ Quick win_
+
+**Focus escapes the dialog when `document.activeElement` is neither `first` nor `last`.**
+
+The trap intercepts Tab only at the two boundaries. If focus sits outside the focusable set, both conditions are false, the handler does not call `preventDefault`, and the browser moves focus to the next focusable element in document order.
+
+That state is reachable. The user clicks a non-focusable region of the panel, for example the title or the disclaimer paragraph. `document.activeElement` becomes `<body>`. Tab then focuses the first focusable element in the document, and the portal target is `document.body` with the dialog appended last, so the first focusable element is in the page behind the overlay — the footer email input or the locale button. Focus leaves an `aria-modal="true"` dialog, which breaks WCAG 2.1.2 and 2.4.3.
+
+The stories do not cover this because `SubscribeModalOpen` always tabs from a control inside the form. Add a containment branch: if the active element is not inside `formRef.current`, pull focus back to `first`.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:ebd40ba5942a2e523cd59512 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Confirmed, and reproduced before answering. Harness: click the non-focusable disclaimer prose, which leaves `document.activeElement` as `<body>`, then press Tab. Focus lands on a control outside the `aria-modal="true"` dialog:
+
+‹code elided›
+
+Your reading of the mechanism is right. The handler only tests `=== first` and `=== last`, so an active element outside the focusable set matches neither branch, `preventDefault` never fires, and the browser walks document order into the page behind the overlay. WCAG 2.1.2 and 2.4.3. It is also a genuine gap in this hook's tests, which only ever tab from a control already inside the form.
+
+Deferring rather than patching, on reachability: `enableNameCapture` defaults to `false` at both definition sites and gates the modal at `footer/index.tsx:254`. The only callers passing `true` are two Storybook stories, so there is no path to this code in the shipped app.
+
+Deferred to HPC-035 alongside the marketing-consent finding on the same hook, so the modal's outstanding items land together. Noting for that story that `react-focus-lock` (2.13.7), `react-remove-scroll` (2.7.2) and `@chakra-ui/modal` (2.2.12) are all already installed — the likely resolution there is replacing the hand-rolled trap rather than adding a third branch to it.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thank you for reproducing the failure and documenting the production reachability.
+
+The finding remains valid. The current `enableNameCapture: false` gate prevents the affected modal from rendering in the shipped application. Deferring the work to HPC-035 is appropriate.
+
+Replacing the custom focus trap with the existing modal and focus-management dependencies should also reduce the risk of further keyboard and scroll-lock edge cases. The test for focus recovery after interaction with non-focusable dialog content should be included in that work.
+
+🐇
+
+---
+
+‹details elided›
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [23]  overrides/app/theme/components/recipeGuards.test.ts:44
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🎯 Functional Correctness_ | _🟡 Minor_ | _⚡ Quick win_
+
+‹details elided›
+
+**Fix `fontSize="l"` in the header.** Use a valid `fontSize` token or `textStyle`; otherwise the browser ignores the declaration and the heading inherits its font size.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:0e42138613e0b3704b738ff0 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+The bug is real and not in dispute: `theme.fontSizes` is never registered (see `overrides/app/theme/index.ts`), so `fontSize="l"` resolves to nothing, the declaration is dropped, and the heading inherits its size. This finding is derived from the comment at `recipeGuards.test.ts:33`, which documents that instance deliberately.
+
+Out of scope for this PR:
+
+- `header/index.tsx:302` dates to cd60b7a (12 Jun, initial commit during Detailed Design). This branch's only change to that file is 14 lines of comments, zero code.
+- Correcting the token changes the rendered size of a header heading. That is a live visual change to Tier 2 shared shell — `.claude/rules/protectedFiles.md` lists `components/header/` under Global Shell, owned by both squads — with no Figma review, inside a footer PR. AGENTS.md Hard Rule #5 covers this directly: fixing a bug in one component does not license touching its neighbours.
+
+As the comment itself states, this failure mode needs a static rule over JSX attributes in `.coderabbit/ast-grep-rules/`, not a one-off patch. A theme walk cannot reach a call-site literal, and there is no reason to assume line 302 is the only instance. That rule is the right home for it, and it is a governance change rather than footer work.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, agreed. The finding is valid, but the header correction is outside this PR’s scope.
+
+A static JSX rule in `.coderabbit/ast-grep-rules/` is the correct follow-up. It can detect this failure mode across call sites without changing the Tier 2 shared shell during footer work.
+
+Would you like me to create a GitHub issue for that rule and assign it to you?
+
+---
+
+‹details elided›
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Thanks for the offer — no GitHub issue needed. This project tracks work in Jira (`SFCC-*` / `HPC-*`), so a GitHub issue would be a parallel tracker nobody watches. `.coderabbit/` is Tier 1 governance per `.claude/rules/frozenFiles.md`, so the ast-grep rule needs its own story and named owner regardless; I'm raising it on our side.
+
+Agreed on the shape of it: a static JSX rule catches this failure mode across call sites without touching the Tier 2 shared shell during footer work. Resolving here — the header correction is recorded as out of scope for SFCC-55 and the follow-up is captured.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, understood. Do not create a GitHub issue for this follow-up.
+
+The header correction remains out of scope for SFCC-55. The static JSX rule requires a separate Jira story and a named owner because `.coderabbit/` is Tier 1 governance.
+
+🐇
+
+---
+
+‹details elided›
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [24]  overrides/app/theme/components/zimmTextInput.test.ts:11
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Add the required test lifecycle hooks.**
+
+This file has no `beforeEach` setup or `vi.clearAllMocks()` cleanup. Initialise `base` in `beforeEach`, and call `vi.clearAllMocks()` from `afterEach`.
+
+As per coding guidelines, “beforeEach setup, and `vi.clearAllMocks()` after each test.”
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:10a9522922cf311ab93a602e -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits 13add6e to a207b9a
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Both hooks would be provable no-ops in this file:
+
+- It contains zero `vi.*` calls, so `vi.clearAllMocks()` has nothing to clear.
+- `base` is a frozen object literal that is only ever spread into calls (`{...base, focused: true}`) and never mutated, so re-initialising it per test guards against no observable state.
+
+`.claude/rules/testing.md` asks for `beforeEach` setup and `clearAllMocks` where there is state or mocks to reset — the point of the guideline is isolation between tests, and there is nothing here that leaks. Adding both would read as if this file had shared state to defend against, which is the opposite of what is true.
+
+--- coderabbitai[bot] ---
+‹details elided›
+
+`@marcelannavarro`, the hooks have no current runtime effect. The test file does not create mocks, and it does not mutate `base`.
+
+However, the repository-specific rule is unconditional: “Use `beforeEach` for setup; clear mocks with `vi.clearAllMocks()` after each test.” It does not restrict these hooks to tests with mocks or mutable setup state.
+
+I will keep this finding open because the requested change is required by the stated test convention.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Done in a207b9a — `beforeEach` initialising `base` and `afterEach` calling `vi.clearAllMocks()`, with `base` typed by the exported `ZimmTextInputStyleProps` so the default state tracks the resolvers' own signature.
+
+You're right that the rule in `.claude/rules/testing.md` is stated without qualification, and consistency with the convention as written is worth more than the argument. A comment at the declaration records that the hooks reset no observable state here — the resolvers are pure and the file mocks nothing — so the next reader doesn't go looking for the shared state they're protecting.
+
+`tsc` clean, 197/197 vitest.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, confirmed. The change addresses the required test lifecycle convention. The typed `base` fixture also keeps the test defaults aligned with `ZimmTextInputStyleProps`.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [25]  overrides/app/theme/foundation/fonts.ts:3
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+**Restore the protected foundation file.**
+
+`overrides/app/theme/foundation/**` is frozen. Revert this comment-only edit in `overrides/app/theme/foundation/fonts.ts` and keep the explanatory text in an allowed documentation file.
+
+As per coding guidelines: `overrides/app/theme/foundation/**`: Never modify `overrides/app/theme/foundation/`; design-token changes must go through the UI designer.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:dfb8626e191cfdeda89d6664 -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+The edit is comment-only — no token value, scale, weight or export changed. `git diff` on this file is prose.
+
+- AGENTS.md Hard Rule #3 and `.claude/rules/frozenFiles.md` state the rationale as *design-token* changes going through the UI designer. A corrected comment does not engage that: the designer's review surface here is the token values, which are untouched.
+- `overrides/app/theme/foundation/` is Tier 1, and AGENTS.md's Tier 1 Approval section grants the verified-session exception to Tier 1 files. This session is a verified member of `@ZimmermannAU/tier-1-approvers`, and `foundation/` is not among Hard Rule #4's four absolutes.
+
+On the proposed alternative of keeping the explanatory text in a documentation file: that leaves the original comment in place, and the original asserted the opposite of what ships — that the Monotype licence prevents self-hosting Futura Round — while `overrides/app/theme/fontFace.tsx` serves both faces from `overrides/app/static/fonts/` on every tier, unconditionally, mounted inside `_app-config`'s `ChakraProvider`.
+
+A false statement in a frozen file, at the point of use, is a worse outcome than a corrected one — particularly for the next person deciding whether they are allowed to touch the fonts. The correction is mirrored in `.claude/rules/frozenFiles.md` and `.docs/architecture.md` so the docs and the code agree.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the detailed clarification.
+
+The finding is invalid. This edit changes only documentation in `overrides/app/theme/foundation/fonts.ts`. It does not change a design token, export, font scale, or font weight.
+
+The verified Tier 1 exception applies to this change. The corrected comment also matches the self-hosted font implementation and prevents the file from stating the opposite of current behaviour.
+
+I am withdrawing the finding.
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [26]  scripts/generateRegistry.mjs:557
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🗄️ Data Integrity & Integration_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Resolve preferred union aliases before using the fallback.**
+
+Line 444 only matches `Props` declarations with an object-literal body. It does not match `ZimmButtonProps = ZimmLabelButtonProps | ZimmIconButtonProps`.
+
+The fallback then merges variant-specific blocks. The generated `ZimmButton` row contains both `label` and required `icon`, although those belong to separate variants. Parse and resolve the preferred alias, or do not merge unrelated blocks when the preferred declaration exists but cannot be extracted.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:poseidon:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:40e91f0c2ff3b5dc18a03a50 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commit 13add6e
+
+--- marcelannavarro ---
+Fixed in 13add6e. Confirmed the reported output first — `ZimmButton`'s row did carry `label: string` and a required `icon: ZimmIconType` together, which `ZimmLabelButtonProps | ZimmIconButtonProps` forbids.
+
+Took the "parse and resolve the preferred alias" branch of your suggestion. `extractTsProps` now detects a union-alias declaration for the preferred type, resolves its members, and marks any prop absent from at least one member optional — which is what `?` means at a union.
+
+Two details worth recording, since both obvious implementations are wrong:
+
+- Resolution follows one level of intersection. Both members are `ZimmButtonBaseProps & {...}`, so reading only their own object literals drops the shared `label` entirely, trading one inaccuracy for another. It is scoped to the union branch deliberately — resolving ancestors in the object-literal fast path too would churn unrelated rows for no fix.
+- Members declared in another file cannot be resolved from this file's content, so those return the union expression rather than falling through to the merge that misreports them.
+
+Net registry effect is `icon: ZimmIconType` to `icon?: ZimmIconType`. No other row changed and the generator is idempotent across runs. `variant` and `size` still show only the first member's type union — a pre-existing limitation of a flat table cell rather than a requiredness claim, so left alone.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, confirmed. The update resolves the preferred union alias and retains shared properties from `ZimmButtonBaseProps`. It also prevents the fallback from reporting mutually exclusive variant properties as jointly required.
+
+---
+
+‹details elided›
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [27]  scripts/generateRegistry.mjs:523
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🗄️ Data Integrity & Integration_ | _🟡 Minor_ | _⚡ Quick win_
+
+‹details elided›
+
+**Preserve unresolved union members and requiredness.**
+
+If any `memberNames` entry is absent from `allBlocks`, return the complete union expression. The current `.filter(Boolean)` produces incomplete metadata for `LocalProps | ImportedProps`.
+
+Mark a property as required only when every union member declares it without `?`. Add regression cases for both unions.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:8687804fc71caae736b4fb93 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commit ec9d161
+
+--- marcelannavarro ---
+Both logic points were correct, and I reproduced each before changing anything. Fixed in ec9d161.
+
+**Partial unions published as complete.** Worse than described, in fact: with `.filter(Boolean)` shrinking `members`, `members.length` shrank with it, so every surviving prop satisfied the present-in-every-member test and came out *required*. `A | B` with an external `B` published A's props as a complete mandatory set. Now all-or-nothing — if any member is unresolvable the union expression is returned. Verified against a synthetic `LocalProps | ExternalProps`, which now yields `["LocalProps | ExternalProps"]` rather than `LocalProps`' props marked required.
+
+**Requiredness inferred from presence.** You were right that counting presence is not the same as tracking optionality. Reversing ZimmButton's operands was enough to expose it:
+
+‹code elided›
+
+That is the same false-requiredness claim the original fix set out to remove, relocated — worth stating plainly. A prop is now required only where every member carries it *and* every member declares it without `?`. Types are unioned across members rather than taken from whichever operand happened to be first, so `ZimmButton` reads `variant?: 'primary' | 'secondary' | 'icon'` and `size?: 'large' | 'medium' | ZimmIconSize`. The `?` markers are now stable under operand reversal; the order of the type constituents still follows source declaration order, which seems right — reordering the operands is a real source change, and TypeScript would reorder too.
+
+One case worth recording since it isn't obvious: within a single member an intersection can declare the same prop twice — the base's `label: string` plus the member's own literal. `A & B` must satisfy both, so the member is treated as requiring the prop if any declaration does.
+
+**On the regression coverage — declining, and want to be straight about why rather than quietly skipping it.** `scripts/` has no test file today, so this would mean standing up the first test harness for the directory. `.claude/rules/testing.md` scopes tests to failures that are non-obvious or costly to debug; the output here is one cell in a generated markdown table that no shipped code reads, regenerated on every commit, and a wrong cell is visible on inspection. Both defects above were caught by mutation against the real source in minutes, which is the cheaper instrument for this surface. If `scripts/` gains a test harness for other reasons, this resolver is a reasonable first candidate — it just doesn't justify building one on its own.
+
+`tsc` clean, 197/197 vitest, ZimmButton is the only changed row, generator still idempotent.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the detailed validation.
+
+The all-or-nothing handling prevents incomplete union metadata. The requiredness rule now matches the union contract. The intersection handling is also correct.
+
+I accept the decision not to add a new `scripts/` test harness for this change. The reported type check, Vitest run, idempotence check, and targeted mutation checks provide sufficient validation here.
+
+---
+
+‹details elided›
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [28]  .env.sample:139

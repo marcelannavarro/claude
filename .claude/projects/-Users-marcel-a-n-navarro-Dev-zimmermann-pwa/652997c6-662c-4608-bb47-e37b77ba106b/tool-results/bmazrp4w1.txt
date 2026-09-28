@@ -1,0 +1,182 @@
+ [32m✓[39m overrides/app/hooks/useContentfulClient.test.ts[2m > [22museContentfulClient[2m > [22mreturns a null client when required config (spaceId) is missing[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/hooks/useUiCopy.test.tsx[2m > [22museUiCopy[2m > [22mfalls back to the provided default with no UiCopyProvider mounted[32m 5[2mms[22m[39m
+ [32m✓[39m overrides/app/hooks/useUiCopy.test.tsx[2m > [22museUiCopy[2m > [22mreturns the provided context value when a UiCopyProvider is mounted[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mhasIntentionalLineBreak[2m > [22mtrue for a label carrying a non-breaking space[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mhasIntentionalLineBreak[2m > [22mfalse for an ordinary single-line label[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mhasIntentionalLineBreak[2m > [22mfalse for an empty label[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mFooterNavColumn[2m > [22mrenders the heading and every link as an accessible link[32m 51[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mFooterNavColumn[2m > [22momits the contact-channel row when showContactChannels is not set[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mFooterNavColumn[2m > [22mrenders the contact-channel row when showContactChannels is true[32m 8[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/footerNavColumn/index.test.tsx[2m > [22mFooterNavColumn[2m > [22mrenders a non-interactive fallback for a contact channel with no href, not a dead link[32m 4[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mcollect() actually walks the registered recipes[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mno sizing property uses a bare spacing-scale key[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mno typography property uses a bare scale key[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mno compound shorthand contains a bare scale key[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mno override-component style uses a bare token key on a registered scale[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/components/recipeGuards.test.ts[2m > [22mrecipe guards[2m > [22mno recipe silently inherits a base SFCC recipe of the same name[32m 0[2mms[22m[39m
+[90mstderr[2m | overrides/app/theme/index.test.tsx[2m > [22m[2mrendered output[2m > [22m[2mtextStyle applies the brand type style end to end
+[22m[39mCould not parse CSS stylesheet
+
+[90mstderr[2m | overrides/app/theme/index.test.tsx[2m > [22m[2mrendered output[2m > [22m[2mButton renders square and uppercase from the theme override
+[22m[39mCould not parse CSS stylesheet
+
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mbrand colours resolve through their semantic aliases[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mextendTheme merges rather than replaces the base colour scales[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mbody and heading font stacks are headed by Futura Round with the brand fallbacks[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mspace carries the named Zimmermann scale and keeps Chakra numerics[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mborderWidths and breakpoints are wired[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mall Handover text styles are registered[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mall .zimm-* global classes reach styles.global[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mform-field classes are registered for the shared flush-border row[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mfoundations reach the composed theme[2m > [22mcomponent overrides are registered[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mscale token collisions — Chakra keeps its own meanings[2m > [22mfontSizes are NOT remapped to the Zimmermann scale[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mscale token collisions — Chakra keeps its own meanings[2m > [22mtransition durations are NOT remapped to the Zimmermann motion scale[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mscale token collisions — Chakra keeps its own meanings[2m > [22msizes are NOT remapped to the Zimmermann icon or action scales[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mevery textStyle has a matching .zimm-text-* class, except the documented exceptions[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mheading1Strong matches .zimm-text-h1-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mheading1 matches .zimm-text-h1[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mheading2 matches .zimm-text-h2-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mheading3 matches .zimm-text-h3-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mbody1Strong matches .zimm-text-body1-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mbody1 matches .zimm-text-body1[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mbody2Strong matches .zimm-text-body2-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mbody2 matches .zimm-text-body2[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mmobileBody1Strong matches .zimm-text-mobile-body1-strong[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mmobileBody1 matches .zimm-text-mobile-body1[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mmobileBody2 matches .zimm-text-mobile-body2[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mlabel matches .zimm-text-label[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mcaption matches .zimm-text-caption[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mlinkLg matches .zimm-text-link-lg[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mlinkSm matches .zimm-text-link-sm[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mproductNames matches .zimm-text-product-name[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mprice matches .zimm-text-price[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mnavigation matches .zimm-text-nav[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mfooter matches .zimm-text-footer[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mthe Chakra and CSS-variable surfaces agree[2m > [22mserif matches .zimm-text-serif[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mthe colour palette is fully mapped[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.100[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.200[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.300[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.500[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.600[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.700[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.800[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.900[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.black[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.grey.white[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.ivory.100[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.ivory.200[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.ivory.300[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.ivory.400[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.coral.500[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.green.500[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.orange.500[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.red.500[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.opacity.15[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.opacity.30[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.opacity.40[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.opacity.50[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.01[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.02[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.03[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.04[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.05[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.06[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.background.07[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.text.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.text.inverse[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.text.inverseGrey[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.text.secondary[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.text.muted[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.border.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.border.secondary[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.border.focus[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.border.forms[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.status.success[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.status.error[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.status.errorBackground[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.status.storeClosed[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.link.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.link.hover[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.icon.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.bgDefault[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.bgHover[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.bgPressed[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.bgDisabled[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.bgFocused[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.text[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.primary.textDisabled[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.secondary.border[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.secondary.bgHover[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.secondary.text[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.secondary.textInverse[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mcolors.action.secondary.textDisabled[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.3xs[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.2xs[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.xs[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.s[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.m[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.l[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.2xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.3xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.4xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.5xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.6xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mspacing.7xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mborderWidths.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22miconSizes.lg[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22miconSizes.md[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22miconSizes.sm[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mactionSizes.height.lg[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mactionSizes.height.md[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mactionSizes.paddingX.lg[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mactionSizes.paddingX.md[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mactionSizes.gap[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mgrid.containerPadding.base[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mgrid.containerPadding.md[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mgrid.containerPadding.xl[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.duration.fast[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.duration.default[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.duration.slow[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.easing.standard[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.easing.slides[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mmotion.easing.fades[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mevery foundation constant matches its --zimm-* twin[2m > [22mthe font families are a single shared definition, not a copy[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mrendered output[2m > [22mtextStyle applies the brand type style end to end[32m 88[2mms[22m[39m
+ [32m✓[39m overrides/app/theme/index.test.tsx[2m > [22mrendered output[2m > [22mButton renders square and uppercase from the theme override[32m 27[2mms[22m[39m
+ [32m✓[39m overrides/app/hooks/useZimmModal.test.tsx[2m > [22museZimmModal — the Tab trap skips disabled controls[2m > [22mforward Tab from the last enabled control wraps to the first[32m 111[2mms[22m[39m
+ [32m✓[39m overrides/app/hooks/useZimmModal.test.tsx[2m > [22museZimmModal — the Tab trap skips disabled controls[2m > [22mShift+Tab from the first enabled control wraps to the last[32m 64[2mms[22m[39m
+ [32m✓[39m overrides/app/hooks/useZimmModal.test.tsx[2m > [22museZimmModal — body-scroll lock[2m > [22mrestores the inline overflow it found rather than clearing the property[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22midle: renders the email input and Subscribe button, no success/error message[32m 51[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22msuccess: renders the success message, not the input[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22munavailable: renders the alert message, not the input[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22merror: renders the same alert message as unavailable (component does not distinguish them)[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22menableNameCapture=false: never renders the modal, even if the hook reports modalOpen=true[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22menableNameCapture=true, modalOpen=false: modal not rendered[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22menableNameCapture=true, modalOpen=true: modal renders[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22msubmitting the email form calls handleEmailSubmit with the typed value[32m 55[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22mmodal continue calls handleModalSubmit with the entered names[32m 9[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22muses the CMS-sourced email label and subscribe button text when useUiCopy resolves them[32m 4[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22muses the CMS-sourced success and unavailable messages when useUiCopy resolves them[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/ui-kits/organisms/zimmSubscribeSection/index.test.tsx[2m > [22mZimmSubscribeSection[2m > [22mmodal cancel calls closeModal[32m 10[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mscopeToRegion[2m > [22mdrops a region-scoped link that does not match the current site[32m 1[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mscopeToRegion[2m > [22mkeeps a region-scoped link that matches the current site[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mscopeToRegion[2m > [22mapplies the same scoping to legalLinks[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mscopeToRegion[2m > [22mhandles legalLinks being undefined without throwing[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mscopeToRegion[2m > [22mpreserves non-link fields on each nav group unchanged[32m 0[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mrenders nothing while the fetch is pending[32m 49[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mrenders the resolved footerConfig once the fetch succeeds[32m 5[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mrenders nothing when the fetch rejects[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mrenders nothing when no footerConfig entry matches the current site[32m 2[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mpicks the region-scoped entry over the global one for a matching site[32m 4[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mapplies region scoping to the resolved entry before rendering[32m 3[2mms[22m[39m
+ [32m✓[39m overrides/app/components/footer/index.test.tsx[2m > [22mFooterContainer[2m > [22mrenders nothing when no Contentful client is configured[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m      Tests [22m [1m[32m252 passed[39m[22m[90m (252)[39m
+[2m   Start at [22m 10:13:09
+[2m   Duration [22m 3.96s[2m (transform 1.76s, setup 4.56s, collect 15.48s, tests 668ms, environment 14.10s, prepare 844ms)[22m
+
+
+[exited with code 0]

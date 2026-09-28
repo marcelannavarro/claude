@@ -1,0 +1,197 @@
+[core]
+	repositoryformatversion = 0
+	bare = false
+	ignorecase = true
+	filemode = true
+	precomposeunicode = true
+[lfs]
+	storage = "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.git/lfs"
+[remote "origin"]
+	url = "https://github.com/ZimmermannAU/zimmermann-pwa"
+	fetch = "+refs/heads/*:refs/remotes/origin/*"
+[branch "develop"]
+	remote = "origin"
+	merge = "refs/heads/develop"
+[branch "feature/env-switching"]
+	remote = "origin"
+	merge = "refs/heads/feature/env-switching"
+[branch "fix/contentful-cli-lockfile-sync"]
+	remote = "origin"
+	merge = "refs/heads/fix/contentful-cli-lockfile-sync"
+[branch "feature/storefront-preview-contentful"]
+	remote = "origin"
+	merge = "refs/heads/feature/storefront-preview-contentful"
+[branch "main"]
+	remote = "origin"
+	merge = "refs/heads/main"
+[branch "feature/agent-docs-cleanup"]
+	remote = "origin"
+	merge = "refs/heads/feature/agent-docs-cleanup"
+[branch "feature/contentfulDoc"]
+	remote = "origin"
+	merge = "refs/heads/feature/contentfulDoc"
+[branch "feature/docsUpdates"]
+	remote = "origin"
+	merge = "refs/heads/feature/docsUpdates"
+[branch "feature/local-test-branch"]
+	remote = "origin"
+	merge = "refs/heads/feature/local-test-branch"
+[branch "fix/e2e-ci-timeout"]
+	remote = "origin"
+	merge = "refs/heads/fix/e2e-ci-timeout"
+[branch "release/v0.1.0"]
+	remote = "origin"
+	merge = "refs/heads/release/v0.1.0"
+[branch "feature/version-guard"]
+	remote = "origin"
+	merge = "refs/heads/feature/version-guard"
+[branch "feature/test-gate-bundle-size"]
+	remote = "origin"
+	merge = "refs/heads/feature/test-gate-bundle-size"
+[branch "feature/retire-tag-release"]
+	remote = "origin"
+	merge = "refs/heads/feature/retire-tag-release"
+[branch "feature/tagging-rules-doc"]
+	remote = "origin"
+	merge = "refs/heads/feature/tagging-rules-doc"
+[branch "feature/us-intl-storefront"]
+	remote = "origin"
+	merge = "refs/heads/feature/us-intl-storefront"
+[branch "feature/mrt-blast-radius-tests"]
+	remote = "origin"
+	merge = "refs/heads/feature/mrt-blast-radius-tests"
+[branch "feature/design-tokens-implementation-to-dev"]
+	remote = "origin"
+	merge = "refs/heads/feature/design-tokens-implementation-to-dev"
+[branch "f2r-component-registry"]
+	remote = "origin"
+	merge = "refs/heads/feature/f2r-component-registry"
+[branch "f2r-implementation-workflow"]
+	remote = "origin"
+	merge = "refs/heads/feature/f2r-implementation-workflow"
+[branch "feature/SFCC-55_global-footer-ui"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-55_global-footer-ui"
+[branch "feature/SFCC-89_pdp-ui-static-product-information"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-89_pdp-ui-static-product-information"
+[branch "feature/contentful-site-scoping-proposal"]
+	remote = "origin"
+	merge = "refs/heads/feature/contentful-site-scoping-proposal"
+[branch "feature/fix-cd-release-core-data-import"]
+	remote = "origin"
+	merge = "refs/heads/feature/fix-cd-release-core-data-import"
+[branch "feature/pdp-token-class-spike"]
+	remote = "origin"
+	merge = "refs/heads/feature/pdp-token-class-spike"
+[branch "feature/theme-token-consistency"]
+	remote = "origin"
+	merge = "refs/heads/feature/theme-token-consistency"
+[branch "review/SFCC-89"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-89_pdp-ui-static-product-information"
+[branch "feature/SFCC-89_pdp-static-product-info"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-89_pdp-static-product-info"
+[branch "fix/footer-tablet-wide-breakpoint"]
+	remote = "origin"
+	merge = "refs/heads/fix/footer-tablet-wide-breakpoint"
+[branch "feature/SFCC-194_pdp-was-now-price"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-194_pdp-was-now-price"
+[branch "feature/SFCC-91_pdp-ui-colour-swatches-variation-selection"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-91_pdp-ui-colour-swatches-variation-selection"
+[branch "feature/SFCC-91_pdp-colour-swatches"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-91_pdp-colour-swatches"
+[branch "feature/SFCC-52_global-header-ui-beta"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-52_global-header-ui-beta"
+[branch "feature/SFCC-662-adyen-pwa-install"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-662-adyen-pwa-install"
+[branch "feature/SFCC-92_pdp-size-selection-add-to-bag"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-92_pdp-size-selection-add-to-bag"
+[branch "feature/f2r-component-registry"]
+	remote = "origin"
+	merge = "refs/heads/feature/f2r-component-registry"
+[branch "feature/f2r-design-sync"]
+	remote = "origin"
+	merge = "refs/heads/feature/f2r-design-sync"
+[branch "feature/f2r-implementation-workflow"]
+	remote = "origin"
+	merge = "refs/heads/feature/f2r-implementation-workflow"
+[branch "feature/header-css-tokens"]
+	remote = "origin"
+	merge = "refs/heads/feature/header-css-tokens"
+[branch "feature/sfcc-52-global-header"]
+	remote = "origin"
+	merge = "refs/heads/feature/sfcc-52-global-header"
+[branch "feature/sfcc-736-pdp-drawer-tabs"]
+	remote = "origin"
+	merge = "refs/heads/feature/sfcc-736-pdp-drawer-tabs"
+[branch "fix/SFCC-855-pwa-installability"]
+	remote = "origin"
+	merge = "refs/heads/fix/SFCC-855-pwa-installability"
+[branch "fix/SFCC-856-csp-hardening-v2"]
+	remote = "origin"
+	merge = "refs/heads/fix/SFCC-856-csp-hardening-v2"
+[branch "fix/SFCC-860-performance-bundle-hygiene"]
+	remote = "origin"
+	merge = "refs/heads/fix/SFCC-860-performance-bundle-hygiene"
+[branch "fix/release-v0.1.0-sit-gate-recovery"]
+	remote = "origin"
+	merge = "refs/heads/fix/release-v0.1.0-sit-gate-recovery"
+[branch "fix/sit-gate-bootstrap"]
+	remote = "origin"
+	merge = "refs/heads/fix/sit-gate-bootstrap"
+[branch "worktree-agent-ad5819ca08ea2001d"]
+	remote = "origin"
+	merge = "refs/heads/worktree-agent-ad5819ca08ea2001d"
+[branch "feature/SFCC-236_product-card-shared-component"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-236_product-card-shared-component"
+[branch "feature/zimmproductcard-live-demo"]
+	remote = "origin"
+	merge = "refs/heads/feature/zimmproductcard-live-demo"
+[branch "feature/SFCC-83-84_recently-viewed"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-83-84_recently-viewed"
+[branch "feature/SFCC-102_pdp-ui-slide-out-size-fit"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-102_pdp-ui-slide-out-size-fit"
+[branch "feature/SFCC-266_pdp-ui-environmental-qualities"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-266_pdp-ui-environmental-qualities"
+[branch "feature/motion-design-updates"]
+	remote = "origin"
+	merge = "refs/heads/feature/motion-design-updates"
+[branch "feature/sfcc-873_contentful-migration-script"]
+	remote = "origin"
+	merge = "refs/heads/feature/sfcc-873_contentful-migration-script"
+[branch "fix/release-v0.2.0-sit-gate-env-var-clear"]
+	remote = "origin"
+	merge = "refs/heads/fix/release-v0.2.0-sit-gate-env-var-clear"
+[branch "release/v0.2.0"]
+	remote = "origin"
+	merge = "refs/heads/release/v0.2.0"
+[branch "feature/SFCC-831-689_country-language-mismatch"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-831-689_country-language-mismatch"
+[branch "fix/adyen-vendor-chunk-split"]
+	remote = "origin"
+	merge = "refs/heads/fix/adyen-vendor-chunk-split"
+[branch "feature/SFCC-836-317_cart-ui-zimmermann-benefits-icon-text-contentful"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-836-317_cart-ui-zimmermann-benefits-icon-text-contentful"
+[branch "feature/SFCC-847-search"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-847-search"
+[branch "feature/SFCC-741_pdp-ui-notify-me"]
+	remote = "origin"
+	merge = "refs/heads/feature/SFCC-741_pdp-ui-notify-me"
+[branch "fix/SFCC-662-adyen-payment"]
+	remote = "origin"
+	merge = "refs/heads/fix/SFCC-662-adyen-payment"

@@ -1,0 +1,784 @@
+Regenerating Claude Code registry...
+Generating Claude Code registry...
+  components.md  — 123 entries (Override: 9, Custom: 50, Base: 64)
+  hooks.md       — 74 entries (Override: 1, Custom: 17, Base: 56)
+  utils.md       — 35 entries (Override: 0, Custom: 6, Base: 29)
+  pages.md       — 20 entries (Override: 5, Custom: 5, Base: 10)
+  routes.md      — 20 entries (Inherited: 10, Override: 10)
+Done.
+Running Vitest for files related to your staged changes...
+
+ RUN  v3.2.7 /Users/marcel.a.n.navarro/Dev/zimmermann-pwa
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — trigger rendering > renders the label as the trigger text
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — content > renders the zimm size code
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — trigger rendering > renders the selected value when provided
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > renders as <a> (role="link") when href is provided
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — content > renders no status badge for an in-stock row
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — trigger rendering > trigger has aria-expanded=false when closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — content > renders the Low Availability badge
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > calls onClick when the button is clicked and ariaDisabled is not set
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > renders a real <a> when given a safe href
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > renders a single control for the label — no separate hidden/decorative trigger element — regression guard: an earlier revision kept a zero-width chevron button around as the real PopoverTrigger child, leaving an invisible extra Tab stop between every pair of L1 items with no visible focus ring (WCAG 2.4.7)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > renders as <button> (role="button") when href is omitted
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — open / close > clicking the trigger opens the panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > renders the label as a non-navigating button when the item has no href (the common mega-menu-trigger case)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > calls onClick when rendered as a button and clicked
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > does not call onClick when ariaDisabled is true — handler is suppressed at the React layer
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > renders a heading for a headed group and each of its links
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > exposes role="option" with aria-selected reflecting isSelected
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > forwards item, itemsKey, and maxColumns to the given contentComponent
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — open / close > pressing Escape closes the panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > renders a non-navigating <button> when no href is given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > renders the label as visible text in anchor form
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > sets aria-disabled="true" on the rendered button when ariaDisabled is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > renders the label as a real link when the item does carry its own href
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > gives the popover dialog an accessible name — regression guard: axe flagged this as a real violation once a real interaction actually opened the popover (aria-dialog-name), a pre-existing gap in both this override and base SFCC's own list-menu-popover.jsx
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > renders the label as visible text in button form
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > renders no heading element for an unheaded group
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > aria-selected is false when unselected
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders a loading spinner while items is undefined
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards a ref to the underlying <button> element
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > never falls back to a broken /category/undefined href — regression guard for the SFCC-96 fix
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > omits the aria-disabled attribute entirely when ariaDisabled is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — onItemSelect + Enter > Enter on a focused item calls onItemSelect and closes the panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > adds a visually-hidden Out of Stock label for out-of-stock rows
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > renders as <button> and no anchor when href is an unsafe javascript: URL
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > renders every section it is given, not a fixed column count
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > overrides type to "button" when ariaDisabled is true, even when type="submit" is passed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — error and helper text > renders errorMessage with role=alert when hasError is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > marks the link visually active (underlined) when isActive is true, without claiming it is the current page — regression guard: isActive reflects "the mega-menu is open," not real navigation state, so it must never set aria-current
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > does not add the hidden Out of Stock label for other statuses
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards a ref to the underlying <a> element
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > runs an internal href through useSafeHref() to carry the current site/locale prefix
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — error and helper text > renders helperText when no error
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards aria-haspopup/aria-expanded/aria-controls/id
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > never sets aria-disabled, even for unavailable statuses
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > renders a loading spinner and marks the nav aria-busy while items is undefined
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > does not mark the link visually active when isActive is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > leaves a non-internal href https://instagram.com/zimmermann untouched by useSafeHref()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton > preserves type="submit" when ariaDisabled is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > does not wrap the L1/L2 nav content in an atomic live region — regression guard: aria-live/aria-atomic on the whole #drawer-menu-nav wrapper re-announced every link in a freshly drilled-into L2 panel on top of the correct, already-in-place focus-move announcement (this same component's own panelRef effect), which is what produced the reads-everything-at-once bug shared with the desktop nav (list-menu.tsx)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — error and helper text > does not render helperText when hasError is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — accessibility > applies the supplied id for programmatic focus targeting
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards tabIndex={-1} — used by megaMenuContent/index.tsx to pull a leaf link out of Tab order without touching its visual rendering
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > calls onClose when a leaf link is activated
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > renders the icon passed via the icon prop
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > leaves a non-internal href tel:+61255555555 untouched by useSafeHref()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > omits the tabindex attribute (default tabbable) when tabIndex is not given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > the single control carries the correct name/role/state — regression guard: previously the visible label had no aria-expanded/aria-haspopup at all, and a separate invisible element carried them instead, so a screen reader announced "Open Clothing menu, collapsed" while sitting on a zero-width node the label's own name never reached
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — interaction > calls onClick when the row is clicked
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > renders the visible label text inside the button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > leaves a non-internal href mailto:help@zimmermann.com untouched by useSafeHref()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — disabled > trigger is disabled and clicking does not open the panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > aria-expanded reflects the popover actually being open
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > does not wrap the whole nav in an atomic live region — regression guard: aria-live/aria-atomic on the entire <nav> re-announced every mega-menu link (plus the promo image alt text) on any later, unrelated mutation inside it, which is what produced the "screen reader reads everything at once" bug
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — interaction > out-of-stock rows are still clickable (Option A)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx > ZimmLink > leaves a non-internal href #size-guide untouched by useSafeHref()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > renders the promo image with its mapped src/alt when present
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmLink/index.test.tsx (11 tests) 463ms
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards onMouseOver
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx > ZimmDropdown — footer slot > renders the footer between the trigger and any helper/error text
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmDropdown/index.test.tsx (11 tests) 497ms
+stderr | overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx > ZimmDropdownItem — interaction > clicking a notify-me row calls onClick like any other status
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > scopes aria-live/aria-atomic to just the loading indicator, not the whole nav
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > is a controlled component — isOpen is driven entirely by the prop, not internal state
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmDropdownItem/index.test.tsx (12 tests) 471ms
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > scopes aria-live/aria-atomic to just the loading indicator
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > icon box defaults to md (16px) when iconSize is not given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > clicking the label calls onOpen — per HPC-024 (SFCC-883), the trigger no longer opens on hover, only click
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > forwards onKeyDown
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > iconSize picks a different registered box size
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header logo > renders the logo as an accessible, natively-focusable button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > clicking the trigger label calls the given onOpen, not an internally-owned disclosure — per HPC-024 (SFCC-883), click-only, not hover
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > renders a zero-columns item as a plain accessible link, not a popover trigger
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image loading strategy > defaults to lazy loading
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > hovering the label alone does not call onOpen — regression guard for HPC-024 (SFCC-883)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > iconSx overrides the box size for a one-off value outside the four registered sizes
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > marks the current page with aria-current="page" when active
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header logo > is reachable via keyboard Tab order
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > renders an item with one or more columns as a ListMenuPopover, passing the columns field through
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > styles each column's first link as a heading only when twoColumnLayout is set
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > defaults to full width when no fullWidth is given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image loading strategy > eager skips lazy loading (LCP priority, PRD-064)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > does not fall back to an unsafe href — renders a button instead
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > clicking opens the menu when the item carries its own href — regression guard (CodeRabbit finding, SFCC-883 PR #88): a real <a>'s native click-to-navigate would otherwise fire before Popover's own click-to-open logic ever showed the menu, taking the shopper straight to the href ('New' is the one real item that's both a link and a mega-menu trigger)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — empty state > renders nothing when media is empty
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders a direct-link L1 item as an accessible link, with no drill-down affordance
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > renders both direct-link and mega-menu items side by side in the same nav
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > an explicit fullWidth={false} overrides the social default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > does not style the first link as a heading for a single-column item
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > hovering the trigger label alone does not call onOpen — regression guard for HPC-024 (SFCC-883)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > runs an internal href through buildUrl() to carry the current site/locale prefix
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > respects a custom maxColumns
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > a non-social variant is not full width by default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > clicking a link-with-href item prevents the default navigation — matches Space's own preventDefault, so Popover's composed onClick/onToggle opens the menu instead of the browser following the href
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > leaves a non-internal href https://instagram.com/zimmermann untouched by buildUrl()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx > ZimmButton — variant="social" (ZimmSocialButton consolidation) > a non-social variant still honours an explicit fullWidth={true}
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmButton/index.test.tsx (15 tests) 633ms
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > Escape while the trigger itself has focus calls onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > marks the two-column heading link with the class sectionLinks uses to cancel its own row gap
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > leaves a non-internal href tel:+61255555555 untouched by buildUrl()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header logo > invokes onLogoClick when clicked, wiring the homepage-navigation handler
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > opening one mega-menu item closes any other that was open — regression guard: hovering a second L1 item used to leave the first one stuck open with no way to close it
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — video slot > renders play/pause and mute as independently labelled, focusable controls
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > renders no image element when the item has no promoImage
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > an unhandled key on the trigger does not call onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > leaves a non-internal href mailto:help@zimmermann.com untouched by buildUrl()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > renders an item with columns as a drill-down button, no chevron affordance
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 3 items — 3 stacked, no grid, plain "Gallery" button (AC 1)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header wishlist state > passes hasWishlistItems=false when the wishlist has no items (including guests, who have no list at all)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > isFullyOpen — leaf links pulled out of Tab order while the panel is still animating > sets tabIndex={-1} on every leaf link when isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > ArrowDown calls onEnterPanel — the panel is open, so this is the W3C WAI-ARIA APG Disclosure Navigation pattern's documented fast-path from the trigger into the panel's first link
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx > ZimmNavItem > leaves a non-internal href #size-guide untouched by buildUrl()
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — video slot > play/pause toggles its own accessible name without affecting mute
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmNavItem/index.test.tsx (16 tests) 681ms
+stderr | overrides/app/components/header/index.test.tsx > Header wishlist state > passes hasWishlistItems=true when the wish_list product list has at least one item
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > content calling its own onClose calls the given onClose, not an internally-owned disclosure
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > ArrowDown does nothing when onEnterPanel is not given — regression guard: list-menu-popover.tsx only passes onEnterPanel while its panel is actually open, so ArrowDown on a closed trigger must not throw or do anything
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > isFullyOpen — leaf links pulled out of Tab order while the panel is still animating > leaves leaf links normally tabbable when isFullyOpen is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > starts closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > ArrowDown still forwards to onTriggerKeyDown (L1 roving focus is a separate concern from entering the panel)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > isFullyOpen — leaf links pulled out of Tab order while the panel is still animating > defaults to normally tabbable when isFullyOpen is omitted — a story/test rendering this component standalone (no real motion phase) keeps normal Tab behaviour
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 4 items — 2 stacked + 2-up grid, plain "Gallery" button (AC 2)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image load failure (AC 21) > a failed image is replaced with a neutral fallback, not a broken-image icon
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > a mega-menu item reporting open swaps RightBar to fullSwap
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > Space opens the menu when the item carries its own href — regression guard: a real <a> (the one real item that's both a link and a mega-menu trigger, 'New') never activates on Space natively, only Enter/click do, so Space silently did nothing until wired by hand
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — image load failure (AC 21) > a new valid source at the same list position after a variation swap is not stuck on the old fallback (CodeRabbit, PR #81)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > Space on a link-with-href item prevents the default (page-scroll) action — it does not fall through to any native <a> behaviour
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: flattens every column of the active item into one stacked list of headings + links
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > renders through DynamicImage (a real <picture>/srcSet) when widths is given
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > ArrowDown moves focus to the next leaf link in DOM order
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mega-menu open state > clicking the fullSwap Close control closes the mega menu
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > Space does not call onOpen a second time for a plain mega-menu button (no href) — the fix is scoped to the link case, native button activation already covers it
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > forwards a custom quality into the DIS query on every responsive source
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > hovering a second item while the first is still mid-expand switches directly to it, closing the first immediately — regression guard: routing this through the same contentOut fade as an already-open switch got the phase machine stuck, since expanding content has no visible opacity change to fade from
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 5 items — 2 stacked + 2-up grid, "Gallery +1" — one held back rather than a lopsided 3-cell row (AC 3)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > without widths, renders a plain <img> with no <picture> wrapper (unchanged default behaviour)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > forwards onTriggerKeyDown (L1 roving focus) alongside its own Escape handling
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx > ZimmMediaTile — responsive DIS widths (SFCC-731 AC 19) > a failed image still falls back to the neutral fill when rendered via DynamicImage
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/atoms/zimmMediaTile/index.test.tsx (10 tests) 619ms
+   ✓ ZimmMediaTile — image loading strategy > defaults to lazy loading  380ms
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: renders the promo image with its mapped src/alt when the active item has one
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-trigger.test.tsx > ListMenuTrigger > renders an empty label gracefully when name is omitted
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-trigger.test.tsx (22 tests) 800ms
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > ArrowDown crosses from the last link of one column to the first link of the next
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > a stale Down-Arrow request from when an item was only pending (not yet active) does not move focus once it later opens for real via a plain hover
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > closed by default: both bars start at menuExpanded="closed"
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 6 items — 2 stacked + 4-up grid, plain "Gallery" button (AC 4)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > the trigger underline swaps to the newly-hovered item immediately — regression guard: hovering a new L1 item used to leave the old trigger underlined until the whole content fade-out finished, instead of both underlines animating at the same time
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — mount gating > renders nothing when closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > menu-click from closed calls the real onMenuClick (base _app's onOpen) and moves both bars to mobileL1
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: renders no image element when the active item has no promoImage
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > ArrowDown from the very last link wraps to the very first
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — mount gating > SFCC-731 AC 20 — renders nothing when media is empty, even if open
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — desktop layout per SFCC-731 AC 1-5 > 7 items — 2 stacked + 4-up grid, "Gallery +1" (AC 5, X = total - 6)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > menu-click again from mobileL1 (toggle semantics) calls the registered close handler and resets to closed, without re-calling the real onMenuClick
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L1: never renders a promo image, even when items in the list carry one
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > ArrowUp moves focus to the previous leaf link
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > reports open (not closed) to the header shell after switching directly from one open item to another — regression guard: this used to race, since each MegaMenuContent instance reported its own isOpen independently and the previously-open item's reportClose could fire after the newly-open item's reportOpen in the same commit
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'expanding'": gridTemplateRows '1fr', opacity '0'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — showGalleryButton > false hides the button on both desktop and compact, regardless of media count (AC 7)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > ArrowUp from the very first link wraps to the very last
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > close-click from RightBar resets both bars to closed
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > closing an item that is no longer the open one does not clobber whichever item opened after it
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — showGalleryButton > true (the default) still renders the button per the layout thresholds (AC 8)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/megaMenuContent/index.test.tsx > MegaMenuContent > Up/Down arrow navigation > an unrelated key does not move focus
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/megaMenuContent/index.test.tsx (18 tests) 916ms
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: styles each group's first link as a heading only when twoColumnLayout is set
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/header/index.test.tsx > Header mobile drawer state (SFCC-97) > drilling in via the shared DrawerMenuStateContext moves both bars to mobileL2, and back-click returns to mobileL1 without closing
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — dialog semantics (AC 22-24) > renders as a labelled dialog, named by the product name
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel gallery button (AC 11) > visible on the first slide, not just the last — a shopper should not have to swipe through the whole carousel to find it
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > L2: does not style the first link as a heading for a single-column item
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/header/index.test.tsx (13 tests) 829ms
+   ✓ Header logo > renders the logo as an accessible, natively-focusable button  381ms
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'contentIn'": gridTemplateRows '1fr', opacity '1'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenuView > ArrowRight/ArrowLeft roves focus between direct-link L1 triggers
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel gallery button (AC 11) > stays visible after swiping to the last slide, with the same total count
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu.test.tsx > ListMenu > passes useHeaderNav()’s items and isLoading through to ListMenuView
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu.test.tsx (14 tests) 955ms
+   ✓ ListMenuView > renders a loading spinner and marks the nav aria-busy while items is undefined  301ms
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > returning from L2 to L1 (isDrilledIn: false) shows the root list again
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — close (AC 12/13) > the close button fires onClose
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — single image > SFCC-731 AC 9 — renders a plain "Gallery" button (no count) even for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'open'": gridTemplateRows '1fr', opacity '1'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > moves focus onto the L1 panel once loading finishes — regression guard: the panel is not mounted yet while isLoading/items are unsettled, so the focus effect must re-run once it actually mounts, not just on isOpen/isDrilledIn/activeItem
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > renders one keyboard-focusable dot per media item, labelled with its position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > renders no dots for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'contentOut'": gridTemplateRows '1fr', opacity '0'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > drilling from L1 into L2 moves focus onto the new panel — regression guard: L1 and L2 occupy the same subtree, so without this the L1 button that had focus unmounts and focus silently drops to document.body, restarting keyboard tab order from the top
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > renders one keyboard-focusable thumbnail per media item, labelled with its position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > a dot click is a real, independently operable control (does not throw, stays in the document)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > returning from L2 to L1 moves focus onto the root list panel
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > no thumbnail strip for a single image
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'collapsing'": gridTemplateRows '0fr', opacity '0'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > guest: renders a Sign In link rather than the account accordion
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel dots > ArrowRight/ArrowLeft move focus between dots, wrapping at each end — Tab-ability is unchanged
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenuView > Wishlist onAuthSuccess: closes the drawer and navigates to /account/wishlist
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > a thumbnail click scrolls to the corresponding image — a real, independently operable control
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'closed'": gridTemplateRows '0fr', opacity '0'
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — compact carousel offscreen slides > only the selected slide is reachable by assistive tech and keyboard — every other slide is inert
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — live region > announces the current slide's alt text, not just its position — dots/arrows only ever announce position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > wires useHeaderNav() and useDrawerMenuState() through to DrawerMenuView
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'expanding'": isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — click-anywhere trigger > the click-anywhere surface and the visible "Gallery" button both fire onOpenGallery independently
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > registers its real onClose with the shared drawer state on mount, unregisters on unmount
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — thumbnail strip (AC 14/16) > ArrowRight/ArrowLeft move focus between thumbnails, wrapping at each end
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/drawer-menu/index.test.tsx > DrawerMenu (container) > notifies the shared drawer state closed whenever isOpen is false
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/drawer-menu/index.test.tsx (20 tests) 1325ms
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'contentIn'": isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — click-anywhere trigger > each desktop tile has its own position-labelled trigger, in DOM order matching visual order, ending with the Gallery button
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — image content (AC 18) > renders the full media array as tiles, first one eager (LCP priority)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > the first item loads eagerly by default (LCP priority, PRD-064)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'open'": isFullyOpen is true
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > lazy defers the first item too (set/bundle child context)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image loading strategy > the compact carousel never marks its own first item eager, even when the desktop tile is (CodeRabbit, PR #81 — both trees are always mounted, so both eager would double-fetch the hero image)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — live region > announces the current image's alt text and position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'contentOut'": isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — image load failure (AC 21) > a new valid source at the same list position after a variation swap is not stuck on the old fallback (CodeRabbit, PR #81)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx > ZimmProductGallery — selectedIndex clamps when media shrinks (CodeRabbit, PR #81) > a variation swap that shrinks media does not leave every slide inert or the live region announcing an invalid position
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmProductGallery/index.test.tsx (24 tests) 1339ms
+   ✓ ZimmProductGallery — empty state > renders nothing when media is empty  365ms
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — live region > scrolling to a new item (IntersectionObserver) updates the announced position
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'collapsing'": isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > renders "Also available in" + a swatch per colour when there are multiple
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > phase "'closed'": isFullyOpen is false
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > 'expanding' starts at 0fr and only reaches 1fr after the value is deferred a frame — not synchronously on first render
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > SFCC-731 fix — renders "Colour: <name>" (no swatch row, no "Also available in") when there is only one colour, matching the PDP
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx > ZimmGalleryOverlay — colour selector (AC 15) > renders nothing when no colour values are supplied
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/organisms/zimmGalleryOverlay/index.test.tsx (14 tests) 1122ms
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > an inactive instance (isOpen=false) always renders the closed resting state, regardless of the shared motionPhase prop
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > a pending item (isOpen=true, isActiveItem=false) — the incoming item during a switch — stays at the closed CSS resting state even though its Popover is already open
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > the height reveal completing calls onExpandComplete only during the expanding phase
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > the height collapse completing calls onCollapseComplete only during the collapsing phase
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > a transitionend on the reveal wrapper during a steady phase (open) calls neither height callback
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > the content fade-in completing calls onContentInComplete only during the contentIn phase
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/list-menu/list-menu-popover.test.tsx > ListMenuPopover > motion phase -> CSS mapping > the content fade-out completing calls onContentOutComplete only during the contentOut phase
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/list-menu/list-menu-popover.test.tsx (27 tests) 2106ms
+ ✓ overrides/app/theme/components/recipeGuards.test.ts (6 tests) 31ms
+stderr | overrides/app/theme/index.test.tsx > rendered output > textStyle applies the brand type style end to end
+Could not parse CSS stylesheet
+
+stderr | overrides/app/theme/index.test.tsx > rendered output > Button renders square and uppercase from the theme override
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/theme/index.test.tsx (128 tests) 143ms
+stderr | overrides/app/components/ui-kits/molecules/zimmProductMeta/index.test.tsx > ZimmProductMeta > resolves its recipe under a ChakraProvider — 28px of rhythm, not an inherited default
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/ui-kits/molecules/zimmProductMeta/index.test.tsx (6 tests) 117ms
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantImage (item-image) — defaults-then-spread > a caller-supplied width wins over the Zimmermann default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantImage (item-image) — defaults-then-spread > a caller-supplied mr is applied (the exact regression that would break order-summary)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantName (item-name) — spread-order bug fix > a caller-supplied color wins over the Zimmermann default
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > renders the image with an alt, the name uppercase, the price, and one combined colour+size node
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantName (item-name) — spread-order bug fix > renders uppercase via textStyle="productNames" (text-transform, not literal casing)
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > hideStepperAndActions suppresses the stepper and every actions surface, and nothing throws
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantAttributes (item-attributes) — combineAttributeValues default (per-key) path > renders one Text per variation-value key, with labels, when combineAttributeValues is omitted
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantAttributes (item-attributes) — combineAttributeValues default (per-key) path > hideAttributeLabels still renders per-key (one Text per key), just without the "Key: " prefix
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantPrice (item-price) — rendering logic > isDesktop-gated positioning: PricePerItem renders before the main price on mobile, after it on desktop
+Could not parse CSS stylesheet
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.test.tsx > ProductItem > every existing caller (hideStepperAndActions omitted) is unaffected — the stepper and actions still render
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/product-item/index.test.tsx (3 tests) 201ms
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantPrice (item-price) — rendering logic > isOnSale collapses the price Stack spacing to 0, otherwise theme.space[1] (0.25rem)
+Could not parse CSS stylesheet
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/item-variant/index.test.tsx > item-variant > CartItemVariantPrice (item-price) — rendering logic > applies the price recipe (textStyle) directly to its own Stack
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/item-variant/index.test.tsx (9 tests) 254ms
+stderr | overrides/app/components/product-item/index.stories.test.tsx > ProductItem — Storybook story render (SFCC-270 round 2) > Default-equivalent: renders through the real, unmocked useDerivedProduct/useSelectedStore chain without throwing
+Could not parse CSS stylesheet
+
+stderr | overrides/app/components/product-item/index.stories.test.tsx > ProductItem — Storybook story render (SFCC-270 round 2) > GiftCard-equivalent: hideStepperAndActions renders through the real chain without throwing, and hides the actions
+Could not parse CSS stylesheet
+
+ ✓ overrides/app/components/product-item/index.stories.test.tsx (2 tests) 171ms
+
+ Test Files  20 passed (20)
+      Tests  381 passed (381)
+   Start at  17:24:05
+   Duration  6.97s (transform 888ms, setup 5.10s, collect 32.60s, tests 13.68s, environment 16.48s, prepare 1.17s)
+
+[feature/SFCC-11_cart 9991c91] feat(cart): SFCC-270 restyle override, fix item-name spread order
+ 13 files changed, 1248 insertions(+), 43 deletions(-)
+ create mode 100644 overrides/app/components/item-variant/index.test.tsx
+ create mode 100644 overrides/app/components/item-variant/item-variant.css.ts
+ create mode 100644 overrides/app/components/product-item/index.stories.test.tsx
+ create mode 100644 overrides/app/components/product-item/index.stories.tsx
+ create mode 100644 overrides/app/components/product-item/index.test.tsx
+ create mode 100644 overrides/app/components/product-item/product-item.css.ts

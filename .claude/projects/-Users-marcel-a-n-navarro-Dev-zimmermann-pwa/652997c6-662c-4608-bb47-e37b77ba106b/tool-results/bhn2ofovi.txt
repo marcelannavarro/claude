@@ -1,0 +1,474 @@
+# The Frontend Development Lead Playbook
+### Zimmermann Commerce Migration · How to be the FE Lead as both IC and Senior/Lead
+
+*Distilled from the Manila AI Engineering Training Week (June 2026, facilitated by Tim Lavelle). This is your operating manual, not a summary of the week.*
+
+---
+
+## 0. How to use this document
+
+This is the standard you hold yourself and your squad to. Read it once end-to-end, then treat it as a lookup — every section is written so you can jump to it mid-delivery.
+
+**Source and provenance — read this once so you never confuse the two layers:**
+
+- Everything in sections 1–9 is grounded in the **Manila training**. The training vehicle was a *TelcoNow B2C portal* on **Next.js 14 · TypeScript · Tailwind · Contentful**. That is what was actually taught.
+- The training's *methodology* is deliberately stack-agnostic. Its closing thesis: **"The discipline transfers. The specific tools won't."** That is why it maps onto Zimmermann at all.
+- Anything about **SFCC / PWA Kit / MRT / the two squads / RACI / CI-CD gates / integrations** is **me bridging to your project** from separate context (the solution deck and project setup). It is labeled as a bridge in **section 16**, which has since been verified against the real repo (2026-07-09) — corrections and open items are called out there, not silently folded in here. Don't cite section 16 as training content; it still isn't.
+
+**The three gaps you carry into this role — stated plainly, because pretending they aren't there is how leads fail:**
+
+1. **Framework gap.** You're Angular-primary. The training and the project are React (Next in training, PWA Kit in project). The *habits* below transfer cleanly. The *code idioms* do not. Build PWA Kit / React fluency as a separate, explicit track — don't let the transferable methodology fool you into thinking the framework transfers with it.
+2. **Scale gap.** The training taught *solo* builds. You lead *shared-codebase, two-squad* delivery. Every "memory for future-you" artifact below has to be re-read as "contract for the whole team." Section 16 makes that jump concrete.
+3. **Leadership gap.** You are stepping up into the lead seat. The IC craft you already have. The lead craft — running review culture, protecting quality under pressure, multiplying yourself — is the part this document is really for.
+
+---
+
+## 1. The one principle everything hangs on
+
+> **The quality ceiling is set by the human, not the AI.**
+
+Claude will match the quality of what you give it. Give it a vague plan, you get plausible garbage that costs hours to unwind. Give it a tight contract, sharp stories, and enforced rules, and you get output you'd have been proud to write yourself. This is true today and it will be true in two years when the tools have changed names.
+
+Two corollaries the training hammered:
+
+- **Claude is not autocomplete.** It's a co-engineer with memory and constraints — but the memory and the constraints are *things you supply*. It has no standards of its own. You are the standard.
+- **Claude makes your assumptions visible faster.** That's the actual value. Not that it writes code — that it exposes the gap in your thinking in ten minutes instead of on Thursday night. Treat every gap it surfaces as a gift, not an insult.
+
+Everything else is mechanics in service of this.
+
+---
+
+## 2. The dual mandate
+
+You wear two hats *at the same time*, not in alternation. The failure mode is collapsing into one:
+
+- **Collapse into IC** → you ship your own components beautifully and the squad drifts, the rules layer rots, and nobody but you knows what "done" means.
+- **Collapse into Lead** → you run great regroups and review everyone's work but haven't touched the codebase in three weeks, so your technical judgment goes stale and your reviews become vibes.
+
+Hold both. Here is the shift in each hat — same activity, two altitudes:
+
+| Dimension | As Individual Contributor | As Senior / Lead |
+|---|---|---|
+| **Think** | Get *this* component right — states, edges, what Claude will get wrong before it does. | Get the *system* right — will this decision collide with the other squad, the integration seams, go-live? |
+| **Ask** | "What does this story not tell Claude Code?" | "What does our *rules layer* not tell any developer or any Claude instance on this project?" |
+| **Communicate** | Precise AC, precise commit, precise "here's what Claude got wrong and why." | Frame reviews as work-not-person, translate across dev/BA/tester/SA, make commitments checkable. |
+| **Decide** | Monolith or split *your* file, hook or component for *this* value — and defend it. | Set the *convention* the squad decides by, so nobody re-litigates it per component. |
+| **Review** | Read your own output against the story before you commit. | Run the loop that makes *everyone's* output legible, and catch drift across the codebase. |
+| **Think beyond** | The next component, the next state, the downstream effect of a data-shape choice. | What happens when you're *not in the room*. The team you're growing. Maintainability in 2027. |
+| **Protect** | Your commit doesn't introduce a hardcoded hex or an `any`. | The *whole codebase's* quality bar holds under deadline pressure — including when it's inconvenient. |
+| **Multiply** | You get faster and cleaner. | The room gets faster and cleaner *because of how you work*. You are the capability anchor. |
+
+The training's own closing line for the cohort — *"This group is the capability anchor; the expectation is that what you learned reaches the people who weren't in this room"* — is a job description for the Lead hat. Internalize it.
+
+---
+
+## 3. Tooling model: two tools, two mindsets, one handoff
+
+The single most consequential distinction in the whole week:
+
+- **Claude.ai = the planning partner.** It explores, suggests, asks questions, thinks out loud with you. Use it to *decide*.
+- **Claude Code = the engineering colleague in your terminal.** It reads files, writes code, runs commands. Critically: **it does not ask what you meant — it infers and proceeds.** Use it to *build*.
+
+**The handoff rule:** move from Claude.ai to Claude Code only *when you trust your plan enough to stop editing it and start building from it.* Not before.
+
+**The most common mistake — and it will tempt your whole squad:** moving to Claude Code too early because you're excited to build. Then Claude Code starts inventing things to fill the gaps you left, and by mid-sprint you're fighting the tool instead of directing it.
+
+- *IC discipline:* Don't open Claude Code on a story you haven't hardened. If you're still discovering questions, you're still in Claude.ai.
+- *Lead discipline:* Watch for the squad jumping to build early. "Is your plan ready for that?" is the question you ask before anyone scaffolds. The moment Claude Code reads a plan and finds the gaps is the most important moment — make the squad *curious* about it, not defensive.
+
+---
+
+## 4. Defeating agreeableness — the skill the whole week is built on
+
+**Claude is optimised to be helpful, which means optimised to agree.** Left to its defaults it will praise a plan that produces unusable output. Agreeable defaults produce unchallenged assumptions, and unchallenged assumptions cost hours of rework on a real, fixed-price engagement.
+
+You break the default deliberately. Four techniques, each producing meaningfully different output. These are your reusable prompts — adapt the wording, keep the intent:
+
+1. **Role framing** — *"Act as a senior engineer whose job is to find flaws in plans before they reach production. Be direct. Don't soften criticism."*
+2. **Steelman** — *"What is the strongest argument against this approach? What would go wrong if we built this exactly as described?"*
+3. **Critique-first** — *"Before telling me what's good about this, list every weakness, gap, or assumption you're making. Weaknesses first, always."*
+4. **Constraint injection** — *"Assume this goes to production at scale. Assume a QA engineer rejects it if there are no tests. Assume a designer rejects it if there are hardcoded values. Now review it."*
+
+**Set a persistent baseline at the account level.** Account instructions change Claude's default behaviour across *every* conversation. The working style this session describes — "lead with the point, flag the trade-off mid-response, challenge like a senior reviewing a PR" — is the target. What you actually have today is a *tool-configuration* baseline, not a committed instructions file: a global effort dial and a curated plugin list that already push back on rubber-stamping (see §16.2). That's a real approximation, but don't assume the gap is already closed — closing it deliberately means writing the actual instructions, not just configuring the tool around the edges.
+
+- *IC discipline:* Never accept the first response on anything that matters. If Claude found nothing wrong with your plan, that's a signal to apply technique 1 or 2, not a signal you're done.
+- *Lead discipline:* Make anti-agreeableness a *team norm*, not your private trick. A squad that accepts Claude's first answer wholesale will produce a codebase full of unexamined assumptions. Teach the four techniques. Put them in the shared rules. Ask in regroup: *"What did Claude agree with that it shouldn't have?"*
+
+---
+
+## 5. Context and thread hygiene
+
+Long conversations degrade output. Every message carries the full history; on a long thread the relevant signal gets buried in noise and quality quietly drops.
+
+The rules:
+
+- **New conversation when the topic shifts.** Topics bleed across context and pollute each other.
+- **Name conversations like files, not chat logs.** `checkout-fetch-pattern`, not "SFCC stuff." Treat them as a structured archive you can navigate.
+- **Aim for 8–10 named, focused threads**, not one 80-message thread called "Zimmermann."
+- **Claude.ai Projects share context across conversations** — use a Project for planning. **Claude Code uses the repo's rules/context files instead** (`CLAUDE.md` + the `.claude/` layer).
+
+- *IC discipline:* One topic per thread. The moment you notice yourself pasting unrelated context to "remind" Claude, you needed a new thread three messages ago.
+- *Lead discipline:* At team scale, thread hygiene stops being about *your* signal and becomes about *shared* context. What lives in a personal thread is invisible to the squad; what needs to be shared belongs in the Project or the rules layer, not buried in someone's chat history. Decide, as lead, what's personal-thread vs shared-artifact — and make that call explicit so the team isn't guessing.
+
+---
+
+## 6. The planning layer — your codebase's constitution
+
+This is where the quality ceiling is actually set. In the training it was a `.claude/` structure; on your project it's the equivalent rules-and-context layer (section 16 maps the names).
+
+### `CLAUDE.md` is a contract, not a readme
+
+It tells Claude exactly **what to build**, **how to build it**, and **what NOT to do**. Claude Code reads it at the start of *every* session. It is the entry point every prompt begins from.
+
+- **Use Claude to *critique* the contract, not rewrite it.** Ask what's wrong; fix one problem at a time. If you let Claude rewrite it wholesale you get a file that reflects Claude's assumptions, not your decisions.
+- **Each fix should change *structure or specificity*, not wording.** Polishing sentences is procrastination. If your edit didn't change what Claude can or can't do, it wasn't a real edit.
+
+### One topic per file — a hard rule
+
+If a file covers two things, Claude gets confused about which one applies. So: `build-spec.md`, `solution-architecture.md`, `auth-spec.md`, `design-system.md`, `api-patterns.md`, `component-registry.md` — one concern each. The training's own structure split a `brief/` folder (the *what* and *how*) from a `rules/` layer (the enforceable constraints Claude checks against).
+
+**Monolith vs split is a real decision.** Both are defensible *if you can defend it* — but the split is where a serious project lands. A monolithic file and a split set of files produce genuinely *different* Claude Code output. Know why you chose yours.
+
+### `build-log.md` is memory, not documentation
+
+Claude reads it at the start of every session to know what state the project is in and what's already been done. It is how a fresh Claude Code session — with no memory of yesterday — picks up where you left off.
+
+### Define "done" — or Claude Code never stops
+
+Claude Code with no stopping condition keeps building components forever. If your file doesn't say what "done" looks like, Claude will invent more work. **Where does your file say what done is?** If it doesn't, that's a bug in the plan, not the tool.
+
+- *IC discipline:* Before you build, three questions must be *yes*: does Claude know exactly what to build, exactly how, and exactly what not to do? If any is no, fix it before you open Claude Code.
+- *Lead discipline:* The planning layer is the highest-leverage thing you own. **This is a system, not a personal note.** A rule that isn't checkable is an aspiration Claude will ignore — police the difference across the whole `rules/` layer. And because two squads read the same files, ambiguity here isn't one dev's rework, it's a fork in the codebase. Owning this well is worth more than any component you'll personally write.
+
+---
+
+## 7. Gap-hunting before the build
+
+**Find every gap before Claude Code does. Every gap in your planning files costs time in the build** — and on a fixed-price job, that time comes out of margin.
+
+**Use two reviewers with different mindsets, in order:**
+
+1. **Claude.ai first** — the conversational reviewer. Prompt it as a senior engineer handing the project to a junior who'll build it with Claude Code: *"Find every place Claude Code would have to make an assumption because I haven't told it what to do. Be specific. Don't be kind."*
+2. **Claude Code second** — the builder's reviewer. *"Read all files. Do not write code yet. Tell me: every assumption you'd have to make; every instruction that conflicts with another; every topic the files don't cover; check framework versions are current LTS; check the sample code is correct and uses our methodology; any flaws with downstream impact. Reference the file and line for each."*
+
+**The contrast between what Claude.ai flags and what Claude Code flags is the lesson.** Claude.ai catches conceptual holes; Claude Code catches build-breaking ones. Whatever gaps remain after both — they're *knowable*, and knowable gaps are the ones you can close.
+
+**The distinction that separates real work from theatre:** *"Is that gap fixed now, or did you just acknowledge it?"* Acknowledging a gap in conversation and moving on is the seductive failure. Fixing means the file changed.
+
+- *IC discipline:* Run both reviewers on your own stories before you build. "What did Claude just find that I thought was obvious?" is the most useful question you'll ask all day.
+- *Lead discipline:* Institutionalize the two-reviewer pass as a squad ritual before any sprint. And guard against acknowledge-don't-fix at the team level — in review, don't ask "did Claude flag anything?", ask "show me the file line you changed."
+
+---
+
+## 8. Scaffolding discipline
+
+**Do not scaffold by hand.** Running the framework's project generator manually (`create-next-app` in training; the PWA Kit generator on your project) *skips the brief entirely* — Claude Code won't wire up your design tokens, routes, env vars, or folder structure, and you'll spend Wednesday paying for it.
+
+Instead: let Claude Code **read the brief and execute every setup step**, as an explicit numbered sequence — configure design tokens, set up fonts, create the folder structure from the architecture file, wire env placeholders, create the build-log with a setup checklist as its first entry. **Confirm each step; list every file created at the end.**
+
+- *IC discipline:* After generation, don't trust — verify. Open the token config; missing tokens cause compile errors downstream. A green scaffold checklist exists precisely so this moment is fast and unambiguous.
+- *Lead discipline:* The scaffold sets conventions the whole squad inherits. Get the folder structure, token config, and env contract right *once*, centrally — every shortcut here is multiplied across every developer who builds on top of it.
+
+---
+
+## 9. The build loop — the core craft
+
+This is the part that "makes the methodology different from just prompting." Everything above exists to make this loop clean.
+
+### 9.1 Atomic design, bottom-up
+
+Build in layers: **layout primitives → atoms → molecules → components.** The lower layers are the foundation; you generate them from the design-system spec *first*, review them carefully, and everything above imports them.
+
+### 9.2 The story skill — consistency at scale
+
+A **skill is a reusable Claude prompt** that produces consistent, buildable output given a component name. You build one `story-skill` conversation and drive it with a command: `/create-story [ComponentName]`.
+
+A good story is **thin — intent and constraints, not implementation detail.** The non-negotiable format:
+
+- Follows the story template exactly.
+- References the *correct* design file and the *correct* data stub (or none, for static components).
+- **AC describes behaviour, not implementation** — something a tester can verify without asking a developer what it means.
+- **Always includes happy path + loading-state AC + error-state AC.** Three states, every time.
+- **Flags anything uncertain rather than inventing it.**
+
+**The skill is only as good as its prompt — and the prompt gets better every time you find a gap in its output.** Run it, find what it invented or left vague, refine one thing, run again. The second output is tighter. *That iteration is the lesson* — it's the same feedback loop as section 9.6, applied to your tooling.
+
+### 9.3 Generate is 10%. Review is 90%.
+
+Generating a component or a story takes a minute. **The work is the review.** A bad story generates a bad component; five minutes reviewing a story now saves an hour tonight.
+
+**Hard rule: no one builds from a story they haven't personally read and checked.** Not you, not anyone on the squad.
+
+### 9.4 The registry — import, don't reinvent
+
+`component-registry.md` lists what exists, where it lives, and its data source. Before building anything: **check the registry and import what's there — do not rebuild atoms inline.** After building: **update the registry.**
+
+The test: *"If Claude Code opens this repo tomorrow with no memory of today, does it find a registry that tells it what's already built?"* On a solo project that's a convenience. **On two squads it's the difference between reuse and three developers building three different `StatusBadge`s.**
+
+### 9.5 The loop itself
+
+> **story → build → review → correct → commit.** One story, one prompt, one review, one commit.
+
+The build prompt pattern, every component: *read the registry, read the design-system rules, read this component's story, read the design file — confirm what you read before writing a single line of code — build exactly as specified, import from the registry, don't reinvent.*
+
+- *IC discipline:* Run the loop honestly on your own components. When Claude Code does something the story didn't specify, that's a defect in the story — go fix the story (9.6), don't just patch the code.
+- *Lead discipline:* The loop is what you're teaching and enforcing. In review, verify the loop *ran*: "Did Claude Code read the story before building, or did you just hand it the design file?" A squad that skips the story and prompts from the design file is doing exactly the thing the methodology exists to prevent.
+
+### 9.6 The feedback loop that hardens the rules layer
+
+The most important habit for long-term quality:
+
+> **"Find one place where Claude Code made a decision you didn't specify. What would you add to the AC or the rules to prevent that next time?"**
+
+Every correction is data. A correction you make once and forget is a correction you'll make fifty times across the codebase. A correction you *push back into the story template or the rules layer* is made once, forever, for the whole squad. This is how the rules layer becomes real instead of aspirational — and it's pure Lead leverage.
+
+---
+
+## 10. The quality bar and the anti-patterns
+
+### The hardening checklist — every component, non-negotiable
+
+Run this on every component before it's "done." (Stack names are translated to your project; the *intent* is verbatim from training.)
+
+- **Mobile layout at 375px** — actually open dev tools and check.
+- **Loading state present — a skeleton, not a spinner.**
+- **Error state present — a proper error component *with retry*.**
+- **No hardcoded hex values — design tokens only.**
+- **No TypeScript `any`** — strict mode on. *(This is already your default per your working style — hold the squad to it.)*
+- **Deployed and resolving — matches local, not just running locally.**
+- **Registry updated with everything built.**
+
+### Anti-patterns to catch on sight
+
+- **Over-engineering.** A static banner that should be ~25–35 lines of JSX comes back as 120 — that's Claude over-engineering; simplify it. If a trivial component takes too long to build, the problem is usually the atom layer underneath, not the component.
+- **Logic in the wrong place.** Derive calculated values (a `percentUsed`, a `daysRemaining`) **in the component, not the hook** — or wherever your `api-patterns` rule specifies. The point isn't the specific rule; it's *consistency* — watch for Claude Code *drifting* from the pattern across components.
+- **Fetch inside the component.** Data-fetching follows the shared pattern (a hook / service layer), *not* inline in the component.
+- **UI state vs server state confusion.** A local toggle is local UI state — it does not round-trip to the API. Know which is which and don't let Claude blur them.
+- **Invented data sources.** A *derived* component (one whose data comes from other components' data) does not get its own stub or its own API call. If Claude invents one, **fix the story, not the code.**
+- **Rebuilt assets.** Complex SVGs / illustrations get copied from the design file verbatim — don't let Claude "recreate" them from scratch.
+- **Hardcoded-per-item logic.** Icon or variant selection driven by a `type` enum, not a hardcoded branch per item.
+
+- *IC discipline:* Harden your own work to this bar before you'd dream of asking anyone else to.
+- *Lead discipline:* This checklist is your review rubric and your definition of team-done. The over-engineering and drift checks especially are things *only a senior eye catches* — juniors accept whatever compiles. That catch is a large part of what you're paid for.
+
+---
+
+## 11. Shipping discipline — pragmatism under a fixed-price clock
+
+The training's pragmatism is directly relevant to a fixed-price, deadline-bound delivery:
+
+- **Deploy first.** A local build that hasn't shipped is invisible — to the review, to the client, to everyone. *"A local build that hasn't shipped is invisible to the regroup."*
+- **A partial-but-hardened deliverable beats a complete-but-broken one.** *"A deployed page with a loading state beats a perfect local component."* *"A partial portal with hardened components beats a complete portal with broken states."*
+- **Descope — never cut.** When something runs over: reduce scope (the complex chart becomes a data table — same data, no charting library), commit a loading-skeleton placeholder, and move on. **Never delete the component entirely.** Something honest in place beats a hole.
+- **The 20-minute rule.** If a fix will take more than ~20 minutes right before a deadline, it's not worth doing before the milestone. Ship what's done and done well; log the rest.
+- **Compare against the design, side by side.** Design file on one half of the screen, live URL on the other. Divergence you can't see, you can't fix.
+
+- *IC discipline:* Make the descope call on your own work early and without ego. Running over at the 80% mark? Stop, commit a clean placeholder, move on.
+- *Lead discipline:* You own the *triage* across the squad — what gets hardened, what gets descoped, what gets cut for the milestone. Protecting the quality bar under deadline pressure is the specific test of whether you're actually leading or just hoping. Hold the bar when it's inconvenient; that's when it counts.
+
+---
+
+## 12. Cross-cutting dimensions — the "etc."
+
+The user asked for the *etc.* explicitly. Here is the full dual-lens reference — the same eleven capabilities, each in both hats. This is the section to reread before a hard week.
+
+**Think.**
+IC — one component deep: states, edges, and *what Claude will get wrong before it does.* Lead — one system wide: does this decision collide with the other squad, the integration seams, the go-live sequence, maintainability in 2027?
+
+**Ask.** *(full question bank in section 13)*
+IC — the questions that expose gaps in *a story*. Lead — the questions that expose gaps in *the rules layer, the conventions, and the team's understanding.*
+
+**Communicate.**
+IC — precise AC, precise commits, precise "here's what Claude got right and what I corrected and why" (specificity over politeness — the *correction* is the more valuable half). Flag uncertainty; never invent. Lead — frame reviews as *work-not-person*; translate across dev/BA/tester/SA; keep the showcase *honest, not polished*; make every commitment specific enough that someone could check it in three months.
+
+**Decide.**
+IC — monolith-or-split for *your* files, hook-or-component for *this* value — and be able to defend it. Lead — set the *convention* so the squad doesn't re-litigate the same decision every component; document it in the rules layer.
+
+**Review.**
+IC — your own output against the story, before commit, honestly. Lead — run the loop that makes *everyone's* work legible; catch pattern-drift across the codebase that no single-component view reveals.
+
+**Ship.**
+IC — deploy your own work, descope early, no ego. Lead — triage what hardens / descopes / cuts across the whole squad against the milestone.
+
+**Improve.**
+IC — every correction you make, push back into your story or prompt so you never make it twice. Lead — push corrections into the *shared* rules layer so the *squad* never makes them again. This is your highest-leverage move.
+
+**Protect quality.**
+IC — your commit is clean (no `any`, no hex, three states). Lead — the bar holds across the codebase *under deadline pressure*, including when holding it is inconvenient.
+
+**Manage context.**
+IC — one topic per thread; named threads; short threads. Lead — decide what's personal-thread vs shared-artifact and make it explicit, so team knowledge lives in the Project and rules layer, not in someone's chat history.
+
+**Handle uncertainty.**
+IC — flag what you (or Claude) are unsure of rather than inventing; distinguish "verified" from "assumed." *(This is already how you work — it's your verification mindset. Keep it.)* Lead — make "flag, don't invent" a team norm; keep an open-items list visible; never let an assumption harden into a fact silently.
+
+**Multiply / mentor.**
+IC — you get faster and cleaner. Lead — *the room* gets faster and cleaner because of how you work. You are the capability anchor; knowledge you don't transfer is a single point of failure wearing your name.
+
+**Think beyond.**
+IC — the next component, the next state, the downstream effect of a data-shape choice. Lead — what happens when you're *not in the room*: the team you're growing, the second squad's dependencies, the integration seams, the go-live risk, the two-year maintainability of every convention you set.
+
+---
+
+## 13. The questions bank
+
+Extracted straight from the training's regroup and review prompts, re-pointed for your project and split by hat. Keep these where you can grab them.
+
+### Questions you ask yourself / Claude (IC hat)
+
+**Planning a story or file:**
+- What would a senior engineer need to know that this file doesn't tell them?
+- What assumption would Claude Code make here that isn't written down?
+- Is this a rule Claude can *check against*, or an aspiration it will ignore?
+- What's missing that would cause the first build to go wrong?
+- Where does this say what "done" looks like?
+
+**After Claude reviews your plan:**
+- What did Claude just find that I thought was obvious?
+- Is that *fixed* now, or did I just *acknowledge* it?
+- If Claude Code reads this tonight and I'm not around — what goes wrong?
+
+**Reviewing your own output:**
+- Does this AC describe *behaviour a tester can verify*, or implementation?
+- Is there a loading-state AC? An error-state AC?
+- Did Claude Code follow the story, or invent something? What, exactly?
+- Did I check the registry before building — what was already there that I reused?
+- Where's this calculated — hook or component? Is that consistent with the pattern?
+- Find one decision Claude made that the story didn't specify. What do I add to prevent it next time?
+
+### Questions you ask the squad / the codebase (Lead hat)
+
+**On the rules layer:**
+- What would *any* developer assume here that isn't written down?
+- Is this a checkable rule or an aspiration? *(ask it of the whole rules layer, not one story)*
+- If a fresh Claude Code session opens this repo with no memory, does it find a registry that tells it what's already built?
+- What did Claude.ai miss that Claude Code found? What's the *pattern*?
+
+**In regroup / review:**
+- What's working here — specific enough for Claude to act on?
+- What's still missing or too vague to be useful?
+- Did Claude Code read the story before building, or did someone just hand it the design file?
+- Show me one AC line and where it appears in the build.
+- Did you have to correct Claude Code? Could the story have prevented it?
+- Four components in — is Claude Code consistent with our patterns, or drifting?
+
+**Cross-role and forward-looking:**
+- (To BAs/testers) Was there a component where the AC wasn't testable? What would you write instead?
+- What did Claude do *consistently* wrong across multiple components? *(that's a rules-layer fix, not fifty code fixes)*
+- Did the rules layer actually change Claude Code's output, or are we correcting the same things anyway?
+- What's the thing no one has said yet that everyone is thinking?
+
+---
+
+## 14. Rituals to run — review culture as delivery practice
+
+The training's *regroup* is your review culture. On the project you're the facilitator, under real stakes. Run it deliberately:
+
+- **Every work block gets a regroup.** Build, then look at real work together. The regroup exists *to learn from the work, not to judge the person who wrote it* — say that out loud and mean it. This norm is the whole thing; without it people hide their work and you lose visibility.
+- **Rotate who's on screen.** Don't only review the confident volunteers — deliberately surface work from people who haven't been seen. (The training literally cold-picks, and bribes volunteers with snacks. Do the humane version: make it safe, make it normal, make it everyone.)
+- **Ask structural questions, not surface ones.** "Is this well-written?" is the wrong question. "What will Claude *do* with this?" is the right one. Push people from fixing words to fixing structure.
+- **Rolling verbal reviews, not just projector sessions.** One person shares one surprising flag; the room reacts. Cheap, frequent, low-ceremony.
+- **The showcase is honest, not polished.** When you demo up or across, show what was *built*, not what you were *trying* to build. The single most valuable thing to surface is *"one thing the AI got right that followed from our rules, and one thing we corrected and why"* — the correction is the more important half. Model this; it sets the honesty bar for the squad.
+- **Commitments are specific enough to check.** "Use Claude more" is not a commitment. *"Write the AC before I open Claude Code, not after"* is. Hold yourself and the squad to actionable specificity — the kind someone could verify in three months.
+
+---
+
+## 15. How you'll know you're slipping
+
+Failure signals, by hat. If you catch these in yourself, correct before they compound.
+
+**IC drift:**
+- You accept Claude's first response on things that matter.
+- You're editing wording in your planning files instead of structure.
+- You built a component without reading its story, or without checking the registry.
+- You corrected Claude and moved on without fixing the story.
+- You have one 60-message thread called "Zimmermann."
+
+**Lead drift:**
+- You haven't touched the codebase in weeks — your reviews are becoming vibes.
+- Your rules layer has aspirations in it that Claude Code demonstrably ignores.
+- You're fixing the same Claude mistake in five components instead of fixing it once in the rules.
+- Reviews feel like judging people, and people have started hiding their work.
+- You're the only one who knows how a convention works — you haven't transferred it.
+- Under deadline you quietly dropped the quality bar and didn't say so.
+
+---
+
+## 16. Bridge to Zimmermann — translating the training to your actual project
+
+**Update, 2026-07-09 — verified against the real repo.** This section originally mapped the training onto the project from secondhand context only (a solution deck, before the repo existed locally). It has since been checked file-by-file against the actual `zimmermann-pwa` repo and against your personal Claude Code setup in `manndotfiles`. What follows is corrected where the repo disagreed with the original guess, and expanded where the repo turned out to have more (or less) than assumed. A few things are still genuinely unresolved — those are flagged as open items below, not silently picked one way. Confirm anything still marked *to confirm* with your leads (Tim Lavelle, Jeffrey Cruz); treat everything else here as load-bearing, not hypothesis.
+
+**Keeping this section honest:** re-verify §16 against the repo after any major architecture change — a new squad-ownership model, a new integration wave, a PWA Kit major-version bump — or, absent a specific trigger, at least once a quarter. This section went stale once already without anyone noticing until it was actually checked; a bridge section nobody re-checks is precisely the "Lead drift" §15 warns about, applied to this document itself.
+
+### 16.1 Stack and methodology mapping — verified
+
+| Training (TelcoNow) | Zimmermann — verified |
+|---|---|
+| Next.js 14 | PWA Kit on Salesforce Managed Runtime (MRT) — React-based, extending `@salesforce/retail-react-app` v10 via a slim `overrides/` layer |
+| `create-next-app` scaffold | PWA Kit generator — same rule: don't run it by hand, let Claude Code build from the brief |
+| NextAuth | SFCC / SLAS auth, handled in `overrides/app/ssr/slasTokens.ts` (Tier 1) — the React idioms don't map, learn the PWA Kit way |
+| Contentful (training's headless CMS) | Genuinely in scope, but check before trusting the tooling: `.claude/skills/contentful-register-component` and `.claude/skills/contentful-drift-check` both assume a component registers via a co-located `*ContentfulDefinition.ts` file. The three components actually live in Contentful Studio today (`CollectionHero`, `ImageText`, `ShoppableImage`) are instead inlined in one array in `overrides/app/components/contentful/experiences/definitions.ts` — no `*ContentfulDefinition.ts` file exists anywhere in the repo yet. Run drift-check today and it silently checks zero pairs; a clean report currently means "nothing matched the expected file pattern," not "no drift." Reconcile the convention (or the skill) before trusting either one's output. |
+| Tailwind tokens | Chakra UI props first, tokens in `overrides/app/theme/foundation/` (Tier 1, UI-designer owned) |
+| `build-log.md` (imagined) | No single file. Team-shared state lives in `.docs/memory/projectState.md` (formal snapshot) plus a personal, gitignored `.claude/session-notes.md` (informal per-developer carryover). Both are read by the `/session-start` skill at the top of every session — run it. |
+| `component-registry.md` (imagined) | **Better than imagined.** `.claude/registry/{components,hooks,pages,routes,utils}.md` — auto-generated by `scripts/generateRegistry.mjs`, refreshed on every file write by a hook. Not hand-curated, so it can't go stale from someone forgetting to update it. |
+| "Story skill" (component scaffold) | `.claude/skills/new-component` — scaffolds `index.tsx` + `index.stories.tsx` (+ a test if logic-heavy) per `conventions.md`. **Terminology warning:** don't say "story" unqualified to the squad. `new-component`'s story is a Storybook file. `.claude/skills/qa-generate`'s story is a Jira user story becoming a Gherkin `.feature` file. Same word, two unrelated artifacts — be explicit about which one you mean. |
+| Two-reviewer gap-hunt | `.claude/skills/feature-spec` is the real, working planning-layer skill — one-question-at-a-time clarification, then parallel research agents against the registry/patterns/upstream, then a scoped spec with a ready-to-paste Claude Code prompt. This is closer to the training's ideal than the training's own workflow was. |
+| Hardening checklist | `.claude/skills/code-quality` (read-only audit against `conventions.md`) and `.claude/skills/pr-checklist` (runs code-quality, then classifies every changed file by tier/owner into a PR description). Run both before opening a PR, not just before calling something "done" in your head. |
+| The "corrections → rules layer" loop (§9.6) | Partially automated, not manual-only as the training assumed: a Stop hook (`.claude/hooks/session-reflect.sh`) fires at the end of any session with uncommitted changes and drafts a dated proposal into `.docs/agents-proposals/` covering candidate edits to `AGENTS.md` / `.docs/memory/*` / `.claude/rules/*`. It never auto-merges — you still review and apply by hand. `.docs/memory/feedback.md` itself is currently empty; the hook is the active loop, not that file. |
+
+Five more skills are real and map cleanly onto sections above, even though nothing above names them yet. `.claude/skills/scope-check` operationalizes §3's "is your plan ready for that?" — it reviews a *proposed* Claude Code prompt before you run it and verdicts it SAFE / RISKY / BLOCKED against the tier system. `.claude/skills/onboarding` is the actual mechanism behind §12's "multiply/mentor" — a role-aware, interactive first-day walkthrough, not just an aspiration to "transfer knowledge." `.claude/skills/qa-generate`, beyond the terminology note above, has its own two-step gate — Gherkin draft, then **stop for Lead QA sign-off**, only then generate the Playwright spec — a lived, QA-side instance of §7's "stop and get sign-off before code." `.claude/skills/upstream-sync-review` is the concrete tool for the framework gap from §0 — it's how you decide whether to bump the PWA Kit dependency without breaking the override surface. And `.claude/skills/generate-changelog` is a real, four-audience (dev/QA/product/GitHub Release) reporting tool that could anchor §14's "the showcase is honest, not polished" ritual directly.
+
+**Still accurate, now with real names attached:** the rules layer as a **shared, two-squad contract** (not personal memory) remains arguably your single highest-leverage responsibility as FE Lead — this is the scale gap from §0. That contract isn't just written down, either — it's mechanically enforced: root `CODEOWNERS` maps every tier to a real GitHub team (`@ZimmermannAU/tier-1-approvers`, `tier-2-approvers`, `pwa-squad-a`, `pwa-squad-b`, and `pwa-qa-team` for test paths), and branch protection blocks a merge without the right team's review. §2's "Decide → set the convention so nobody re-litigates it" has a literal, checkable answer on this project: whichever `CODEOWNERS` says — assuming it agrees with the rest of the rules layer, which §16.4 shows it doesn't always. The regroup culture (§14) is still your cross-squad review cadence, run on your sprint/PI rhythm. Descope-never-cut, the 20-min rule, and deploy-first still directly protect margin on a fixed-price engagement. And the CI-CD gates are real and confirmed: `qa.yml` (Vitest + Storybook a11y, every PR into `develop`/`release/**`) and `digital-sit.yml` — the composite "Digital SIT Gate" (Playwright P0 + bundle-size + Lighthouse CI) on `release/**`. NewStore's OMS SIT runs as a genuinely parallel, non-blocking lane that only converges with Digital at the Stage tier — the original "Digital SIT; NewStore SIT" framing was directionally right; now you have the actual workflow files to point to.
+
+### 16.2 Corrections — claims that didn't hold up
+
+- **"14 integrations, four connector patterns routing through MuleSoft" — wrong, drop it.** No document in the repo supports either number. The real count is **18 PWA-layer integrations** (`.docs/temp/integration/index.md`, confirmed by `.docs/memory/projectState.md`'s status table), or **~28** including server-to-server/out-of-band systems (`.docs/architecture.md`'s full integration map — Avalara, Transperfect, Zendesk, Feedonomics, and others). Even `.docs/temp/openItems.md` contradicts itself — its prose says "fifteen," its own table and total line say 18. Cite "18 PWA-layer integrations" and drop the connector-pattern count entirely; the real MuleSoft routing is heterogeneous per integration (GiveX alone uses three different MuleSoft-involving paths depending on validate/redeem/issue/balance).
+- **The "shared AI brain" isn't real — don't cite it as infrastructure.** `.docs/planning/sharedAiBrainBrief.md` proposes a pgvector/RAG knowledge base with its own MCP server and a `/knowledge` skill. It was never built — no fifteenth skill, no vector DB, nothing. What *is* real and does the Confluence/Jira-connectivity job it was reaching for: a plain `mcp-atlassian` MCP server, configured in root `.mcp.json`, giving Claude Code direct Jira/Confluence read/write with none of the semantic-search ambition. Don't oversell the aspiration to the squad as if it shipped.
+- **The account-level instructions baseline from §4 doesn't exist as a file yet.** There is no committed prose instructions document anywhere in `manndotfiles` or elsewhere on this machine — verified directly. What you actually have is *tool configuration*: `claude/settings.seed.json` sets a global `effortLevel: "high"` dial, and your curated plugin list (`superpowers`, `code-review`, `pr-review-toolkit`) pulls in skills that already push back on rubber-stamping by design (e.g. `superpowers:receiving-code-review` explicitly requires "technical rigor and verification, not performative agreement"). That's a real, working approximation — but if you want the actual instructions-file baseline §4 describes, closing that gap means writing it, not assuming it's already there.
+
+### 16.3 Real capabilities the original bridge never mentioned
+
+Things that exist in the repo today that neither the training nor the original bridge covered:
+
+- **The auto-generated registry** (`.claude/registry/`, §16.1) — check it before every build per §9.4, and trust it more than any hand-written doc, since it can't go stale.
+- **Five automation hooks** (`.claude/hooks/`): `tier2Warn.sh`, `contentfulDriftWarn.sh`, `registryUpdate.sh`, `testFileRemind.sh`, and `session-reflect.sh` (the doc-proposal drafter from §16.1), wired into `.claude/settings.json` across PreToolUse/PostToolUse/Stop events. Together they already enforce pieces of your quality bar mechanically — check `.claude/settings.json` for exactly which hook fires on which event before assuming something still needs a manual check.
+- **CodeRabbit** (`coderabbit.yaml`, Tier 1) — a second, independent AI reviewer wired into the PR flow, separate from anything Claude Code does. Your review culture (§14) has two AI reviewers plus human review in the loop, not one.
+- **`weekly-agents.yml`** — despite the name, this runs no AI agent. It's a scheduled job that sweeps for components missing tests/stories, audits orphaned Contentful definitions, and reminds open release PRs to run `/generate-changelog`. Don't describe it to the squad as "an AI agent" — it's plain automation with a misleading filename.
+- **The rules layer isn't Claude-Code-exclusive.** `scripts/syncCursorRules.mjs` mirrors `.claude/rules/` and `.claude/skills/` out to `.cursor/rules/skills/*.mdc` and `.vscode/instructions/workflows.md`. If anyone on either squad works in Cursor or plain VS Code instead of Claude Code, the same conventions still reach them — worth knowing if you're relying on the rules layer as your enforcement mechanism across the whole squad, not just Claude Code users.
+
+### 16.4 Your first gap-hunts — live, unresolved contradictions
+
+Section 7 says to find every gap before Claude Code does. Here are four already sitting in the repo, found by cross-referencing real sources against each other. None are resolved below — that's deliberate, and it's a call for you and the leads, not something to silently pick a side on in a document.
+
+**1. Who owns Home, PDP, and PLP?**
+- `squadA.md`, `squadB.md`, and `.docs/memory/sprintScope.md` all say **Squad A** — but `squadA.md` and `squadB.md` both self-label *"Draft squad split — scope can still change as sprints are confirmed,"* which is a real reason to weight them lower, not just a hedge.
+- Root `CODEOWNERS` and the auto-generated `.claude/registry/pages.md` say **Squad B** — and unlike the draft rule files, these two are the mechanically current, enforced sources.
+- Three skills (`onboarding`, `feature-spec`, `qa-generate`) also say Squad B, but don't count that as three independent checks — it's the same assumption hardcoded into all three prompts. It's not academic: `onboarding`'s actual interactive script tells a new Squad B developer, unconditionally, that they own `product-detail/` and `product-list/`. If Squad A turns out to be correct, this skill is actively misinforming every new hire today, not just disagreeing on paper.
+- Everyone agrees cart/checkout is Squad A and search/account is Squad B — the fault line is specifically Home/PDP/PLP.
+
+**2. May Claude write directly to memory and rules files, or must it always propose first?**
+- `.claude/hooks/session-reflect.sh`, a Stop hook, says Claude must *never* edit `.docs/memory/*`, `.claude/rules/*`, or PRDs directly — only draft a dated proposal into `.docs/agents-proposals/` for a human to review and apply by hand.
+- `.claude/skills/session-start`'s own instructions describe writing to memory files directly, the moment something worth recording comes up.
+- `frozenFiles.md`'s Tier-1 governance list doesn't include `.docs/memory/*` at all — the file-protection tier that would normally justify the hook's "never direct-edit" stance.
+- This one is sharper than #1 — it's not just about who reviews a PR, it's about what Claude is actually allowed to do unprompted on this repo, and the answer currently depends on which doc a session happens to read first.
+
+**3. Are the `.docs/prompts/` build-prompt templates actually "done"?**
+- All three carry a `Status — done. Kept for traceability.` banner.
+- Each one lists doc-artifact paths under a bare `docs/` directory as part of what it produced — and that directory doesn't exist anywhere in this repo. (The code/config artifacts they describe — `digital-sit.yml`, `playwright.config.js`, `.browserstack.yml`, and others — are all real and verified; only the documentation half of the "done" claim is stale, likely left behind by the project's later move to Confluence.)
+- This is the literal version of §7's own question: *"Is that gap fixed now, or did you just acknowledge it?"* These files acknowledged a plan and marked themselves done. Nobody went back to check.
+
+**4. Does `/code-quality`'s own default command even run?**
+- Its `SKILL.md` says: if no argument is given, run `git diff --name-only main`.
+- Run that in this repo today and git errors immediately — `fatal: ambiguous argument 'main': unknown revision or path not in the working tree` — there is no local `main` branch, only `develop`.
+- Even where `main` resolves (say, after a fetch), it's the wrong base per `AGENTS.md`'s own Branch Rules table: `feature/*` and `fix/*` branch from `develop`, so diffing against `main` would pull in everything already merged to `develop` from unrelated, already-finished work.
+- `/pr-checklist`, which calls `/code-quality` internally, gets this right — it diffs against `develop`. The two skills disagree with each other, and the one most people would reach for on its own is the one that's broken.
+
+All four are the "is this a rule Claude can check against, or an aspiration it will ignore" failure mode from §6 — except worse, because each would pass a casual read. #1 would route a PR to the wrong reviewer, or actively misinform a new hire on day one. #2 means two Claude Code sessions on this same repo could legitimately behave differently depending on which rule they happened to read first. #3 means a document you'd otherwise trust as "done" is quietly missing half of what it claims. #4 means the tool you'd reach for to check your own work fails outright unless you already know to pass it an argument. Acknowledging all four in this paragraph isn't the fix, per §7's own distinction — the fix is whichever file actually changes.
+
+### 16.5 The honest close
+
+The training gave you a *transferable methodology* and proved it on a solo React build. Your job takes that methodology into **shared-codebase, two-squad, fixed-price delivery on a stack you don't yet have deep muscle memory in.** The discipline carries over completely. The framework fluency and the leadership craft are the two things you have to build deliberately on top of it.
+
+What's different now versus when this section was first written: you're no longer bridging from a solution deck. The repo is real, most of what it needed has already been read once, end to end, and the gaps that remain (§16.2's corrections, §16.4's contradictions) are *knowable* — which, per §7, means they're closeable. This document is only useful if you actually close them, not just read that they exist.
+
+The quality ceiling is set by you. So set it high, and hold it when it's inconvenient.

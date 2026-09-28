@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Multi-app support + cost model — resolved via official MRT docs",
+  "description": "Multi-project support confirmed YES; 100 total/10 production env org caps confirmed; environments themselves are unmetered. Only residual: Zimmermann's specific commercial cost for an additional MRT project (see task #8).",
+  "activeForm": "Confirming multi-app support + cost model with Gideon/platform",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

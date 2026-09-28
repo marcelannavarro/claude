@@ -1,0 +1,648 @@
+
+
+####################################################################################################
+THREAD [0]  .claude/registry/components.md:23
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Regenerate the Footer description from the Footer component.**
+
+The row describes a non-breaking-space helper, not the Footer. This makes the registry metadata misleading. Add a component-level JSDoc description or update `extractDescription` to select the public Footer declaration, then regenerate `.claude/registry/components.md`.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:e5c4cf18f40a4306b7453c9e -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits f664f59 to 706e47d
+
+--- marcelannavarro ---
+Fixed in \`706e47d\`. Rather than adding a component-level JSDoc, `extractDescription` now takes the row's own declaration name and prefers the docblock attached to it, falling back to the previous first-qualifying-JSDoc rule. Demoting the offending comment was tried first and just handed the row to the next JSDoc down (`NEW_TAB_SUFFIX`), so the whole-file fix was the right level. Blast radius checked before committing: only 2 registry rows moved, `Footer` and the new `safeHref`.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, confirmed. The Footer registry row now has a Footer-specific description. The declaration-aware `extractDescription` change addresses the source-selection problem.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [1]  .claude/rules/frozenFiles.md:36
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+‹details elided›
+
+**Obtain Tier 1 approval before merging.**
+
+- Obtain an approving code-owner review for `.claude/rules/frozenFiles.md` from `@ZimmermannAU/tier-1-approvers`.
+- Keep `.cursor/rules/tier1FrozenFiles.mdc` and `.github/copilot-instructions.md` generated from the source rule. They are synchronised.
+
+‹details elided›
+
+‹details elided›
+
+<!-- consolidated_sites_start -->
+<!--
+<consolidated_sites>
+<site>
+<role>anchor</role>
+<file>.claude/rules/frozenFiles.md</file>
+<line_range>27-36</line_range>
+</site>
+<site>
+<role>sibling</role>
+<file>.cursor/rules/tier1FrozenFiles.mdc</file>
+<line_range>34-43</line_range>
+</site>
+<site>
+<role>sibling</role>
+<file>.github/copilot-instructions.md</file>
+<line_range>360-369</line_range>
+</site>
+</consolidated_sites>
+-->
+<!-- consolidated_sites_end -->
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:57bc5a5e1ad341fa88984c43 -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits 8c25f11 to ac224a6
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Not changing this, and recording why so the same pattern isn't re-flagged.
+
+`.claude/rules/frozenFiles.md` is Tier 1 Governance. AGENTS.md's "Tier 1 Approval — How It's Actually Enforced" section provides a verified-session exception: the authenticated `gh` identity is checked against `@ZimmermannAU/tier-1-approvers`, and if it is a member the edit may proceed after naming the file and the reason. That check was run — `marcelannavarro` is a member — and both the file and the reason are named in the commit bodies of `af87b5b` and `f8d2f75`.
+
+The change is text-only. It corrects statements about the fonts that contradicted the code: the file claimed self-hosting was "for development and testing" when `ZimmFontFace` mounts unconditionally in `_app-config`'s provider tree and `staticFolderCopyPlugin` copies `overrides/app/static` in both the client and SSR webpack configs. No frozen path, owner, or tier classification was altered.
+
+Note the real merge gate is unaffected either way — CODEOWNERS routes this path to `@ZimmermannAU/tier-1-approvers` and branch protection requires that review before merge, independently of this workflow step.
+
+--- coderabbitai[bot] ---
+‹details elided›
+
+`@marcelannavarro`, thanks for the clarification and the evidence.
+
+`AGENTS.md` Lines 69-74 allow the verified-session exception for Tier 1 files. Commits `af87b5b` and `f8d2f75` name `.claude/rules/frozenFiles.md`, state the reason for the change, and record the verified-session check for `marcelannavarro`.
+
+The implementation also supports the corrected font-delivery statement. `ZimmFontFace` mounts in `_app-config` without an environment condition, and it declares the self-hosted font assets.
+
+I withdraw the finding. CODEOWNERS and branch protection remain the independent merge controls.
+
+🐇
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [2]  .storybook/main.js:12
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+**Protected Storybook configuration was changed in two files.**
+
+- `.storybook/main.js#L6-L11`: restore the protected configuration and obtain an approved asset-serving mechanism.
+- `.storybook/preview.tsx#L7-L21`: restore the protected preview configuration and obtain an approved font-mounting mechanism.
+
+As per coding guidelines: `.storybook/**`: Never modify `.storybook/` test or Storybook configuration files.
+
+‹details elided›
+
+‹details elided›
+
+<!-- consolidated_sites_start -->
+<!--
+<consolidated_sites>
+<site>
+<role>anchor</role>
+<file>.storybook/main.js</file>
+<line_range>6-11</line_range>
+</site>
+<site>
+<role>sibling</role>
+<file>.storybook/preview.tsx</file>
+<line_range>7-21</line_range>
+</site>
+</consolidated_sites>
+-->
+<!-- consolidated_sites_end -->
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:3320adb4fd37e74781d5b24c -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits 8c25f11 to ac224a6
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Not changing this. Correcting my earlier reply on this thread — it cited a document that is not in this repository, which nobody reviewing can verify. The argument rests on AGENTS.md alone, and it holds there.
+
+AGENTS.md Hard Rule #8 lists `.storybook/` flatly. But Hard Rule #4 defines the shape of the Tier 1 exception, and does it precisely:
+
+> Never modify `overrides/app/ssr.js`, `config/default.js`, `config/sites.js`, or `worker/main.js`. **These are absolute — the verified-session exception in Tier 1 Approval does not apply to them, regardless of approver status.** `.github/workflows/` is Tier 1 CI/CD config and instead follows the standard Hard Rule #2 process (**verified-session exception applies**).
+
+Two things follow from that text. It names exactly four absolutes, and `.storybook/` is not among them. And it then takes another Tier 1 path — `.github/workflows/`, frozen in `.claude/rules/frozenFiles.md` the same way `.storybook/` is — and states the exception *does* apply to it. So being Tier 1 is not by itself disqualifying; being one of the four named absolutes is.
+
+`.storybook/` is Tier 1 per frozenFiles.md and is not one of the four. Proceeding on that basis, with the check in AGENTS.md's Tier 1 Approval section actually run — `gh api user` returns `marcelannavarro`, a member of `@ZimmermannAU/tier-1-approvers` — and both files named in the commit body.
+
+On the substance: 14 lines across the two files, and both are needed for the fonts to be reviewable at all. `staticDirs` maps `overrides/app/static` to `/static` so the fallback path in `overrides/app/theme/fontFace.tsx` resolves in Storybook instead of 404ing, and `preview.tsx` mounts `ZimmFontFace` so specimens render the real face. Without both, Storybook renders the fallback stack — which measures roughly 13% wider — while the app renders Futura Round, so no visual comparison made in Storybook can be trusted. No test configuration, addon behaviour, or CI-relevant setting was touched.
+
+Worth stating plainly that none of this is the merge gate. CODEOWNERS routes these paths to `@ZimmermannAU/tier-1-approvers` and branch protection requires that review regardless of anything argued here.
+
+Separately, and not an objection to this finding: `.storybook/test-runner.js` does not exist, so `@storybook/addon-a11y` is not actually gated in CI even though the job is named for it and `preview.tsx` sets `a11y.test: 'error'`. Integration's call, not this PR's.
+
+--- coderabbitai[bot] ---
+‹details elided›
+
+`@marcelannavarro`, thanks for the detailed policy context.
+
+I withdraw this finding. `AGENTS.md` Hard Rule `#2` permits the verified-session exception for Tier 1 files. Hard Rule `#4` identifies the files that remain absolute, and `.storybook/` is not in that list. My original finding incorrectly treated Hard Rule `#8` as an absolute restriction.
+
+Hard Rule `#8` and the Tier 1 exception text should be reconciled in the governance documents. The supplied shell output does not include the FED Lead playbook or the membership-check result, but the stated process matches `AGENTS.md`.
+
+🐇
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [3]  overrides/app/components/_app-config/index.tsx:10
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+‹details elided›
+
+**Complete the required Global Shell review before merging.**
+
+`overrides/app/components/_app-config/index.tsx` is a Tier 2 protected Global Shell file. Use a feature branch, obtain review from a developer other than the author, and coordinate between both squads before merging to `develop`. Run `npx tsc --noEmit` after modifying `overrides/`.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:bbb6b20f48b38f9c1c318d69 -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits 8c25f11 to ac224a6
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Correct on the process requirement, and it is being followed — recording it here rather than changing code.
+
+`overrides/app/components/_app-config/index.tsx` is Tier 2 Global Shell per `.claude/rules/protectedFiles.md`. This is a `feature/*` branch off `develop`, the PR is open for review, and it will not merge without an approving review from someone other than the author — CODEOWNERS routes Global Shell paths and branch protection enforces it, so that is a hard gate rather than a convention.
+
+`npx tsc --noEmit` is clean, and has been re-run after every change to `overrides/` on this branch.
+
+The change itself is 2 lines — an import and one JSX element (`<ZimmFontFace />`) — with no change to provider order, configuration, or any other shell behaviour. Cross-squad coordination is the outstanding item, and the Tier 2 disclosure in the PR body names this file for that reason.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the clarification.
+
+The change does not require an implementation update. The stated feature branch, non-author approval gate, and successful `npx tsc --noEmit` satisfy the applicable review and validation requirements.
+
+Cross-squad coordination remains the only outstanding Tier 2 requirement. Keep this thread open until that coordination is complete.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [4]  overrides/app/components/footer/contentfulSchema.placeholder.ts:85
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🗄️ Data Integrity & Integration_ | _🟠 Major_ | _⚡ Quick win_
+
+**Add the contact-channel fields to the `footerConfig` placeholder.**
+
+`FooterConfigEntry` in `overrides/app/types/contentful.ts` declares `phoneHref`, `whatsAppHref`, and `emailHref`, and `overrides/app/components/footer/index.tsx` reads all three at lines 399-401. This schema declares none of them. When the schema moves into the sync script, editors will not be able to populate the contact icons, and the icons will stay non-interactive. Add the three optional fields now so the schema and the type stay aligned.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:refactor_suggestion -->
+
+<!-- cr-comment:v1:58567e58de5705241c0ee5fa -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits f664f59 to 706e47d
+
+--- marcelannavarro ---
+Fixed in \`fce5af1\`. `phoneHref`, `whatsAppHref` and `emailHref` are now declared as optional `Symbol` fields, alongside a `showContactChannels` Boolean — see the reply on the heading-match finding for why that flag exists. Each carries a note that values pass through `isSafeHref` before reaching an anchor, so a CMS editor cannot introduce a `javascript:` or `data:` URL.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the update. The schema fields now align with `FooterConfigEntry` and the footer contact-channel inputs.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [5]  overrides/app/components/footer/index.tsx:319
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🔒 Security & Privacy_ | _🟠 Major_ | _⚡ Quick win_
+
+**Unguarded URLs reach anchor `href` attributes in two places.** The footer renders externally supplied URLs directly into `href` without an unsafe-URL check, so a `javascript:` value would execute on click.
+- `overrides/app/components/footer/index.tsx#L288-L319`: guard the Contentful `phoneHref`, `whatsAppHref`, and `emailHref` values, and fall back to the non-interactive `<span>` branch when a URL fails the check.
+- `overrides/app/components/footer/index.tsx#L145-L192`: apply the same guard to `privacyPolicyHref` before line 173 renders it.
+
+‹details elided›
+
+‹details elided›
+
+<!-- consolidated_sites_start -->
+<!--
+<consolidated_sites>
+<site>
+<role>anchor</role>
+<file>overrides/app/components/footer/index.tsx</file>
+<line_range>288-319</line_range>
+</site>
+<site>
+<role>sibling</role>
+<file>overrides/app/components/footer/index.tsx</file>
+<line_range>145-192</line_range>
+</site>
+</consolidated_sites>
+-->
+<!-- consolidated_sites_end -->
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:2e08e36e3a282a952948495c -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits f664f59 to 706e47d
+
+--- marcelannavarro ---
+Fixed in \`fce5af1\`. Both sites now gate on `isSafeHref` before rendering an anchor; a rejected or absent value falls through to a labelled non-interactive `<span>`, which is the correct treatment for "no usable destination" and avoids a WCAG 2.4.4/3.2.4 false affordance. The guard was extracted to `overrides/app/utils/safeHref.ts` in `f664f59` so the footer and `ZimmNavItem` share one implementation, with 13 unit cases and a `ContactChannelFallbacks` story exercising the degraded path through the real component.
+
+Worth flagging that your later finding on `safeHref.ts` is correct and still open — the allow-list accepts `/\example.com`. Tracking that separately.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the confirmation. The `isSafeHref` guard now covers both reported anchor-rendering sites. The fallback behaviour is appropriate for absent or rejected destinations.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [6]  overrides/app/components/footer/index.tsx:347
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🎯 Functional Correctness_ | _🟡 Minor_ | _⚡ Quick win_
+
+**The locale control is announced as actionable but performs no action.**
+
+`onClick={undefined}` leaves a focusable `<button>` with `aria-label="Change locale"`. Keyboard and screen-reader users reach it, activate it, and nothing happens. The label text `'United States (USD) / ENG'` is also hardcoded, and it contradicts the fixture locale (`Global Footer — EN-AU`), so the rendered footer states the wrong locale.
+
+Until the locale selector lands, set `disabled` (or `aria-disabled` plus `tabIndex={-1}`) so the control does not promise an action, and move the label text into a named constant.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:fb8f27235b137131f136cd83 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+--- marcelannavarro ---
+Deferring both halves of this, deliberately rather than in disagreement — the a11y point is valid.
+
+SFCC-55 is scoped to the footer shell. Its stated assumption is "We will build the footer structure first, without any content behind the different links and buttons", and it defers link destinations and behaviour to separate stories. A locale selector is content behind a button, so an inert control is what this story asked for rather than an oversight.
+
+On the label: `LOCALE_LABEL_PLACEHOLDER` is annotated in place with the reason it is hardcoded and the fix that replaces it — region and currency come from site config, not Contentful, so `FooterConfigEntry` has no field for them, and the real implementation reads `site.l10n` and the site currency via `useMultiSite` when the selector lands. It also no longer says "United States (USD)" on an AU storefront, which was the concrete error in your original comment; `cc9a8f1` corrected it.
+
+On the dead `onClick`: agreed, and worth being precise that it is the weaker half of the deferral. A focusable `<button aria-label="Change locale">` with no handler is a false affordance, and the same file applies the opposite treatment 60 lines earlier — `ContactIconRow` renders a labelled non-interactive `<span>` rather than a dead anchor, citing WCAG 2.4.4 / 3.2.4. `aria-disabled` would close it in one attribute. Not taking it here because it is a behavioural change to a control whose behaviour is another story's subject, and half-implementing the accessible state of a control that is about to be rewritten adds a thing to undo.
+
+Recorded rather than resolved, so it travels with the locale-selector story instead of being lost.
+
+--- coderabbitai[bot] ---
+‹details elided›
+
+`@marcelannavarro`, thanks for the verification output.
+
+The locale label correction is present. `LOCALE_LABEL_PLACEHOLDER` now states `Australia (AUD) / ENG` and documents the planned `useMultiSite` source.
+
+The locale control remains focusable with `onClick={undefined}`. The accessibility concern remains valid, but it is intentionally deferred to the locale-selector work. I will keep this thread open until that work addresses the control state or the follow-up is created.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [7]  overrides/app/components/footer/index.tsx:479
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🎯 Functional Correctness_ | _🟠 Major_ | _🏗️ Heavy lift_
+
+**Do not key layout behaviour off the English heading text.**
+
+Lines 429, 447, and 474 compare `group.fields.heading` with `CONTACT_GROUP_HEADING` (`'Contact'`). The heading is localised Contentful content, and this footer ships to eight storefronts. For any locale whose heading is not exactly `'Contact'`, the contact indent is lost and `ContactIconRow` is not rendered at all, so the phone, WhatsApp, and email channels disappear.
+
+Key off stable data instead, for example `group.sys.id`, or add an explicit boolean field such as `showContactChannels` to `footerNavGroup` and to `FooterNavGroupEntry`.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:refactor_suggestion -->
+
+<!-- cr-comment:v1:ed47fdd4b6e57a02edfa9966 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits f664f59 to 706e47d
+
+--- marcelannavarro ---
+Fixed in \`fce5af1\`. `heading === 'Contact'` is gone; the three sites now key off a `showContactChannels` boolean on the group. Verified locale-independent by renaming the fixture heading to `Kontakt` and confirming the icon row and indent still render. `CONTACT_GROUP_HEADING` was removed entirely so the string cannot come back.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the confirmation. The `showContactChannels` condition removes the locale dependency and keeps the contact icons and layout active for translated headings.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [8]  overrides/app/components/ui-kits/atoms/zimmTextInput/index.stories.tsx:64
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_🎯 Functional Correctness_ | _🟠 Major_ | _⚡ Quick win_
+
+**Enable clearing in the `Filled` story.**
+
+`ZimmTextInput` defaults `clearable` to `false`. The play function requires `Clear input`, so this Storybook test fails in CI. Set `clearable: true` in the story args, or remove the clear-button assertions.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:f7ced2fc7be3677122ba879e -->
+
+_Source: Pipeline failures_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Confirmed as addressed by @marcelannavarro
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Fixed in \`2dd5e13\`, taking the second option. `Filled` now asserts the default — no clear control — via `queryByRole`, and a new `Clearable` story carries the original clear-button assertions. `clearable` is a deliberate opt-in defaulting off: SFCC-55's AC specifies the Stay in Touch section as "an email input field and submit button", two controls not three, and Kiera confirmed the footer's trailing glyph is the submit chevron rather than an ✕.
+
+You were right that this failed CI, and my own check missed it — I grepped case-sensitively for `"Clear input"` while the story matched `/clear input/i`.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the correction and the detailed context.
+
+The split between `Filled` and `Clearable` preserves the intentional `clearable: false` default and gives each behaviour dedicated Storybook coverage. The original CI failure is addressed.
+
+🐇 ✓
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [9]  overrides/app/hooks/useZimmTextInputState.test.ts:3
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Clear Vitest mocks after each test.**
+
+Add `afterEach(() => vi.clearAllMocks())`. This keeps future shared mocks isolated between tests.
+
+As per coding guidelines, “vi.clearAllMocks() after each test.” 
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:tapir -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:ac79f8ceec49b8238e1659df -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Addressed in commits f664f59 to 706e47d
+
+--- marcelannavarro ---
+Fixed in \`7e1c081\`.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the fix.
+
+`@marcelannavarro` Thanks for confirming the fix. I couldn't resolve this review thread on the repository platform, so it remains open. Please retry or resolve it manually.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [10]  overrides/app/theme/components/footer.ts:348
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Add a visible focus ring to the contact icon links.**
+
+`localeButton` defines `_focusVisible` with an inverse outline at lines 461-465. `contactIconLink` defines none, so a focused contact anchor falls back to the browser default outline on the dark footer background. Contrast of that default is not guaranteed. Add the same inverse focus treatment for consistency.
+
+‹details elided›
+
+<!-- suggestion_start -->
+
+‹details elided›
+
+<!-- suggestion_end -->
+
+‹details elided›
+
+<!-- fingerprinting:phantom:medusa:komodo -->
+
+<!-- cr-indicator-types:potential_issue -->
+
+<!-- cr-comment:v1:d707ca04eed0371151e170e4 -->
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Confirmed as addressed by @marcelannavarro
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Fixed in \`fce5af1\`. `contactIconLink` now carries the same inverse `_focusVisible` treatment as `localeButton` — `var(--zimm-border-width-default)` solid, `text.inverse`, offset `var(--zimm-focus-ring-offset-default)`. Verified in-browser at `solid 1px @2px rgb(255,255,255)` on real keyboard focus.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks. The change addresses the focus-visible contrast and consistency requirement for `contactIconLink`.
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+
+####################################################################################################
+THREAD [11]  overrides/app/theme/fontFace.tsx:52
+####################################################################################################
+
+--- coderabbitai[bot] ---
+_📐 Maintainability & Code Quality_ | _🟠 Major_ | _⚡ Quick win_
+
+**Add the required Vitest coverage for the URL helpers.**
+
+`assetRoot` contains an environment branch, and `fontUrl` performs a transformation. Cover SSR, browser `window.Progressive.buildOrigin`, and the Storybook fallback. Assert generated CSS output rather than private function calls.
+
+As per coding guidelines: pure utilities in `overrides/app` with at least one conditional branch or transformation require Vitest coverage.
+
+‹details elided›
+
+<!-- fingerprinting:phantom:poseidon:caracal -->
+
+<!-- cr-indicator-types:refactor_suggestion -->
+
+<!-- cr-comment:v1:05225ca05dedf76ccf5ccbbf -->
+
+_Source: Coding guidelines_
+
+<!-- This is an auto-generated reply by CodeRabbit -->
+
+✅ Confirmed as addressed by @marcelannavarro
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+
+--- marcelannavarro ---
+Fixed in \`7e1c081\`. Six tests covering all three `assetRoot` branches — SSR, `window.Progressive.buildOrigin`, and the Storybook fallback — asserting the generated `@font-face` CSS rather than internal calls, as you asked.
+
+One detail worth recording: the first attempt was vacuous. jsdom always provides `window`, so every case took the browser branch and the SSR path was never exercised, and two assertions iterated an empty array. Fixed with `// @vitest-environment node` plus an explicit `toHaveLength(2)` before the loop.
+
+--- coderabbitai[bot] ---
+`@marcelannavarro`, thanks for the confirmation. The coverage now exercises the SSR, browser `window.Progressive.buildOrigin`, and Storybook fallback branches through generated CSS output. The Node test environment and `toHaveLength(2)` assertion prevent the vacuous cases described.
+
+---
+
+‹details elided›
+
+✅ Review thread resolved.
+
+<sub>You are interacting with an AI system.</sub>
+
+<!-- This is an auto-generated reply by CodeRabbit -->

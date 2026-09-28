@@ -1,0 +1,188 @@
+# PR #57 / SFCC-89 audited against `uiBuild-knowledge.md`
+
+Audit date 2026-08-22 · branch `feature/SFCC-89_pdp-ui-static-product-information` @ `d526ad1` ·
+read-only, nothing in the repo or the reference doc was modified.
+
+> **Handling constraint.** `/Users/marcel.a.n.navarro/Dev/uiBuild-knowledge.md` is a **local-only**
+> reference. It must never appear in a PR comment, commit message, or code comment. Everywhere a rule
+> in it also exists in the repo, the repo file is named as the citable source — use that one when
+> writing anything the author or a reviewer will see.
+>
+> **Method.** `[V]` = I read the code / ran the command myself. `[F]` = taken from the consolidated
+> findings and not independently re-run. Doc quotes are verbatim with line numbers.
+
+---
+
+## (a) Verdict
+
+The doc would have prevented most of what is wrong with **how this PR is styled and verified**, and
+none of what is wrong with **what it integrates**. Ten material findings map to rules the doc states
+plainly and the build broke anyway — the styling layer is authored in the wrong place in two of three
+new components, fifteen `var(--zimm-*)` sites sit in JSX where the doc's own chain diagram puts
+`textStyle` and semantic tokens, two new numeric-alias-from-a-recipe violations join the five the doc
+already lists by name, the `?? ''` empty-element layout void is the doc's §7 pattern (2) verbatim and
+is fixed at the call site the doc explicitly says not to fix it at, and the focus ring the doc says
+belongs in the recipe is answered two different ways inside one PR and absent from the third. Against
+that, the doc is **completely silent** on all three P0s: the Tier 1 `package.json` change, the
+`isomorphic-dompurify` module-scope JSDOM evaluation that 500s every SSR request while `tsc`, Vitest,
+Storybook a11y and `npm run build` all stay green, and the fact that a page-level override quietly
+removes add-to-bag from the storefront. The doc also carries four factual errors that matter here —
+its Figma node-type rule is binary and wrong for hug-sized frames, its breakpoint numbers
+(768/860/1024) do not exist in this theme, its "settled" `ui-kits` layout does not exist on `develop`
+at all, and `recipeGuards.test.ts` — cited three times as the model verification artefact — lives only
+on an unmerged branch. Net for the Lead: treat the doc as authoritative on token resolution, styling
+layer, and verification discipline; do not treat it as a completeness check for a page override, and
+correct §3 and §5 before anyone builds against them.
+
+---
+
+## (b) VIOLATED — the doc warned, the build did it anyway
+
+| # | Doc rule (verbatim) | Code | Notes |
+|---|---|---|---|
+| **V1** | §3 L149-150: "**Styling surface: a theme recipe, always.** Not inline styles, not a `.zimm-*` class, not co-located CSS." | `overrides/app/components/breadcrumb/index.tsx:22-35` (`BASE_STYLE`, `LINK_PROPS` consts) · `overrides/app/components/ui-kits/atoms/zimmPageToolbar/index.tsx:28-33` (`PADDING` map) | **[V]** `ls overrides/app/theme/components/` = `button.ts header.ts index.ts listMenu.ts navConstants.ts pdpProductInfo.ts`. Neither component has a recipe. The author *did* build one for `PdpProductInfo` (commit `3e1686b`) and stopped — the branch is mid-migration. Citable repo source: `.claude/rules/overrideStyling.md` § "The hierarchy — reach for these in order", item 3. |
+| **V2** | §1 L22-24 (the one-way chain): "`theme/components/<name>.ts` recipes, consuming var(--zimm-*)" → "`component JSX` textStyle + semantic tokens only". §3 L155-158: "A stylesheet can only see `var(--zimm-*)`, which is derived output at the *bottom* of the pipeline. Author there and you forfeit `textStyle`, the named `theme.space` scale, semantic colour tokens, responsive arrays, and the theme drift guards." | 9 sites in shipped code: `pages/product-detail/index.tsx:52,61,62,63,69,70,71` · `components/breadcrumb/index.tsx:33` · `components/ui-kits/atoms/zimmPageToolbar/index.tsx:58`. Plus 6 duplicates in `pages/product-detail/index.stories.tsx:48,54,55,56,84,85,86` | **[V]** grepped. All resolve — no dangling var. Two of them are legitimately unavoidable today (`--zimm-scale-4500` 180px, `--zimm-scale-3500` 140px have no named token) but belong in a recipe, not JSX. Four have a named equivalent and should never have been vars: `:61,62 base` `--zimm-scale-800` = `2xl` **[V]** `zimmTokens.ts:163`; `:63` `--zimm-scale-400` = `m` **[V]** `:159`; `:70` `--zimm-scale-500` = `l` **[V]** `:160`. |
+| **V3** | §1 L79-80: "3. **Is the target permitted?** `--zimm-scale-NNN` numeric aliases are class-only; naming one from a recipe is itself a violation." L82-83: "Known numeric-alias violations: `listMenu.ts:17,33,65,84` and `header.ts:59`. Match them with `var(--zimm-scale-[0-9]+)`" | `overrides/app/theme/components/pdpProductInfo.ts:47,50` | **[V]** I ran the doc's own regex. It returns exactly the five known sites **plus these two new ones**, and the six JSX sites from V2. **Mitigating, and say so:** `--zimm-scale-700` (28px) and `--zimm-scale-1100` (44px) have no named-scale equivalent **[V]** `zimmTokens.ts:162,165`, the author documented both with a stated exit path (`pdpProductInfo.ts:41-50`), and the doc itself records at §10 L442-443 that `overrideStyling.md:65` and `theme/index.ts:47` contradict each other on precisely these aliases. This is the weakest of the ten. |
+| **V4** | §7 L310-311: "**(2) Fallback to empty string — a layout bug.** `heading ?? ''` renders an empty element that keeps its margins; measured as a roughly 64px void." L316: "Fix (2) and (3) **at the atom**, not the call site: one change covers every consumer." | `pages/product-detail/index.tsx:75` — `name={product?.name ?? ''}` — and `:42-45` — `formattedPrice` falls back to `''`. Consumed at `components/pdpProductInfo/index.tsx:32` (`<chakra.h1>`, rendered unconditionally) and `:34-36` (`<chakra.p>` price, rendered unconditionally) | **[V]** The doc names the exact idiom (`?? ''`). Both parts carry `marginBottom: 'l'` (20px) in the recipe — `theme/components/pdpProductInfo.ts:62,68` **[V]** — so a product with no `currency` leaves an empty `<p>` plus 20px of margin, and a nameless product an empty `<h1>` plus 20px. It is fixed **at the call site**, which the doc explicitly rules out. |
+| **V5** | §8 L350-352: "**2.4.7 Focus visible** — the ring belongs in the recipe's `_focusVisible` so every consumer inherits it." §8 L362-363: "**Interaction state belongs in the recipe** (`_hover`/`_active`/`_disabled`/`_focusVisible`)" | `_focusVisible` appears **zero times** across `components/breadcrumb/`, `components/pdpProductInfo/`, `components/ui-kits/` and `theme/components/pdpProductInfo.ts`. `breadcrumb/index.tsx:31` puts `_hover` in a component-file const. `zimmPageToolbar/index.tsx:55` reaches for `className="zimm-focus-visible"` instead | **[V]** grepped. Two different answers to the same question inside one PR, and neither is the recipe. The class route is also the thing §3 L149 forbids ("not a `.zimm-*` class"). Honest scope: browsers still paint a UA default outline, so this is "brand focus treatment not authored, and inconsistent", not "no ring at all". **Nobody has flagged this** — it is not in the consolidated findings. |
+| **V6** | §9 L376: "**a check must be made to fail deliberately before its pass counts.**" L382-385: "**Watch for a green test that encodes a bug as correct.** … If a test would pass equally on the broken and the fixed version, it asserts nothing." | `e2e/tests/zimm/pdp/SFCC-89_pdp-static-product-information.spec.js:42-51` — "Model copy is **not** shown when the attribute is not populated" · `components/pdpProductInfo/index.stories.tsx` `play` asserting optional fields are **absent** · `pages/product-detail/index.test.ts` — 5 cases, all `extractModelLine` happy paths | **[F]** for the CI result, **[V]** for the code shape. This is the doc's own "contact icons are not focusable passed because there were no hrefs to focus" pattern: with every PDP SSR request returning an error page **[F]**, an "is absent" assertion is trivially satisfiable. The regex has two known failure classes — attributed `<li>`, non-English copy — and **neither is covered by the 5 tests**. |
+| **V7** | §9 L374-376 (integrity principle): "The verification instrument was built from the same belief as the thing it verified, and was never made to fail on purpose." | `pages/product-detail/index.stories.tsx:43-65` hand-duplicates the page's entire JSX — grid, aspect ratios, all six `var(--zimm-scale-*)` values, the toolbar — importing only `PDP_OPTIONS_COLUMN_WIDTH` from the real page | **[V]** read both files side by side. `Pages/PDP` is a copy of the page, so it can never disagree with it; the one artefact a reviewer opens cannot fail on a page-layout defect. Flagging the fit honestly: the doc states this as a *principle*, not a named "don't duplicate the page in its story" rule. |
+| **V8** | §9 L425-428: "**No automated gate in this stack catches a layout defect.** … Only rendering the page beside Figma found it. Budget for that pass; nothing upstream of it will save you." | `pages/product-detail/index.tsx:14` — `PDP_OPTIONS_COLUMN_WIDTH = '360px'`, commented "Provisional — no matching zimm token; pending designer sign-off" | **[V]** for the code, **[F]** for the measurement. The pass was not budgeted: the value was guessed, and the measured Figma answer is **218px** — 142px wrong, which also costs the gallery 140px (`900 + 179 + 218 + 142 = 1439 ≈ 1440`). Same class: mobile side padding ships 32px (`--zimm-scale-800`) where the design is 30px and `grid.containerPadding.base` is **exactly** `'30px'` **[V]** `gridSystem.ts:19`. Citable repo source for the substance: `.claude/rules/overrideStyling.md` § "Component-local tokens" — "leave it inherited … rather than inventing a number — don't guess at design values." |
+| **V9** | §4 L202-208: "**The generalised check:** grep for who imports your path *and* for conditional renders of alternates." + the exact command | `overrides/app/components/breadcrumb/` was created and diverges from base (chevron → literal `/` at `:37-41`, `...rest` dropped at `:47`, `categories` made **required** at `:14`, `useStyleConfig('Breadcrumb')` replaced by in-file consts at `:22-35`) | **[V]** **I ran the doc's grep.** It returns two base consumers in two lines of output: `node_modules/@salesforce/retail-react-app/app/components/product-view/index.jsx:45` and `.../app/pages/product-list/partials/page-header.jsx:14` — the second is the **PLP** breadcrumb. Both import by package specifier, so the resolver *does* redirect them. The PLP is silently restyled by a PDP PR. Citable repo source: `.claude/rules/overrideStyling.md` § "The SFCC bridge pattern (shared components only)". |
+| **V10** | §1 L254-257: "Measure only after the real font loads: the fallback stack renders about 13% wider … `document.fonts.check()` returns `true` for unavailable families and is useless" | PR body test checklist: "`[x]` PDP golden path tested in local dev server (`npm start`): name, price, description, breadcrumb visible" | **[V]** `.claude/rules/frozenFiles.md` records that no font binaries are in this repo and "Type renders from the fallback stack in `foundation/fonts.ts`." Any local visual check on this branch measured a ~13% wider face, so that checkbox cannot have validated a single type metric or wrap point — which is exactly what SFCC-732/733 will be QA'd against. **Nobody has flagged this.** |
+
+### Also worth the Lead's attention — COMPLIED, and genuinely well
+
+Stated so the tone is calibrated: the branch is clean on the doc's own **most dangerous** item.
+
+- §1 L49-51 ("`padding: 'xl'` is correct; `width: 'xl'` is a catastrophe. On sizing and typography props, always the CSS var") — **[V] zero bare scale keys on any sizing or typography prop.** Sizing uses raw `var()` (`product-detail/index.tsx:69-71`), typography goes through `textStyle` or `var(--zimm-font-*)` (`pdpProductInfo.ts:24-33,60,73`), space-family props use registered named keys (`mb="m"`, `pl: '3xl'`). I also re-verified the doc's registration claim against `theme/index.ts` — `borderWidths, breakpoints, colors, fonts, space, textStyles` and nothing else. The doc is exactly right, and the branch obeys it.
+- §2 (namespace every recipe / register it) — **[V]** `ZimmPdpProductInfo` (`theme/components/pdpProductInfo.ts:56`), no SFCC collision, registered at `theme/components/index.ts:4,10`.
+- §2 (shorthand after longhand) — **[V]** `breadcrumb/index.tsx:52` orders `p={0}` before `sx.paddingInlineStart: 0`. Safe.
+- §3 (casing families) — **[V]** `breadcrumb/` kebab (SFCC override), `pdpProductInfo/` and `zimmPageToolbar/` camelCase (Zimmermann-authored). Correct in all three.
+- §3 L160-161 (data-fetching never in `components/`) — **[V]** `useProduct`/`useCategory` only at `product-detail/index.tsx:21-31`; all three components are prop-driven.
+- §3 (encode the a11y contract in the type) — **[V]** `ZimmPageToolbarProps` is a discriminated union (`zimmPageToolbar/index.tsx:7-17`), the doc's named pattern, applied correctly.
+- §4 (import an already-overridden sibling by relative path) — **[V]** `product-detail/index.tsx:6,8,9` all relative.
+- §5 (two Figma files, never cross-compare) — **[F]** the investigation used `QQ427wHWEUjsjP7H8v48Rs` only.
+- §7 L318-319 ("Never 'render nothing.'") — **[V]** the gallery is a coloured placeholder `<Box>` (`product-detail/index.tsx:56`), not an omission.
+- §9 (a11y IS gated; do not delete the block) — **[V]** `.storybook/preview.tsx` still sets `a11y.test: 'error'`; untouched by this branch.
+
+---
+
+## (c) SILENT — the doc does not cover this situation
+
+Each verified by grepping the doc for the relevant terms.
+
+1. **Dependency governance / Tier 1 `package.json`** (P0-C). `dependency`, `package.json`, `Tier 1` return **zero hits** in the doc **[V]**. Correctly so — the doc's own preamble says "Technical reference only — no roles, no process, no review workflow." The citable authority is `AGENTS.md` Hard Rules #2/#7/#10 and `.claude/rules/frozenFiles.md` § Runtime & Integration Config.
+2. **A module-scope import that only fails at SSR runtime** (P0-B). Nothing in the doc. Closest is §9 L398-399 — "**jsdom always provides `window`**, so an SSR branch needs a node test environment" — which is about a *test* environment, not the server runtime. See gap **G7**.
+3. **JS bundle budgets and headroom.** `vendor`, `max-file-size` return **zero hits** **[V]**; the only budget mention is §9 L411 ("any CSS bundle budget") and L413 ("`bundlesize` does not run on PRs to `develop`"). See gap **G8**.
+4. **i18n / hardcoded user-facing copy.** `i18n`, `intl`, `translat` return **zero hits** **[V]**. Four untranslated strings ship: `breadcrumb/index.tsx:51,55`, `pdpProductInfo/index.tsx:59`, `product-detail/index.tsx:66`.
+5. **SEO obligations on a page** — `Helmet` zero hits, `Seo`/`SEO` one passing hit **[V]**. No `<title>`, no canonical, no `BreadcrumbList` JSON-LD, HTTP 200 on an unknown SKU.
+6. **Route-table registration as an intercept mechanism.** `route`/`routes` return **zero hits** **[V]**. See gap **G9**.
+7. **Page-level overrides at all.** §4 is entirely component-scoped. The question "what did the base page do that mine doesn't?" — `ProductView`/add-to-bag, `<Island hydrateOn='visible'>`, the full `useProduct` expand list, SSR cache headers, `HTTPNotFound` — is never asked.
+8. **`data-testid` / QA selector contracts.** Zero hits **[V]**. Relevant: the `h1` has no testid while all four siblings do (`pdpProductInfo/index.tsx:32` vs `:34,40,51,58`) **[V]**, and SFCC-732/733 assert `.product-name` / `.product-price` classes that do not exist.
+9. **`dangerouslySetInnerHTML` / sanitisation.** Zero hits **[V]**. Governed by `.claude/rules/conventions.md` and `semgrep.yml`, which the branch **does** satisfy (`pdpProductInfo/index.tsx:43,54`).
+10. **Playwright / E2E conventions** — the `.p0.` filename segment, `qa.yml` area allow-lists, multi-region fixtures. One passing mention at §10 L446.
+11. **Registry consumer-count cache correctness** (CodeRabbit U8, `BASE_CACHE_SCHEMA` not bumped). The doc covers the registry's **tier column** being untrustworthy (§3 L172-177) but not its caches.
+12. **Squad / CODEOWNERS ownership, CodeRabbit reply obligations, PR-body accuracy.** Explicitly out of the doc's scope by its own framing.
+13. **Performance / LCP.** `LCP` and `performance` return **zero hits** **[V]** — relevant because the new dependency puts ~16 MB (jsdom ~12 MB) on the SSR path.
+
+---
+
+## (d) DOC → FINDINGS — what the doc mandates that this build simply did not do
+
+Walking the doc's own prescriptions against the branch. Items marked **NEW** are not in any existing findings report.
+
+1. **A recipe for every component** (§3 L149). 2 of 3 new components have none. The findings call this a "level-3 candidate"; the doc calls it mandatory. *Severity is understated in the current findings.*
+2. **NEW — interaction state in the recipe** (§8 L362-363). `_hover` is authored in a component-file const (`breadcrumb/index.tsx:31`); `_focusVisible` is absent everywhere **[V]**. The branch's only interactive controls are the breadcrumb crumbs — the AC-mandated navigation — and they have no brand focus treatment.
+3. **NEW — WCAG 2.5.8 target size on the crumbs** (§8 L348-349). Crumbs are inline `Text as={RouteLink}` at `textStyle="caption"` (12px/18px), giving roughly an 18px-tall hit box **[V]**. **Present this as a question, not a defect** — SC 2.5.8 has an explicit *Inline* exception for targets constrained by the line-height of surrounding text, and breadcrumb crumbs separated by `/` arguably qualify. Worth an explicit decision rather than an accident.
+4. **NEW — the type metrics were never measurable locally** (§5 L254-257). No font binaries in the repo, so the local dev-server check in the PR body ran against a ~13%-wider fallback stack **[V]**. Directly undermines the "PDP golden path tested" and "no console errors" checkboxes as evidence for SFCC-732/733.
+5. **Mutation testing** (§9 L376, L379-380). No check on this branch was made to fail on purpose, and there is no non-vacuity meta-assertion anywhere. The 5 Vitest cases test `extractModelLine`'s happy paths but not the two known failure classes.
+6. **Read `gh pr checks` for `skipping`** (§9 L416-418). The findings *did* do this and caught the two green-but-skipped 2026-08-20 runs **[F]**. The **author** did not — the PR body reports self-run results as if they were CI evidence.
+7. **`eslint`/`tsc` are gated nowhere** (§9 L411-412). Knowing this, "`[x]` `npm run lint` passes" in the PR body should have been read as an unverified self-report — it fails, with 5 errors in this branch's own files **[F]**.
+8. **Sweep the bands between frames** (§5 L250). Only 402 and 1440 frames exist **[F]**; the entire 403–1439 range is undesigned, and `ZimmPageToolbar`'s padding is a flat non-responsive map (40px/80px, applied on a 375px viewport) **[V]** `zimmPageToolbar/index.tsx:28-33`. Nobody swept the band; the findings noted the flat padding but did not connect it to the rule.
+9. **NEW — unit choice on the column width** (§1 "Units"). `PDP_OPTIONS_COLUMN_WIDTH = '360px'` is a px-authored width for a wrapping text column **[V]**. Under the doc's own rule, `px` is for hairline geometry that must *not* scale; a text-column width that cannot grow under text zoom is a WCAG 1.4.4 risk. Everyone flagged the *value*; nobody flagged the *unit*.
+10. **Guard hrefs built from data** (§7 L326-341). `breadcrumb/index.tsx:10-11` builds `encodeURI('/category/' + category.id)` from API data with no normalise-then-test guard. Low real risk (internal path, `encodeURI`) — and the doc's "shared guard" **does not exist in this repo** (see gap **G10**), so the rule is currently unsatisfiable.
+
+---
+
+## (e) DOC GAPS — where the doc is wrong or incomplete, with proposed corrections
+
+**G1 — The Figma node-type discriminator is binary, and that is wrong for hug-sized frames.**
+The doc, §5 L227-229: *"**Frames and instances** report a **real box** and are **directly comparable**, so a delta there is a genuine defect."* This investigation found a third case **[F]**: the PDP accordion row FRAMEs report `218 x 9`, which is the **text cap-height of their hugged TEXT child**, not a row height — the real pitch is ≈25.5px. Followed verbatim, the doc turns a correct 25.5px row into a "genuine defect" and someone crushes it to 9px. The doc's supporting heuristic at L231-232 (uniform residual = measurement) would catch it, but it is labelled *supporting* and the primary rule is stated as absolute.
+**Correction:** discriminate by **sizing mode**, not node type. A FRAME/INSTANCE with fixed or content-independent sizing (column widths, buttons, icons, the gallery) reports a real box and is comparable; a FRAME that **hugs** a TEXT child inherits the cap-height artifact and is not. For those, measure the **row pitch** (gap + measured offsets), which is artifact-free.
+
+**G2 — The breakpoint numbers do not exist in this theme.**
+The doc, §5 L248-249: *"Frames exist at **402 / 1023 / 1440**; breakpoint tokens are **768 / 860 / 1024**."* **[V]** `overrides/app/theme/foundation/gridSystem.ts:8-15` defines `md: '48em'` (768px) and `xl: '80em'` (1280px), with `sm`/`lg`/`2xl` each commented "NOT used". `grep -rn 860 overrides/app/theme/` returns **nothing**. And the PDP page has **no 1023-width frame** — only 402 and 1440 **[F]**.
+**Correction:** the active tokens are **768 (`md`) and 1280 (`xl`)**. Keep the rule ("always sweep the bands *between* frames") and drop the numbers, or state them per-surface. For the PDP the undesigned band is 403–1439 and straddles **both** breakpoints — two bands, not one.
+
+**G3 — §3 "Placement, settled" describes an unmerged branch, and the convention is contested.**
+The doc, §3 L125-131, calls the layout **settled** and lists `atoms/ zimmButton/ zimmIcon/ zimmLogo/ zimmNavItem/ zimmTextInput/` and `molecules/ zimmInputAction/`. **[V]** `git ls-tree -r develop overrides/app/components/ui-kits/` returns **nothing** — the directory does not exist on `develop`. Those atoms exist only on `feature/SFCC-55_global-footer-ui` (unmerged) and two backup branches. On this branch `ui-kits/` holds exactly `atoms/zimmPageToolbar/` plus a `.gitkeep`. **[V]** No rules file on `develop` states the convention (`ls .claude/rules/` — no `uikit-components.md`); the doc that does state it lives only on `origin/feature/f2r-implementation-workflow` and **contradicts `overrideStyling.md`** — it forbids Chakra inside ui-kit files and mandates per-component `{name}.styles.ts` + Emotion `<Global>`, where `overrideStyling.md` mandates Chakra props plus a theme recipe **[F]**.
+**Correction:** replace "settled" with "proposed on `feature/SFCC-55_global-footer-ui`, unmerged, and contested by `.claude/rules/uikit-components.md` on `feature/f2r-implementation-workflow`; `overrideStyling.md` on `develop` is the newer of the two — get a ruling before placing a component." This is live: `pdpProductInfo/` and SFCC-91's `pdpColourSwatches/` both sit **outside** `ui-kits/`, and nobody can currently say whether that is wrong.
+
+**G4 — `recipeGuards.test.ts` does not exist on `develop` or on this branch.**
+The doc cites it three times as a live artefact: §2 L102 (*"Intentional merges are allowlisted in `recipeGuards.test.ts`: `Button`, `Header`, `ListMenu`"*), §9 L379-380 (*"**Copy the non-vacuity meta-test.**"*), §10 L448. **[V]** `find . -name "recipeGuards*" -not -path "./node_modules/*"` returns nothing; scanning every branch, it exists only on `feature/SFCC-55_global-footer-ui` and two backups.
+**Correction:** mark it branch-local, or the doc's own §10 ("Signposts in the repo that point at nothing") acquires three entries of its own. The *pattern* it teaches is still worth copying — the artefact just is not there to copy from.
+
+**G5 — `generateRegistry.mjs` scan scope is overstated.**
+The doc, §3 L134: *"Being under `components/` is load-bearing: `generateRegistry.mjs` only scans that directory."* **[V]** It scans four: `scripts/generateRegistry.mjs:5` — "Scans components, hooks, utils, and pages under overrides/app/" — with walkers at `:649` (components), `:727` (hooks), plus utils and pages. This is why `overrides/app/utils/productData.ts` and `overrides/app/pages/product-detail/` both appear in the generated registry.
+**Correction:** "being under one of `components/`, `hooks/`, `utils/`, `pages/` is load-bearing."
+
+**G6 — Wrong line number on a worked example.**
+The doc cites `components/header/index.tsx:302` twice (§1 L54, §10 L448) for the dead `fontSize="l"`. **[V]** On this branch it is at **`overrides/app/components/header/index.tsx:293`**. Trivial, but it is the doc's headline live-bug example.
+
+**G7 — No coverage of a build-passes / server-crashes failure class.**
+§9's "gap no tool covers" (L425-428) is scoped to **layout** defects. This PR exposes a different one **[V]**: `node_modules/isomorphic-dompurify/dist/index.mjs:3-5` runs `var window = new JSDOM("<!DOCTYPE html>").window;` at **module-evaluation time**, and `overrides/app/components/pdpProductInfo/index.tsx:2` imports it at module scope on a page-reachable path. `npx tsc --noEmit`, `npx vitest run` (146/146), Storybook a11y (27/27) and `npm run build` all pass **[F]**; every `/product/*` SSR request then throws `ReferenceError: Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization` **[F]**. I verified the module-scope side effect directly; I did not reproduce the TDZ error.
+**Correction:** add to §9 — *"A green build is not evidence the server can evaluate the module graph. Before calling a page done, render its route server-side (dev server or the MRT preview). And before importing a new runtime dependency at module scope, read its node entry (`exports['.'].node.import`) for module-scope side effects — an `import` that constructs a DOM, opens a handle, or reads config at evaluation time belongs behind a lazy call, not at the top of a component."*
+
+**G8 — Bundle budgets: the doc says the wrong thing and omits the headroom rule.**
+§9 L411-413 mentions only *"any CSS bundle budget"* and *"`bundlesize` does not run on PRs to `develop`."* **[F]** Reality: `npm run test:max-file-size` enforces `main.js ≤ 180 kB` / `vendor.js ≤ 550 kB` and runs in the **Test-tier gate** (`.claude/rules/tagging.md` § The Test gate), not on develop PRs — so the doc is right about PRs and silent about the gate that does exist downstream. On this branch the measured result is `main.js` 103.46 kB and **`vendor.js` 524.74 kB = 95.4% of budget, ~25 kB headroom** **[F]**.
+**Correction:** name the JS budgets and where they actually run, and add *"read the headroom, not the pass/fail — a pass at 95% of budget is a warning that the next dependency will fail the Test gate, on someone else's PR."*
+
+**G9 — §4's intercept model is missing the page/route case, and its grep has a blind spot.**
+§4 lists three ways an override silently fails to take effect; all three are component-level, and the prescribed check (L202-208) greps only for **package-specifier** imports. Two additions, both verified:
+- **(4th case) Route order beats module resolution for pages.** `overrides/app/routes.tsx:38-40` registers `/product/:productId` **before** `..._routes` at `:41` **[V]**, so the override wins the route match with no resolver involvement at all.
+- **The §4 grep misses base-internal relative imports.** Base `node_modules/@salesforce/retail-react-app/app/routes.jsx:43` is `loadable(() => import('./pages/product-detail'))` **[V]** — a relative specifier. `OverridesResolverPlugin.isFromExtends` (`node_modules/@salesforce/pwa-kit-dev/configs/webpack/overrides-plugin.js:128-146`) requires the request to begin with the `extends` package name, so it does **not** rewrite it **[V]**.
+
+> **This also corrects the consolidated findings.** P0-A claims "two independent shadowing mechanisms, so deleting the route entry does not fix it." On the evidence there is **one**. I verified it against the built output: `build/pages-product-detail.js` contains string literals from **both** modules — `product-details-page`, `sf-product-detail-page`, `ZimmPdpProductInfo` (override) *and* `product_detail.recommended_products.title.complete_set`, `useServerContext`, `HTTPNotFound` (base) **[V]** — i.e. both were bundled under one auto-derived chunk name because both import paths spell `./pages/product-detail`. The base module is still there and still wired to the base route inside `..._routes`. **Removing `overrides/app/routes.tsx:38-40` should hand `/product/:productId` back to the base page.** For completeness I also confirmed nothing in the base imports the PDP by package specifier — the only reference is that one relative `import()` **[V]**. This does not soften the finding (merging as-is still removes add-to-bag) but it changes the remediation from "restructure the override" to "one route entry", which is worth knowing before scoping.
+> By contrast, the breadcrumb case is the opposite and the findings have it right: both base consumers import by **specifier**, so the resolver does redirect them, and the PLP really is restyled **[V]**.
+
+**Correction:** add the fourth case, and note the grep is specifier-only — *"for a page override, also read `node_modules/@salesforce/retail-react-app/app/routes.jsx`, and check your own `overrides/app/routes.tsx` ordering. And before overriding a page, diff its capability surface against the base — the resolver has no opinion about functionality you dropped."*
+
+**G10 — §7's shared href guard does not exist.**
+§7 L326-328 prescribes *"Any href from CMS or fixture data goes through the shared guard"* and ships the implementation. **[V]** `SAFE_HREF` / `isSafeHref` / `safeHref` return nothing under `overrides/` on HEAD **or** `develop`.
+**Correction:** same treatment as G4 — mark it branch-local, or reword to "build this when you first need it," because as written it is a signpost pointing at nothing.
+
+---
+
+## (f) What following the doc would — and would not — have prevented
+
+### Would have prevented outright
+
+| Finding | The rule, and how cheap it was |
+|---|---|
+| **Breadcrumb silently restyles the PLP** | §4's grep, run verbatim. **I ran it — two lines of output**, `product-view/index.jsx:45` and `page-header.jsx:14`. |
+| **Breadcrumb + ZimmPageToolbar styled in the component file** | §3 L149. Two missing `theme/components/*.ts`; the author already had the template in his own commit `3e1686b`. |
+| **9 `var(--zimm-*)` JSX sites + 6 story duplicates** | §1's chain diagram (L22-24) and §3's reasoning (L155-158). |
+| **2 new numeric-alias-from-a-recipe violations** | §1 check 3 (L79-80) — and the doc ships the exact regex to find them (L83). |
+| **`?? ''` / `: ''` empty-element void, fixed at the call site** | §7 L310-311 names the idiom; L316 names the wrong place to fix it. |
+| **Focus ring absent from the recipe, two answers in one PR** | §8 L350-352 + §3 L149. *Not currently flagged by anyone.* |
+| **Reading the two 2026-08-20 green CI runs as evidence** | §9 L416-418, including the exact command (`gh pr checks` … look for `skipping`). |
+| **Believing "`[x]` `npm run lint` passes"** | §9 L411-412 tells you no CI job runs it, so the checkbox is self-reported. It fails, with 5 errors in this branch's own files. |
+| **`360px` column surviving to review as a guess** | §9 L428 — "Budget for that pass; nothing upstream of it will save you." The measured answer is 218px. |
+| **Trusting the local dev-server visual check for type metrics** | §5 L254-257 + no font binaries in this repo. *Not currently flagged by anyone.* |
+
+### Would have mitigated, not prevented
+
+- **Green-on-broken E2E assertions** — §9 L382-385 describes the trap's shape exactly, but the underlying cause is the SSR 500, which no unit-layer discipline surfaces.
+- **The undesigned tablet band** — §5 L250 would have raised it as a question; it cannot answer it, because the design does not exist.
+
+### Would **not** have prevented — be clear with the Lead
+
+- **P0-B, the SSR crash.** The single biggest thing on this PR, and the doc is blind to it. Every check the doc names (`tsc`, `vitest`, Storybook a11y, `npm run build`) passes. See gap **G7**.
+- **P0-C, the Tier 1 `package.json` change.** Zero doc coverage, correctly — governance is `AGENTS.md` Hard Rules #2/#7/#10 and `.claude/rules/frozenFiles.md`.
+- **Vendor bundle at 95.4% of budget.** The doc says the wrong thing about where budgets run and nothing about headroom. See gap **G8**.
+- **The base-PDP capability loss** — add-to-bag, `<Island>` deferred hydration, `<Seo>`/`Helmet`, 404 status, the full `useProduct` expand list, `RecommendedProducts`, `InformationAccordion`. §4 is component-scoped and never asks "what did the base page do that mine doesn't?"
+- **Every requirements defect** — `c_sizeFit` vs `modelFit`, `product.id` vs `styleNumber`, the bare-`<li>` English-only regex, `shortDescription || longDescription`, the omitted leaf crumb, the missing `h1` testid, the SFCC-732/733 selector mismatch, the four untranslated strings. Jira/Figma-content territory; the doc is a build reference and correctly out of scope.
+- **Ownership contradictions** (CODEOWNERS vs `squadA.md` vs the in-PR registry edit), the CodeRabbit in-thread reply obligation, the materially stale PR body. Process — excluded by the doc's own framing.
+
+**Rough scorecard.** Of roughly thirty material findings, the doc would have prevented **ten** outright, all inside the styling and verification-discipline band, plus two that are new to this audit (V5 focus ring, V10 fallback-font measurement). All three P0s sit outside its coverage. It is an excellent styling and verification reference and a poor integration checklist — and §3, §5 and §9 need the corrections in (e) before the next person builds against them.

@@ -1,0 +1,47 @@
+{
+  "state": "done",
+  "detail": "PR #90 draft open at feature/zimmproductcard-live-demo; synced",
+  "tempo": "idle",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": [],
+    "drainableMonitors": 0
+  },
+  "tokens": 2755664,
+  "output": {
+    "result": "PR #90 (Live ZimmProductCard variant showcase) open as draft; branch synced"
+  },
+  "children": null,
+  "linkScanOffset": 2360733,
+  "linkScanPath": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/ade6c727-55ee-4bd9-9cd9-5301cb70a4cf.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--permission-mode",
+    "default",
+    "--model",
+    "claude-sonnet-4-6"
+  ],
+  "intent": "we're good for now claude, good work",
+  "name": "ZIMM - Product Cards ⑂",
+  "nameSource": "auto",
+  "sessionId": "ade6c727-55ee-4bd9-9cd9-5301cb70a4cf",
+  "resumeSessionId": "ade6c727-55ee-4bd9-9cd9-5301cb70a4cf",
+  "daemonShort": "ade6c727",
+  "cliVersion": "2.1.261",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "providerEnv": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "forkSourceAlive": true,
+  "forkBoundaryAt": "2026-09-05T14:21:37.260Z",
+  "forkSessionId": "ade6c727-55ee-4bd9-9cd9-5301cb70a4cf",
+  "forkParentSessionId": "f27013ef-785b-4c0c-b11e-78200eb25438",
+  "interactiveLineage": true,
+  "backend": "daemon",
+  "createdAt": "2026-09-05T14:24:45.220Z",
+  "updatedAt": "2026-09-05T14:26:16.279Z",
+  "firstTerminalAt": "2026-09-05T14:26:16.279Z",
+  "lastTerminalAt": "2026-09-05T14:26:16.279Z"
+}

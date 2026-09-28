@@ -1,0 +1,52 @@
+{
+  "state": "done",
+  "detail": "PR #112 open on develop; SFCC tickets built & documented",
+  "tempo": "idle",
+  "inFlight": {
+    "tasks": 0,
+    "queued": 0,
+    "kinds": [],
+    "drainableMonitors": 0
+  },
+  "tokens": 4065287,
+  "output": {
+    "result": "PR #112 merge-conflict resolved; SFCC-831/689 fully built with handoff/postbuild/decisions docs; process fixes live"
+  },
+  "children": [
+    {
+      "id": "112",
+      "href": "https://github.com/ZimmermannAU/zimmermann-pwa/pull/112",
+      "kind": "pr"
+    }
+  ],
+  "linkScanOffset": 20428839,
+  "linkScanPath": "/Users/marcel.a.n.navarro/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/89d94aca-6690-4f2a-949b-667ac7a532c7.jsonl",
+  "template": "bg",
+  "respawnFlags": [
+    "--effort",
+    "max",
+    "--permission-mode",
+    "auto",
+    "--model",
+    "claude-sonnet-5"
+  ],
+  "intent": "how about the critical/important decisions/calls we made, walk me through them as well, ELI5BITFEDLOTP",
+  "name": "ZIMM - SFCC 831, 689",
+  "nameSource": "user",
+  "sessionId": "89d94aca-6690-4f2a-949b-667ac7a532c7",
+  "resumeSessionId": "89d94aca-6690-4f2a-949b-667ac7a532c7",
+  "daemonShort": "89d94aca",
+  "cliVersion": "2.1.269",
+  "cwd": "/Users/marcel.a.n.navarro/Dev/zimmermann-pwa",
+  "bgIsolation": "none",
+  "providerEnv": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6"
+  },
+  "interactiveLineage": true,
+  "backend": "daemon",
+  "createdAt": "2026-09-12T06:18:13.946Z",
+  "updatedAt": "2026-09-14T14:12:08.733Z",
+  "firstTerminalAt": "2026-09-12T06:27:35.520Z",
+  "lastTerminalAt": "2026-09-14T14:12:08.733Z"
+}

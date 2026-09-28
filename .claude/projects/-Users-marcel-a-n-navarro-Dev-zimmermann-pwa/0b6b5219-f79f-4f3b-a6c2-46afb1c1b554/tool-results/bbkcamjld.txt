@@ -1,0 +1,501 @@
+commit 983bddfe7b79f31585c7e9a540f3e03835835e48
+Author: Marcel Angelo Navarro <marcel.a.n.navarro@accenture.com>
+Date:   Sat Sep 5 01:27:23 2026 +0800
+
+    fix(ui-kits): replace :focus-within with :has(:focus-visible) in ZimmProductCard hover reveals (SFCC-236)
+    
+    Live-browser testing surfaced a real bug in the arrows hover-gating fix
+    from the previous commit: hovering the card correctly revealed the
+    carousel arrows, but moving the mouse out did not hide them again —
+    they stayed visible until a click landed outside the card entirely.
+    
+    Root cause: clicking an arrow button gives it real DOM focus in every
+    evergreen browser engine, so the recipe's `&:focus-within` reveal
+    stayed true after the mouse left, since focus doesn't clear on
+    mouseleave. The identical shared-root mechanism underlies every other
+    hover reveal in this recipe too (price show, price hide, the
+    size-selector, notify-me), so a click on a size chip or the notify-me
+    button would reproduce the same stuck-open symptom — confirmed and
+    fixed across all five occurrences, not just the carousel one that was
+    reported.
+    
+    `:has(:focus-visible)` fixes this: it only matches when the browser's
+    own heuristic says a keyboard focus ring is warranted, which a
+    mouse-click-focused <button> never satisfies in any evergreen engine,
+    while genuine Tab navigation still does — so keyboard parity (the
+    reason a focus-based reveal exists at all) is preserved and the
+    mouse-click case is not. First use of :has() in this codebase; fully
+    covered by the project's own browserslist (iOS >= 17, Android >= 14,
+    last 4 ChromeAndroid versions), all past its 2022/2023 shipping
+    baseline.
+    
+    Running the full test file (not just in isolation) surfaced a real
+    jsdom+nwsapi quirk: a later plain .focus() call stops satisfying
+    :has(:focus-visible) once an earlier test in the same file has driven
+    a real userEvent.click()-originated focus. Fixed by switching that
+    assertion to a real simulated Tab keypress (`user.tab()`) instead of
+    an imperative .focus() call — arguably a more faithful test of
+    "keyboard user tabs into the card" to begin with. Verified
+    deterministic across repeated full-file runs.
+
+ .claude/registry/components.md                     |  4 +-
+ .../organisms/zimmProductCard/index.test.tsx       | 95 +++++++++++++---------
+ .../ui-kits/organisms/zimmProductCard/index.tsx    |  4 +-
+ .../zimmProductCard/zimmProductCard.css.ts         | 87 ++++++++++++++------
+ 4 files changed, 121 insertions(+), 69 deletions(-)
+=====FULL DIFF=====
+commit 983bddfe7b79f31585c7e9a540f3e03835835e48
+Author: Marcel Angelo Navarro <marcel.a.n.navarro@accenture.com>
+Date:   Sat Sep 5 01:27:23 2026 +0800
+
+    fix(ui-kits): replace :focus-within with :has(:focus-visible) in ZimmProductCard hover reveals (SFCC-236)
+    
+    Live-browser testing surfaced a real bug in the arrows hover-gating fix
+    from the previous commit: hovering the card correctly revealed the
+    carousel arrows, but moving the mouse out did not hide them again —
+    they stayed visible until a click landed outside the card entirely.
+    
+    Root cause: clicking an arrow button gives it real DOM focus in every
+    evergreen browser engine, so the recipe's `&:focus-within` reveal
+    stayed true after the mouse left, since focus doesn't clear on
+    mouseleave. The identical shared-root mechanism underlies every other
+    hover reveal in this recipe too (price show, price hide, the
+    size-selector, notify-me), so a click on a size chip or the notify-me
+    button would reproduce the same stuck-open symptom — confirmed and
+    fixed across all five occurrences, not just the carousel one that was
+    reported.
+    
+    `:has(:focus-visible)` fixes this: it only matches when the browser's
+    own heuristic says a keyboard focus ring is warranted, which a
+    mouse-click-focused <button> never satisfies in any evergreen engine,
+    while genuine Tab navigation still does — so keyboard parity (the
+    reason a focus-based reveal exists at all) is preserved and the
+    mouse-click case is not. First use of :has() in this codebase; fully
+    covered by the project's own browserslist (iOS >= 17, Android >= 14,
+    last 4 ChromeAndroid versions), all past its 2022/2023 shipping
+    baseline.
+    
+    Running the full test file (not just in isolation) surfaced a real
+    jsdom+nwsapi quirk: a later plain .focus() call stops satisfying
+    :has(:focus-visible) once an earlier test in the same file has driven
+    a real userEvent.click()-originated focus. Fixed by switching that
+    assertion to a real simulated Tab keypress (`user.tab()`) instead of
+    an imperative .focus() call — arguably a more faithful test of
+    "keyboard user tabs into the card" to begin with. Verified
+    deterministic across repeated full-file runs.
+
+diff --git a/.claude/registry/components.md b/.claude/registry/components.md
+index 6ce57a3..32e4c17 100644
+--- a/.claude/registry/components.md
++++ b/.claude/registry/components.md
+@@ -1,6 +1,6 @@
+ # Component Registry
+ > Generated by `node scripts/generateRegistry.mjs` — do not edit manually.
+-> Last updated: 2026-09-04T15:52:30.557Z
++> Last updated: 2026-09-04T17:27:23.734Z
+ > Base: `@salesforce/retail-react-app@10.0.0`
+ 
+ | Component | Origin | Path | Props | Tier | Squad | Consumers | Last touched | Description |
+@@ -98,7 +98,7 @@
+ | ZimmNavItem | Custom | `overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx` | label: string, href?: string, active?: boolean, visuallyActive?: boolean, inverse?: boolean, growUnderline?: boolean, onClick?: (e: React.MouseEvent&lt;HTMLAnchorElement \| HTMLButtonElement&gt;) =&gt; void, onMouseOver?: (e: React.MouseEvent&lt;HTMLAnchorElement \| HTMLButtonElement&gt;) =&gt; void, onKeyDown?: (e: React.KeyboardEvent&lt;HTMLAnchorElement \| HTMLButtonElement&gt;) =&gt; void, id?: string, tabIndex?: number, style?: CSSProperties, sx?: SystemStyleObject, className?: string | 4 — Feature-local | Shared | 11 | 2026-08-31 | Atom — navigation link with bottom-border underline on hover/active. Renders an `<a>` when `href` is provided and safe, a `<button>` otherwise (no scroll, no redirect for placeholder items). |
+ | ZimmPdpDrawer | Custom | `overrides/app/components/ui-kits/organisms/zimmPdpDrawer/index.tsx` | isOpen: boolean, onClose: () =&gt; void, size: ZimmDrawerSize, tabs: ZimmPdpDrawerTab[], initialTabId?: string, ariaLabel: string | 4 — Feature-local | Shared | 3 | 2026-08-31 | The SFCC-736 pdp/drawer deliverable — composes ZimmDrawer (shell) with ZimmTabs (nav header) and swaps content by active tab. Renders the shell even with an empty `tabs` array (AC 11). |
+ | ZimmProductCard | Custom | `overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx` | ZimmProductCardBaseProps &
+-  (ZimmProductCardPlpVariation \| ZimmProductCardHomeVariation \| ZimmProductCardWishlistVariation) | 4 — Feature-local | Shared | 12 | 2026-09-04 | Organism — the full product card, composing `ZimmProductCardMedia` and `ZimmProductCardContent` across the `home` / `plp` / `wishlist` variations. |
++  (ZimmProductCardPlpVariation \| ZimmProductCardHomeVariation \| ZimmProductCardWishlistVariation) | 4 — Feature-local | Shared | 10 | 2026-09-04 | Organism — the full product card, composing `ZimmProductCardMedia` and `ZimmProductCardContent` across the `home` / `plp` / `wishlist` variations. |
+ | ZimmProductCardContent | Custom | `overrides/app/components/ui-kits/molecules/zimmProductCardContent/index.tsx` | name: string, headingLevel: ZimmProductNameHeadingLevel, href: string, currentPrice?: string, originalPrice?: string, isPriceLoading?: boolean, showAttributes: boolean, colour?: string, size?: string, showBag: boolean, isUnavailable?: boolean, onAddToBag?: () =&gt; void, showSizeChips: boolean, sizeChipValues?: ZimmSizeChipValue[], selectedSizeChipValue?: string, onSizeChipSelect?: (value: string) =&gt; void, showNotifyMe: boolean, onNotifyMe?: () =&gt; void | 4 — Feature-local | Shared | 5 | 2026-09-04 | Molecule — the product-card text-content block: heading/link, bag action, wishlist-only colour/size attributes, price, PLP-only size-chip picker, and an out-of-stock notify-me CTA. |
+ | ZimmProductCardMedia | Custom | `overrides/app/components/ui-kits/molecules/zimmProductCardMedia/index.tsx` | primaryImage: ZimmProductCardMediaImage, hoverImage?: ZimmProductCardMediaImage, images?: ZimmProductCardMediaImage[], swapOnHover: boolean, showControls: boolean, badge?: string, onRemove?: () =&gt; void, removeLabel?: string, priority?: boolean | 4 — Feature-local | Shared | 8 | 2026-09-04 | Molecule — the product-card media block: a single image, a hover-swap pair, or a full scroll-snap gallery with desktop arrows / touch slide-indicator, plus the wishlist-remove overlay slot. |
+ | ZimmProductContent | Custom | `overrides/app/components/ui-kits/molecules/zimmProductContent/index.tsx` | name: string, headingLevel: 'h1' \| 'h2' \| 'h3', currentPrice?: string, originalPrice?: string, isPriceLoading?: boolean, description?: string | 4 — Feature-local | Shared | 4 | 2026-08-28 | Molecule — the PDP text group: name, price, description. Model copy and the style code are deliberately *not* here. |
+diff --git a/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx b/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx
+index 4c17848..1253877 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmProductCard/index.test.tsx
+@@ -156,7 +156,7 @@ const CAROUSEL_LIFT_KEY = `[data-card-slot="${CARD_SLOT.carousel}"]`;
+ // CAROUSEL_LIFT_KEY rather than a nested `[data-card-slot="content"] ...` path — the carousel
+ // wrapper is a direct child of Media's own root, a sibling of `content`, not nested under it.
+ const HOVER_CAROUSEL_KEY = `&:hover ${CAROUSEL_LIFT_KEY}`;
+-const FOCUS_WITHIN_CAROUSEL_KEY = `&:focus-within ${CAROUSEL_LIFT_KEY}`;
++const FOCUS_VISIBLE_CAROUSEL_KEY = `&:has(:focus-visible) ${CAROUSEL_LIFT_KEY}`;
+ const CONTENT_LIFT_KEY = `[data-card-slot="${CARD_SLOT.content}"] button`;
+ const PRICE_KEY = `[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`;
+ const SIZE_CHIPS_KEY = `[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`;
+@@ -168,17 +168,17 @@ const HOVER_SIZE_CHIPS_KEY = `&:hover ${SIZE_CHIPS_KEY}`;
+ // zimmFormRowInverse: both use a separate sibling key (`_focusWithin` alongside `_hover`), never
+ // a comma-joined compound selector. This file already uses raw selector strings (not Chakra's
+ // `_hover`/`_focusWithin` shorthand props) because the hover rules need a descendant-combinator
+-// path baked into the selector itself, so the equivalent here is a separate `'&:focus-within ...'`
+-// string key alongside the existing `'&:hover ...'` key, not a merged `'&:hover, &:focus-within ...'`
++// path baked into the selector itself, so the equivalent here is a separate `'&:has(:focus-visible) ...'`
++// string key alongside the existing `'&:hover ...'` key, not a merged `'&:hover, &:has(:focus-visible) ...'`
+ // selector.
+-const FOCUS_WITHIN_PRICE_KEY = `&:focus-within ${PRICE_KEY}`;
+-const FOCUS_WITHIN_SIZE_CHIPS_KEY = `&:focus-within ${SIZE_CHIPS_KEY}`;
++const FOCUS_VISIBLE_PRICE_KEY = `&:has(:focus-visible) ${PRICE_KEY}`;
++const FOCUS_VISIBLE_SIZE_CHIPS_KEY = `&:has(:focus-visible) ${SIZE_CHIPS_KEY}`;
+ // Fix C: notify-me's own reveal-key trio, all three living INSIDE the HOVER_CAPABLE_QUERY block
+ // (see zimmProductCard.css.ts docblock point 4 for why this is the opposite structure from price/
+ // size-chips above — the "hidden by default" half must not be reachable by a touch pointer).
+ const NOTIFY_ME_KEY = `[data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.notifyMe}"]`;
+ const HOVER_NOTIFY_ME_KEY = `&:hover ${NOTIFY_ME_KEY}`;
+-const FOCUS_WITHIN_NOTIFY_ME_KEY = `&:focus-within ${NOTIFY_ME_KEY}`;
++const FOCUS_VISIBLE_NOTIFY_ME_KEY = `&:has(:focus-visible) ${NOTIFY_ME_KEY}`;
+ // Fix D: the PLP-only bag-icon mobile hide — a viewport-width gate, not a hover one (see
+ // zimmProductCard.css.ts docblock point 5). Built from the real `breakpoints` import (not a
+ // hand-typed literal) so this can't silently drift from what the source file actually emits —
+@@ -551,12 +551,12 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+    * sub-block is now removed entirely (see that file's own regression guard), so this pair is the
+    * only reveal path left for the arrows.
+    */
+-  test('carousel arrows: unconditional hover+focus-within reveal inside HOVER_CAPABLE_QUERY, present even with no other flags set', () => {
++  test('carousel arrows: unconditional hover+focus-visible reveal inside HOVER_CAPABLE_QUERY, present even with no other flags set', () => {
+     const style = ZimmProductCardRecipe.baseStyle({});
+     const root = style.root as Record<string, unknown>;
+     const hoverBlock = root[HOVER_CAPABLE_QUERY] as Record<string, unknown>;
+     expect((hoverBlock[HOVER_CAROUSEL_KEY] as Record<string, unknown>).display).toBe('flex');
+-    expect((hoverBlock[FOCUS_WITHIN_CAROUSEL_KEY] as Record<string, unknown>).display).toBe('flex');
++    expect((hoverBlock[FOCUS_VISIBLE_CAROUSEL_KEY] as Record<string, unknown>).display).toBe('flex');
+   });
+ 
+   /**
+@@ -602,15 +602,15 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+     const hoverBlock = root[HOVER_CAPABLE_QUERY] as Record<string, unknown>;
+     expect((hoverBlock[PRICE_KEY] as Record<string, unknown>).display).toBe('none');
+     expect((hoverBlock[HOVER_PRICE_KEY] as Record<string, unknown>).display).toBe('block');
+-    // Fix 2 (Scorer rework round 1): the focus-within equivalent must reveal identically, so a
++    // Fix 2 (Scorer rework round 1): the focus-visible equivalent must reveal identically, so a
+     // keyboard-only user tabbing through the card sees the same state a mouse-hover would.
+-    expect((hoverBlock[FOCUS_WITHIN_PRICE_KEY] as Record<string, unknown>).display).toBe('block');
++    expect((hoverBlock[FOCUS_VISIBLE_PRICE_KEY] as Record<string, unknown>).display).toBe('block');
+     expect(root[SIZE_CHIPS_KEY]).toBeUndefined();
+     expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_SIZE_CHIPS_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+   });
+ 
+-  test('plp/wishlist (hoverHidesPrice + hoverRevealsSizeSelector): price visible by default, size-selector hidden by default, both swap on hover AND on focus-within', () => {
++  test('plp/wishlist (hoverHidesPrice + hoverRevealsSizeSelector): price visible by default, size-selector hidden by default, both swap on hover AND on focus-visible', () => {
+     const style = ZimmProductCardRecipe.baseStyle({ hoverHidesPrice: true, hoverRevealsSizeSelector: true });
+     const root = style.root as Record<string, unknown>;
+     // No unconditional price rule — Content's own natural rendering already shows it by default.
+@@ -619,15 +619,15 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+     const hoverBlock = root[HOVER_CAPABLE_QUERY] as Record<string, unknown>;
+     expect((hoverBlock[HOVER_PRICE_KEY] as Record<string, unknown>).display).toBe('none');
+     expect((hoverBlock[HOVER_SIZE_CHIPS_KEY] as Record<string, unknown>).display).toBe('block');
+-    // Fix 2 (Scorer rework round 1): focus-within must swap identically to hover — a keyboard
++    // Fix 2 (Scorer rework round 1): focus-visible must swap identically to hover — a keyboard
+     // user tabbing into the card (e.g. onto the bag button or a size chip) sees the size-selector
+     // in place of the price, the same revealed state a mouse-hover produces, not a silently
+     // unreachable one.
+-    expect((hoverBlock[FOCUS_WITHIN_PRICE_KEY] as Record<string, unknown>).display).toBe('none');
+-    expect((hoverBlock[FOCUS_WITHIN_SIZE_CHIPS_KEY] as Record<string, unknown>).display).toBe('block');
++    expect((hoverBlock[FOCUS_VISIBLE_PRICE_KEY] as Record<string, unknown>).display).toBe('none');
++    expect((hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY] as Record<string, unknown>).display).toBe('block');
+   });
+ 
+-  test('with every hover flag false/absent, no hover-reveal or focus-within-reveal rule is emitted at all — a touch/no-hover pointer keeps the natural default permanently', () => {
++  test('with every hover flag false/absent, no hover-reveal or focus-visible-reveal rule is emitted at all — a touch/no-hover pointer keeps the natural default permanently', () => {
+     const style = ZimmProductCardRecipe.baseStyle({});
+     const root = style.root as Record<string, unknown>;
+     expect(root[PRICE_KEY]).toBeUndefined();
+@@ -635,8 +635,8 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+     const hoverBlock = (root[HOVER_CAPABLE_QUERY] ?? {}) as Record<string, unknown>;
+     expect(hoverBlock[HOVER_PRICE_KEY]).toBeUndefined();
+     expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_PRICE_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_SIZE_CHIPS_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_PRICE_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+   });
+ 
+   /**
+@@ -676,14 +676,14 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+     expect(hoverBlock[PRICE_KEY]).toBeUndefined();
+     expect(hoverBlock[HOVER_PRICE_KEY]).toBeUndefined();
+     expect(hoverBlock[HOVER_SIZE_CHIPS_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_PRICE_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_SIZE_CHIPS_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_PRICE_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_SIZE_CHIPS_KEY]).toBeUndefined();
+     // Notify-me's "hidden by default" lives INSIDE the media query (docblock point 4) — never
+     // emitted as an unconditional root-level rule, unlike price/size-chips' own unconditional half.
+     expect(root[NOTIFY_ME_KEY]).toBeUndefined();
+     expect((hoverBlock[NOTIFY_ME_KEY] as Record<string, unknown>).display).toBe('none');
+     expect((hoverBlock[HOVER_NOTIFY_ME_KEY] as Record<string, unknown>).display).toBe('block');
+-    expect((hoverBlock[FOCUS_WITHIN_NOTIFY_ME_KEY] as Record<string, unknown>).display).toBe('block');
++    expect((hoverBlock[FOCUS_VISIBLE_NOTIFY_ME_KEY] as Record<string, unknown>).display).toBe('block');
+   });
+ 
+   test('hoverRevealsNotifyMe absent/false emits no notify-me rule at all — matches an in-stock card, where notify-me never mounts', () => {
+@@ -693,7 +693,7 @@ describe('ZimmProductCard — real recipe assertions (bypasses the useMultiStyle
+     const hoverBlock = (root[HOVER_CAPABLE_QUERY] ?? {}) as Record<string, unknown>;
+     expect(hoverBlock[NOTIFY_ME_KEY]).toBeUndefined();
+     expect(hoverBlock[HOVER_NOTIFY_ME_KEY]).toBeUndefined();
+-    expect(hoverBlock[FOCUS_WITHIN_NOTIFY_ME_KEY]).toBeUndefined();
++    expect(hoverBlock[FOCUS_VISIBLE_NOTIFY_ME_KEY]).toBeUndefined();
+   });
+ 
+   /**
+@@ -868,7 +868,7 @@ describe('ZimmProductCard — Fix 3: carousel wrapper stays positioned and gains
+ });
+ 
+ /**
+- * Fix 2 (Scorer rework round 1) — DOM-level proof that the `:focus-within` reveal genuinely
++ * Fix 2 (Scorer rework round 1) — DOM-level proof that the `:has(:focus-visible)` reveal genuinely
+  * engages on a real focus event, not just that the recipe object carries the right string key
+  * (already proven structurally in the "real recipe assertions" block above).
+  *
+@@ -878,25 +878,32 @@ describe('ZimmProductCard — Fix 3: carousel wrapper stays positioned and gains
+  * real layout/paint/hit-testing; investigating this fix surfaced a SEPARATE, more specific jsdom
+  * gap that docblock does not cover: `window.getComputedStyle()` in this project's installed jsdom
+  * does not dynamically re-resolve a pseudo-class-gated rule after the DOM's focus state changes
+- * post-mount, even for a bare self-referential `&:focus-within` rule with no descendant selector
+- * at all (confirmed by direct experiment — a real `.focus()` call correctly updates
+- * `document.activeElement` and correctly makes `element.matches(':focus-within')` return `true`,
+- * but a subsequent `getComputedStyle()` read still reports the PRE-focus value). This is exactly
+- * why Fix 1's proof above (a purely static cascade with no pseudo-class involved) could safely
+- * use `getComputedStyle()` while this one cannot. `.matches()` against the exact literal
++ * post-mount, even for a bare self-referential `&:has(:focus-visible)` rule with no descendant
++ * selector at all (confirmed by direct experiment — a real `.focus()` call correctly updates
++ * `document.activeElement` and correctly makes `element.matches(':has(:focus-visible)')` return
++ * `true`, but a subsequent `getComputedStyle()` read still reports the PRE-focus value). This is
++ * exactly why Fix 1's proof above (a purely static cascade with no pseudo-class involved) could
++ * safely use `getComputedStyle()` while this one cannot. `.matches()` against the exact literal
+  * descendant-selector suffix the real recipe emits (`SIZE_CHIPS_KEY`, module-scope above) — with
+  * only the Emotion-specific `&` swapped for a plain stand-in ancestor selector, since `&` is an
+  * Emotion/PostCSS nesting token resolved at CSS-in-JS compile time, not a selector nwsapi
+  * understands directly — correctly reflects the live DOM focus state both before and after a
+  * real `.focus()` call, so it is what actually proves the mechanism here.
++ *
++ * jsdom has no concept of "focus triggered by a mouse click" vs "focus triggered by keyboard" —
++ * there is no such distinction to probe — so this test proves the reveal still fires on real
++ * focus, exactly as it did for `:focus-within`; it cannot prove, and only a real browser can,
++ * that a mouse-click-focused button is excluded, which is the actual bug this fix (Fix H)
++ * addresses.
+  */
+ describe('ZimmProductCard — Fix 2 (Scorer rework round 1): size chips reveal on keyboard focus, not just mouse hover', () => {
+-  test('an ancestor :focus-within + the real recipe’s own descendant-selector suffix flips from non-matching to matching once a nested control receives real focus', () => {
++  test('an ancestor :has(:focus-visible) + the real recipe’s own descendant-selector suffix flips from non-matching to matching once a nested control receives real focus', async () => {
++    const user = userEvent.setup();
+     const ANCESTOR_STAND_IN = '[data-testid="card-root"]';
+     // Swap the Emotion-only `&` token for the stand-in ancestor selector above — the remaining,
+     // actual descendant path comes straight from the real recipe's own module-scope constant,
+     // not a hand-typed second copy.
+-    const revealSelector = FOCUS_WITHIN_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
++    const revealSelector = FOCUS_VISIBLE_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
+ 
+     const { container } = render(
+       <div data-testid="card-root">
+@@ -913,12 +920,24 @@ describe('ZimmProductCard — Fix 2 (Scorer rework round 1): size chips reveal o
+     // permanently in the real recipe.
+     expect(sizeChips.matches(revealSelector)).toBe(false);
+ 
+-    // A real `.focus()` call (not `fireEvent.focus`, which only dispatches a synthetic event
+-    // without moving `document.activeElement` — confirmed empirically not to engage
+-    // `:focus-within` matching here) on a descendant of the card root.
+-    screen.getByRole('button', { name: 'Add to bag' }).focus();
+-
+-    // :focus-within on the card ROOT (not on the size-chip wrapper itself, which would be
++    // Fix H rework: `await user.tab()` (a real simulated Tab keypress), not a bare `.focus()` call
++    // (what this test used for the `:focus-within` version, and what a first pass at this rename
++    // kept unchanged). Empirically, in THIS project's installed jsdom/nwsapi, a bare `.focus()`
++    // call satisfies `:focus-visible` only when nothing else in the same test FILE has already
++    // driven a real pointer-originated focus via `userEvent.click()` — Vitest's jsdom environment
++    // is created once per file, not per test, so state can carry over. Confirmed by direct
++    // experiment: this exact assertion passes when this test runs alone, and fails when it runs
++    // after any of this file's own `user.click(...)` tests (e.g. the "bag button" test in the
++    // click-wiring describe block above) — with `document.hasFocus()`/`document.activeElement`
++    // still correctly pointing at this test's own button, but `button.matches(':focus-visible')`
++    // alone (no `:has()`, no compound selector) already false. `:focus`/`:focus-within` are
++    // unaffected either way. `await user.tab()` sidesteps this reliably (verified against both the
++    // isolated case and the full 57-test file) and is arguably the more faithful simulation of
++    // what this test claims to prove in the first place — a keyboard user tabbing into the card —
++    // than an imperative `.focus()` call, which does not represent any particular input modality.
++    await user.tab();
++
++    // :has(:focus-visible) on the card ROOT (not on the size-chip wrapper itself, which would be
+     // circular — an element that is display:none is unfocusable and unreachable by Tab) bubbles
+     // from this descendant's real focus state up to the root, so the reveal selector now matches
+     // — the same live-DOM condition the real recipe's CSS rule keys its `display: block` off.
+@@ -927,7 +946,7 @@ describe('ZimmProductCard — Fix 2 (Scorer rework round 1): size chips reveal o
+ 
+   test('the reveal selector still does not match a sibling control receiving focus outside the card root entirely', () => {
+     const ANCESTOR_STAND_IN = '[data-testid="card-root"]';
+-    const revealSelector = FOCUS_WITHIN_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
++    const revealSelector = FOCUS_VISIBLE_SIZE_CHIPS_KEY.replace('&', ANCESTOR_STAND_IN);
+ 
+     const { container } = render(
+       <>
+diff --git a/overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx b/overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx
+index af74334..ada70a2 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmProductCard/index.tsx
+@@ -46,7 +46,7 @@ import type { ZimmSizeChipValue } from '../../molecules/zimmSizeChipGroup';
+  *     Home's own hover-reveals-price behaviour is unaffected — its Unavailable Hover reference
+  *     still reveals price exactly as the in-stock case does.
+  *   - "Notify me" is hover-gated on hover-capable devices (hidden by default, revealed on
+- *     hover/focus-within, confirmed via every Desktop Unavailable+Hover reference) but
++ *     hover/focus-visible, confirmed via every Desktop Unavailable+Hover reference) but
+  *     unconditionally visible on touch (confirmed via the Mobile Unavailable references —
+  *     Mobile has no Hover variant at all, so whatever they show is the only state a touch
+  *     pointer ever sees, and all of them show notify-me plainly).
+@@ -425,7 +425,7 @@ export const ZimmProductCard = (props: ZimmProductCardProps) => {
+     hoverRevealsSizeSelector,
+     sizeSelectorUnavailable,
+     // Same Fix C audit: notify-me is hover-gated on hover-capable devices (hidden by default,
+-    // revealed on hover/focus-within — every Desktop Unavailable+Hover reference shows it
++    // revealed on hover/focus-visible — every Desktop Unavailable+Hover reference shows it
+     // appearing only there) but unconditionally visible on touch (every Mobile Unavailable
+     // reference — the only state a touch pointer ever sees, per the "Mobile has no Hover variant"
+     // finding — shows it plainly, with no hover to reveal it). This flag is deliberately keyed off
+diff --git a/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts b/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts
+index 0a315b7..13744d1 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts
++++ b/overrides/app/components/ui-kits/organisms/zimmProductCard/zimmProductCard.css.ts
+@@ -103,10 +103,11 @@ type ZimmProductCardStyleProps = {
+  *   3. THE HOVER-REVEAL SWAP between price and the PLP/Wishlist size-selector (and Home's
+  *      hidden-by-default price), gated by the same `(hover: hover) and (pointer: fine)` query
+  *      `zimmProductCardMedia.css.ts` already uses for its own arrows/indicator split. Each reveal
+- *      rule fires on `:hover` OR `:focus-within` on this same root (Fix 2 rework below) — `:hover`
+- *      alone would leave every reveal permanently unreachable by keyboard on a hover-capable
+- *      device, since `display: none` removes the unconditional-state element from the tab order
+- *      entirely and nothing but a real pointer hover could ever have revealed it.
++ *      rule fires on `:hover` OR `:has(:focus-visible)` on this same root (Fix 2 rework below,
++ *      superseded by Fix H — see point 6) — `:hover` alone would leave every reveal permanently
++ *      unreachable by keyboard on a hover-capable device, since `display: none` removes the
++ *      unconditional-state element from the tab order entirely and nothing but a real pointer
++ *      hover could ever have revealed it.
+  *   4. NOTIFY-ME'S HOVER GATE (Fix C, found during the SFCC-236 Step 6 visual audit against the
+  *      real Figma Default+Hover Unavailable instances for all three variations, desktop AND
+  *      mobile). Three behaviours confirmed together, all different from point 3 above:
+@@ -132,7 +133,7 @@ type ZimmProductCardStyleProps = {
+  *          reveal needed. Putting the "hidden by default" half outside the media query — matching
+  *          point 3's own structure literally — would have made notify-me permanently invisible on
+  *          touch, since a touch pointer never matches `HOVER_CAPABLE_QUERY` and so could never
+- *          trigger the `:hover`/`:focus-within` half either.
++ *          trigger the `:hover`/`:has(:focus-visible)` half either.
+  *   5. THE BAG ICON'S PLP-ONLY MOBILE HIDE (Fix D, same SFCC-236 Step 6 visual audit). A genuinely
+  *      different axis from points 3-4 above: `DESKTOP_QUERY` is a **viewport-width** media query
+  *      (`min-width`), not `HOVER_CAPABLE_QUERY`'s pointer-capability one — a large touch tablet and
+@@ -165,11 +166,27 @@ type ZimmProductCardStyleProps = {
+  *      `[HOVER_CAPABLE_QUERY]` block — a device-CAPABILITY check, not an actual-hover check —
+  *      which made the arrows visible permanently on any hover-capable device instead of only
+  *      while genuinely hovering/focusing the card. That sub-block is now removed entirely from
+- *      `zimmProductCardMedia.css.ts`; the `:hover`/`:focus-within` pair here is the only reveal
+- *      path left, the same mechanism point 3 already established for price/the size-selector.
++ *      `zimmProductCardMedia.css.ts`; the `:hover`/`:has(:focus-visible)` pair here is the only
++ *      reveal path left, the same mechanism point 3 already established for price/the size-selector.
+  *      Purely additive to the existing `carousel` z-index lift in point 2 above — that lift
+  *      already handles stacking once the arrows are visible; this handles visibility itself.
+  *
++ *      Fix H (live-browser check immediately after the above shipped): clicking an arrow button
++ *      gives it real DOM focus in every evergreen engine, which kept the then-`:focus-within`
++ *      reveal true — and the arrows visible — even after the mouse moved back out, until focus
++ *      moved elsewhere entirely (confirmed live: arrows stayed up until a click landed outside
++ *      the card). The same shared-root `:focus-within` shape underlies every reveal in point 3
++ *      too (price, the size-selector, notify-me), so a click on a size chip or the notify-me
++ *      button reproduces the identical stuck-open symptom — this fix was therefore applied to
++ *      every `:focus-within` occurrence in this recipe, not just this one. `:has(:focus-visible)`
++ *      replaces `:focus-within` everywhere in this file: it matches only when the browser's own
++ *      heuristic says a keyboard focus ring is warranted, which a mouse-click-focused `<button>`
++ *      never satisfies in any evergreen engine, while genuine Tab navigation still does — so
++ *      keyboard parity (Fix 2's original reason for adding a focus-based reveal at all) is fully
++ *      preserved, and the mouse-click case is not. `:has()` is new to this codebase as of this
++ *      fix; it is fully covered by this project's own browserslist (`iOS >= 17`, `Android >= 14`,
++ *      `last 4 ChromeAndroid versions`), all far past `:has()`'s 2022/2023 shipping baseline.
++ *
+  * Parts: only `root` is declared. Everything above is a nested descendant selector inside
+  * `root`'s own style object (targeting the composed children's `data-card-slot` attributes), not
+  * a separate Chakra part — `index.tsx` never reads anything off `useMultiStyleConfig` but
+@@ -281,16 +298,30 @@ export const ZimmProductCard = {
+           },
+           // Fix 2 (Scorer rework round 1): `display: none` removes an element from the tab
+           // order entirely, so a keyboard-only user on a hover-capable device (tabbing, not
+-          // hovering) could never reveal this via `:hover` alone. `:focus-within` on this same
+-          // root — scoped here, not on the price/size-chip wrapper itself, so that focus landing
+-          // on ANY descendant control (name link, bag button, size chip) triggers the reveal —
+-          // mirrors zimmSearchInput.css.ts's container/zimmFormRow's own `_focusWithin` sibling
+-          // to `_hover`. Expressed as a separate string key (not a comma-joined
+-          // `'&:hover, &:focus-within ...'` selector) to match that same established idiom;
+-          // this file already uses raw selector strings rather than Chakra's `_hover`/
+-          // `_focusWithin` shorthand props because the descendant-combinator path has to be
+-          // baked into the selector itself.
+-          [`&:focus-within [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: {
++          // hovering) could never reveal this via `:hover` alone. Originally `:focus-within` on
++          // this same root — scoped here, not on the price/size-chip wrapper itself, so that
++          // focus landing on ANY descendant control (name link, bag button, size chip) triggers
++          // the reveal — mirroring zimmSearchInput.css.ts's container/zimmFormRow's own
++          // `_focusWithin` sibling to `_hover`.
++          // Fix H (live-browser check after the arrow reveal shipped): plain `:focus-within`
++          // does not distinguish a real Tab-focused descendant from one that only has focus
++          // because the user *clicked* it with a mouse — most browsers give a `<button>` real
++          // DOM focus on click, so clicking any interactive control inside the card (an arrow,
++          // a size chip, notify-me) left `:focus-within` true, and therefore every reveal below
++          // stuck open, until focus moved elsewhere entirely (e.g. a click outside the card) —
++          // moving the mouse back out was not enough. `:has(:focus-visible)` fixes this: it only
++          // matches when the browser's own focus-visible heuristic says a *keyboard* focus ring
++          // is warranted, which excludes a mouse-click-focused `<button>` in every evergreen
++          // engine but still matches genuine Tab navigation — so the keyboard case Fix 2 exists
++          // for keeps working, and the mouse-click case that produced the stuck-open bug does
++          // not. `:has()` is not used anywhere else in this codebase yet; it is fully covered by
++          // this project's own browserslist (`iOS >= 17`, `Android >= 14`, `last 4 ChromeAndroid
++          // versions`), all far past `:has()`'s 2022/2023 shipping baseline. Expressed as a
++          // separate string key (not a comma-joined `'&:hover, &:has(:focus-visible) ...'`
++          // selector) to match this file's own established idiom; raw selector strings are used
++          // throughout rather than a Chakra shorthand prop because the descendant-combinator
++          // path has to be baked into the selector itself, and Chakra has no `:has()` shorthand.
++          [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: {
+             display: 'block',
+           },
+         }),
+@@ -300,11 +331,12 @@ export const ZimmProductCard = {
+           [`&:hover [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: {
+             display: 'none',
+           },
+-          // Fix 2 — see the hoverRevealsPrice block above for the full rationale. Keyboard focus
+-          // anywhere in the card must hide price in favour of the size-selector exactly as hover
+-          // does, so a keyboard user sees the identical revealed state, not a different partial
+-          // one.
+-          [`&:focus-within [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: {
++          // Fix 2 / Fix H — see the hoverRevealsPrice block above for the full rationale.
++          // Keyboard focus anywhere in the card must hide price in favour of the size-selector
++          // exactly as hover does, so a keyboard user sees the identical revealed state, not a
++          // different partial one; `:has(:focus-visible)` keeps that true while no longer
++          // sticking open after a mouse click.
++          [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.price}"]`]: {
+             display: 'none',
+           },
+         }),
+@@ -313,8 +345,8 @@ export const ZimmProductCard = {
+           [`&:hover [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+             display: 'block',
+           },
+-          // Fix 2 — see the hoverRevealsPrice block above for the full rationale.
+-          [`&:focus-within [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
++          // Fix 2 / Fix H — see the hoverRevealsPrice block above for the full rationale.
++          [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.sizeChips}"]`]: {
+             display: 'block',
+           },
+         }),
+@@ -329,7 +361,8 @@ export const ZimmProductCard = {
+           [`&:hover [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.notifyMe}"]`]: {
+             display: 'block',
+           },
+-          [`&:focus-within [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.notifyMe}"]`]: {
++          // Fix 2 / Fix H — see the hoverRevealsPrice block above for the full rationale.
++          [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.content}"] [data-card-slot="${CARD_SLOT.notifyMe}"]`]: {
+             display: 'block',
+           },
+         }),
+@@ -343,11 +376,11 @@ export const ZimmProductCard = {
+         // `zimmProductCardMedia.css.ts`'s own `[HOVER_CAPABLE_QUERY]: { display: 'flex' }` used to
+         // reveal this permanently on any hover-capable device (a device-capability check, not an
+         // actual-hover one) — removed entirely there; this pair is now the only reveal path left,
+-        // the same `:hover`/`:focus-within` shape as the price/size-selector swap above.
++        // the same `:hover`/`:has(:focus-visible)` shape as the price/size-selector swap above.
+         [`&:hover [data-card-slot="${CARD_SLOT.carousel}"]`]: {
+           display: 'flex',
+         },
+-        [`&:focus-within [data-card-slot="${CARD_SLOT.carousel}"]`]: {
++        [`&:has(:focus-visible) [data-card-slot="${CARD_SLOT.carousel}"]`]: {
+           display: 'flex',
+         },
+       },

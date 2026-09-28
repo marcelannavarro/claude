@@ -1,0 +1,641 @@
+======================================================================
+PR #46  [MERGED] merged=2026-08-06T04:35:16Z
+title: feat(ci): add version-tag naming guards (pre-push hook + validation workflow)
+branch: feature/tag-naming-guards
+----------------------------------------------------------------------
+# Description
+
+Adds two guards that enforce the version-tag naming convention for the tag-based
+promotion rollout.
+
+On the GitHub **Team** plan, repository-ruleset `tag_name_pattern` rules are not
+enforced (Enterprise-only). The `tag-rc` / `tag-release` rulesets still guarantee
+tag immutability and tier-1-only final tags, but not name *format* — these two
+guards cover the naming layer:
+
+- **`.husky/pre-push` + `scripts/hooks/pre-push`** — prevention: blocks a malformed
+  `v*` tag before it leaves the developer's machine.
+- **`.github/workflows/tag-validate.yml`** — detection: fails if a malformed `v*`
+  tag lands on the remote.
+
+Allowed: `vX.Y.Z-rc.N` · `vX.Y.Z` · `vX.Y.Z-hotfix.N`. Non-`v*` tags (`sprint/*`,
+`sit/deploy/*`) and branch pushes pass through untouched. No UI, copy, or
+third-party-integration changes.
+
+# Linked
+
+- Ticket: tag-based promotion rollout under epic **SFCC-1** (Platform Setup &
+  Environments); design in Confluence *Proposed: Tag-Based Environment Promotion
+  (GitFlow)* (335216656)
+- Sprint: SFCC Sprint 2
+
+# Squad ownership
+
+- [x] Platform / integration
+
+# Types of Changes
+
+- [x] **New feature** (non-breaking change that adds functionality)
+
+# Changes
+
+- Add `scripts/hooks/pre-push` — rejects malformed `v*` tags on push (checks the
+  remote ref, skips deletions)
+- Add `.husky/pre-push` — Husky wrapper invoking the hook (matches existing
+  `pre-commit` / `commit-msg` pattern)
+- Add `.github/workflows/tag-validate.yml` — CI check that fails on a malformed
+  `v*` tag push
+
+# How to test-drive this PR
+
+- `git tag v9.9-rc.0 && git push origin v9.9-rc.0` → **blocked** (malformed)
+- `git tag v0.1.0-rc.0 && git push origin v0.1.0-rc.0` → allowed
+- Branch pushes and non-`v*` tags (`sprint/*`, `sit/deploy/*`) → unaffected
+- Local V&V: 12/12 (valid / malformed / passthrough / `branch:refs/tags/vX` / deletion)
+
+# Protection-tier check
+
+> ⚠️ **Tier 1 change** — `.github/workflows/tag-validate.yml` is Tier 1
+> (frozenFiles.md > CI/CD); the new `scripts/hooks/pre-push` / `.husky/pre-push`
+> sit in the governance-controlled hooks area. Authenticated as `marcelannavarro`,
+> a member of `@ZimmermannAU/tier-1-approvers`; CODEOWNERS auto-requests a peer
+> review on merge.
+
+- [x] Tier 1 file(s) modified — owner review required (CODEOWNERS auto-requests
+      `@ZimmermannAU/tier-1-approvers`)
+- [x] No `package.json` changes
+- [x] No edits to generated AI-config files (`.cursor/rules/`, `.github/copilot-instructions.md`)
+
+# Testing
+
+- [x] Tag-naming V&V — 12/12 cases pass
+- [x] Workflow YAML validated
+- [x] `npx tsc --noEmit` — N/A (no TypeScript files changed)
+- [x] `npm run lint` — N/A (shell + YAML only)
+- N/A: Storybook / Vitest / Playwright (no components, logic, or user journeys changed)
+
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+
+## Summary by CodeRabbit
+
+* **Bug Fixes**
+  * Added validation for version tags to prevent malformed release, release-candidate, and hotfix tags from being pushed.
+  * Added checks during automated workflows to identify invalid version tags and report clear errors.
+
+* **Chores**
+  * Updated pre-push checks to validate version tags before they are submitted.
+
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+======================================================================
+PR #47  [MERGED] merged=2026-08-06T08:19:37Z
+title: feat(ci): add version-guard to block downgrades on tag-promoted deploys
+branch: feature/version-guard
+----------------------------------------------------------------------
+# Description
+
+Adds **downgrade protection** to the manually-promoted, tag-based deploy tiers
+(`test` / `uat` / `staging` / `prod`). Before a deploy, the guard reads the
+environment's last recorded deployed tag and **blocks** a push whose tag is *older*
+than what's live; after a successful push it **records** the deployed tag.
+
+Why the recording step: on the GitHub **Team** plan, a deploy's auto-created
+Deployment records the *trigger* ref (the default branch), not the deployed tag — so
+we record the tag ourselves (an explicit GitHub Deployment) and read it back to compare.
+
+`dev` and `sit` are the continuous auto tiers (no human-picked tag — `dev` deploys
+`develop`'s latest, `sit` deploys the gate's commit SHA), so a tag-downgrade guard does
+not apply and they are intentionally excluded.
+
+# Linked
+
+- Ticket: tag-based promotion rollout under epic **SFCC-1** (Platform Setup &
+  Environments); design in Confluence *Proposed: Tag-Based Environment Promotion
+  (GitFlow)* (335216656)
+- Sprint: SFCC Sprint 2
+
+# Squad ownership
+
+- [x] Platform / integration
+
+# Types of Changes
+
+- [x] **New feature** (non-breaking change that adds functionality)
+
+# Changes
+
+- Add `scripts/versionGuard.mjs` — `check` (block a downgrade; fail-closed on lookup
+  error; skip non-`v*` refs; allow the first deploy) + `record` (stamp the deployed
+  tag; fail the run if the record cannot be created; warn on status-update failure)
+- `deploy-{test,uat,stg,prod}.yml` — run the guard **before** the push, **record**
+  after a successful push, add `deployments: write`, and a **per-env concurrency**
+  group (`cancel-in-progress: false`) so two runs cannot race a downgrade
+- Add `semver` (devDependency) for the comparison
+
+# How to test-drive this PR
+
+Guard logic is integration-tested locally against the real Deployments API: record a
+baseline tag → downgrade **blocked**, newer/equal/first-deploy **allowed**, non-`v*`
+ref **skipped**, and a failed record **fails** the run. The live end-to-end check runs
+after merge (a `workflow_dispatch` uses the default-branch workflow definition):
+
+- record a baseline on an env, then `deploy-<tier> -f ref=<older-tag>` → **blocked**
+- `deploy-<tier> -f ref=<newer-tag>` → proceeds and records the new tag
+
+# Protection-tier check
+
+> ⚠️ **Tier 1** — `.github/workflows/*` (CI/CD) and a `package.json` dependency add.
+> The `semver` dependency is approved (tag-based promotion proposal + tier-1 review).
+> Authenticated as `marcelannavarro`, a member of `@ZimmermannAU/tier-1-approvers`;
+> CODEOWNERS auto-requests a peer review on merge.
+
+- [x] Tier 1 file(s) modified — owner review required (CODEOWNERS auto-requests
+      `@ZimmermannAU/tier-1-approvers`)
+- [x] `package.json` dependency (`semver`) — approved (proposal + tier-1 review)
+- [x] No edits to generated AI-config files
+
+# Testing
+
+- [x] Guard logic — integration-tested end-to-end against the real Deployments API
+- [x] Workflow YAML validated (all 4)
+- [x] `node --check scripts/versionGuard.mjs` passes
+- [x] `npx tsc --noEmit` — N/A (no TypeScript files changed)
+- N/A: Storybook / Vitest / Playwright (no components, logic, or user journeys changed)
+
+# Note on file naming
+
+`scripts/versionGuard.mjs` is camelCase to match the repo convention
+(`.claude/rules/conventions.md` → Zimmermann-authored files use camelCase) and its
+sibling `scripts/switchEnv.mjs` — deliberately not kebab-case.
+
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+## Summary by CodeRabbit
+
+* **Bug Fixes**
+  * Prevented deployments from accidentally introducing an older application version.
+  * Added safeguards for failed deployment checks and recording operations.
+
+* **Deployment Improvements**
+  * Deployment runs are now queued instead of cancelling one another across all environments.
+  * Successfully deployed versions are recorded for future validation.
+  * Initial deployments and non-version references continue to be supported.
+  * Improved deployment permissions to support reliable status tracking.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+======================================================================
+PR #59  [MERGED] merged=2026-08-24T08:26:38Z
+title: feat(footer): SFCC-55 global footer UI — shell, layout, and ui-kit component structure
+branch: feature/SFCC-55_global-footer-ui
+----------------------------------------------------------------------
+# Description
+
+Builds the global footer per SFCC-55 — shell, layout, and component structure across
+all eight storefronts and both breakpoints. Content is Contentful-shaped but
+fixture-backed: the CMS integration, link destinations, and Omneo sign-up are
+separate stories, so `FooterContainer` supplies `FOOTER_FIXTURE` and `Footer` itself
+takes its content as a required prop and fetches nothing.
+
+Six ui-kit atoms/molecules were built or completed alongside it — logo, icon,
+nav-item, button, text-input, and the input-action molecule — all six consumed by
+the footer.
+
+Three points worth surfacing before review:
+
+- **Fonts are now self-hosted**, reversing the position stated in #53. Futura Round
+  renders in-app and in Storybook from one shared `@font-face` module. The fallback
+  stack measures ~13% wider, so several sizing decisions made against it were wrong
+  and were redone once real metrics were in play. Licence files are deliberately
+  excluded from the repository.
+- **This branch was taken over from Jersey.** Their three CodeRabbit-fix commits are
+  in the history; the parts worth keeping were adopted deliberately as separate
+  commits (`fix(button)`, `feat(footer)`, `test(ui-kit)`) rather than folded into
+  conflict resolution, so what came from upstream and why stays visible.
+- **9 of the 16 new commits carry `.claude/registry/` churn.** The `pre-commit` hook
+  regenerates it on any `components/`/`hooks/`/`utils/` change and `git add`s it.
+  Mechanical — skip those hunks.
+
+`header/index.tsx` carries a pre-existing `fontSize="l"` (invalid token) and a
+`useCurrentBasket` call from the original copy-first import. Both predate this PR —
+our diff there is comments only — but they surface in the changed-files view.
+
+# Linked
+
+- Ticket: **SFCC-55** (Global Footer UI). Design: Figma *Zimmermann_Design_System_2026*;
+  footer frames signed off with Dani & Vicky (2026-07-07). Test cases SFCC-T116 – SFCC-T122
+- Sprint: SFCC — Sprint 3
+
+# Squad ownership
+
+- [x] Squad B
+
+# Types of Changes
+
+- [x] **New feature** (non-breaking change that adds functionality)
+
+# Changes
+
+- `components/footer/` — footer assembly, subscribe section + modal, contact icon row,
+  bottom bar; Contentful-shaped fixture and schema placeholder
+- `theme/components/footer.ts` — the `ZimmFooter` multipart recipe. Named `ZimmFooter`,
+  not `Footer`: `extendTheme` deep-merges, so a recipe sharing a base SFCC recipe's name
+  inherits it rather than replacing it
+- `components/ui-kits/` — six atoms/molecules; `cssVars` indirection removed in favour of
+  the `--zimm-*` custom properties directly, and `utils/cssVars.ts` deleted
+- `theme/fontFace.tsx` + `static/fonts/` — self-hosted Futura Round, mounted in both the
+  app and Storybook from one module so the two cannot drift
+- `components/icons/` — the four Zimmermann chevrons, replacing base-template
+  substitutions that rendered a filled glyph where the design is a 1px stroke
+- `theme/components/zimmTextInput.ts` — colour derivation moved out of the hook into the
+  recipe, so the recipe is the single styling surface
+- `scripts/generateRegistry.mjs` — prop extraction scoped to `<ComponentName>Props`,
+  Markdown table cells escaped, comma-containing types no longer silently dropped
+
+# How to test-drive this PR
+
+- `npm run env -- dev && npm start` → `/`, scroll to the footer. Nav columns hug their
+  content with even gaps; hovering a link underlines it
+- Resize through **1030px → 760px** — the bottom bar stays aligned with the content above
+  it at every width
+- Type a valid email → `>` opens the Join Us modal; empty or malformed is blocked inline
+  with no modal
+- `npm run storybook` → `Layout/Footer` (4 states incl. modal-open), `Elements/ZimmNavItem`
+  (unsafe-href fallback), `Forms/ZimmInputAction` (validation)
+
+# Protection-tier check
+
+> ⚠️ **Tier 1** — `.storybook/{main.js,preview.tsx}` (test config, **Integration-owned**)
+> for serving and mounting the self-hosted fonts; `.claude/rules/frozenFiles.md`
+> (governance, **both squad leads + Integration lead**) to record them;
+> `theme/foundation/sizes.ts` (design system, **UI-Designer-owned**) — whitespace only,
+> and it now diffs to **zero** against `develop`.
+> Authenticated as `marcelannavarro`, a member of `@ZimmermannAU/tier-1-approvers`.
+>
+> ⚠️ **Tier 2** — `components/footer/`, `components/header/` (comments only),
+> `theme/components/` (**UI-Designer — notified**). `components/footer/` is Global Shell,
+> owned by **both squads** — Squad A notified.
+
+# Testing
+
+- [x] `npx tsc --noEmit` — clean
+- [x] `npm run lint` — 0 errors (3 pre-existing `header` unused-import warnings, documented in-file)
+- [x] `npm run test` (Vitest) — 168/168
+- [x] Storybook interaction — 15 `play` functions across 7 stories
+- [x] Runtime behaviour — 20/20 (hover, focus-visible, validation, modal focus trap + Escape + focus restore, overlay z-index above the sticky header)
+- [x] Figma geometry — structural paddings exact at 64/48, 48/48, 24/24
+- [x] Box model — 112 footer elements × 6 viewports, 0 off-token paddings/margins/gaps/borders
+- [x] Accessibility — axe 0 violations / 17 passes (wcag2a → 2.2aa)
+- [x] Local CodeRabbit — no new findings
+
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+## Summary by CodeRabbit
+
+- **New Features**
+  - Added a region-aware Contentful footer with navigation, legal links, contact channels, branding and newsletter sign-up.
+  - Added reusable buttons, icons, navigation items, text inputs and accessible modals.
+  - Added UI copy loading with fallback text.
+  - Added self-hosted Futura Round fonts across the app and Storybook.
+  - Added secure handling for navigation and contact links.
+
+- **Bug Fixes**
+  - Improved experience-page rendering in Contentful Studio canvas mode.
+  - Removed unsupported shoppable-image experiences.
+
+- **Documentation**
+  - Updated Contentful setup, regional content, styling and testing guidance.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+======================================================================
+PR #62  [MERGED] merged=2026-08-27T02:39:42Z
+title: Contentful cleanup: Boolean toggle Appearance app, org-template editor interfaces, dead-code removal
+branch: feature/contentful-cleanup
+----------------------------------------------------------------------
+## Summary
+
+- Adds a Contentful App Framework app (`contentful-apps/boolean-toggle-field/`) that replaces the default Boolean-field checkbox with a Forma36 `Switch` — Contentful ships no built-in toggle appearance. Installed org-wide (app def `5MrV88VE7h4RIIndwLbP5Y`) and wired into `footerNavGroup.showContactChannels` and `image.decorative` via the org `EnvironmentTemplate`.
+- Extends `scripts/contentful/buildTemplate.js` to actually populate `editorInterfaceTemplates` (previously hardcoded to `[]`), and migrates the previously dev-only, unmanaged `image` content type into the template. Template rebuilt and redeployed to all six space environments (dev → test → sit → staging → uat → master).
+- Removes unused Hardi-era components with no live consumer: `button/`, `contentful/{heroBanner,duplexSection,videoEmbed,productHero}.tsx`, and the never-populated Studio Experiences scaffolding (`experiences/collectionHero.tsx`, `experiences/imageText.tsx`). Strips the resulting dead imports from `pages/home/index.tsx` (the live homepage route) and restores `experiences/definitions.ts` as a minimal stub for the two Studio Experiences pages that still depend on it (`pages/experience`, `pages/contentfulPreview`), which are live code, not dead.
+- Fixes a real bug in `scripts/generateRegistry.mjs`: the PostToolUse registry-update hook's "incremental" mode was blanking `Consumers`/`Last touched` to `—` for every row in a touched category (not just the edited file) and persisting that to disk. Now only the touched row gets a fresh recompute; every other row reuses its cached value.
+- Tier 1 fix to `scripts/hooks/pre-commit` (edited under the verified tier-1-approver session exception — see commit `f2254ae`): handles the case where every `experiences/*.tsx` component is deleted in one commit, which previously hard-failed the Contentful codegen step.
+- `.eslintrc.js`: adds a `scripts/contentful/**/*.js` override for `@typescript-eslint/no-var-requires`, matching the existing `e2e/**/*.js` precedent (plain CommonJS tooling scripts, not TypeScript).
+
+## Test plan
+
+- [x] `npx tsc --noEmit` — clean
+- [x] `npm run lint` — clean except pre-existing, unrelated findings in files this PR doesn't touch
+- [x] `npm run test` — 257/257 passing
+- [x] Verified locally in the browser: toggle renders on `imageAndText.homepage` and `footerNavGroup.showContactChannels`, homepage loads without the removed components, `pages/experience`/`pages/contentfulPreview` resolve `definitions.ts` again
+- [x] Simulated the registry incremental-mode bug fix directly (`--file=` against an untouched file) — confirmed zero data loss vs. the pre-fix behavior
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01HQuuJDbcPAmZkRavWTs2VT
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+## Summary by CodeRabbit
+
+* **New Features**
+  * Added a Contentful Boolean Toggle Field app for enabling and disabling boolean fields.
+  * Added image content modelling with asset, accessibility, caption and rich-text link support.
+  * Added configurable editor controls for selected Contentful fields.
+
+* **Bug Fixes**
+  * Improved Contentful environment template updates to retain editor settings.
+
+* **Documentation**
+  * Added setup, installation, development and deployment guidance for the Boolean Toggle Field app.
+
+* **Refactor**
+  * Removed unused homepage experience components and the legacy custom button.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+======================================================================
+PR #64  [MERGED] merged=2026-08-27T01:28:37Z
+title: feat(pdp): SFCC-89 static product information — name, price, description, model line, and style code
+branch: feature/SFCC-89_pdp-static-product-info
+----------------------------------------------------------------------
+
+# Description
+
+Renders the five static product fields on the PDP per SFCC-89 — product name, full
+price in the active storefront's currency, description, "Model is…" copy, and style
+code — as five ui-kit atoms composed by two molecules, consumed by the product detail
+page. No commerce interaction, no Contentful, no gallery: swatches (SFCC-91), size and
+add-to-bag (SFCC-92), the gallery (SFCC-186/187/188), accordions (SFCC-195/102), badges
+(SFCC-132/225) and was/now pricing (SFCC-194) are all separate stories and none of them
+is touched here.
+
+The model line reads `c_modelFit`. Nothing scrapes `c_sizeFit`.
+
+Seven points worth surfacing before review:
+
+- **The copy-first port is its own commit and reviewable on its own.** `d1fb034` is the
+  mechanical `.jsx` → `.tsx` port of `product-view` and `product-detail` with **zero**
+  functional change — `AGENTS.md`'s copy-first rule requires that split, and it is the
+  largest commit by line count. Reading it first makes the other five small.
+- **`product-view/index.tsx` gains exactly one optional slot, `renderHeader`.** The
+  default export stays a faithful, undecorated SFCC bridge — base components import this
+  module, so its prop surface and `forwardRef` behaviour are unchanged and the slot
+  defaults to the base header. No other slots were added speculatively.
+- **Type sits in the recipes, not on the JSX elements.** `.claude/rules/overrideStyling.md`
+  is silent on *where* a `textStyle` should live rather than contradictory: hierarchy point 1
+  happens to show it as a prop (`textStyle="body2"`), but its actual rule is "never a raw
+  `fontSize`", and point 3 plus "one canonical styling surface per component type" both point
+  at the component's own theme config. PR #59 settled it in practice — seven recipe files
+  carry `textStyle`, zero JSX props do — and this PR follows that deliberately. A
+  one-sentence clarification to point 1 is worth a separate doc PR (that file is Tier 1
+  governance): until it lands, the doc still reads as prescribing the prop form, and nothing
+  mechanical catches the difference — `recipeGuards.test.ts`'s `TYPOGRAPHY_PROPS` checks only
+  `fontSize`/`lineHeight`/`letterSpacing`, so a `textStyle` in the wrong place is invisible to
+  `tsc`, eslint, the guard and axe alike.
+- **Five changed files have no CODEOWNERS rule, so GitHub auto-requests no reviewer for
+  them.** There is no default (`*`) owner in CODEOWNERS. Named by hand below.
+- **The loading state diverges from base deliberately.** Base renders nothing until the
+  product resolves; this page wraps the static fields in a `Skeleton` with a
+  `minHeight` pinned to a line-height token, so the info column does not reflow when the
+  data lands. Called out because it is a visible behavioural difference from the base PDP.
+- **`staticProductHeader` has a story that `components.md` says it does not need.** That
+  rule exempts "purely internal sub-components that only render inside one parent", which
+  this partial is. It got one anyway: it is the only place the name's heading level is
+  decided, and a wrong level (`h3` where the page needs `h1`) is invisible to `tsc`, to
+  eslint, and to a passing unit test — but it is an axe violation, and every story is an
+  axe assertion. Categorised `Commerce/StaticProductHeader` rather than `Pages/`, since
+  `Pages/` is specified for full page assemblies and explicitly not per-sub-section stories.
+- **Our components' internal spacing is exact; the column they sit in is not, and that's
+  SFCC-723.** A 4-viewport sweep of the rendered page confirms every internal metric against
+  the DS and finds **zero** off-token paddings/margins/gaps. But Figma puts the info column at
+  **218px** (`5083:70358`) with the model line and style code *inside* it, while base's PDP
+  layout gives our content **660px** at 1440 and leaves the meta block full-width below the
+  accordions. That is `pdp/hero` layout geometry — **SFCC-723**, out of scope here. Flagging it
+  so "design fidelity" is not read as covering the column itself.
+- **The product name is an `h2`; the page's only `h1` is base's screen-reader-only "Product
+  Details"** (`<Heading as="h1" srOnly>`, base-verbatim). Not an axe violation — which is why
+  every a11y gate passes — but for a PDP the product name as `h1` is the SEO norm. Our `h2` is
+  deliberately consistent with base rather than introducing a second `h1`; changing it means
+  replacing base's, which is page-structure scope beyond this story. Worth its own ticket.
+- **For QA: base renders `ProductView` twice** (one per breakpoint, one `display: none`), so
+  `product-name`, `product-price`, `product-description` and `product-content` each appear
+  **twice** in the DOM. Playwright strict mode will fail on a bare `getByTestId` — SFCC-732/733
+  specs need a visibility filter.
+- **`formatPrice` is duplicated** between the page and `partials/staticProductHeader.tsx`.
+  The partial carries a comment pointing at the page's copy and vice versa. Left duplicated
+  rather than lifted to `utils/` — extracting it would be refactoring upward out of this
+  story's scope. Worth a follow-up.
+- **6 of the 8 commits carry `.claude/registry/` churn.** The `PostToolUse` hook regenerates
+  it on any `components/`/`pages/` edit and the `pre-commit` hook `git add`s it. Mechanical
+  — skip those hunks.
+
+`header/index.tsx:299` spreads `{...styles.popoverContent}` off a recipe that declares no
+such part, in both our override and the base template it was copied from
+(`retail-react-app/app/components/header/index.jsx:265`) — `popoverContent` is a **ListMenu**
+part, so it is an upstream cross-recipe name mixup. It resolves to `undefined` and
+`{...undefined}` is a legal no-op, so nothing breaks and Chakra's own `Popover` recipe styles
+the element anyway. Pre-existing, out of scope here, and the only instance repo-wide; it
+surfaces in the changed-files view because this PR ports that file. Worth its own ticket.
+
+# Linked
+
+- Ticket: **SFCC-89** (PDP — static product information). Design: Figma
+  *Zimmermann_Designs* — desktop PDP `3093:67151` ("PDP 01"), info column `5083:70358`
+  (218px), text group `5083:70362`, model line `5083:70411`, style code `5083:70412`.
+  (Earlier working notes cited `40000307:14062` / `40000343:9727`; **neither node exists in
+  the file** — corrected here so the citation is checkable.)
+- Sprint: SFCC — Sprint 3
+
+# Squad ownership
+
+- [x] Squad A (common UI, homepage, navigation, regional storefront, PDP, PLP, cart, checkout, order, payments, returns)
+- [ ] Squad B (search & recommendations, promotions, account, store locator, Zimmerse, SEO & analytics)
+- [x] Cross-squad — both leads notified
+- [ ] Platform / integration
+
+> **Ownership contradiction, flagged not resolved.** Four places in the repo answer "who owns
+> `overrides/app/pages/product-detail/`", and they split 2–2: `CODEOWNERS:162` and
+> `scripts/generateRegistry.mjs:186` say **Squad B**, while `.claude/rules/squadA.md` and this
+> template (PDP is listed under Squad A) say **Squad A**. CODEOWNERS is the surface GitHub
+> enforces, so Squad B is auto-requested regardless and nothing is left unguarded. Cross-squad
+> is ticked because `components/ui-kits/` is owned by both, so neither lead is surprised.
+>
+> Not reconciled here: two of the four are Tier 1 governance files, so picking a winner is a
+> squad-leads-plus-Integration-lead decision rather than something a feature PR should settle by
+> editing one side into agreement. Raised as a follow-up — it will keep resurfacing on every PDP
+> and PLP PR until it is settled.
+
+# Types of Changes
+
+- [x] **New feature** (non-breaking change that adds functionality)
+
+# Changes
+
+- `components/product-view/index.tsx` — copy-first TS port, plus one optional
+  `renderHeader` slot. Default export unchanged in shape
+- `pages/product-detail/index.tsx` — copy-first TS port, then composes the static fields;
+  no container mirroring `pdp/product-content` was introduced, the page composes directly
+- `pages/product-detail/productInfo.ts` — the SFCC → view-model mapper (`c_modelFit`,
+  `longDescription`, style code, price), with its own unit suite
+- `pages/product-detail/partials/staticProductHeader.tsx` — the header assembly, extracted
+  so it is testable without the page
+- `components/ui-kits/atoms/` — `zimmProductName`, `zimmProductPrice`,
+  `zimmProductDescription`, `zimmProductModelInfo`, `zimmProductStyleCode`
+- `components/ui-kits/molecules/` — `zimmProductContent` (the text group's rhythm),
+  `zimmProductMeta` (model line + style code)
+- `components/ui-kits/recipeParts.test.ts` — guard widened from `ui-kits/**` to
+  `components/**`, newly covering the three footer recipes. `theme/components/header.ts`
+  remains deliberately unguarded (not co-located) and says so in-file
+- `utils/richText.tsx` — the description's rich-text parser, with its own suite. Two defects
+  found by the local CodeRabbit review and fixed here, each with regression cases proven to
+  fail against the old implementation: the tag unwind searched the stack from the root, so a
+  nested `<li>` closed its same-named ancestor and the trailing text escaped the list
+  (4 cases); and HTML comments were not tags, so `<!-- ... -->` markers and body rendered as
+  visible copy — `longDescription` is Business-Manager-authored, so a shopper would have seen
+  an author's note (5 cases)
+- `theme/components/index.ts` — registers the seven new recipes
+- `theme/index.test.tsx` — registration pins; `useStyleConfig` returns `{}` for an
+  unregistered recipe and `__css={undefined}` is legal, so an unregistration is otherwise
+  silent
+- `routes.tsx`, `types/vendor.d.ts` — route wiring and the vendor type surface the port needs
+
+# How to test-drive this PR
+
+- `npm run env -- dev && npm start` → any PDP. Name, price, description, model line and
+  style code render in the info column; switching a variant updates the price
+- Switch a variant with a screen reader on — the price is announced without focus moving
+  (WCAG 2.2 AA 4.1.3). It is a live region on the price element itself, not a duplicate node
+- Resize through the mobile breakpoint — the info column keeps its 64/28/28/64 rhythm
+- `npm run storybook` → `Commerce/` for all eight: the five atoms, the two molecules, and
+  `Commerce/StaticProductHeader`
+
+# Protection-tier check
+
+> **No Tier 1 file is modified by this PR.**
+>
+> ⚠️ **Tier 2** — `overrides/app/routes.tsx` (Global Shell, **both squads**; CODEOWNERS
+> additionally routes it to tier-1 and tier-2 approvers, so their review is auto-requested)
+> and `overrides/app/theme/components/index.ts` (**UI-Designer-owned** — registration
+> entries only, no design values). `overrides/app/components/product-view/` is treated as
+> Tier 2 by convention; note no tier list or CODEOWNERS entry actually covers it.
+
+**Five files match no CODEOWNERS rule, and there is no default owner — reviewers named by
+hand:** `components/product-view/index.tsx` (shared SFCC bridge imported by base components;
+treated as Tier 2, **Squad B** notified), `theme/index.test.tsx`, `utils/richText.tsx` +
+`richText.test.tsx`, and `types/vendor.d.ts`.
+
+# Testing
+
+- [x] `npx tsc --noEmit` — clean. Not wired into CI; this is the only place it runs
+- [x] `npm run lint` — 17 errors / 15 warnings, both at `develop`'s baseline. Error count
+      held as an invariant across all commits
+- [x] `npm run test` (Vitest) — 379 passed / 25 files
+- [x] Storybook interaction + a11y — 24 suites / 106 tests. `.storybook/preview.tsx` sets
+      `a11y: {test: 'error'}`, so every story is also an axe assertion
+- [x] `npm run audit:tokens` — 14 unacknowledged / 22 acknowledged, unchanged from
+      `develop`. Not wired into CI either
+- [x] **Box model — 4 viewports (402 / 768 / 1024 / 1440), 0 off-token paddings, margins or
+      gaps.** Meta rows 28/28px, style-code label→value 4px, name→price and price→description
+      20px, list indent 16px (provisional, no DS spec), markers `disc`, all margins 0 — every
+      value identical at all four widths. Note 768–1279 is undesigned in the DS, so those two
+      widths are measured for stability, not compared to a spec
+- [x] Accessibility — 106 axe assertions across 24 Storybook suites (`preview.tsx` sets
+      `a11y: {test: 'error'}`); `aria-live="polite"` + `aria-atomic="true"` confirmed on the
+      price element on the live page at all four viewports
+- **Not verified: the price announcement itself.** Nobody has switched a variant with a screen
+      reader running. The live region is proven present and unit-tested; that a given AT
+      vocalises it is untested. Also worth knowing: before consent, Didomi's dialog `aria-hidden`s
+      the whole page — correct fail-closed behaviour, but a screen-reader user meets consent first
+- [x] Local CodeRabbit (`cr review --light --base develop`) — no findings
+- [x] `/code-quality` audit vs `develop` — run; findings triaged. Deferred with reasons rather
+      than fixed late in this PR: the `any` type aliases in the two copy-first ports should import
+      `ShopperProductsTypes` from `commerce-sdk-isomorphic` (which does export it — the aliases'
+      stated justification is wrong); `renderHeader` has no test; the seven new components use
+      `data-testid` where `testing.md` prefers role/text selectors (zero of the ten existing
+      Zimmermann `ui-kits` components use one). None changes behaviour; all are follow-ups
+- [x] Runtime behaviour on a live PDP — developer-verified at two checkpoints
+- **N/A: Playwright.** No PDP spec exists (`e2e/tests/` holds two homepage smoke tests) and
+      writing one is gated on Lead QA signing off a Gherkin `.feature` first, per the
+      three-stage workflow. Not closable in this PR
+
+# Accessibility
+
+Minimum bar **WCAG 2.1 AA**; 2.2 AA aspirational. This PR adds no interactive elements — the
+five components are a heading, a paragraph, two text blocks and a two-node row.
+
+- [ ] There are no UI changes
+- [ ] **Tested with a screen reader — NOT done.** The price carries `aria-live="polite"` +
+      `aria-atomic="true"` (confirmed on the live page at four viewports) and is unit-tested,
+      but nobody has switched a variant with VoiceOver or TalkBack running. **The one open
+      a11y item on this PR.** Worth knowing when you do: before consent, Didomi's dialog
+      `aria-hidden`s the whole page, so a screen-reader user meets consent first
+- [x] Keyboard-only navigation — no interactive elements are added, so there is nothing new
+      in the tab order
+- [x] Colour contrast meets WCAG 2.1 AA — `text.default` (#191919) ≈ 16:1 and
+      `text.secondary` (#666666) ≈ 5.7:1 on white, both above 4.5:1; also covered by axe
+- [x] Changes comply with [WCAG 2.1 AA](https://www.w3.org/WAI/WCAG21/quickref/?levels=aa) —
+      axe reports 0 violations across all 24 Storybook suites
+- [x] Common UI patterns follow [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [x] _(Bonus)_ [WCAG 2.2 AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aa) considered —
+      **4.1.3 Status Messages** is precisely why the price is a live region: choosing a variant
+      rewrites the URL's `pid` and repaints the price with no focus change, so without it the
+      number a shopper is buying at changes silently
+
+Known, deliberately not fixed here: the product name is an `h2` because the page's only `h1`
+is base's screen-reader-only "Product Details". Not an axe violation, but off the SEO norm for
+a PDP — replacing base's `h1` is page-structure scope beyond this story.
+
+# Localisation
+
+- [ ] No copy changes
+- [x] Copy change **noted as pending translation.** One new string — the style-code label,
+      `product_view.label.style_code` — goes through `intl.formatMessage` with a
+      `defaultMessage`, and no `translations/` entry is added. That directory is Tier 2
+      (Integration / SI Partner). Behaviour until extraction runs: each site's default locale
+      is silent, because `config/sites.js` sets `defaultLocale` to its first locale and
+      `@formatjs` only raises `MissingTranslationError` when `locale !== defaultLocale`;
+      non-default locales route through base `_app`'s `onError`, which downgrades
+      `MISSING_TRANSLATION` to a `logger.warn` and returns. No crash, no console error.
+
+# Known gaps and follow-ups
+
+A `/code-quality` audit against `develop` ran before this PR. Nine findings were triaged as
+follow-ups rather than fixed here — none changes behaviour, and each would either edit a
+copy-first port or refactor tests late in a gated PR:
+
+- **Types.** Both ports alias `SfccProduct`/`Variant`/`Category`/`PriceData` to `any`. The
+  in-file justification has been corrected: `@salesforce/retail-react-app` shipping no types is
+  true but beside the point — these shapes are `commerce-sdk-isomorphic`'s and it does export
+  `ShopperProductsTypes`. Substituting also clears 3 of the 15 lint warnings, which moves a
+  baseline this branch holds as an invariant across all 8 commits — hence not bundled here. The
+  same follow-up covers `SfccVariationValue.image` (declared a Product, read as an `Image`) and
+  `name: string` where upstream is `name?: string`.
+- **`renderHeader` has no test.** Both call sites pass byte-identical prop objects today with
+  nothing pinning that, and the default-vs-supplied branch is untested. A test needs the shared
+  `renderWithProviders` helper `testing.md` calls for and that doesn't exist yet — that helper is
+  the real unit of work.
+- **Selectors.** The seven new components carry `data-testid`; `testing.md` wants role/text first
+  and reserves test IDs for elements with no semantics. Zero of the ten existing Zimmermann
+  `ui-kits` components use one, so this is a divergence worth correcting — as a test refactor with
+  its own review, not late here. The two molecule wrappers legitimately qualify and would stay.
+- **Assertion consistency.** Collapse behaviour is asserted three ways across six suites;
+  standardise on `toBeEmptyDOMElement()`.
+- **The seven registration pins catch an unregistration only** — a recipe emptied to `{}` still
+  passes. Four of the seven pin no resolved value anywhere, which matters more now type lives in
+  the recipes. Documented in-file; closing it means asserting a resolved value per recipe.
+- **`staticProductHeader.tsx:58,60`** carries bare Chakra keys lifted verbatim from base
+  `product-view`. `minWidth={64}` is the one that matters — `sizes` is not a registered scale
+  here, so a bare key can misresolve rather than just read oddly.
+- **`app/constants` is imported by base path in both ports** (base-verbatim). No behavioural
+  impact — the override is a pure superset re-export — but a constant's *value* changing would
+  split base consumers from these two files.
+- **The shipped ProductView/PDP path has no coverage in this repo.** Base ships `index.test.js`
+  for both (39 and 24 cases); `vitest.config.ts` scopes collection to `overrides/**`, so they
+  never run here. Not a CI regression — the override now shadows the implementation those suites
+  were written against. Base's suites are a ready-made porting source.
+
+Owner-side, not ours: the cap-height/leading-trim spacing question and a named 28px spacing step
+(designer — `--zimm-scale-700` is raw px for a spacing alias, against the Units rule);
+`overrideStyling.md`'s `isFromExtends` rationale is wrong in a way that *understates* the rule,
+and its "known instance" cites two files that exist on no branch (governance); no ESLint
+`import/*` rules, so the highest-value override rule is human-review-only (Integration).
+
+

@@ -1,0 +1,400 @@
+====================================================================================================
+### [pwa] [2026-08-26] Zephyr test case generation workflow — 7 user turns — 6619ca79-d877-4f28-b5c6-4a67058fb214.jsonl
+====================================================================================================
+
+--- turn 1 ---
+# Zephyr Test Case Generation — Workflow
+Save as `~/tools/zephyr/zephyr-workflow.md`.
+Invoke with: `claude "Follow ~/tools/zephyr/zephyr-workflow.md for SFCC-1234"`
+---
+## Role
+You generate Zephyr Scale test cases from Jira requirements and upload them as
+**drafts for human review**. You are the first pass, not the final word. A QA
+engineer reviews everything you produce in the Zephyr UI before it becomes real.
+## Constants
+| Setting | Value |
+|---|---|
+| Jira site | `zimmermannworkboard.atlassian.net` |
+| Project key | `SFCC` |
+| Target folder | `/Staging/<JIRA-KEY>` |
+| Status on write | `Draft` — never anything else |
+| Upload script | `~/tools/zephyr/zephyr-upload.ts` |
+| Token | `$ZEPHYR_TOKEN` from Keychain — never read, print, or log it |
+---
+## Procedure
+### 1. Read the requirement
+Via the Atlassian MCP, fetch the Jira issue: summary, description, acceptance
+criteria, issue type, status, **and comments**. Requirements frequently live in
+comments rather than the description — read them.
+Follow every linked Confluence page and read it. If a link is dead or you lack
+access, say so explicitly rather than proceeding on partial information.
+### 2. Assess before generating
+Report to the user, before writing anything:
+- How many distinct acceptance criteria you found
+- Anything ambiguous, contradictory, or underspecified
+- Anything referenced but unreadable
+**If acceptance criteria are ambiguous, stop and ask.** Do not resolve ambiguity
+by picking the most plausible reading. A confidently-worded test case built on a
+guess is worse than no test case, because it passes review by looking right.
+### 3. Generate
+One test case per acceptance criterion, plus error and edge paths **that the
+requirement actually states**. Do not invent requirements to reach a target count.
+Naming: `<Feature>: <behaviour being verified>`
+e.g. `Checkout: rejects expired payment method`
+Each case gets:
+- `name` — as above, unique within the project
+- `objective` — one sentence, what this proves
+- `precondition` — required state, or omit
+- `folder` — `/Staging/<JIRA-KEY>`
+- `statusName` — `Draft`
+- `priorityName` — inherit from the Jira issue priority
+- `labels` — `["<JIRA-KEY>", "ai-generated", "needs-review"]`
+- `linkedIssueKey` — the Jira key
+- `steps` — each with `description` and `expectedResult`
+**Steps must be executable by someone who has not read the ticket.** Concrete
+values, named UI elements, observable outcomes. `expectedResult` states what the
+tester can see, not what the system does internally.
+Bad: `Verify the payment fails appropriately.`
+Good: `Error banner reads "Card expired". Order status remains Pending. No charge appears in the payment log.`
+### 4. Report coverage gaps
+Before uploading, list what you could **not** test from the requirement as
+written — unstated error paths, missing edge cases, integration points the
+ticket doesn't describe.
+This section is the point of the exercise. You can only test what the ticket
+says; the gaps are where the QA engineer's domain knowledge is needed. Surface
+them as a list for the reviewer to act on. Never fill them in yourself.
+### 5. Write and confirm
+Write the JSON to `/tmp/zephyr-<JIRA-KEY>.json` and show the user a summary:
+case count, names, folder, gap list.
+**Wait for explicit approval before uploading.** Do not chain step 6.
+### 6. Upload
+
+```bash
+cd ~/tools/zephyr && npx tsx zephyr-upload.ts /tmp/zephyr-<JIRA-KEY>.json
+```
+
+Run `--dry-run` first if the flag exists. Report per-case success or failure with
+the returned Zephyr keys. Do not retry failures automatically — report and stop.
+### 7. Hand off
+Output for the reviewer:
+- Zephyr folder path and the test case keys created
+- Case count
+- The coverage gap list from step 4
+- Anything you flagged as ambiguous in step 2
+---
+## Hard constraints
+- **Write only to `/Staging/<JIRA-KEY>`.** Never to any other folder.
+- **Status is always `Draft`.** You never mark anything `Approved`. Approval is a
+  human act performed in the Zephyr UI.
+- **Never modify or delete existing test cases** outside `/Staging`. If a case
+  with the same name exists elsewhere, report the collision and stop.
+- **Never delete anything** in Zephyr under any circumstances.
+- **Never print the token**, in output, logs, or error messages.
+- **Never invent requirements.** If the ticket doesn't say it, it goes in the gap
+  list, not in a test case.
+- **Never batch multiple Jira issues** in one run without being asked.
+## Re-running
+Re-running for the same Jira key is safe: the script matches on name and
+overwrites steps rather than appending. Cases the reviewer already moved out of
+`/Staging` will not be touched — they are outside your write scope, so a re-run
+regenerates only what is still in staging.
+If the requirement changed, say so in the handoff so the reviewer knows which
+cases are newly stale.
+
+--- turn 2 ---
+Base directory for this skill: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Current sprint / phase (from `projectState.md`)
+   - The last completed task and the next task
+   - Any blockers or outstanding issues
+
+   Format: "Resuming from: [last completed task]. Next: [next task]. [Any blockers or health issues]."
+
+5. **Confirm readiness** — ask if the user wants to proceed with the stated next task or redirect to something else.
+
+Do not write any code until this ritual is complete and the user has confirmed direction.
+
+---
+
+## Living Memory — what belongs where
+
+`.docs/memory/` is the project's persistent memory. Keep it current — update the relevant file whenever a session produces new information that belongs there.
+
+**`.claude/session-notes.md` is different: a lightweight, Claude-writable, gitignored, per-developer staging area** (same pattern as `userProfile.md` below, but for tasks rather than profile info) for short-lived carryover items (e.g. "still need to do X next session") that haven't been promoted to `.docs/memory/` yet. It's **not** shared via git — each developer's notes stay local, so they never conflict or overwrite a teammate's. Unlike the files below, Claude may write to it directly. Use it for quick pending-item tracking; move anything durable and team-relevant into the right `.docs/memory/` file once it's confirmed, and clear the note.
+
+| File | What belongs there | When to update |
+|---|---|---|
+| `architecture.md` | Stack decisions, overrides pattern, key paths, structural choices | A new integration is added, a structural decision is made, or a key path changes |
+| `projectState.md` | Phase, integration statuses (mock/live/not started), what's done and pending, unresolved dependencies | Any integration goes live, a phase changes, a feature is completed, or a dependency is resolved |
+| `feedback.md` | What worked, what failed, patterns to avoid or repeat | After discovering a gotcha, a failed approach, or a validated pattern |
+| `references.md` | Service URLs, API keys, credentials, logins, dashboards | A new credential or service URL is introduced (system roles live in `architecture.md`) |
+| `userProfile.md` | User's role, expertise, working style, preferences | User shares a preference or working-style detail that should persist |
+
+**Rules:**
+- Never leave a file with only its placeholder comment — populate it the moment you learn something that belongs there.
+- **No duplication.** Every fact has exactly one home. Before writing something, check whether it already lives in another doc — if it does, reference that doc instead of copying. Applies across all `.md` files: `AGENTS.md`, memory files, and PRDs.
+- **Conciseness.** Keep all `.md` instructions concise.
+
+--- turn 3 ---
+is the branch even relevent to this task for zephyr? i'm just running a test for it anyway
+
+--- turn 4 ---
+zephyr
+running
+
+Command
+npx
+
+Arguments
+-y mcp-zephyr-scale
+
+Advanced options
+Environment variables
+ZEPHYR_API_TOKEN=it's available
+
+JIRA_PROJECT_KEY=SFCC
+
+--- turn 5 ---
+just pick one with good acceptance criteria
+
+--- turn 6 ---
+approved - now let's try to get this into Zephyr - work with the working atlassian MCP to solve this
+
+--- turn 7 ---
+create an action plan to resolve this matter
+
+====================================================================================================
+### [pwa] [2026-08-06] ZIMM - Tag — 86 user turns — 66452e62-9291-4cff-a37b-5e738e4d0c18.jsonl
+====================================================================================================
+
+--- turn 1 ---
+hey claude - make sure our local active branches are up to date with the remote
+
+--- turn 2 ---
+no need to delete the state branches
+
+--- turn 3 ---
+as the FED Lead, i am being asked to work on setting up the release branch for the PWA Kit and also for the PWA Kit to get all the environments deployed as well
+
+this is in alignment with SFCC-254 in JIRA
+
+with this in mind - execute an in-depth check in the codebase, confluence, and JIRA in preparation for these
+
+--- turn 4 ---
+<task-notification>
+<task-id>a5f31b261ddf68afa</task-id>
+<tool-use-id>toolu_0194UYzVTk3ykjNhjCxvbhXP</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/40c4f2c3-4027-4ed9-b2a0-3e5b75096ce2/tasks/a5f31b261ddf68afa.output</output-file>
+<status>completed</status>
+<summary>Agent "Map release + deploy + env codebase surface" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>I have a complete picture. Here is the concrete inventory.
+
+---
+
+# Release + Deployment + Environment Tooling Map — Zimmermann PWA Kit
+
+**Repo state:** current branch `feature/your-ticket-onboarding-setup`; default remote branch is `origin/develop`. All findings are read-only; nothing was modified.
+
+---
+
+## 1. CI/CD workflows (`.github/workflows/`)
+
+Eleven files. Grouped by role below. **All six deploy tiers HAVE a workflow — none are missing.** The gap is not in the deploy workflows themselves but in the guard tooling (see §8).
+
+### Deploy workflows
+
+| File | Trigger | `environment:` | npm script run | Ref source |
+|---|---|---|---|---|
+| `deploy-dev.yml` | `push` → `develop` | **`dev`** (job `deploy-dev`, line 74) | `push:dev` (line 90) | checkout default |
+| `deploy-test.yml` | `workflow_dispatch` (input `ref`, default `develop`) | **`test`** (line 19) | `push:test` (line 37) | `inputs.ref` |
+| `deploy-sit.yml` | `workflow_run` of **"SIT Gate"** completed, branches `release/**` (lines 4-9) | **`sit`** (line 20) | `push:sit` (line 38) | `github.event.workflow_run.head_sha` |
+| `deploy-uat.yml` | `workflow_dispatch` (input `ref`, default `develop`) | **`uat`** (line 20) | `push:uat` (line 37) | `inputs.ref` |
+| `deploy-stg.yml` | `workflow_dispatch` (input `ref`, default `main`) | **`staging`** (line 20) | `push:staging` (line 37) | `inputs.ref` |
+| `deploy-prod.yml` | `workflow_dispatch` (input `ref`, required, no default) | **`prod`** (line 18) | `push:prod` (line 36) | `inputs.ref` |
+
+**Naming trap to cross-check against GitHub Environments:** the workflow *filename* suffix and the bound Environment *name* diverge for staging — `deploy-stg.yml` binds `environment: staging` (not `stg`). Every other file matches its suffix. `deploy-prod.yml` binds `prod` but the npm script targets MRT `-t production`. `projectState.md:83` explicitly warns this `stg` → `staging` mismatch already caused a bug (commit `12bf91b`).
+
+**Secrets/vars referenced by every deploy workflow:** only `secrets.MRT_USER` and `secrets.MRT_API_KEY` (exported as `MRT_USER` / `MRT_API_KEY` env, e.g. `deploy-dev.yml:76-77`). These are the MRT credentials required for any deploy. They must exist on **each** of the six Environments (dev, test, sit, uat, staging, prod).
+
+**deploy-dev.yml is the fullest one** — it also has: `contract-tests` (`npm run test:contracts`), `bundle-size` (`npm run test:max-file-size`), a `dev-gate` aggregator, and a `tag-sprint` job (lines 92-119) that reads `scripts/sprint.txt` and creates `sprint/&lt;n&gt;/&lt;date&gt;` tags. **Note: `scripts/sprint.txt` does NOT exist yet** — the tag-sprint job's diff check will simply find no change and no-op until that file is created.
+
+### Gate / QA workflows
+
+- **`digital-sit.yml`** — name is **"SIT Gate"**. Triggers on `push` and `pull_request` to `release/**` (lines 4-9). Jobs: `playwright-p0`, `lighthouse-ci`, `contract-tests`, `bundle-size`, aggregated by `sit-gate`. The only `environment:` here is **`github-pages`** (line 60, for publishing the Playwright report) — it does **not** bind an MRT tier. Secrets: `LHCI_SERVER_BASE_URL`, `LHCI_TOKEN`, `LHCI_TARGET_URL_SIT`; var `RETAIL_APP_HOME`. This is the workflow whose success triggers `deploy-sit.yml`.
+- **`qa.yml`** — name **"QA"**. Triggers on `pull_request` to `develop` and `release/**`. Jobs: `detect-changes`, `unit-tests`, `storybook-test`, `e2e-localhost` (binds **`environment: dev`**, line 290), `e2e-browserstack` (no environment binding). Secrets/vars: `secrets.PWA_KIT_SLAS_CLIENT_SECRET`, `vars.COMMERCE_API_CLIENT_ID/ORGANIZATION_ID/SHORT_CODE/SITE_ID`, `secrets.PWA_E2E_USER_EMAIL/PASSWORD`, `secrets.E2E_*_PRODUCT_SKU`, `secrets.E2E_FIXTURE_ORDER_NUMBER`, `secrets.BROWSERSTACK_USERNAME/ACCESS_KEY`, `secrets.RETAIL_APP_HOME_SIT`. This is the only non-deploy workflow that binds an MRT-tier Environment (`dev`).
+
+### Guard / automation workflows
+
+- **`protected-file-guard.yml`** — name **"Protected File Guard"**. Triggers on `pull_request` to `develop`, `main`, `release/**`. No `environment:`, no secrets. Warns on Tier 1 file changes (informational), blocks direct feature→`main` PRs, tracks Tier 2 files. Path lists reference `mobify.config.js` (which doesn't exist) and `config/**`.
+- **`upstream-release-watch.yml`** — `schedule` Mondays 00:00 UTC + `workflow_dispatch`. Opens a tracking issue for new `@salesforce/retail-react-app` releases. Secret: `GITHUB_TOKEN`.
+- **`weekly-agents.yml`** — `schedule` Mondays 01:00 UTC + `workflow_dispatch`. Quality/Contentful-drift/changelog sweeps. Secret: `GITHUB_TOKEN`.
+
+---
+
+## 2. npm scripts (`package.json`, lines 41-88)
+
+**Push/deploy (tier-specific, all six present):**
+- `push` — `npm run build &amp;&amp; pwa-kit-dev push` (line 43, generic, no target)
+- `push:dev` — `... pwa-kit-dev push -t dev` (line 76)
+- `push:test` — `-t test` (line 77)
+- `push:sit` — `-t sit` (line 78)
+- `push:staging` — `-t staging` (line 79)
+- `push:uat` — `-t uat` (line 80)
+- `push:prod` — `-t production` (line 81) ← target name is **`production`**, not `prod`
+
+**Build:** `build` (line 46), `analyze-build` (54), `test:max-file-size` (60, `build &amp;&amp; bundlesize`).
+
+**Env / tier tooling:** `env` — `node scripts/switchEnv.mjs` (line 87).
+
+**Test/gate:** `test:sit` — `playwright test --project=p0` (82); `test:contracts` — a **stub** (`echo 'TODO: MuleSoft contract tests…' &amp;&amp; exit 0`, line 83); `test:story` — `bash scripts/runStoryTests.sh` (86); `test`, `test:watch`, `test:lighthouse`.
+
+**MISSING / not present:**
+- **No `activate:*` scripts of any kind** (no `activate`, `activate:dev`, etc.). MRT bundle *activation* is not scripted — the deploy scripts only `push`, they do not activate a bundle to a target.
+- No `deploy:*` npm scripts (deployment is driven by the workflows calling `push:*`).
+- Generic `push` (line 43) has no target — pushing without `-t` is possible and would be untargeted.
+
+---
+
+## 3. MRT config
+
+**`mobify.config.js` does NOT exist.** `find` confirms no `mobify*` file anywhere outside `node_modules`. Both `.docs/architecture.md:108` and `protected-file-guard.yml`/`qa.yml` path filters reference `mobify.config.js` as if it exists — those references are **stale/aspirational**.
+
+The actual MRT/SSR configuration lives in **`config/default.js`**:
+- `ssrParameters` (lines 206-217): `ssrFunctionNodeVersion: '24.x'`, and `proxyConfigs` with two hosts — `qmyt7hks.api.commercecloud.salesforce.com` (path `api`, the SCAPI short code) and `bkzk-002.dx.commercecloud.salesforce.com` (path `ocapi`).
+- `ssrShared` (line 204), `ssrOnly` (line 201), `ssrEnabled: true` (line 198).
+
+**There are no MRT target/environment *names* defined in any config file.** The MRT targets (`dev`, `test`, `sit`, `uat`, `staging`, `production`) exist only as `pwa-kit-dev push -t &lt;target&gt;` arguments in the npm scripts (§2) and must be provisioned in the MRT dashboard. So "missing tiers" is not applicable to a config file here — but note the architecture doc's claim of a `dev | sit | uat | stage | production` MRT target list (`architecture.md:108`) **omits `test`** and says `stage` where the tooling uses `staging`.
+
+---
+
+## 4. Config tiers (`config/`)
+
+Per-tier config files present — **all six tiers have a file** (each spreads `default.js` and overrides only the `ocapi` proxy host):
+
+| File | OCAPI host it sets | Note |
+|---|---|---|
+| `config/dev.js` | `bkzk-002.dx.commercecloud.salesforce.com` | same as default |
+| `config/test.js` | `bkzk-005.dx...` | |
+| `config/sit.js` | `bkzk-003.dx...` | |
+| `config/uat.js` | `development-ap01-zimmermann.demandware.net` | on-realm host |
+| `config/staging.js` | `staging-ap01-zimmermann.demandware.net` | on-realm host |
+| `config/production.js` | `production-ap01-zimmermann.demandware.net` | filename is `production`, not `prod` |
+
+The `api` proxy host (`qmyt7hks...`) is identical across all tiers; only the `ocapi` host differs. **No per-tier file overrides anything other than `proxyConfigs`** (no per-tier siteId, feature flags, etc.).
+
+**Filename ↔ tier mapping:** the tier slug maps to filename via `DEPLOY_TARGET_MAP` in `switchEnv.mjs:62-69` — `prod → production` is the only divergence; `staging` keeps its name. `switchEnv.mjs` cross-checks each `.env.&lt;tier&gt;`'s `COMMERCE_API_OCAPI_HOST` against the matching `config/&lt;target&gt;.js` proxy host (lines 561-567, 609-622).
+
+**Other config files:** `default.js` (base, 219 lines — includes `defaultSite: 'ZimmermannAU'`, `siteAliases`, `commerceAPI`/`einsteinAPI`/`contentful` from env), `sites.js` (merges `sites.generated.js` + `sites.overlay.js`), `utils.js`. **No `prod.js`** (it's `production.js`) — worth confirming against any tooling that assumes `prod.js`.
+
+---
+
+## 5. Environment tooling
+
+### `scripts/switchEnv.mjs` (872 lines)
+- **Tiers supported (`TIERS`, line 57):** `dev, test, sit, uat, staging, prod` — all six.
+- **Scopes (`SCOPE_TAG_RE`, line 103):** `shared` | `tier` | `personal` | `auto`.
+  - `shared` — same across tiers + team; lives in `.env.shared`; pushed/pulled to GitHub Environments.
+  - `tier` — differs per tier; lives in `.env.&lt;tier&gt;`; pushed/pulled.
+  - `personal` — per-developer credential (e.g. CMA token, Jira token); lives in `.env.shared` but **never** pushed/pulled (filtered out, lines 302, 353).
+  - `auto` — script-injected only (`ENVIRONMENT_NAME`, `DEPLOY_TARGET`); rejected if hand-set (line 577).
+- **Commands (`main`, lines 839-866):**
+  - *(no arg)* — `reportCurrent()`: prints active tier from `.env`'s `ENVIRONMENT_NAME`.
+  - `init` — scaffolds `.env.shared` + every `.env.&lt;tier&gt;` (lines 220-259), migrates values from a pre-existing `.env`, **pulls from GitHub Environments** (`gh variable list --env &lt;scope&gt;`), then auto-fetches Contentful delivery/preview tokens + environment id per tier via the Content Management API (tier-1-approver gated).
+  - `validate [--live]` — checks placement/typos/blanks + cross-checks OCAPI host vs `config/&lt;tier&gt;.js` and Contentful env id vs tier. `--live` makes a **real read-only Contentful Delivery API call** and a **real SLAS guest `client_credentials` token request per tier** (lines 672-741) to prove creds actually work.
+  - `push &lt;shared|dev|test|sit|uat|staging|prod&gt;` — tier-1-approvers only; uploads local values to the matching GitHub Environment as Variables via `gh variable set`. A tier push includes the shared+tier merge so each Environment is self-sufficient for CI (`buildPushEntries`, lines 323-332).
+  - `&lt;tier&gt;` — `switchTo()`: merges `.env.shared` + `.env.&lt;tier&gt;` (tier wins) into `.env`, stamping `ENVIRONMENT_NAME` + `DEPLOY_TARGET` (lines 797-837).
+- **Contentful env-id map (line 72-79):** dev/test/sit/uat/staging → own slug; **prod → `master`**.
+- **GitHub Environments are used as the shared secret store** — a deliberate, documented override of the "secrets only in .env/MRT" rule (`.env.sample:49-54`).
+
+### `.env.sample` (304 lines) — env var keys grouped by scope
+
+**scope:shared** (same all tiers + team): `COMMERCE_API_SHORT_CODE` (=`qmyt7hks`), `COMMERCE_API_SITE_ID` (=`ZimmermannAU`), `COMMERCE_AGENT_SETTINGS`, `OTP_TOKEN_LENGTH`, `MARKETING_CLOUD_CLIENT_ID/CLIENT_SECRET/SUBDOMAIN/PASSWORDLESS_LOGIN_TEMPLATE/RESET_PASSWORD_TEMPLATE`, `GOOGLE_CLOUD_API_KEY`, `CONTENTFUL_SPACE_ID` (=`u9kb6gp6slxu`), `CONTENTFUL_HOST`, `GLOBALE_SUPPORTED_COUNTRIES`, `NARVAR_ACCOUNT_ID`, `MEASMERIZE_BRAND_CODE`, `OPTIMIZELY_PROJECT_ID`, `GTM_CONTAINER_ID` (=`GTM-M8PJ5D`), `SENTRY_DSN`, `NEW_RELIC_LICENSE_KEY`, `JIRA_URL`, `CONFLUENCE_URL`, `BROWSERSTACK_USERNAME`, `BROWSERSTACK_ACCESS_KEY`, `CODERABBIT_API_KEY`.
+
+**scope:tier** (differs per tier): `COMMERCE_API_OCAPI_HOST` (=`TODO`), `COMMERCE_API_ORGANIZATION_ID` (=`TODO`), `COMMERCE_API_SCAPI_HOST`, `COMMERCE_API_CLIENT_ID` (=`TODO`), `PWA_KIT_SLAS_CLIENT_SECRET`, `EINSTEIN_API_SITE_ID`, `CONTENTFUL_ENVIRONMENT_ID`, `CONTENTFUL_DELIVERY_TOKEN`, `CONTENTFUL_PREVIEW_TOKEN`, `CMS_WEBHOOK_SECRET`, `MULESOFT_BASE_URL`, `MULESOFT_API_TOKEN`, `GLOBALE_MERCHANT_ID/ENV/API_KEY/SCRIPT_HOST`, `ADYEN_CLIENT_KEY`, `ADYEN_ENVIRONMENT`, `INSIDE_CHAT_SITE_TOKEN`, `RECAPTCHA_SITE_KEY`, `DIDOMI_API_KEY`, `RETAIL_APP_HOME`, `PWA_E2E_USER_EMAIL`, `PWA_E2E_USER_PASSWORD`, `E2E_STANDARD_PRODUCT_SKU`, `E2E_VARIANT_PRODUCT_SKU`, `E2E_OOS_PRODUCT_SKU`, `E2E_SALE_PRODUCT_SKU`, `E2E_FIXTURE_ORDER_NUMBER`.
+
+**scope:personal** (never pushed): `CONTENTFUL_MANAGEMENT_TOKEN`, `JIRA_USERNAME`, `JIRA_API_TOKEN`, `CONFLUENCE_USERNAME`, `CONFLUENCE_API_TOKEN`.
+
+**scope:auto** (script-injected): `ENVIRONMENT_NAME` (and `DEPLOY_TARGET` is stamped by the switcher though not tagged in the sample).
+
+**Deployment-critical vars flagged:**
+- **MRT credentials** (`MRT_USER`, `MRT_API_KEY`) — used by every `deploy-*.yml`, but **NOT present in `.env.sample`** (they're only GitHub-Environment/CI secrets, never in the local `.env` schema). Worth confirming they're set on all six Environments.
+- **SLAS / Commerce:** `PWA_KIT_SLAS_CLIENT_SECRET` (tier), `COMMERCE_API_CLIENT_ID` (tier, `TODO`), `COMMERCE_API_ORGANIZATION_ID` (tier, `TODO`), `COMMERCE_API_OCAPI_HOST` (tier, `TODO`), `COMMERCE_API_SHORT_CODE`, `COMMERCE_API_SITE_ID`. The three `TODO` placeholders are the SFCC bootstrap values that are never auto-fetched and need manual entry per tier (`.env.sample:56-60`).
+- **No `MRT_*_URL` var exists** in the schema (e.g. no `MRT_DEV_URL`); the E2E target host is `RETAIL_APP_HOME` (tier-scoped) / `RETAIL_APP_HOME_SIT` (CI secret) instead.
+- **Committed real env files exist locally but are gitignored:** `.env`, `.env.dev`, `.env.test`, `.env.sit`, `.env.uat`, `.env.staging`, `.env.prod`, `.env.shared` are all present on disk and confirmed `git check-ignore`d. Only `.env.sample` (and `.envrc`) are tracked. Good — no secrets committed.
+
+---
+
+## 6. Release / deploy docs (`.docs/`)
+
+- **`.docs/architecture.md` → "Environments" section (lines 89-108).** Six-tier topology table (Local · Dev · SIT · UAT · Stage · Prod) with owner/purpose/third-party-availability/deploy-trigger per tier (lines 93-100). Describes the QA workflow (104), SIT gate (106), MRT targets (108). **Two inconsistencies to note:** (a) the topology table has **no "Test" tier**, yet the tooling/deploy workflows have a full `test` tier; (b) it lists MRT targets as `dev | sit | uat | stage | production` and references `mobify.config.js`, both stale vs the actual `staging`/`test` names and the non-existent file.
+- **`.docs/releaseBranchesRules.md`** (2691 bytes). GitFlow back-merge rules (release→main must back-merge to develop), release-branch behaviour (plan+confirm before edits, no new features/refactor/deps), how to make a fix on a release branch (`fix/release-{version}_{desc}` sub-branch, PR targets the release branch), and that the SIT gate runs on release-branch PRs. Points to `architecture.md &gt; Environments` for topology.
+- **`.docs/upstreamPolicy.md`** (2193 bytes). Opportunistic-bump policy for `@salesforce/retail-react-app`; not deployment per se but relevant to release hygiene. References `upstream-release-watch.yml` and `.docs/memory/upstreamBaseline.md`.
+- **`.docs/memory/projectState.md` (lines 71-89) — the single most relevant doc for your task.** Documents the CI split (qa.yml vs digital-sit.yml) and, crucially, the **"Proposed: tag-based environment promotion (GitFlow)"** spec (see §8). Links to the Confluence page. This is where the release-tag design lives.
+- **`.docs/temp/tsd-architecture.md`** (115 KB) — full TSD, `§14.1` is the environment-topology source of truth referenced by `architecture.md:35,91`. `.docs/temp/openItems.md` also present.
+- **`.docs/integration/`** — 18 numbered per-vendor files + `index.md`; `01-sfcc.md` is cited by `switchEnv.mjs:49` for why SFCC values are manual. `index.md:65` states the "no secrets in browser bundle / MRT env vars" rule.
+- **`.docs/prd/regional.md`** — routing rules referenced by `config/sites.js`.
+
+---
+
+## 7. Existing release/tag state
+
+- **`git tag --list` → EMPTY.** No version tags, no `release/digital/*` tags, no `sprint/*` tags exist yet. **This will be the first tag.**
+- **`git branch -a` → NO `release/*` or `hotfix/*` branches exist** (local or remote). Branches are: `main`, `develop` (default), and `feature/*` + `fix/*` working branches. Remotes include `origin/main`, `origin/develop`, and several `origin/feature/*` + `origin/fix/*`. **This will be the first `release/*` branch** — confirming the premise of your task.
+
+So: the `release/**`-triggered workflows (`digital-sit.yml`, `deploy-sit.yml`, and the `release/**` arms of `qa.yml` / `protected-file-guard.yml`) have **never fired** — creating the first `release/*` branch is what activates the entire SIT lane.
+
+---
+
+## 8. Version-guard / tag tooling — mostly ABSENT (proposal-only)
+
+**What EXISTS:**
+- **`scripts/tagRelease.sh`** (56 lines) — a **manual** helper. Validates semver `^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$` (line 25), then creates and pushes **two** tags: `v{version}` and `release/digital/v{version}` (lines 41-50). Warns if not on `main`. This is the only existing tag automation, and it is not wired into CI.
+- **`deploy-dev.yml` `tag-sprint` job** (lines 92-119) — creates `sprint/&lt;n&gt;/&lt;date&gt;` tags on `develop` push if `scripts/sprint.txt` changed. **But `scripts/sprint.txt` does not exist**, so this never fires. Not a version guard.
+
+**What is ABSENT (confirmed by grep):**
+- **No `push: tags:` validation workflow.** `grep -rn "tags:" .github/workflows/` → **NONE**. No workflow triggers on tag push at all.
+- **No semver version-guard step in any `deploy-*.yml`.** The deploy workflows accept an arbitrary `ref` input and deploy it with zero version/downgrade checking. No `semver` npm package usage, no `gh api …/deployments` comparison.
+- **No `npm version` usage anywhere in code/scripts/workflows.** Only referenced as a *proposal* in `projectState.md:81`.
+- **No tag-protection / ruleset config** committed in the repo (rulesets live on GitHub.com, not in-repo — none scripted here).
+- **No `release:` event workflow** and no `gh release create` automation (only mentioned as a future `/generate-changelog` wire-up, `projectState.md:85`).
+
+**The full design for all of the above already exists as a written proposal** in `.docs/memory/projectState.md:76-89` (and a linked Confluence page). Key decided points (2026-07-16, line 79): per-sprint cadence; pre-launch versions start `v0.1.0` (MAJOR pinned at `0` until go-live → `v1.0.0`); Test gets its own automated gate; tag protection + version-guard + Release-per-final-tag adopted immediately. The proposal's implementation checklist (lines 80-89) enumerates exactly the missing pieces: (1) adopt `npm version`, (2) a GitHub tag Ruleset targeting `v*` with pattern `^v\d+\.\d+\.\d+(-rc\.\d+|-hotfix\.\d+)?$` plus a defense-in-depth `push: tags: ['*']` validation workflow, (3) a `semver`-based version-guard step in each `deploy-*.yml` with an explicit tier→Environment map (**`stg`→`staging`**, fail-closed), (4) a Test-tier CI gate, (5) wire `gh release create`. Items 6-7 (governance docs) need squad-lead + Integration-lead sign-off before merging.
+
+---
+
+### Cross-check summary for your GitHub Environments audit
+
+Six Environment names your workflows bind to, exactly as written: **`dev`, `test`, `sit`, `uat`, `staging`, `prod`** (plus `github-pages` used only for report publishing). Each of the six needs `MRT_USER` + `MRT_API_KEY`. The `staging` Environment is bound by `deploy-stg.yml` (filename says `stg`) — verify the Environment is literally named `staging`. The MRT push targets to verify in the MRT dashboard: `dev`, `test`, `sit`, `uat`, `staging`, `production` (note `production`, not `prod`).</result>
+<usage><subagent_tokens>102795</subagent_tokens><tool_uses>32</tool_uses><duration_ms>337839</duration_ms></usage>
+</task-notification>
+
+--- turn 5 ---
+this is a little overwhelming right now - let's step back a bit - go for ELI5 but i'm the FED Lead of the project
+
+--- turn 6 ---
+are the 2 tasks doable today?
+
+--- turn 7 ---
+let's start with the release branch work - what do we need to get this up and running
+
+--- turn 8 ---
+let's compare the tag-based promotion model (proposal 335216656) to the current/existing implementation - how does it compare - what are the gaps - pros? cons? - implications?

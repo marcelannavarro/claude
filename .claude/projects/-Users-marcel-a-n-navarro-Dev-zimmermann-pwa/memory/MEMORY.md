@@ -1,0 +1,75 @@
+# Memory Index
+
+- [User role](user_role.md) — Frontend development lead, spans both squads, first time on project (onboarded 2026-07-10)
+- [Confluence SFCC space](reference_confluence_sfcc.md) — space key/key page IDs for architecture, standards, QA, setup docs
+- [Confluence/repo conflicts](project_confluence_repo_conflicts.md) — icons import path, component `custom/` folder, stale env setup page
+- [Figma sign-off status](project_figma_signoff_status.md) — CORRECTED 2026-08-11: two trackers exist (04.2 page-level/stale, 04.7 component-level/live); PLP is 100% pending, not signed off as previously recorded
+- [SFCC-122/123 spike audit](project_spike_122_123_audit.md) — Confluence docs found/missing for MRT API & Contentful TSD spikes (2026-07-15)
+- [TSD template](project_tsd_templates.md) — official SSOT TSD template (Confluence 352419841 + local mirror); "one TSD = one problem" rule
+- [SFCC-29 product display outage](project_sfcc29_product_display_outage.md) — CONFIRMED backend, not frontend; `allImages=true` triggers it for the reported case, NOT universal — see file before quoting (2026-07-28)
+- [PR #42 env-sync security gotcha](project_pr42_env_security_gotcha.md) — `choice` dropdown ≠ server-side gate; repo-level secrets are inherited by any environment context (2026-07-28)
+- [SFCC-237 MRT topology spike](project_sfcc237_mrt_topology_spike.md) — SFCC-237 marked Done/cloned to SFCC-681 (now active, Sprint 3) 2026-08-11; blast-radius finding exhaustively re-verified, holds; per-integration MRT app NOT platform-supported
+- [Coverage threshold](project_coverage_threshold.md) — PWA frontend has NO coverage %; the 90% belongs to the separate SFCC backend cartridge repo. Only 2 unit-test files / 15 tests exist. Re-verified across all 3 surfaces (2026-08-06)
+- [Release branch status](project_release_branch_status.md) — PR #75 fixed SIT gate infra but real perf/PWA gaps remain; PR #78 (SFCC-860) likely wrong preconnect origin + inert until gate passes; Marcel took over adjudication (2026-09-01)
+- [Env topology doc conflicts](project_env_topology_doc_conflicts.md) — Confluence + architecture.md/tsd-architecture.md disagree with actual pipeline on Test tier, Stage↔UAT order, SIT trigger, env names, mobify.config.js (2026-08-10)
+- [Tag-based rollout decisions](project_tagbased_rollout_decisions.md) — Q3 SIT-trigger DECIDED=Option B (SIT stays continuous/branch-gate-driven, not tag-triggered); Q1/Q2 Test-gate pending (2026-08-05)
+- [PR body standard](feedback_pr_body_standard.md) — basis depends on PR type: #46/#47 (CI, no key in title), #59/#116 (story-backed, key IS in the title); not the literal template (2026-08-06)
+- [US-INTL status](project_usintl_status.md) — ZimmermannUSIntl 8th storefront (`/en-ca/`, locale en-CA): merged (PR #51) + LIVE on dev/test/sit, only uat pending BM en-CA; verify BM via product-API locale validation (200 vs 400) NOT the lagging Shopper-Configurations endpoint; shared MRT dev-target gets clobbered by others' branches (updated 2026-08-11)
+- [Story decomposition pattern](project_story_decomposition_pattern.md) — now formalized in Confluence 04.71 (Level 1 component epics vs Level 2 page epics); SFCC-104/108/199 etc. show pattern already dominant; SFCC-90/52/55 are old-style counter-examples (2026-08-11)
+- [Real sprint cadence](project_real_sprint_cadence.md) — Jira ground truth: Sprint 3=11-24 Aug, Sprint 5 ends 21 Sep; corrects stale sprintScope.md; people Tash/Izzy/Hazel/Jasmijn/Victor/Gids/Kiera; "Epsom" unidentified (2026-08-11)
+- [Component pivot findings](project_component_pivot_findings.md) — Exec Readout verified: SFCC-240 spike Done but artifact unlocatable in repo, Navigation-epic split half-done, no Language Selector ticket exists, component-reuse gap real but fixable from SFCC-236 data (2026-08-11)
+- [Einstein investigation](project_einstein_siteid_investigation.md) — 🔴 Einstein "Not Deployed" on all 8 sites, 3 sandboxes (2026-09-07, BM-verified); plus DNT defaults ON and aaij-MobileFirst demo siteId — 3 stacking blockers, platform-wide not just SFCC-83/84; SFCC-112 Blocked; NEVER enable on SIT
+- [Message drafting audience](feedback_message_drafting_audience.md) — cut drafted replies to what the recipient's own role needs; don't carry over internal PM/delivery detail into a cross-discipline message (2026-08-11)
+- [Calendar component gap](project_calendar_component_gap.md) — Booxi booking IS agreed in scope for go-live (Isabel Chaloner, 7 Aug Teams) but implementation approach (widget vs custom) still open; no library decided anywhere; SOW still misnames Booxi as "Booksy" (2026-08-11)
+- [Confluence TSD publishing](project_confluence_tsd_publishing.md) — parent page 392888324, title pattern derived from template Document ID, and the markdown→storage conversion traps (<br />, code+bold spacing, no `ts` language)
+- [CSS bundle budget gap](project_css_bundle_budget_gap.md) — no CSS budget exists in CI; projectState.md's "main.css < 50 kB" was never implemented (verified 2026-08-14)
+- [Atlassian mention sweep method](reference_atlassian_mention_sweep.md) — Jira has no mention field; search the raw account ID instead
+- [Mention sweep 2026-08-19](project_mention_sweep_2026_08_19.md) — 6 open actions; 2 hidden inside threads that look answered
+- [Local-only docs](feedback_local_only_docs.md) — the three ~/Dev playbooks must never be cited in PRs, commits, or code comments; no Co-Authored-By on commits
+- [Prove, don't assert](feedback_prove_dont_assert.md) — a check must be made to fail on purpose before its pass counts; mutation testing is the bar
+- [Test harness gaps](project_test_harness_gaps.md) — a11y IS gated (don't delete the preview.tsx block); lint/prettier/tsc gated nowhere; a skipped required check counts as passing
+- [Chakra scale registration](project_chakra_scale_registration.md) — only `space` is registered; bare token keys on sizing/typography props misresolve silently (8×–112×, or drop)
+- [SFCC-55 footer / PR #59](project_sfcc55_footer_state.md) — CodeRabbit cleared, blocked on human code-owner approval; the deliberately-deferred set not to re-raise
+- [Locale selector dead end](project_locale_selector_dead_end.md) — footer country label isn't derivable from config; blocked on the unbuilt region selector
+- [Styling layer boundary](project_styling_layer_boundary.md) — `var(--zimm-*)` lives in theme recipes, never component JSX; two PRs misread #56 and rebuilt the duplication it deleted
+- [Component structure decided](project_component_structure_decided.md) — `ui-kits/{atoms,molecules,organisms}/<camelCase>/`, theme recipe always; only 7 dirs exist so most stories pay copy-first
+- [Figma metrics rule](project_figma_metrics_rule.md) — TEXT nodes are cap-height (not comparable); FRAMES/instances are real boxes (comparable); two Figma files, don't cross-compare
+- [shared/ui barrel trap](project_shared_ui_barrel_trap.md) — overriding `shared/ui/<Name>` intercepts nothing; 208 base files import the barrel
+- [Authorisation and scope](feedback_authorisation_and_scope.md) — investigate ≠ fix ≠ commit; audit-loop warning signs and the "came from reading code we just wrote" test
+- [Contentful env state](project_contentful_env_state.md) — test/sit/uat now populated (38 entries), staging+prod still empty; code defines 6 of 19 live types (re-checked 2026-08-27)
+- [Contentful CMA token trap](project_contentful_cma_token_trap.md) — CLI's OAuth token has full access; only the CFPAT- PAT is org-gated. Re-verify token identity before theorising — it moved 3x mid-session
+- [Contentful access resolved](project_contentful_access_resolved.md) — CLI OAuth token works incl. content-type writes; only space-admin endpoints 404, breaking config:contentful alone (which you don't need)
+- [Contentful known bugs](project_contentful_known_bugs.md) — promoteAlias.mjs throws at runtime; CLI ignores our token and defaults to master
+- [Playbook set](project_playbook_set.md) — three live docs in ~/Dev; the philosophy doc is archived, don't update it
+- [Frontend Claude enablement](project_frontend_claude_enablement.md) — team hesitancy is workflow-specific, not SFCC-specific; user's mentoring proposal to leads (2026-08-25)
+- [Sprint commitment stance](project_sprint_commitment_stance.md) — user opposes high story-count commits while foundational stories block downstream ones (2026-08-25)
+- [Figma-To-React tool](project_figma_to_react_tool.md) — in-development design-to-code tool, not yet available; user stands in as interim glue until it ships (2026-08-25)
+- [Footer PR #69 parked](project_footer_pr69_parked.md) — STALE (2026-09-01): PR #69 has since moved to unrelated content; re-check `gh pr view 69` before citing
+- [Review verdict severity](feedback_review_verdict_severity.md) — confirmed blocking findings can still get comment-only treatment when the author is senior/lateral (e.g. tech lead)
+- [SFCC-855 PWA manifest review](project_sfcc855_pwa_manifest_review.md) — PR #77 shipped 3/4 audits; service-worker/CSP gap tracked in sibling SFCC-856, left as-is (2026-09-01)
+- [SFCC-856 CSP review](project_sfcc856_csp_review.md) — PR #79 approved despite not closing named csp-xss audit; script-src unsafe-eval is structurally SDK-locked (2026-09-01)
+- [SFCC-91 swatches PR #70](project_sfcc91_pdp_colour_swatches_review.md) — SUPERSEDED 2026-09-02: CI now green, Jhoan's rework looks to structurally fix all 3 findings, but Marcel hasn't re-reviewed
+- [SFCC-742 wishlist login panel](project_sfcc742_wishlist_login_panel.md) — gated twice 2026-09-01, plan amended; the shared-atom variant gap (ZimmButton icon slot, ZimmTextInput boxed) recurs on SFCC-588/590/347
+- [Surface gaps during prebuild](feedback_surface_gaps_prebuild.md) — when running "the improver" (term unconfirmed) and any prebuild pass, explicitly hunt for what Marcel is missing, not just validate his asks
+- [PLP grid still placeholder](project_plp_grid_placeholder.md) — PLP cards ~200px wide (interim SimpleGrid), not the real 288px Zimm grid; card-width symptoms trace here first, not the shared card components
+- [Improver ledger](project_improver_ledger.md) — runs recorded in gitignored ~/Dev/zimmerMANN-skills/.runs/_improver/; run date ≠ commit date; 2026-09-11 catch-up state + 2 items only Marcel can fix
+- [Review findings never posted](project_review_findings_never_posted.md) — 4 defects his own reviews confirmed and never posted, re-verified live 2026-09-11; QA re-found 4 others as SFCC-898
+- [ELI5BITFEDLOTP register](feedback_eli5bitfedlotp_register.md) — default way of writing to Marcel: consequence, then mechanism, then fix; not dumbed down, no jargon in the way
+- [Build faster, not thinner](feedback_build_faster_not_thinner.md) — cut re-running unchanged work, not real testing; plus the standing "tell me what I'm missing" section in every skill
+- [Adyen vendor.js regression](project_adyen_vendor_bundle_regression.md) — root cause was webpack's static-named vendor cache group; fixed, PR #115 open awaiting tier-1-approver review (2026-09-15)
+- [Build regenerates translations](feedback_build_regenerates_translations.md) — npm run build silently rewrites translations/*.json + compiled/* as a side effect; discard before committing unrelated work
+- [PR #107 never merges](project_pr107_demo_only_never_merges.md) — demo/QA vehicle only; the Einstein-wiring branch's own PR is the real merge candidate (2026-09-15)
+- [PR comment terseness](feedback_pr_comment_terseness.md) — state the ask directly to PR authors, no reasoning padding; different register than messages to Marcel
+- [SFCC-266/PR#111 review](project_sfcc266_pr111_review.md) — richText.tsx link-tag gap, styling override drift, squad-doc/CODEOWNERS conflict, locale-key mismatch (2026-09-15)
+- [Cart bundle decisions](project_cart_bundle_decisions.md) — 7 Sprint 5 Cart stories planned bundled; full record in `.claude/session-notes.md`; AC cross-refs are pointers not gates
+- [Cart merge mechanics](project_cart_merge_mechanics.md) — merge takes higher-of-two not sum; passwordless-orphans-basket bug FIXED on feature/SFCC-11_cart (not yet on develop)
+- [Cart sale pricing gaps](project_cart_sale_pricing_gaps.md) — was/now price blocked on missing API data (needs new fetch); discount label blocked on missing copy spec, not data — file as 2 tickets, not 1
+- [Max order quantity](project_max_order_quantity.md) — SFCC has no such field; the 3-per-SKU cap is a hardcoded PDP constant, contradicting "Done" SFCC-268
+- [Jira AC field](reference_jira_ac_field.md) — ACs are in `customfield_10231`, not the description; sometimes ADF
+- [Cart null-pricing BE bypass](project_cart_null_pricing_be_bypass.md) — Gideon confirmed BE-only: temp bypass on a custom calculate hook, reverts to null on next BE redeploy — don't treat as fixed
+- [Story point ownership](project_story_point_ownership.md) — only Hazel has ever set a point on the SFCC board; Marcel has zero estimation history, so "match my pattern" rests on a false premise
+- [Story point calibration](project_story_point_calibration.md) — the board's real 1/3/5/8/13 ladder from shipped work, plus the Story+Development-Task split from 2026-09-21
+- [Sprint 6 duplicate stories](project_sprint6_duplicate_stories.md) — SFCC-801/749/874 each overlap another live ticket; check shared REG-/DMU-/SPR- labels to spot it fast
+- [Override import resolution](project_override_import_resolution.md) — base-path imports from inside overrides/ silently load the BASE module in the real app build; overrideStyling.md says otherwise and is wrong
+- [Routes static-export trap](project_routes_static_export_trap.md) — overrides/routes.tsx imports base's STATIC routes array, so `/social-callback` is never registered despite social being enabled on every tier
+- [9.2 Enhancements FED audit](project_enh_92_fed_audit.md) — tracker carries 49 FED days against a 20-day budget; 18/18 tickets have zero ACs; five rows are duplicates/mis-attributions not estimate errors (2026-09-24)

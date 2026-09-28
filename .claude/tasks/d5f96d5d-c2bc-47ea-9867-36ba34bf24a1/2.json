@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "SFCC-122: Draft MRT API Capabilities inventory doc",
+  "description": "Harvest .docs/integration/01-sfcc.md + tsd-architecture.md into a Confluence-ready inventory: endpoint list, auth model, permanent-vs-workaround classification, gaps MuleSoft must still cover.",
+  "activeForm": "Drafting MRT API Capabilities inventory doc",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

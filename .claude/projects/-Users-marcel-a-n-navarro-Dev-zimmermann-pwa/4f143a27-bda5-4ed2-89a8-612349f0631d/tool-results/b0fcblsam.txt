@@ -1,0 +1,627 @@
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/index.stories.tsx b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/index.stories.tsx
+index 10b8099..4a7457b 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/index.stories.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/index.stories.tsx
+@@ -1,8 +1,9 @@
+ import type { Meta, StoryObj } from '@storybook/react-webpack5';
+ import { expect, within } from 'storybook/test';
+-import React from 'react';
++import React, { useState } from 'react';
+ import { MemoryRouter } from 'react-router-dom';
+ import { ZimmRecentlyViewedGrid } from './index';
++import type { ZimmRecentlyViewedGridProps } from './index';
+ import type { ZimmProductCardProps } from '../zimmProductCard';
+ 
+ // Visually-distinct-enough data-URI SVG at ZimmProductCardMedia's own 2:3 aspect ratio — no
+@@ -41,10 +42,12 @@ const SIZE_CHIP_VALUES = [
+  * `hoverImage`/`sizeChipValues` are real (not omitted) precisely so the `plp` variation's hover
+  * behaviour — swap to a model photo, reveal a size-chip picker, hide the price — has something to
+  * actually show when exercised; see the fixtures' own comment above for why omitting them was the
+- * bug. `onSizeChipSelect` is a no-op — this organism's own contract doesn't need live selection
+- * state (that's `ZimmProductCard`'s own, already-tested territory — `.claude/rules/testing.md`'s
+- * "no duplicate coverage across layers"), it just needs the prop present so the picker renders at
+- * all. `onAddToBag` is similarly omitted — not part of what this organism needs to demonstrate.
++ * bug. `onSizeChipSelect` here is a placeholder only — every story below renders through
++ * `LiveSizeSelectionGrid`, which replaces it with a real, stateful handler per card (see that
++ * component's own docblock for why: Marcel found, live, 2026-09-08, that a no-op read as "size
++ * chips aren't selectable" even though the click was reaching the real element correctly). Kept
++ * present (not omitted) only because the `plp` member of `ZimmProductCardProps` requires it.
++ * `onAddToBag` is genuinely omitted — not part of what this organism needs to demonstrate.
+  */
+ const buildCards = (count: number): ZimmProductCardProps[] =>
+   Array.from({ length: count }, (_, index) => {
+@@ -64,6 +67,42 @@ const buildCards = (count: number): ZimmProductCardProps[] =>
+     };
+   });
+ 
++/**
++ * Wraps `ZimmRecentlyViewedGrid` so each card's size-chip selection is genuinely live rather than
++ * inert — same underlying need `zimmProductCard/index.stories.tsx`'s own `LiveSizeSelectionCard`
++ * documents (`ZimmSizeChipGroup` is a correctly-controlled component; nothing selects itself), now
++ * extended to a whole *grid* of independently-selectable cards rather than one. State is a single
++ * `Record<cardId, selectedValue>` map — one entry per card — so selecting a size on one card can
++ * never affect another's.
++ *
++ * `args.cards` stays exactly what the story declared (every `play` function below reads
++ * `args.cards`/`args` directly, matching `zimmRecentlyViewedRail`/`zimmProductCard`'s own stories'
++ * convention of asserting against the declared args, not a derived render tree) — only the JSX
++ * actually mounted gets the live-selection override, via a locally-built array passed to the real
++ * `ZimmRecentlyViewedGrid`.
++ *
++ * Narrows on `variation === 'plp'` only, not `'plp' || 'wishlist'` like
++ * `zimmProductCard/index.stories.tsx`'s own `LiveSizeSelectionCard` — that file's wrapper covers
++ * both because `ZimmProductCard`'s own stories genuinely exercise both variations. This grid
++ * never does: SFCC-84's Full History page (its only real caller) always constructs `plp`-shaped
++ * cards (see index.tsx's own `cards` JSDoc), and `buildCards` below never builds anything else.
++ * Wishlist is an unrelated feature outside this grid's coverage — checking for it here would be
++ * dead code copied mechanically from a wider-scoped file, not something this one needs.
++ */
++const LiveSizeSelectionGrid = (args: ZimmRecentlyViewedGridProps) => {
++  const [selectedByCardId, setSelectedByCardId] = useState<Record<string, string | undefined>>({});
++  const liveCards = args.cards.map((card) =>
++    card.variation === 'plp'
++      ? {
++          ...card,
++          selectedSizeChipValue: selectedByCardId[card.id],
++          onSizeChipSelect: (value: string) => setSelectedByCardId((prev) => ({ ...prev, [card.id]: value })),
++        }
++      : card,
++  );
++  return <ZimmRecentlyViewedGrid {...args} cards={liveCards} />;
++};
++
+ /**
+  * Simplified proxy for the real ICU-plural caller logic SFCC-84's Full History page container
+  * (build plan §B2, not built by this step) will implement via `intl.formatMessage` — this
+@@ -78,9 +117,14 @@ const buildItemCountLabel = (count: number): string => (count === 1 ? '1 Item' :
+ /**
+  * SFCC-84 — build plan section B1. See index.tsx's own module docblock for the full component
+  * contract (purely presentational, no cap/sort, empty-input renders null) and
+- * zimmRecentlyViewedGrid.css.ts's own docblock for the confirmed/placeholder geometry these
+- * stories render at whatever the current viewport happens to be — resize the preview (or use the
+- * viewport addon) to see the 2-up (below `breakpoints.xl`) vs 4-up (`breakpoints.xl` and up) step.
++ * zimmRecentlyViewedGrid.css.ts's own docblock for the confirmed/Marcel-supplied column-count
++ * geometry: **2-up (Mobile, below `breakpoints.md`), 3-up (Tablet, `breakpoints.md` up), 4-up
++ * (Desktop, `breakpoints.xl` up)**, confirmed 2026-09-08. Column count is pure CSS (no JS cap
++ * logic here, unlike the rail — see index.tsx's own `cards` JSDoc), so it's real, real-browser
++ * `window.matchMedia`-driven behaviour with no addon-viewport installed in this project (same gap
++ * `zimmRecentlyViewedRail/index.stories.tsx`'s own meta docblock documents) — **resize your
++ * actual browser window** to see all three tiers; there is no toolbar control or
++ * `parameters.viewport` override to pin a story to a specific width.
+  *
+  * **Design source is provisional, independently-confirmed values are not** — see index.tsx's own
+  * module docblock for why both are true; restated here rather than re-derived so a reviewer
+@@ -121,13 +165,12 @@ export const Default: Story = {
+     itemCountLabel: buildItemCountLabel(8),
+     cards: buildCards(8),
+   },
++  render: (args) => <LiveSizeSelectionGrid {...args} />,
+   play: async ({ canvasElement, args }) => {
+     const canvas = within(canvasElement);
+     const cards = await canvas.findAllByTestId('product-card');
+     await expect(cards).toHaveLength(8);
+-    await expect(canvas.getByTestId('recently-viewed-grid-count')).toHaveTextContent(
+-      buildItemCountLabel(cards.length),
+-    );
++    await expect(canvas.getByTestId('recently-viewed-grid-count')).toHaveTextContent(buildItemCountLabel(cards.length));
+     await expect(args.cards).toHaveLength(cards.length);
+   },
+ };
+@@ -143,6 +186,7 @@ export const SingleItem: Story = {
+     itemCountLabel: buildItemCountLabel(1),
+     cards: buildCards(1),
+   },
++  render: (args) => <LiveSizeSelectionGrid {...args} />,
+   play: async ({ canvasElement }) => {
+     const canvas = within(canvasElement);
+     const cards = await canvas.findAllByTestId('product-card');
+@@ -156,10 +200,10 @@ export const SingleItem: Story = {
+  * plan §B2) caps its own fetch/display at `RECENTLY_VIEWED_HISTORY_MAX_STORED`
+  * (`app/constants/index.ts`), which is itself set to match the Shopper Products `getProducts`
+  * endpoint's own hard per-request ID limit — not an arbitrary "a lot of items" choice. This
+- * organism enforces no cap of its own (contrast `ZimmRecentlyViewedRail`'s
+- * `RECENTLY_VIEWED_RAIL_MAX_ITEMS` slice) — capping is the caller's job, per index.tsx's own
+- * `cards` JSDoc — so this story renders all 24 to demonstrate six full desktop rows of vertical
+- * gap in sequence.
++ * organism enforces no cap of its own (contrast `ZimmRecentlyViewedRail`'s own hard
++ * per-breakpoint `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS` slice, added 2026-09-08) — capping is the
++ * caller's job, per index.tsx's own `cards` JSDoc — so this story renders all 24 to demonstrate
++ * six full desktop rows of vertical gap in sequence.
+  */
+ export const ManyItems: Story = {
+   args: {
+@@ -167,6 +211,7 @@ export const ManyItems: Story = {
+     itemCountLabel: buildItemCountLabel(24),
+     cards: buildCards(24),
+   },
++  render: (args) => <LiveSizeSelectionGrid {...args} />,
+   play: async ({ canvasElement }) => {
+     const canvas = within(canvasElement);
+     const cards = await canvas.findAllByTestId('product-card');
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/zimmRecentlyViewedGrid.css.ts b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/zimmRecentlyViewedGrid.css.ts
+index 02cfa27..127f6b4 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/zimmRecentlyViewedGrid.css.ts
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedGrid/zimmRecentlyViewedGrid.css.ts
+@@ -49,32 +49,25 @@ import { breakpoints } from 'app/theme/foundation';
+  * step's own instruction, a REAL token is referenced directly (`var(--zimm-scale-1600)`) rather
+  * than re-declared as a named constant — there is nothing to name here that isn't already named.
+  *
+- * COLUMN COUNT PER BREAKPOINT — two tiers, not three, and the smaller tier is a stated
+- * placeholder, not a confirmed reading. The only Figma node supplied for this grid (unlike
+- * `zimmRecentlyViewedRail.css.ts`, which has a Mobile AND a Tablet AND a Desktop node) is the
+- * Desktop one cited above — no Tablet/Mobile-specific card size or column count exists anywhere
+- * in the provisional source for THIS grid. Per `.claude/rules/overrideStyling.md`'s "don't guess
+- * design values" rule (also stated directly in the build plan's own B1 pass criteria: "If a
+- * viewport's count cannot be read from the provisional mockup, leave it inherited and comment
+- * why"), this recipe does not invent a specific Tablet/Mobile card size or column count. Instead:
+- *   - A single sub-desktop tier (covering both Mobile and Tablet) at `GRID_COLUMNS_BASE` = 2 —
+- *     the same "two states, not three" shape `zimmRecentlyViewedRail.css.ts`'s own
+- *     `HEADER_HEIGHT_MOBILE`/`HEADER_HEIGHT_DESKTOP` already uses for the identical situation (one
+- *     node covering Mobile+Tablet, one separate Desktop node, no third reading to key a middle
+- *     tier off).
+- *   - `GRID_COLUMNS_BASE = 2` specifically (rather than some other placeholder number) matches an
+- *     already-established "2-up on the smallest breakpoint" convention for a real product-card
+- *     grid elsewhere in this exact codebase: `overrides/app/pages/product-list/index.tsx`'s own
+- *     search-results `SimpleGrid columns={[2, 2, 4, 5]}` — a different page, different card width
+- *     (280px, per that file's own inline comment) and different breakpoint set (Chakra's default
+- *     array breakpoints, not this recipe's explicit `breakpoints.xl` step), so the exact numbers
+- *     are NOT reused wholesale from there — only the "start at 2-up, not some other count" shape.
+- *   - `GRID_COLUMNS_DESKTOP = 4` is the one confirmed value (Desktop, cited above).
+- *   - Flagged here for confirmation once this grid sits inside a real page (build plan §B2),
+- *     exactly like `zimmRecentlyViewedRail.css.ts`'s own flagged-but-unconfirmed title-row
+- *     horizontal inset: getting the sub-desktop count wrong shows up as a real-world layout
+- *     decision to revisit once a genuine Tablet/Mobile node exists, not a test failure — this
+- *     organism has no assigned page context of its own.
++ * COLUMN COUNT PER BREAKPOINT — three tiers, confirmed directly by Marcel (2026-09-08): 2
++ * (Mobile, below `breakpoints.md`), 3 (Tablet, `breakpoints.md` up), 4 (Desktop,
++ * `breakpoints.xl` up, unchanged — the one value this docblock already had a real Figma reading
++ * for, cited above). **The Tablet figure is a direct instruction, not a re-derived Figma
++ * reading** — this grid's provisional design source (cited above) still has no Tablet-specific
++ * node of its own, exactly as this docblock previously stated; what changed is that the
++ * previously-flagged placeholder gap is now closed by Marcel's own steer rather than by a design
++ * asset that didn't exist. Same sourcing distinction `zimmRecentlyViewedRail.css.ts`'s own
++ * `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS` hard-cap change (2026-09-08, "confirmed with Marcel", not
++ * a Figma citation) already draws for an analogous case — cite the real source, don't dress up a
++ * direct instruction as a design-asset discovery.
++ *   - `GRID_COLUMNS_BASE = 2` (Mobile only, now — previously covered Mobile+Tablet together
++ *     pending a Tablet-specific number; matches the "2-up on the smallest breakpoint" convention
++ *     `overrides/app/pages/product-list/index.tsx`'s own `SimpleGrid columns={[2, 2, 4, 5]}`
++ *     already establishes elsewhere in this codebase, as before).
++ *   - `GRID_COLUMNS_TABLET = 3` — Marcel's own figure, 2026-09-08. No corroborating Figma node;
++ *     if one surfaces later and disagrees, that's a real conflict to raise, not something this
++ *     comment can pre-empt.
++ *   - `GRID_COLUMNS_DESKTOP = 4` — unchanged, the one confirmed-via-Figma value (cited above).
+  *
+  * HEADER HEIGHT — deliberately UNSET (contrast `zimmRecentlyViewedRail.css.ts`'s own
+  * `HEADER_HEIGHT_MOBILE`/`DESKTOP`). The one Figma reading available (`3332:37131`, 75px,
+@@ -100,12 +93,16 @@ import { breakpoints } from 'app/theme/foundation';
+ const GRID_CARD_GAP = '6rem'; // 96px — confirmed Figma value, checked at two independent sources (40000301:11694 "Product Card Group" master, Size=Desktop/Display=4, node 40000307:12446; and the page-level instance 3332:35655). No --zimm-scale-* equivalent (nearest neighbours: named scale 5xl=80px / 6xl=128px; numeric alias 1600=64px jumps straight to 3500=140px) — pending promotion to foundation/spacing.ts or sizes.ts by the UI designer.
+ 
+ // Column counts per breakpoint — see this file's own "COLUMN COUNT PER BREAKPOINT" docblock
+-// section above for the full reasoning (only Desktop is a confirmed Figma reading; the sub-desktop
+-// tier is a stated, flagged placeholder, not a guess presented as fact).
+-const GRID_COLUMNS_BASE = 2; // Mobile + Tablet (below breakpoints.xl) — UNCONFIRMED placeholder, see docblock.
++// section above for the full reasoning and sourcing (Desktop is a confirmed Figma reading; Mobile
++// and Tablet are Marcel's own direct figures, 2026-09-08, not re-derived design-asset readings).
++const GRID_COLUMNS_BASE = 2; // Mobile only (below breakpoints.md) — Marcel, 2026-09-08.
++const GRID_COLUMNS_TABLET = 3; // breakpoints.md up, below breakpoints.xl — Marcel, 2026-09-08.
+ const GRID_COLUMNS_DESKTOP = 4; // breakpoints.xl and up — confirmed (Figma nodes cited in the docblock above).
+ 
+-const DESKTOP_UP_QUERY = `@media (min-width: ${breakpoints.xl})`; // 1280px — same "Desktop" tier convention as zimmRecentlyViewedRail.css.ts's identically-named constant; the confirmed 4-up/288px reading itself comes from a 1440px Figma frame, inside this tier.
++// Same Tablet/Desktop query convention (name and breakpoint) as zimmRecentlyViewedRail.css.ts's
++// own identically-named constants.
++const TABLET_UP_QUERY = `@media (min-width: ${breakpoints.md})`; // 768px
++const DESKTOP_UP_QUERY = `@media (min-width: ${breakpoints.xl})`; // 1280px — the confirmed 4-up/288px reading itself comes from a 1440px Figma frame, inside this tier.
+ 
+ // Content max-width — fixed 2026-09-08, same root cause and same fix shape as
+ // zimmRecentlyViewedRail.css.ts's own identical bug found via live testing the same day: with no
+@@ -114,9 +111,12 @@ const DESKTOP_UP_QUERY = `@media (min-width: ${breakpoints.xl})`; // 1280px —
+ // beyond the confirmed 288px reading, not just a cosmetic nit. 1440px is the same confirmed value
+ // `GRID_CARD_GAP`'s own docblock derives from (4 x 288px cards + 3 x 96px gaps) — restated here as
+ // a width cap rather than a per-card value. Desktop-only, matching the fact that the 4-column
+-// layout itself only applies from this breakpoint up; the sub-desktop 2-column tier has no
+-// confirmed reference width to cap against either (same "don't guess" reasoning as
+-// GRID_COLUMNS_BASE above), so it stays fluid.
++// layout itself only applies from this breakpoint up; neither the Mobile (2-column) nor Tablet
++// (3-column) tier has a confirmed reference *width* to cap against — Marcel's own figures above
++// are column counts, not card widths or a max-width reading — so both stay fluid, same "don't
++// guess" reasoning as the column counts' own docblock section.
++// audit-allow: derived composite (already-pending card width x confirmed column/gap counts),
++// not itself a value with any promotable foundation-token equivalent.
+ const GRID_CONTENT_MAX_WIDTH_DESKTOP = '90rem'; // 1440px = (288px x 4 cards) + (96px x 3 gaps)
+ 
+ // Header vertical padding — fixed 2026-09-08, found via live testing: the header/grid gap read as
+@@ -172,6 +172,9 @@ export const ZimmRecentlyViewedGrid = {
+       // Real registered token, referenced directly — see this file's own "VERTICAL (ROW) GAP"
+       // docblock section above for why this one is NOT a named constant, unlike GRID_CARD_GAP.
+       rowGap: 'var(--zimm-scale-1600)', // 64px
++      [TABLET_UP_QUERY]: {
++        gridTemplateColumns: `repeat(${GRID_COLUMNS_TABLET}, 1fr)`,
++      },
+       [DESKTOP_UP_QUERY]: {
+         gridTemplateColumns: `repeat(${GRID_COLUMNS_DESKTOP}, 1fr)`,
+       },
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.stories.tsx b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.stories.tsx
+index 54ca1f3..5c9d02d 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.stories.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.stories.tsx
+@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
+ import { expect, userEvent, within } from 'storybook/test';
+ import React from 'react';
+ import { MemoryRouter } from 'react-router-dom';
+-import { RECENTLY_VIEWED_RAIL_MAX_ITEMS } from 'app/constants';
+ import { ZimmRecentlyViewedRail } from './index';
+ import type { ZimmProductCardProps } from '../zimmProductCard';
+ 
+@@ -15,13 +14,13 @@ import type { ZimmProductCardProps } from '../zimmProductCard';
+  * testing).** An earlier version of this used one identical flat `fill='#f6f4f1'` rect for every
+  * card, with no border. That's indistinguishable from broken/missing images to a human eyeballing
+  * the story — worse, `zimmRecentlyViewedRail.css.ts`'s `group` part has a deliberate zero gap
+- * between cards (matching the real Figma spec), so five identical, borderless, flush-together
+- * rectangles visually merge into what looks like one giant block rather than five cards. The
+- * component itself was never broken (`OverCap`'s own `play` function below already asserts
+- * exactly 5 `data-testid="product-card"` elements render) — only this story's own placeholder
+- * failed to make that visible. Fix: a visible border plus the card's own position number baked
+- * into the SVG, so each card's boundary and identity are both genuinely legible at a glance, and
+- * the rendered left-to-right order (AC 2) is visually self-checkable too.
++ * between cards (matching the real Figma spec), so several identical, borderless, flush-together
++ * rectangles visually merge into what looks like one giant block rather than separate cards. The
++ * component itself was never broken (`OverCap`'s own `play` function below already asserts the
++ * rendered count directly) — only this story's own placeholder failed to make that visible. Fix:
++ * a visible border plus the card's own position number baked into the SVG, so each card's
++ * boundary and identity are both genuinely legible at a glance, and the rendered left-to-right
++ * order (AC 2) is visually self-checkable too.
+  *
+  * The literal `alt` text here is overridden to `''` internally by ZimmProductCard's own
+  * `recentlyViewed` render branch regardless of what is supplied (see zimmProductCard/index.tsx's
+@@ -53,15 +52,42 @@ const buildCards = (count: number): ZimmProductCardProps[] =>
+ 
+ /**
+  * SFCC-83 — build plan section A5. See index.tsx's own module docblock for the full component
+- * contract (purely presentational, cap/order/empty-state rules) and
+- * zimmRecentlyViewedRail.css.ts's own docblock for the responsive card-width/header-height
+- * geometry these stories render at whatever the current viewport happens to be — resize the
+- * preview (or use the viewport addon) to see the Mobile (201px) / Tablet (256px) / Desktop
+- * (288px) card-width steps and the Mobile/Tablet (56px) vs Desktop (96px) header-height step.
++ * contract (purely presentational, order/empty-state rules) and zimmRecentlyViewedRail.css.ts's
++ * own docblock for the responsive card-width/header-height geometry.
++ *
++ * **The cap itself is a real, hard per-breakpoint limit, confirmed with Marcel (2026-09-08) —
++ * not a "fits before scrolling" soft limit.** `index.tsx` calls
++ * `useBreakpointValue(RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS)`, so the actual browser viewport
++ * width genuinely drives how many cards render: **5 at Desktop (≥80em/1280px), 3 at Tablet
++ * (≥48em/768px, <1280px), 2 below that (Mobile).** No addon-viewport is installed in this
++ * project (checked `.storybook/main.js`'s `addons` list and `package.json` directly — neither
++ * lists it), so there is no toolbar control or `parameters.viewport` override to pin a story to
++ * a specific width. **Resize your actual browser window** to see all three tiers on `Default`
++ * below — every story in this file (except `SingleCard`, whose whole point is testing under the
++ * cap) supplies enough cards that the cap, not the fixture size, is always what's limiting the
++ * rendered count, so the same resize proves the cap at every tier consistently.
++ *
++ * **Automated proof is correspondingly split across two layers, not one:** `OverCap`'s `play`
++ * function below proves the cap is real and enforced (more supplied than any tier's cap never
++ * renders more than the cap) at whatever fixed viewport `@storybook/test-runner`'s Playwright
++ * browser actually launches at by default (empirically confirmed against the real running
++ * instance, see that story's own comment for the exact figure and how it was checked) — it
++ * cannot exercise the *other* two tiers, since nothing in this project can currently change a
++ * `play` function's viewport per-story. Vitest's own `index.test.tsx` proves the opposite half:
++ * given jsdom's fixed `matches: false` `matchMedia` polyfill (no real viewport exists in jsdom
++ * at all), the cap logic itself correctly resolves to and enforces whatever `useBreakpointValue`
++ * hands it — the `base` case specifically, there. Between the two, the cap's *mechanism* is
++ * proven twice over; only the `md` tier's specific 3-card figure has no automated proof anywhere
++ * today, and relies on this file's own manual-resize instruction. Closing that gap for real would
++ * mean adding `@storybook/addon-viewport` (a new dependency — AGENTS.md Hard Rule 7, needs
++ * integration-team approval) or a custom `.storybook/test-runner.ts` (Tier 1 config — Hard Rule
++ * 2) — neither attempted here since neither was asked for.
+  *
+  * No fixed-width decorator `Box` here, unlike zimmProductCard/index.stories.tsx's own single-card
+  * stories — this rail is deliberately full-bleed/fluid (see the recipe's own "GROUP HAS ZERO
+- * GAP" docblock note), so constraining it to a narrow width would misrepresent it.
++ * GAP" docblock note), so constraining it to a narrow width would misrepresent it, and would
++ * also defeat the "resize your real browser window" instruction above (a fixed-width wrapper
++ * does not change what `useBreakpointValue`'s real `window.matchMedia` call sees).
+  */
+ const meta: Meta<typeof ZimmRecentlyViewedRail> = {
+   title: 'Commerce/ZimmRecentlyViewedRail',
+@@ -81,13 +107,18 @@ export default meta;
+ 
+ type Story = StoryObj<typeof ZimmRecentlyViewedRail>;
+ 
+-/** Baseline: exactly RECENTLY_VIEWED_RAIL_MAX_ITEMS (5) cards, no See-Full-History link (below
+- *  the threshold that would surface it — see B3, a later step, for the real ">5 cards" trigger;
+- *  this rail itself only ever checks whether `seeAllHref` is truthy). */
++/**
++ * Baseline. 8 cards supplied — more than every tier's cap (`RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS`:
++ * 5/3/2) — so resizing the real browser window between the three tiers always shows the cap
++ * itself doing the limiting, at every tier, not just however many happened to be in the fixture.
++ * No See-Full-History link here (that's `seeAllHref`/`seeAllLabel` being supplied at all, which
++ * this story deliberately omits — see `WithSeeAllLink` below; unrelated to how many cards were
++ * fetched, this rail itself only ever checks whether `seeAllHref` is truthy).
++ */
+ export const Default: Story = {
+   args: {
+     title: 'Recently Viewed',
+-    cards: buildCards(5),
++    cards: buildCards(8),
+   },
+ };
+ 
+@@ -137,18 +168,32 @@ export const SingleCard: Story = {
+ };
+ 
+ /**
+- * 8 cards supplied, only RECENTLY_VIEWED_RAIL_MAX_ITEMS (5) should ever render — `play` asserts
+- * the rendered count directly via ZimmProductCard's own `data-testid="product-card"` DOM hook,
+- * rather than leaving this as a manual visual count.
++ * Same 8-card fixture as `Default` (reused, not re-built — same "split for `play`-function
++ * clarity" relationship `WithSeeAllLink`/`SeeAllLinkKeyboardFocus` above already establish),
++ * with a `play` function attached to turn the cap into an automated assertion instead of a
++ * manual visual count.
++ *
++ * **What this actually proves, precisely — read before trusting the number below.**
++ * `@storybook/test-runner`'s Playwright browser launches at a fixed viewport with no per-story
++ * override available in this project (see meta docblock above) — this `play` function therefore
++ * only ever exercises whichever ONE of the three tiers that fixed viewport happens to fall into,
++ * not all three. Empirically confirmed by running `test-storybook --ci` against the real running
++ * local instance (2026-09-08): the default Playwright viewport here is exactly 1280px wide, which
++ * satisfies `useBreakpointValue`'s `xl` query (`min-width: 80em` = 1280px, inclusive) — so this
++ * resolves to the Desktop tier (cap 5), confirmed by first running this assertion at the OLD
++ * flat cap's value (5) and observing it pass, then re-running with a deliberately wrong value (4)
++ * and observing it fail with "Received: 5" — not assumed from Playwright's documented default
++ * alone. If `@storybook/test-runner`'s own default viewport ever changes, or if
++ * `@storybook/addon-viewport` is added later and starts applying a different default globally,
++ * this number would need re-confirming the same way — it is not derived from
++ * `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.xl` in code, precisely so a drift between the two isn't
++ * silently masked by both sides changing together.
+  */
+ export const OverCap: Story = {
+-  args: {
+-    title: 'Recently Viewed',
+-    cards: buildCards(8),
+-  },
++  args: Default.args,
+   play: async ({ canvasElement }) => {
+     const canvas = within(canvasElement);
+     const cards = await canvas.findAllByTestId('product-card');
+-    await expect(cards).toHaveLength(RECENTLY_VIEWED_RAIL_MAX_ITEMS);
++    await expect(cards).toHaveLength(5);
+   },
+ };
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
+index 91f51dc..ba61e33 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.test.tsx
+@@ -29,14 +29,42 @@
+  * mechanism is already covered by that file's own tests, not re-proven here.
+  */
+ import React from 'react';
+-import { describe, test, expect, vi } from 'vitest';
++import { describe, test, expect, vi, beforeEach } from 'vitest';
+ import { render, screen } from '@testing-library/react';
++import { ChakraProvider } from '@chakra-ui/react';
+ import { IntlProvider } from 'react-intl';
+ import { MemoryRouter } from 'react-router-dom';
+-import { RECENTLY_VIEWED_RAIL_MAX_ITEMS } from 'app/constants';
++import theme from 'app/theme';
++import { RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS } from 'app/constants';
+ import { ZimmRecentlyViewedRail } from './index';
+ import type { ZimmProductCardProps } from '../zimmProductCard';
+ 
++// jsdom has no matchMedia implementation, and this component's own `useBreakpointValue` call
++// (RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS, added 2026-09-08 for the hard per-breakpoint cap) needs
++// one — a per-file polyfill, not a change to the frozen vitest.setup.ts (Tier 1), matching the
++// identical, already-established precedent at drawer-menu/index.test.tsx and
++// recommended-products/index.test.tsx (Chakra's own useBreakpointValue usage). `matches: false`
++// unconditionally is what makes useBreakpointValue resolve to its `base` value in this
++// environment — jsdom has no real viewport, so proving the `md`/`xl` cases genuinely respond to a
++// real breakpoint is Storybook's job (a real browser), not this file's — same "that's Chakra's
++// own concern, not this component's" reasoning recommended-products/index.test.tsx already
++// documents for the identical situation.
++beforeEach(() => {
++  Object.defineProperty(window, 'matchMedia', {
++    writable: true,
++    value: vi.fn().mockImplementation((query: string) => ({
++      matches: false,
++      media: query,
++      onchange: null,
++      addListener: vi.fn(),
++      removeListener: vi.fn(),
++      addEventListener: vi.fn(),
++      removeEventListener: vi.fn(),
++      dispatchEvent: vi.fn(),
++    })),
++  });
++});
++
+ vi.mock('@chakra-ui/react', async (importOriginal) => {
+   const actual = await importOriginal<typeof import('@chakra-ui/react')>();
+   return {
+@@ -79,11 +107,13 @@ vi.mock('../../../icons', () => ({
+ 
+ const wrap = (ui: React.ReactElement) =>
+   render(
+-    <MemoryRouter>
+-      <IntlProvider locale="en" defaultLocale="en">
+-        {ui}
+-      </IntlProvider>
+-    </MemoryRouter>,
++    <ChakraProvider theme={theme}>
++      <MemoryRouter>
++        <IntlProvider locale="en" defaultLocale="en">
++          {ui}
++        </IntlProvider>
++      </MemoryRouter>
++    </ChakraProvider>,
+   );
+ 
+ const buildCard = (id: string): ZimmProductCardProps => ({
+@@ -95,42 +125,57 @@ const buildCard = (id: string): ZimmProductCardProps => ({
+   primaryImage: { src: `${id}.jpg`, alt: '' },
+ });
+ 
+-describe('ZimmRecentlyViewedRail — cap (RECENTLY_VIEWED_RAIL_MAX_ITEMS)', () => {
+-  test('renders at most RECENTLY_VIEWED_RAIL_MAX_ITEMS cards when more are supplied', () => {
++describe('ZimmRecentlyViewedRail — cap (RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS, hard per-breakpoint cap)', () => {
++  // jsdom's matchMedia polyfill above always resolves useBreakpointValue to `base` (2) — this
++  // describe block therefore only proves the `base` case is a genuine hard cap (more supplied
++  // than the cap never renders more than the cap). The `md`/`xl` cases resolving correctly to a
++  // real browser viewport is proven in Storybook (real matchMedia), not here.
++  test('renders at most RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base cards when more are supplied', () => {
+     const cards = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(buildCard);
+     wrap(<ZimmRecentlyViewedRail title="Recently Viewed" cards={cards} />);
+-    expect(screen.getAllByTestId('product-card')).toHaveLength(RECENTLY_VIEWED_RAIL_MAX_ITEMS);
++    expect(screen.getAllByTestId('product-card')).toHaveLength(RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base);
+   });
+ 
+   test('renders exactly the number of cards supplied when under the cap', () => {
+-    const cards = ['a', 'b', 'c'].map(buildCard);
++    const cards = ['a'].map(buildCard);
+     wrap(<ZimmRecentlyViewedRail title="Recently Viewed" cards={cards} />);
+-    expect(screen.getAllByTestId('product-card')).toHaveLength(3);
++    expect(screen.getAllByTestId('product-card')).toHaveLength(1);
+   });
+ });
+ 
+ describe('ZimmRecentlyViewedRail — order preservation (AC 2: most-recent-first, left to right)', () => {
+   /**
++   * Fixture kept at exactly RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base (2) cards, not more —
++   * jsdom's matchMedia polyfill above resolves the cap to `base`, so a fixture larger than that
++   * would have its tail truncated by the (correct, separately-tested) cap before order could ever
++   * be observed on the truncated entries, muddying what this test is actually proving.
++   *
+    * Fail-first requirement: this fixture's correct and reversed renderings are visibly different
+-   * — a test asserting only "all 5 ids are present" would pass under either a correct or a
++   * — a test asserting only "both ids are present" would pass under either a correct or a
+    * reversed implementation and is exactly the encoded-bug trap this fixture avoids. Proven by
+    * temporarily adding `.reverse()` to this component's own `visibleCards` slice, confirming this
+-   * exact assertion failed (`Expected: ["a","b","c","d","e"], Received: ["e","d","c","b","a"]`),
+-   * then removing it and confirming this assertion passes again — see this step's own report for
+-   * the record of that run; no trace of the temporary change remains in index.tsx.
++   * exact assertion failed (`Expected: ["a","b"], Received: ["b","a"]`), then removing it and
++   * confirming this assertion passes again — see this step's own report for the record of that
++   * run; no trace of the temporary change remains in index.tsx.
+    */
+   test('renders cards in the exact order received, not sorted or reversed', () => {
+-    const cards = ['a', 'b', 'c', 'd', 'e'].map(buildCard);
++    const cards = ['a', 'b'].map(buildCard);
+     wrap(<ZimmRecentlyViewedRail title="Recently Viewed" cards={cards} />);
+     const renderedIds = screen.getAllByTestId('product-card').map((el) => el.getAttribute('data-product-id'));
+-    expect(renderedIds).toEqual(['a', 'b', 'c', 'd', 'e']);
++    expect(renderedIds).toEqual(['a', 'b']);
+   });
+ });
+ 
+ describe('ZimmRecentlyViewedRail — empty state', () => {
+   test('renders null when cards is empty', () => {
+-    const { container } = wrap(<ZimmRecentlyViewedRail title="Recently Viewed" cards={[]} />);
+-    expect(container).toBeEmptyDOMElement();
++    // Not asserted via `container.toBeEmptyDOMElement()`: ChakraProvider (added above for
++    // useBreakpointValue's real theme-context requirement) always injects its own internal
++    // `<span id="__chakra_env">` marker regardless of what this component renders, so an
++    // empty-container check would be asserting on Chakra's own internals, not this component's
++    // contract — same precedent recommended-products/index.test.tsx already documents for the
++    // identical situation.
++    wrap(<ZimmRecentlyViewedRail title="Recently Viewed" cards={[]} />);
++    expect(screen.queryByTestId('recently-viewed-rail')).not.toBeInTheDocument();
+   });
+ });
+ 
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.tsx b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.tsx
+index 47fe7ca..2da9af9 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.tsx
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/index.tsx
+@@ -1,8 +1,8 @@
+ import React from 'react';
+ import type { ReactNode } from 'react';
+-import { chakra, useMultiStyleConfig } from '@chakra-ui/react';
++import { chakra, useMultiStyleConfig, useBreakpointValue } from '@chakra-ui/react';
+ import { Link as RouteLink } from 'react-router-dom';
+-import { RECENTLY_VIEWED_RAIL_MAX_ITEMS } from 'app/constants';
++import { RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS } from 'app/constants';
+ import { ZimmProductCard } from '../zimmProductCard';
+ import type { ZimmProductCardProps } from '../zimmProductCard';
+ 
+@@ -29,9 +29,11 @@ export type ZimmRecentlyViewedRailProps = {
+   title: ReactNode;
+   /**
+    * Rendered in the exact order received (AC 2: most-recent-first, left to right) — no sorting or
+-   * reordering happens here. Capped to `RECENTLY_VIEWED_RAIL_MAX_ITEMS` regardless of length; see
+-   * that constant's own comment (app/constants/index.ts) for why the cap has to live here rather
+-   * than in the request that produced this array.
++   * reordering happens here. Capped to `RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS` for the current real
++   * breakpoint regardless of length — a hard cap, not a "fits before scrolling" soft limit (see
++   * that constant's own comment, app/constants/index.ts, and this component's own render-body
++   * comment below for why the cap has to live here rather than in the request that produced this
++   * array).
+    */
+   cards: readonly ZimmProductCardProps[];
+   /** Href to the SFCC-84 Recently Viewed Full History page. The See-Full-History link only
+@@ -56,10 +58,19 @@ const ZIMM_RECENTLY_VIEWED_RAIL_RECIPE = 'ZimmRecentlyViewedRail';
+  * component's visibility (A4's `hasRecentlyViewed`), and supplying `title`/`seeAllLabel` copy.
+  *
+  * Structure mirrors Figma exactly: a `header` row (title left, the See-Full-History link right)
+- * above a horizontally scrollable `group` of `ZimmProductCard`s. No rail-level arrow buttons —
+- * `ZimmProductCardMedia` already carries its own intra-card carousel arrows, and a second set at
+- * the rail level would collide with them (see zimmRecentlyViewedRail.css.ts's own docblock for
+- * the Figma node evidence). Paging is native horizontal scroll with CSS scroll-snap only.
++ * above a `group` of `ZimmProductCard`s. No rail-level arrow buttons — `ZimmProductCardMedia`
++ * already carries its own intra-card carousel arrows, and a second set at the rail level would
++ * collide with them (see zimmRecentlyViewedRail.css.ts's own docblock for the Figma node
++ * evidence).
++ *
++ * **`group`'s horizontal scroll/scroll-snap (zimmRecentlyViewedRail.css.ts) is a narrow-viewport
++ * safety net, not the "more cards exist, scroll to see them" mechanism it might look like.**
++ * Confirmed with Marcel (2026-09-08): the per-breakpoint card count below is a hard cap — a
++ * shopper on a real, design-reference-width device never has more cards to scroll to than the
++ * cap allows; "more history exists" is surfaced via the See-Full-History link (the container's
++ * job, build plan §B3), not via scrolling this rail further. The scroll/scroll-snap CSS stays
++ * meaningful only for a real device narrower than the design reference itself (e.g. a phone
++ * under ~402px), where the capped card count can still slightly overflow the actual viewport.
+  *
+  * `cards` is typed as the full `ZimmProductCardProps` union, matching this step's own given
+  * component contract verbatim — this component therefore spreads each entry straight into
+@@ -77,11 +88,16 @@ const ZIMM_RECENTLY_VIEWED_RAIL_RECIPE = 'ZimmRecentlyViewedRail';
+ export const ZimmRecentlyViewedRail = ({ title, cards, seeAllHref, seeAllLabel }: ZimmRecentlyViewedRailProps) => {
+   const styles = useMultiStyleConfig(ZIMM_RECENTLY_VIEWED_RAIL_RECIPE, {});
+ 
+-  // Cap is enforced here, client-side, regardless of how many cards were passed in — see
+-  // RECENTLY_VIEWED_RAIL_MAX_ITEMS's own comment (app/constants/index.ts): the Einstein API this
+-  // data ultimately comes from does not itself honour a requested limit. A slice, never a sort —
+-  // order is otherwise untouched (AC 2).
+-  const visibleCards = cards.slice(0, RECENTLY_VIEWED_RAIL_MAX_ITEMS);
++  // Cap is enforced here, client-side, regardless of how many cards were passed in — the data
++  // source (`useRecentlyViewedHistory` / `recentlyViewedProductFetch.ts`) does not itself honour
++  // a requested limit, and per-breakpoint capping is this component's own presentational concern,
++  // not the container's. Falls back to the smallest (base/mobile) count on the very first render
++  // before Chakra's SSR-safe mount-then-resolve pass settles (see RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS's
++  // own comment, app/constants/index.ts, for why this is a hard per-breakpoint cap, not a "fits
++  // before scrolling" soft limit). A slice, never a sort — order is otherwise untouched (AC 2).
++  const maxVisibleCards =
++    useBreakpointValue(RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS) ?? RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS.base;
++  const visibleCards = cards.slice(0, maxVisibleCards);
+ 
+   // Second guard behind A4's own visibility gate, which lives in the container, not here — an
+   // empty rail renders nothing at all, not an empty shell.
+@@ -93,7 +109,7 @@ export const ZimmRecentlyViewedRail = ({ title, cards, seeAllHref, seeAllLabel }
+     <chakra.div __css={styles.container} data-testid="recently-viewed-rail">
+       <chakra.div __css={styles.header}>
+         <chakra.span textStyle="heading3">{title}</chakra.span>
+-        {seeAllHref && (
++        {seeAllHref && seeAllLabel && (
+           <SeeAllLink to={seeAllHref} textStyle="linkLg" __css={styles.seeAllLink}>
+             {seeAllLabel}
+           </SeeAllLink>
+diff --git a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/zimmRecentlyViewedRail.css.ts b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/zimmRecentlyViewedRail.css.ts
+index 92cc173..e6fa52e 100644
+--- a/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/zimmRecentlyViewedRail.css.ts
++++ b/overrides/app/components/ui-kits/organisms/zimmRecentlyViewedRail/zimmRecentlyViewedRail.css.ts
+@@ -95,6 +95,9 @@ const HEADER_HEIGHT_DESKTOP = '6rem'; // 96px — confirmed Figma value (node 40
+ // inside a real page"). Derived from the exact same per-breakpoint card-width x visible-count
+ // arithmetic the docblock already documents (201x2=402, 256x3=768, 288x5=1440) — not a new
+ // measurement, the same one restated as a width cap instead of a per-card value.
++// audit-allow: derived composite (already-pending CARD_WIDTH_* x a visible-card count), not
++// itself a value with any promotable foundation-token equivalent — a "content max-width" isn't
++// a spacing/sizing scale concept on its own.
+ const RAIL_CONTENT_MAX_WIDTH_MOBILE = '25.125rem'; // 402px = 201px (CARD_WIDTH_MOBILE) x 2 visible cards
+ const RAIL_CONTENT_MAX_WIDTH_TABLET = '48rem'; // 768px = 256px (CARD_WIDTH_TABLET) x 3 visible cards
+ const RAIL_CONTENT_MAX_WIDTH_DESKTOP = '90rem'; // 1440px = 288px (CARD_WIDTH_DESKTOP) x 5 visible cards

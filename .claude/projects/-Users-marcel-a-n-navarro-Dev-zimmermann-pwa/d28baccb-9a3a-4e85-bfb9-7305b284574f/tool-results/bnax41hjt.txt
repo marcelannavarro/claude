@@ -1,0 +1,578 @@
+---
+/*
+ * Copyright (c) 2022, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+
+/*
+ * Copy-first port of
+ * node_modules/@salesforce/retail-react-app/app/components/recommended-products/index.jsx
+ * (retail-react-app 10.0.0), converted to TypeScript per AGENTS.md's copy-first rule.
+ *
+ * The differences from the base file are the TypeScript annotations below and house
+ * formatting — no changed JSX, hook calls, prop names, or reordered `useEffect`s, and the base
+ * file's own dead check (`recommendations.length < 1` on what is always an object) is ported
+ * byte-identical in behaviour. The annotations: a `RecommendedProductsProps` type replacing the
+ * `propTypes` block; a narrow local `RecommendedProduct` type for the one field read off a
+ * recommendation-context product (reused for the `productTileProps` callback's own `product`
+ * param below, since it is that same recommendation-context product); an explicit `boolean`
+ * param on the one nested callback that isn't contextually typed; and inline
+ * `{ productId?: string }` / `{ id?: string }` object-type-literal params on four
+ * `.find`/`.some`/`.map` callbacks whose containing expression is untyped (`any`) and therefore
+ * supplies no contextual parameter type — `noImplicitAny` flags these regardless of the `any`
+ * receiver (confirmed against `npx tsc --noEmit`, which is why these four are annotated despite
+ * this file's own initial plan expecting two of them not to need it). The `{ productId?: string
+ * }` shape and inline-annotation style mirrors the existing precedent at
+ * product-detail/index.tsx:437 and :735; the `{ id?: string }` shape matches the field the base
+ * hook itself reads, `use-einstein.js`'s own `reco.recs?.map((rec) => rec.id)` (line 466).
+ *
+ * A sixth adjustment, found by lint rather than tsc: the base file destructures `formatMessage`
+ * straight off `useIntl()`, but `@typescript-eslint/unbound-method` flags any destructured
+ * reference to it — `formatMessage` is declared with method-shorthand syntax in
+ * `@formatjs/intl/src/types.d.ts:64-65`, which this rule always flags regardless of whether the
+ * real implementation needs `this`. Fix: keep the whole object (`const intl = useIntl();`) and
+ * call `intl.formatMessage(...)` at each of its five call sites instead of destructuring — a
+ * property-access call sidesteps the rule entirely, with zero behavioural change. Same
+ * "toolchain requires a different access shape than the untyped base file used" reasoning as the
+ * annotations above.
+ *
+ * SFCC-83/84 — this branch renders `ZimmRecentlyViewedRail` instead of `ProductScroller` when
+ * `recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED` (`'viewed-recently-einstein'`, the
+ * same string `CART_RECENTLY_VIEWED` resolves to — confirmed identical in
+ * node_modules/@salesforce/retail-react-app/app/constants.js:156,160). Every other recommender
+ * keeps the original `ProductScroller` branch below, untouched.
+ *
+ * **Build plan step E1 (2026-09-15) wires this branch to real Einstein data**, replacing an
+ * interim browser-tracked mechanism (shipped as draft PR #107) that existed only because Einstein
+ * was confirmed "Not Deployed" on every real Zimmermann site. That interim build tracked viewed
+ * product ids in local storage and fetched real product data for them via a dedicated utility —
+ * both removed in build plan step E4 — instead of ever reading `useEinstein()`'s own
+ * `recommendations`. This branch now matches the other four recommenders in this same file
+ * exactly:
+ * 1. The `getRecommendations`/`getZoneRecommendations` effect below fires unconditionally for
+ *    this recommender too — no more early return for it.
+ * 2. Cards are built by mapping `recommendations.recs` through the unchanged
+ *    `selectRecentlyViewedCard`. Einstein's own `fetchRecProductDetails`
+ *    (use-einstein.js:465 onward) already merges each rec with its full hydrated `getProducts`
+ *    record before this component ever sees it (`{...rec, ...product, productId, image}`), so
+ *    every field `selectRecentlyViewedCard` reads (`id`/`name`/`imageGroups`/`variants`/`price`/
+ *    `currency`) is present — a strict superset of the plain `ShopperProductsTypes.Product` shape
+ *    the interim build fed it, confirmed directly against that function's body rather than
+ *    assumed.
+ * 3. The empty-state gate (AC 8) is now `!recommendations?.recs?.length` directly. This one check
+ *    owns both the loading case (`useEinstein()`'s own `useState([])` initial value,
+ *    use-einstein.js:463, means `recs` is `undefined` until the request resolves) and the true
+ *    zero-history case. This branch still sits ahead of the base dead-check below — inherited from
+ *    the interim build's own ordering — though it no longer strictly matters either way, since
+ *    every path inside this `if` returns (null or the rail) and never falls through; there's just
+ *    no reason to move it.
+ *
+ * **Named, intended behaviour change, not a regression:** the `isOnScreen && recommendations?.recs`
+ * impression-tracking effect below previously no-opped for this branch only because
+ * `recommendations` stayed permanently `[]` under the interim bypass. Now that real recs arrive,
+ * `sendViewReco`/`dataCloud.sendViewRecommendations` begin firing for this rail too, closing a
+ * previously-accepted, temporary analytics gap — a direct consequence of point 1 above, not a
+ * separate code change.
+ *
+ * `ref` is still attached on the Recently Viewed branch too, via a plain wrapping `<Box
+ * ref={ref}>` — `isOnScreen` below (the impression-tracking gate for `sendViewReco`/
+ * `dataCloud.sendViewRecommendations`) only works once `ref.current` is a real DOM node
+ * (use-intersection-observer.js: `if (!ref?.current) return`, with no dependency on which
+ * component produced that node), and `ZimmRecentlyViewedRail` is a plain function component with
+ * no `forwardRef` support of its own. Wrapping here, rather than adding `forwardRef` to that
+ * already-committed component (A5), keeps this fix entirely inside this file.
+ *
+ * `headingLevel`/`variation` are added here, not by the mapper: `selectRecentlyViewedCard`'s own
+ * docblock states both are deliberately excluded from its output because they are this
+ * container's decision to make. `headingLevel: 'h3'` is inert for this variation —
+ * `ZimmProductCardContent` never mounts when `variation: 'recentlyViewed'`
+ * (zimmProductCard/index.tsx's `VARIATION_CONFIG.showContent`) — and matches the one other
+ * established value for this same required field (product-list/productListCardMapper.ts).
+ *
+ * `{...props}` is forwarded to the `<Box>` wrapper (cast to `BoxProps` — this file's own index
+ * signature types `props` as `Record<string, unknown>`, not safely spreadable onto `Box`'s typed
+ * props otherwise), matching the ProductScroller branch below exactly. This matters concretely:
+ * PDP passes `mx={{base: -4, md: -8, lg: 0}}` and Cart passes `mx={{base: -4, sm: -6, lg: 0}}` to
+ * bleed this component edge-to-edge on mobile/tablet — without forwarding it, this branch would
+ * render inset inside the page's normal content padding while every sibling rail on the same page
+ * bleeds to the edge, and `zimmRecentlyViewedRail.css.ts`'s own card-width math (e.g. 201x2=402)
+ * assumes the full viewport width is actually available. Confirmed live on PDP/Cart/PLP,
+ * 2026-09-08 (a real Playwright session against the running app, real view history, real
+ * screenshots) — this genuinely renders edge-to-edge on all three surfaces.
+ *
+ * **The See-Full-History link, added 2026-09-08 — previously a stated "not yet built" gap on
+ * every caller.** `seeAllHref`/`seeAllLabel` are computed here, once, rather than by
+ * each page: `showSeeAllLink` compares this branch's own unsliced `cards.length` against
+ * `useRecentlyViewedRailVisibleCount()` (app/hooks — 2/3/5 per breakpoint), matching the AC's own
+ * "exceeds the visible rail width" wording, which is viewport-relative, not a flat count (Open
+ * Question 1, reopened 2026-09-07 after the original flat->5 reading was found to misread that AC
+ * text). **Corrected 2026-09-10 (later same day as the card-width fixes elsewhere this session):
+ * was `useBreakpointValue(RECENTLY_VIEWED_RAIL_VISIBLE_COUNTS)`** — that resolves the "Desktop"
+ * step at this site's shared `breakpoints.xl` (1280px), but the rail's own card-width styling
+ * switches to Desktop sizing at 1024px, its own real Figma threshold. The two silently disagreed
+ * between 1024–1280px (confirmed live, Marcel: ~1277px showed the row styled for 5 cards, only 3
+ * rendered, this link showing as if still capped at 3) — see
+ * `useRecentlyViewedRailVisibleCount.ts`'s own docblock for the full incident and why a plain
+ * `useBreakpointValue` object can't express this threshold at all. No ResizeObserver — this hook
+ * reads the current breakpoint only. `seeAllHref` is site/locale-prefixed via `useMultiSite`'s own
+ * `buildUrl` — this container builds the prefix, never the rail itself (AGENTS.md's Multi-site
+ * section: never assume routing). `title`, by contrast, stays each caller's own responsibility
+ * (PDP/Cart/PLP each pass their own) — a correction from an earlier instruction to one caller
+ * (PLP) that wrongly deferred `title` to this same "not yet built" step alongside the link; fixed
+ * there and noted here so the split doesn't get re-confused later.
+ */
+
+import React, { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { defineMessages, useIntl } from 'react-intl';
+import type { BoxProps } from '@chakra-ui/react';
+import { Box, Button } from '@salesforce/retail-react-app/app/components/shared/ui';
+import ProductScroller from '@salesforce/retail-react-app/app/components/product-scroller';
+import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein';
+import useDataCloud from '@salesforce/retail-react-app/app/hooks/use-datacloud';
+import { useCurrentCustomer } from '@salesforce/retail-react-app/app/hooks/use-current-customer';
+import useIntersectionObserver from '@salesforce/retail-react-app/app/hooks/use-intersection-observer';
+import { useWishList } from '@salesforce/retail-react-app/app/hooks/use-wish-list';
+import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site';
+
+import { useToast } from '@salesforce/retail-react-app/app/hooks/use-toast';
+import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation';
+import {
+  API_ERROR_MESSAGE,
+  EINSTEIN_RECOMMENDERS,
+  TOAST_ACTION_VIEW_WISHLIST,
+  TOAST_MESSAGE_ADDED_TO_WISHLIST,
+  TOAST_MESSAGE_REMOVED_FROM_WISHLIST,
+} from '@salesforce/retail-react-app/app/constants';
+// Zimmermann's own constants — NOT the base package above. RECENTLY_VIEWED_ROUTE only exists
+// here; importing it from the base package instead compiles (that module has no real type
+// declarations, so any named import type-checks as `any`) but is `undefined` at runtime —
+// confirmed the hard way via a failing test before this was split out.
+import { RECENTLY_VIEWED_ROUTE } from 'app/constants';
+import { useShopperCustomersMutation } from '@salesforce/commerce-sdk-react';
+// Relative, not the base package path — .claude/rules/overrideStyling.md's "Importing an
+// already-overridden component from a new component": .storybook/main.js and vitest.config.ts
+// don't load the overrides resolver, so a base-path import here would silently story/test the
+// unstyled base component instead of this override.
+import { ZimmRecentlyViewedRail } from '../ui-kits/organisms/zimmRecentlyViewedRail';
+import type { ZimmRecentlyViewedCardProps } from '../ui-kits/organisms/zimmRecentlyViewedRail';
+import { selectRecentlyViewedCard } from '../../utils/recentlyViewedCard';
+import type { RecentlyViewedCard, RecentlyViewedProduct } from '../../utils/recentlyViewedCard';
+import { useRecentlyViewedRailVisibleCount } from '../../hooks/useRecentlyViewedRailVisibleCount';
+
+/**
+ * The See-Full-History link's own accessible label. Not in this file's existing message set (it
+ * had none before this step) because nothing here owned any copy of its own until now — `title`
+ * has always been each caller's own responsibility (see the Recently-Viewed branch below), and
+ * this is the one piece of copy this container itself needs.
+ */
+const messages = defineMessages({
+  seeFullHistory: {
+    id: 'recommended_products.link.see_full_history',
+    defaultMessage: 'See Full History',
+  },
+});
+
+/**
+ * The one field this file reads off a recommendation-context product. A real
+ * commerce-sdk-isomorphic Product shape underlies it, but @salesforce/retail-react-app's
+ * useEinstein/ProductScroller ship untyped (vendor.d.ts's wildcard), so this is narrowed
+ * to exactly the field touched here rather than invented more broadly (AGENTS.md > Type
+ * Definitions: hand-roll only the genuinely unexported shape actually used).
+ */
+type RecommendedProduct = { productId?: string };
+
+export type RecommendedProductsProps = {
+  /* The title to appear above the product scroller */
+  title?: ReactNode;
+
+  /* The zone to request */
+  zone?: string;
+
+  /* The recommender to request */
+  recommender?: string;
+
+  /* The products to use for recommendation context */
+  products?: readonly Record<string, unknown>[];
+
+  /* Callback to determine if the component should fetch results */
+  shouldFetch?: () => boolean;
+
+  // Index signature for the `...props` passthrough to ProductScroller (itself untyped — see
+  // vendor.d.ts). Without it, the destructured rest types as `{}` instead of accepting arbitrary
+  // passthrough, which is the base file's actual intent: forwarding whatever else the caller
+  // passes.
+  [key: string]: unknown;
+};
+
+/**
+ * A component for fetching and rendering product recommendations from the Einstein API
+ * by a zone or a recommender name.
+ */
+const RecommendedProducts = ({
+  zone,
+  recommender,
+  products,
+  title,
+  shouldFetch,
+  ...props
+}: RecommendedProductsProps) => {
+  const { isLoading, recommendations, getZoneRecommendations, getRecommendations, sendClickReco, sendViewReco } =
+    useEinstein();
+  const { data: customer } = useCurrentCustomer();
+  const { customerId } = customer;
+  const { data: wishlist } = useWishList();
+  const dataCloud = useDataCloud();
+
+  const createCustomerProductListItem = useShopperCustomersMutation('createCustomerProductListItem');
+  const deleteCustomerProductListItem = useShopperCustomersMutation('deleteCustomerProductListItem');
+  const toast = useToast();
+  const navigate = useNavigation();
+  const intl = useIntl();
+  // Same split product-list/productListCardMapper.ts's own consumer uses
+  // (product-list/index.tsx): passed into the mapper rather than formatted there, keeping that
+  // mapper free of any react-intl dependency of its own.
+  const formatPrice = (amount: number, currency: string) => intl.formatNumber(amount, { style: 'currency', currency });
+
+  const ref = useRef();
+  const isOnScreen = useIntersectionObserver(ref, { useOnce: true });
+  const [_products, setProducts] = useState(products);
+  // Cart-exclusion check (2026-09-10, Marcel: "no recently viewed on cart" — a standing product
+  // decision, not an Einstein-not-deployed-yet placeholder). Cart has no Zimmermann override
+  // (no overrides/app/pages/cart/ at all) — its base page imports this same overridden component
+  // and passes `recommender={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}`, which resolves to the
+  // exact same string as PDP_RECENTLY_VIEWED (confirmed identical,
+  // node_modules/.../constants.js:154-160), so the recommender check below cannot tell the two
+  // apart by value alone. `.endsWith('/cart')`, not an exact match — AGENTS.md's Multi-site
+  // section: a real storefront path is locale/site-prefixed (e.g. `/en-GB/cart`), so an exact
+  // `=== '/cart'` would only ever match the default site.
+  const location = useLocation();
+  const isCartPage = location.pathname.endsWith('/cart');
+  // The Recently-Viewed visible-card-count threshold — used in two places below: the
+  // impression-tracking effect's own id cap (PostBuild fix round, Fix 1, 2026-09-15 — see that
+  // effect's own comment) and the See-Full-History trigger threshold in the Recently-Viewed render
+  // branch further down. Also unconditional per rules of hooks; only meaningful for the
+  // Recently-Viewed recommender, same as `useLocation()` immediately above (whose derived
+  // `isCartPage` is read in the fetch effect below too, as of the 2026-09-15 Cart-skip fix, in
+  // addition to the Recently-Viewed branch further down). Reads the current breakpoint only — no
+  // ResizeObserver, no runtime DOM measurement, matching the AC's own viewport-relative "exceeds
+  // the visible rail width" wording (Open Question 1). See the module docblock's own
+  // "See-Full-History link" section for why this is no longer a plain `useBreakpointValue` call.
+  const visibleCardCount = useRecentlyViewedRailVisibleCount();
+  // `buildUrl` site/locale-prefixes an internal path (e.g. `/en-GB/recently-viewed` on a non-AU
+  // storefront) — AGENTS.md's Multi-site section: never assume routing. The rail itself must not
+  // build this prefix; this container does it once, here.
+  const { buildUrl } = useMultiSite();
+
+  useEffect(() => {
+    // Cart-exclusion, extended to the fetch itself (2026-09-15, CodeRabbit finding, personally
+    // verified before treating as valid). The Recently-Viewed render branch below already returns
+    // `null` unconditionally on Cart for this recommender (see `isCartPage`'s own comment above),
+    // so this request's result is never rendered on that route -- this skips firing it in the
+    // first place instead of fetching a result nothing will ever read. Named in the build plan as
+    // an accepted, optional cleanup ("the implementer may keep a Cart-only skip in the effect if
+    // trivial"); it is.
+    if (isCartPage && recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED) {
+      return;
+    }
+
+    // Check if the component should fetch results or not. This is useful
+    // when you are still waiting on additional data, like `products`.
+    if (typeof shouldFetch === 'function' && !shouldFetch()) {
+      return;
+    }
+
+    // Fetch either zone or recommender, but not both. If a zone and recommender
+    // name are both provided, `zone` takes precendence.
+    if (zone) {
+      getZoneRecommendations(zone, _products);
+      return;
+    }
+    if (recommender) {
+      getRecommendations(recommender, _products);
+      return;
+    }
+  }, [zone, recommender, _products, isCartPage]);
+
+  useEffect(() => {
+    // This is an optimization that eliminates superfluous rerenders/fetching by
+    // keeping a copy of the `products` array prop in state for shallow comparison.
+    if (!Array.isArray(products)) {
+      return;
+    }
+    if (products.length !== _products?.length || !products.every((val, index) => val === _products?.[index])) {
+      setProducts(products);
+    }
+  }, [products]);
+
+  useEffect(() => {
+    if (isOnScreen && recommendations?.recs) {
+      // PostBuild fix round, Fix 1 (2026-09-15): Recently-Viewed only, report just the cards that
+      // actually survived `selectRecentlyViewedCard`'s own null-filtering AND fit within
+      // `ZimmRecentlyViewedRail`'s own visible-count cap — the same two-step set the render branch
+      // further down actually puts on screen — not the full raw `recommendations.recs`. Every
+      // other recommender has no filtering or capping step at all between its raw recs and what
+      // actually renders, so the `else` branch below is the exact original, unchanged expression —
+      // this `ids` computation changes nothing for them.
+      //
+      // Without the null-filter, a Recently-Viewed rec that fails to map (e.g. no usable
+      // name/image — see that mapper's own hard-gate contract) still got reported to
+      // Einstein/DataCloud as "viewed" even though the rail never actually rendered it: if every
+      // one of a shopper's recently-viewed products failed to map, the rail correctly rendered
+      // nothing, but this effect still told Einstein/DataCloud the shopper viewed every one of
+      // them — false signal into Einstein's own recommendation-quality feedback loop, and silent
+      // (nothing on screen indicated it happened).
+      //
+      // Without the visible-count cap (added here, PostBuild fix round, 2026-09-15 — CodeRabbit
+      // finding on PR #116, confirmed by direct code trace against
+      // zimmRecentlyViewedRail/index.tsx:128-129's own `cards.slice(0, maxVisibleCards)`): every
+      // surviving card was still reported, even ones past what the Rail actually slices to and
+      // renders. Whenever a shopper had more recently-viewed history than fits one row at the
+      // current breakpoint — the exact condition that triggers the See-Full-History link above —
+      // Einstein/DataCloud were told about more "viewed" recommendations than were actually shown.
+      // `<ZimmRecentlyViewedRail cards={cards}>` further down still receives the full, unsliced
+      // list unchanged — only this effect's own reported id list is capped.
+      //
+      // Recomputing `selectRecentlyViewedCard` here rather than sharing the render branch's own
+      // `cards` (declared later in this same function, out of this effect's reach) is an accepted,
+      // cheap duplicate — this effect only ever fires once per mount, since `isOnScreen` is itself
+      // `useOnce: true` (use-intersection-observer.js). `recommender`/`formatPrice`/`buildUrl`/
+      // `visibleCardCount` are all read here without being added to the dependency array below,
+      // matching this same effect's pre-existing omission of `sendViewReco`/`dataCloud` —
+      // `react-hooks/exhaustive-deps` is off repo-wide (see recentlyViewed/index.tsx's own
+      // docblock for the exact config line). `formatPrice`/`buildUrl` are recreated every render,
+      // so adding them would make this effect re-fire on every render instead of once per mount;
+      // `visibleCardCount` (declared above, the same `useRecentlyViewedRailVisibleCount()` call the
+      // See-Full-History threshold already uses) is stable across most renders but can change on a
+      // real breakpoint-crossing resize — adding it here would re-fire this once-per-mount
+      // impression effect a second time on a later resize, sending a second, differently-sized
+      // impression for the same rail. It should report whatever was visible at the moment
+      // `isOnScreen` first became `true`, once — not keep tracking the breakpoint afterwards.
+      const ids: { id?: string }[] =
+        recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED
+          ? recommendations.recs
+              .map((product: RecentlyViewedProduct) => selectRecentlyViewedCard(product, formatPrice, buildUrl))
+              .filter((card: RecentlyViewedCard | null): card is RecentlyViewedCard => card !== null)
+              .slice(0, visibleCardCount)
+              .map((card: RecentlyViewedCard) => ({ id: card.id }))
+          : recommendations.recs.map((rec: { id?: string }) => ({ id: rec.id }));
+
+      // Recently-Viewed only: nothing survived the mapping above, so nothing actually rendered —
+      // report no impression at all, rather than an empty-but-still-sent call. Gated on the
+      // recommender check too, not just `ids.length`, so the other four recommenders keep firing
+      // unconditionally exactly as before, even in the (untouched, pre-existing) case where their
+      // own raw `recs` happens to be an empty array.
+      if (recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED && ids.length === 0) {
+        return;
+      }
+
+      sendViewReco(
+        {
+          recommenderName: recommendations.recommenderName,
+          __recoUUID: recommendations.recoUUID,
+        },
+        ids,
+      );
+      dataCloud.sendViewRecommendations(
+        {
+          recommenderName: recommendations.recommenderName,
+          __recoUUID: recommendations.recoUUID,
+        },
+        ids,
+      );
+    }
+  }, [isOnScreen, recommendations]);
+
+  // SFCC-83 — Recently Viewed only. Every other recommender falls through to the unchanged
+  // ProductScroller branch below. This branch sits ahead of the base dead-check below (see this
+  // file's own module docblock, point 3, for why that no longer strictly matters but is kept
+  // anyway) — every path inside this `if` returns on its own, so it never falls through to that
+  // dead-check or the ProductScroller return regardless. Every other recommender is unaffected:
+  // they still hit the exact same dead-check + ProductScroller path below, unchanged, just after
+  // this check now short-circuits past them when it applies.
+  if (recommender === EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED) {
+    // Cart exclusion (2026-09-10, Marcel) — see the isCartPage constant's own comment above for
+    // why this can't be expressed as a distinct recommender value. No rail, no title, no
+    // placeholder — same treatment as the empty-state gate below, just for a different reason.
+    if (isCartPage) {
+      return null;
+    }
+
+    // AC 8's empty-state gate, now against Einstein's own recs directly (build plan step E1) —
+    // see this file's own module docblock for why this one check covers both the loading case
+    // (`recs` undefined until `getRecommendations` resolves) and the true zero-history case. No
+    // rail, no title, no placeholder.
+    if (!recommendations?.recs?.length) {
+      return null;
+    }
+
+    // `recommendations.recs` is `useEinstein()`'s own untyped (`any`) result — like the
+    // `.find`/`.some`/`.map` callbacks elsewhere in this file that already read off it, the
+    // mapping callback below needs an explicit parameter-type annotation to satisfy
+    // `noImplicitAny`. `RecentlyViewedProduct` (recentlyViewedCard.ts's own alias for
+    // `ShopperProductsTypes.Product`) is reused here rather than a hand-rolled inline shape, since
+    // it already names every field `selectRecentlyViewedCard` reads, and this input is a strict
+    // superset of it (see the module docblock above).
+    //
+    // `buildUrl` (already in scope above, for `seeAllHref`) is now also passed into the mapper
+    // itself (2026-09-15, CodeRabbit finding, confirmed) — see selectRecentlyViewedCard's own
+    // docblock: without it, every card's href was a bare, unprefixed `/product/:id` path, which
+    // sent a non-default-site shopper to the default site/locale instead of the storefront they
+    // were actually browsing.
+    const cards: ZimmRecentlyViewedCardProps[] = recommendations.recs
+      .map((product: RecentlyViewedProduct) => selectRecentlyViewedCard(product, formatPrice, buildUrl))
+      .filter((card: RecentlyViewedCard | null): card is RecentlyViewedCard => card !== null)
+      .map(
+        (card: RecentlyViewedCard): ZimmRecentlyViewedCardProps => ({
+          ...card,
+          // Inert for this variation — ZimmProductCardContent never mounts when
+          // variation: 'recentlyViewed' (zimmProductCard/index.tsx's
+          // VARIATION_CONFIG.showContent). 'h3' matches the one other established value for
+          // this same required field (product-list/productListCardMapper.ts).
+          headingLevel: 'h3',
+          variation: 'recentlyViewed',
+        }),
+      );
+
+    // The See-Full-History link, finally wired in (was a stated "not yet built" gap on every
+    // caller until now). Triggers when the shopper has more recently-viewed products
+    // than fit in view at the *current* breakpoint — matching the AC's own "exceeds the visible
+    // rail width" wording, which is viewport-relative, not a flat count. Compared against
+    // `cards.length` (the full, unsliced count this container just built from Einstein's own
+    // `recommendations.recs` — no client-side cap, build plan step E4 Open Question 4), not the
+    // rail's own internal 5-item render slice, since the question is "does more exist than is
+    // visible", not "did we cap the render".
+    const showSeeAllLink = cards.length > visibleCardCount;
+
+    return (
+      // Ref-attachment point — see the module docblock's own isOnScreen/forwardRef note above for
+      // why this wrapper exists at all. `{...props}` forwards the caller's own layout props (e.g.
+      // PDP's `mx={{base: -4, md: -8, lg: 0}}`, Cart's `mx={{base: -4, sm: -6, lg: 0}}`) exactly
+      // as the ProductScroller branch below already does — without it, this branch would render
+      // inset inside the page's normal content padding while every sibling rail on the same page
+      // bleeds edge-to-edge, and zimmRecentlyViewedRail.css.ts's own card-width math (e.g.
+      // 201x2=402) assumes the full viewport width is actually available. `title` is passed
+      // straight through with no `recommendations?.displayMessage` fallback — this component owns
+      // no copy of its own for this branch (build plan A5/A6): the real title always comes from
+      // the caller, regardless of whether Einstein's own `displayMessage` is present.
+      <Box ref={ref} {...(props as BoxProps)}>
+        <ZimmRecentlyViewedRail
+          title={title}
+          cards={cards}
+          seeAllHref={showSeeAllLink ? buildUrl(RECENTLY_VIEWED_ROUTE) : undefined}
+          seeAllLabel={showSeeAllLink ? intl.formatMessage(messages.seeFullHistory) : undefined}
+        />
+      </Box>
+    );
+  }
+
+  // The component should remove itself altogether if it has no recommendations
+  // and we aren't loading any.
+  if (!isLoading && (!recommendations || recommendations.length < 1)) {
+    return null;
+  }
+
+  // TODO: DRY this handler when intl provider is available globally
+  const addItemToWishlist = async (product: RecommendedProduct) => {
+    try {
+      if (!wishlist || !customerId) {
+        return;
+      }
+      await createCustomerProductListItem.mutateAsync({
+        parameters: {
+          listId: wishlist.id,
+          customerId,
+        },
+        body: {
+          quantity: 1,
+          productId: product.productId,
+          public: false,
+          priority: 1,
+          type: 'product',
+        },
+      });
+
+      toast({
+        title: intl.formatMessage(TOAST_MESSAGE_ADDED_TO_WISHLIST, { quantity: 1 }),
+        status: 'success',
+        action: (
+          // it would be better if we could use <Button as={Link}>
+          // but unfortunately the Link component is not compatible
+          // with Chakra Toast, since the ToastManager is rendered via portal
+          // and the toast doesn't have access to intl provider, which is a
+          // requirement of the Link component.
+          <Button variant="link" onClick={() => navigate('/account/wishlist')}>
+            {intl.formatMessage(TOAST_ACTION_VIEW_WISHLIST)}
+          </Button>
+        ),
+      });
+    } catch {
+      toast({
+        title: intl.formatMessage(API_ERROR_MESSAGE),
+        status: 'error',
+      });
+    }
+  };
+
+  const removeItemFromWishlist = async (product: RecommendedProduct) => {
+    try {
+      const wishlistItem = wishlist?.customerProductListItems?.find(
+        (item: { productId?: string }) => item.productId === product.productId,
+      );
+      if (!wishlistItem || !wishlist || !customerId) {
+        return;
+      }
+      await deleteCustomerProductListItem.mutateAsync({
+        parameters: {
+          customerId,
+          itemId: wishlistItem.id,
+          listId: wishlist.id,
+        },
+      });
+      toast({
+        title: intl.formatMessage(TOAST_MESSAGE_REMOVED_FROM_WISHLIST),
+        status: 'success',
+        id: product.productId,
+      });
+    } catch {
+      toast({
+        title: intl.formatMessage(API_ERROR_MESSAGE),
+        status: 'error',
+      });
+    }
+  };
+
+  return (
+    <ProductScroller
+      ref={ref}
+      title={title || recommendations?.displayMessage}
+      products={recommendations.recs}
+      isLoading={isLoading}
+      productTileProps={(product: RecommendedProduct) => ({
+        onClick: () => {
+          sendClickReco(
+            {
+              recommenderName: recommendations.recommenderName,
+              __recoUUID: recommendations.recoUUID,
+            },
+            product,
+          );
+        },
+        enableFavourite: true,
+        isFavourite: wishlist?.customerProductListItems?.some(
+          (item: { productId?: string }) => item.productId === product?.productId,
+        ),
+        onFavouriteToggle: (toBeFavourite: boolean) => {
+          const action = toBeFavourite ? addItemToWishlist : removeItemFromWishlist;
+          return action(product);
+        },
+      })}
+      {...props}
+    />
+  );
+};
+
+export default RecommendedProducts;

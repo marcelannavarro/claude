@@ -1,0 +1,545 @@
+######## SFCC-52 ########
+--- field: status | created: 2026-08-30T12:51:41.914000+10:00 | by: Tim Lavelle ---
+TO: Code Review
+
+--- field: status | created: 2026-08-26T11:53:03.135000+10:00 | by: Tim Lavelle ---
+TO: In Progress
+
+--- field: Link | created: 2026-08-24T22:33:27.562000+10:00 | by: Hazel Marie Cacalda ---
+TO: This work item relates to SFCC-791
+
+--- field: Link | created: 2026-08-14T15:42:29.307000+10:00 | by: Isabel Chaloner ---
+TO: This work item relates to SFCC-747
+
+--- field: Link | created: 2026-08-14T15:03:13.133000+10:00 | by: Isabel Chaloner ---
+TO: This work item relates to SFCC-746
+
+--- field: status | created: 2026-08-07T12:10:06.640000+10:00 | by: Automation for Jira ---
+TO: Ready for Development
+
+--- field: status | created: 2026-08-07T12:10:05.209000+10:00 | by: Hazel Marie Cacalda ---
+TO: Ready for Development
+
+--- field: status | created: 2026-08-07T12:09:44.461000+10:00 | by: Automation for Jira ---
+TO: Tech design
+
+--- field: status | created: 2026-08-07T12:09:42.207000+10:00 | by: Hazel Marie Cacalda ---
+TO: Ready for Development
+
+--- field: status | created: 2026-08-07T12:09:38.112000+10:00 | by: Hazel Marie Cacalda ---
+TO: Tech design
+
+--- field: status | created: 2026-08-07T12:09:35.227000+10:00 | by: Hazel Marie Cacalda ---
+TO: Ready For Review
+
+--- field: status | created: 2026-08-07T12:09:31.051000+10:00 | by: Hazel Marie Cacalda ---
+TO: In Refinement
+
+--- field: Link | created: 2026-07-27T18:31:18.424000+10:00 | by: Hazel Marie Cacalda ---
+TO: This work item is blocked by SFCC-240
+
+--- field: status | created: 2026-07-23T11:56:19.234000+10:00 | by: Hazel Marie Cacalda ---
+TO: Blocked
+
+--- field: Link | created: 2026-07-23T10:46:07.988000+10:00 | by: Hazel Marie Cacalda ---
+TO: This work item is blocked by SFCC-205
+
+--- field: Dependency | created: 2026-07-07T16:37:59.536000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off → Separate user story for logo motion, we’ll check logo status in that again [https://zimmermannworkboard.atlassian.net/browse/SFCC-93|https://zimmermannworkboard.atlassian.net/browse/SFCC-93|smart-link].
+* Icons are not signed off → separate user story for when icons are coming SFCC-[116|https://zimmermannworkboard.atlassian.net/browse/SFCC-116]
+
+--- field: Dependency | created: 2026-07-07T16:37:40.237000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off → Separate user story for logo motion, we’ll check logo status in that again [https://zimmermannworkboard.atlassian.net/browse/SFCC-93|https://zimmermannworkboard.atlassian.net/browse/SFCC-93|smart-link].
+* Icons are not signed off → separate user story for when icons are coming SFCC-116
+
+--- field: Link | created: 2026-07-07T16:34:11.550000+10:00 | by: Jasmijn Tsang ---
+TO: This work item relates to SFCC-116
+
+--- field: Dependency | created: 2026-07-07T16:31:15.334000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off → Separate user story for logo motion, we’ll check logo status in that again [https://zimmermannworkboard.atlassian.net/browse/SFCC-93|https://zimmermannworkboard.atlassian.net/browse/SFCC-93|smart-link].
+* Icons are not signed off
+
+--- field: Dependency | created: 2026-07-03T13:40:33.941000+10:00 | by: Bianca Morley ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+
+--- field: Link | created: 2026-07-03T13:37:38.989000+10:00 | by: Bianca Morley ---
+TO: This work item relates to SFCC-98
+
+--- field: Dependency | created: 2026-07-03T13:30:20.056000+10:00 | by: Bianca Morley ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+* For motion design epic - create an user story for logo size changing/disappearing + one for bag counter → this is with Jon
+
+--- field: Link | created: 2026-07-03T13:30:17.639000+10:00 | by: Bianca Morley ---
+TO: This work item relates to SFCC-97
+
+--- field: Link | created: 2026-07-03T13:30:14.581000+10:00 | by: Bianca Morley ---
+TO: This work item relates to SFCC-96
+
+--- field: status | created: 2026-07-03T10:33:17.821000+10:00 | by: Jasmijn Tsang ---
+TO: Tech design
+
+--- field: Link | created: 2026-07-02T16:00:39.127000+10:00 | by: Bianca Morley ---
+TO: This work item relates to SFCC-93
+
+--- field: Dependency | created: 2026-07-02T15:20:40.083000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+* For motion design epic - create an user story for logo size changing/disappearing + one for bag counter → this is with Jon
+* Separate user stories for navigation menu on mobile and one for desktop
+
+--- field: Dependency | created: 2026-07-02T12:06:33.093000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+* For motion design epic - create an user story for logo size changing/disappearing + one for bag counter
+* Separate user stories for navigation menu on mobile and one for desktop
+
+--- field: Acceptance Criteria | created: 2026-07-02T12:05:10.370000+10:00 | by: Jasmijn Tsang ---
+TO: *Desktop/Mobile:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the top navigation remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+
+*Desktop:*
+
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Saved, Bag) are visible per the linked Figma Design.
+
+*Mobile:*
+
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+
+--- field: Dependency | created: 2026-07-02T11:56:34.767000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+* For motion design epic - create an user story for logo size changing/disappearing + one for bag counter
+
+--- field: Dependency | created: 2026-07-02T11:52:52.212000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* Icons are not signed off
+* For motion design epic - create an user story for logo size changing/disappearing
+
+--- field: status | created: 2026-07-01T21:55:56.691000+10:00 | by: Jasmijn Tsang ---
+TO: Ready For Review
+
+--- field: Dependency | created: 2026-07-01T21:55:53.337000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+* icons are not signed off
+
+--- field: Acceptance Criteria | created: 2026-06-26T14:24:37.766000+10:00 | by: Jasmijn Tsang ---
+TO: *Desktop/Mobile:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+
+*Desktop:*
+
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Saved, Bag) are visible per the linked Figma Design.
+
+*Mobile:*
+
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+
+--- field: Acceptance Criteria | created: 2026-06-26T14:23:13.435000+10:00 | by: Jasmijn Tsang ---
+TO: *Desktop/Mobile:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+
+*Desktop:*
+
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+
+*Mobile:*
+
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+
+--- field: Acceptance Criteria | created: 2026-06-26T14:22:56.202000+10:00 | by: Jasmijn Tsang ---
+TO: *Desktop/Mobile:*
+
+# Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+
+*Desktop:*
+
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+
+*Mobile:*
+
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+
+--- field: Dependency | created: 2026-06-26T14:17:39.924000+10:00 | by: Jasmijn Tsang ---
+TO: * 25-06: Logo not signed off, maybe should be above the navigation menu? 
+
+--- field: status | created: 2026-06-26T14:17:03.204000+10:00 | by: Jasmijn Tsang ---
+TO: In Refinement
+
+--- field: status | created: 2026-06-19T16:38:47.714000+10:00 | by: Jasmijn Tsang ---
+TO: Ready For Review
+
+--- field: Link | created: 2026-06-19T16:38:43.032000+10:00 | by: Jasmijn Tsang ---
+TO: None
+
+--- field: Dependency | created: 2026-06-19T16:38:32.908000+10:00 | by: Jasmijn Tsang ---
+TO: 
+
+--- field: Acceptance Criteria | created: 2026-06-19T16:38:29.028000+10:00 | by: Jasmijn Tsang ---
+TO: # Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+
+--- field: Link | created: 2026-06-19T16:37:30.755000+10:00 | by: Jasmijn Tsang ---
+TO: None
+
+--- field: Link | created: 2026-06-19T16:14:42.306000+10:00 | by: Jasmijn Tsang ---
+TO: This work item is cloned by SFCC-79
+
+--- field: Link | created: 2026-06-18T14:16:14.397000+10:00 | by: Jasmijn Tsang ---
+TO: This work item is cloned by SFCC-55
+
+--- field: Link | created: 2026-06-18T14:15:44.438000+10:00 | by: Jasmijn Tsang ---
+TO: None
+
+--- field: Acceptance Criteria | created: 2026-06-18T14:15:10.240000+10:00 | by: Jasmijn Tsang ---
+TO: # Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+# Given a shopper views the site on mobile, when any page loads, then the hamburger icon is displayed top-left in the header alongside Search and Bag icons top-right.
+# Given a shopper taps the hamburger icon, when the tap is registered, then the full-screen navigation drawer opens and the hamburger icon is replaced by a close (×) icon.
+# Given the navigation drawer is open, when a shopper taps the close (×) icon, then the drawer closes and the hamburger icon is restored.
+# Given the navigation drawer is open, when a shopper views it, then all top-level navigation categories are displayed vertically in the correct order per the linked Figma design.
+# Given the navigation drawer is open, when a shopper views it, then Saved and Account links are displayed below the main navigation categories.
+# {color:#ff5630}Given a shopper is on any storefront except AU, when they view the header, then the country/region selector is visible.{color}
+# {color:#ff5630}Given a shopper is on the AU storefront, when they view the header, then no country/region selector is displayed.{color}
+
+--- field: Acceptance Criteria | created: 2026-06-18T14:13:11.137000+10:00 | by: Jasmijn Tsang ---
+TO: # Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+# {color:#ff5630}Given a shopper is on any storefront except AU, when they view the header, then the country/region selector is visible.{color}
+# {color:#ff5630}Given a shopper is on the AU storefront, when they view the header, then no country/region selector is displayed.{color}
+
+--- field: Acceptance Criteria | created: 2026-06-18T14:12:58.642000+10:00 | by: Jasmijn Tsang ---
+TO: # Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+# Given a shopper is on any storefront except AU, when they view the header, then the country/region selector is visible.
+# {color:#ff5630}Given a shopper is on the AU storefront, when they view the header, then no country/region selector is displayed.{color}
+
+--- field: Acceptance Criteria | created: 2026-06-18T14:12:51.703000+10:00 | by: Jasmijn Tsang ---
+TO: # Given a shopper visits any page on the storefront, when the page loads, then the global header is displayed at the top of the page on both desktop and mobile.
+# Given a shopper scrolls down the page, when the page is scrolled, then the header remains sticky and visible at the top of the screen.
+# Given a shopper clicks the Zimmermann logo, when the click is registered, then the shopper is navigated to the homepage.
+# Given a shopper views the header, when the page loads, then all header icons (Search, Account, Bag, Wishlist, Bag) are visible per the linked Figma Design.
+# Given a shopper has items in their bag, when they view the header, then the Bag icon displays the correct running count of items.
+# Given a bag item is added or removed, when the bag is updated, then the Bag icon count updates without requiring a full page reload.
+# Given a shopper is on any storefront except AU, when they view the header, then the country/region selector is visible.
+# Given a shopper is on the AU storefront, when they view the header, then no country/region selector is displayed.
+
+--- field: Link | created: 2026-06-18T12:30:29.733000+10:00 | by: Jasmijn Tsang ---
+TO: None
+
+--- field: Link | created: 2026-06-18T12:16:17.741000+10:00 | by: Jasmijn Tsang ---
+TO: This work item is cloned by SFCC-53
+
+--- field: Dependency | created: 2026-06-18T12:06:48.039000+10:00 | by: Jasmijn Tsang ---
+TO: * Design team yet to design: *Country/region selector* — displayed in the header on all storefronts except AU; allows shoppers to switch their region and currency. Persists the selected region across sessions.
+
+######## SFCC-746 ########
+--- field: status | created: 2026-08-31T13:50:03.392000+10:00 | by: Isabel Chaloner ---
+TO: Ready For Review
+
+--- field: Dependency | created: 2026-08-31T13:49:55.548000+10:00 | by: Isabel Chaloner ---
+TO: [SFCC-28] (Base Category Setup) — top-level category taxonomy must be configured in BM before nav items can be wired up. [SFCC-28] is already deployed to UAT; confirm categories are stable before build begins.
+[SFCC-96]
+
+--- field: Acceptance Criteria | created: 2026-08-31T13:48:55.821000+10:00 | by: Isabel Chaloner ---
+TO: *Content Type*
+
+# Given the Contentful content type is created, when a Site Merchandiser opens the content model, then it includes nav item label, category ID, display order, and storefront scoping.
+# Given a Site Merchandiser updates and publishes the nav entries in Contentful, when the page loads after publishing, then the updated nav items and ordering are reflected across all storefronts without a code deployment.
+
+*Structure — Desktop*
+
+# Given a shopper visits any page on desktop, when the page loads, then the Navigation component renders with top-level nav items displayed left-aligned in the configured order.
+# Given a shopper visits any page on desktop, when the page loads, then Search Bar, Account, Wishlist and Bag icons are displayed right-aligned in the nav bar.
+# Given a shopper opens a mega menu on desktop, when the mega menu is active, then the four icons are replaced by a CLOSE X control on the right side of the nav
+# Given a shopper clicks CLOSE X on desktop, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Tablet*
+
+# Given a shopper visits any page on tablet, when the page loads, then the Navigation component renders with all top-level nav items and all four icons visible (Search, Account, Wishlist, Bag)
+# Given a shopper opens a mega menu on tablet, when the mega menu is active, then the four icons are replaced by CLOSE X on the right side of the nav.
+# Given a shopper clicks CLOSE X on tablet, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Mobile*
+
+# Given a shopper visits any page on mobile, when the page loads, then the Navigation component renders with a hamburger icon on the left and Search and Bag icons on the right. Top-level nav items are not visible.
+# Given a shopper opens the mobile drawer, when the drawer is active, then the hamburger icon is replaced by a close icon on the left. Search and Bag icons remain visible on the right.
+# Given a shopper taps the close icon on mobile, when activated, then the mobile drawer is dismissed and the hamburger icon is restored.
+
+*Category Taxonomy*
+
+# Given the Navigation component renders, when it reads top-level nav items, then items, their display order, and storefront visibility are managed in Contentful using a category ID to reference the SFCC category taxonomy in BM (SFCC-28) and are not hardcoded in the component.
+# Given a nav item corresponds to an SFCC category, when a shopper clicks it, then they are navigated to the corresponding category PLP.
+# Given the Navigation component fetches top-level nav items from Contentful, when it renders, then it uses the storefront-specific configuration ensuring nav items and their ordering reflect the correct regional setup.
+# Given a nav item is unpublished or not configured in Contentful for a specific storefront, when the Navigation component renders on that storefront, then the corresponding nav item does not appear in the headline nav.
+
+*Search*
+
+# Given a shopper clicks the search icon in the header, when the interaction occurs, then they are navigated to the search experience - [https://zimmermannworkboard.atlassian.net/browse/SFCC-113|https://zimmermannworkboard.atlassian.net/browse/SFCC-113|smart-link] 
+
+*Wishlist*
+
+# Given a shopper views the header and their wishlist is empty, when the component renders, then the wishlist icon displays in its outlined state.
+# Given a shopper views the header and their wishlist contains one or more items, when the component renders, then the wishlist icon displays in its filled state.
+
+*Cart*
+
+# Given a shopper views the header, when the cart contains items, then the cart icon displays a dynamic item count — full cart behaviour is covered in the dynamic cart header story - [https://zimmermannworkboard.atlassian.net/browse/SFCC-827|https://zimmermannworkboard.atlassian.net/browse/SFCC-827|smart-link] 
+
+*Accessibility*
+
+# Given a screen reader user is navigating by landmarks, when they reach the main navigation, then it is wrapped in a nav element with aria-label equal to Main navigation, distinguishing it from any other nav regions on the page.
+# Given a screen reader user navigates the headline nav, when they move through the top-level items, then each item is announced correctly and the number of items is communicated via a list structure.
+# Given a keyboard-only user is navigating the header on desktop or tablet, when they Tab through the headline nav, then each top-level item and icon receives focus in left-to-right order.
+# Given a screen reader user navigates to a top-level item that triggers a mega menu, when the item receives focus and the menu is closed, then the item is announced with aria-haspopup true and aria-expanded false.
+# Given a screen reader user activates a mega menu trigger, when the menu opens, then aria-expanded updates to true and the CLOSE X control is focusable and announced as Close menu.
+# Given a screen reader user navigates to Z.IMMERSE, when the item receives focus, then it is announced as a standard link with no aria-haspopup or aria-expanded attributes.
+# Given a keyboard-only user is on mobile with the drawer closed, when they Tab to the hamburger button, then it is announced as Open navigation menu with aria-expanded false.
+# Given a keyboard-only user opens the mobile drawer, when the drawer is active, then the close icon is announced as Close navigation menu with aria-expanded true.
+# Given a keyboard-only user is interacting with the nav on any device, when they interact with any element, then all interactions are achievable without a mouse.
+
+--- field: status | created: 2026-08-17T10:27:58.591000+10:00 | by: Isabel Chaloner ---
+TO: In Refinement
+
+--- field: Link | created: 2026-08-14T15:42:37.613000+10:00 | by: Isabel Chaloner ---
+TO: This work item relates to SFCC-747
+
+--- field: Acceptance Criteria | created: 2026-08-14T15:35:53.353000+10:00 | by: Isabel Chaloner ---
+TO: *Structure — Desktop*
+1. Given a shopper visits any page on desktop, when the page loads, then the Navigation component renders with top-level nav items fetched from the SFCC category taxonomy, displayed left-aligned in the order configured in Business Manager.
+2. Given a shopper visits any page on desktop, when the page loads, then Search Bar, Account, Wishlist and Bag icons are displayed right-aligned in the nav bar.
+3. Given no mega menu is open on desktop, when the nav renders, then the Search Bar and all three right-aligned icons (Account, Wishlist, Bag) are visible.
+4. Given a shopper opens a mega menu on desktop, when the mega menu is active, then the four icons are replaced by a CLOSE X control on the right side of the nav. - confirm this with design
+5. Given a shopper clicks CLOSE X on desktop, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Tablet*
+6. Given a shopper visits any page on tablet, when the page loads, then the Navigation component renders with all top-level nav items and all four icons visible (Search, Account, Wishlist, Bag)
+7. Given a shopper opens a mega menu on tablet, when the mega menu is active, then the four icons are replaced by CLOSE X on the right side of the nav.
+8. Given a shopper clicks CLOSE X on tablet, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Mobile*
+9. Given a shopper visits any page on mobile, when the page loads, then the Navigation component renders with a hamburger icon on the left and Search and Bag icons on the right. Top-level nav items are not visible.
+10. Given a shopper opens the mobile drawer, when the drawer is active, then the hamburger icon is replaced by a close icon on the left. Search and Bag icons remain visible on the right.
+11. Given a shopper taps the close icon on mobile, when activated, then the mobile drawer is dismissed and the hamburger icon is restored.
+
+*Category Taxonomy*
+12. Given the Navigation component renders, when it reads top-level nav items, then items and their display order are driven by the SFCC category taxonomy configured in Business Manager (SFCC-28) and are not hardcoded in the component.
+13. Given a nav item corresponds to an SFCC category, when a shopper clicks it, then they are navigated to the corresponding category PLP.
+14. Given Z.IMMERSE is configured as a direct link nav item, when a shopper clicks it, then they are navigated directly to the Z.IMMERSE landing page and no mega menu is triggered.
+15. Given the Navigation component fetches top-level categories, when it renders, then it reads from the storefront-specific catalogue assigned to the active storefront, ensuring nav items and their ordering reflect the correct regional configuration.
+16. Given a category is set to offline in Business Manager for a specific storefront, when the Navigation component renders on that storefront, then the corresponding nav item does not appear in the headline nav.
+{color:#ff5630}17. Given a shopper is on a category page or any sub-category page within a top-level category, when the Navigation component renders, then the corresponding top-level nav item is displayed in its active state (underlined) to indicate the shopper's current location. - confirm with design{color}
+
+*Scroll Behaviour*
+18. Given a shopper scrolls down the page, when the page scrolls, then the Navigation component remains fixed to the top of the viewport and is always visible across all page templates and storefronts.
+19. Given a shopper scrolls down the page, when scroll behaviour is triggered, then any animation or visual change to the nav is consistent across all page templates. Note: exact scroll animation is pending design confirmation via SFCC-93 and will be added as an addendum prior to build.
+
+*Accessibility*
+20. Given a screen reader user is navigating by landmarks, when they reach the main navigation, then it is wrapped in a nav element with aria-label equal to Main navigation, distinguishing it from any other nav regions on the page.
+21. Given a screen reader user navigates the headline nav, when they move through the top-level items, then each item is announced correctly and the number of items is communicated via a list structure.
+22. Given a keyboard-only user is navigating the header on desktop or tablet, when they Tab through the headline nav, then each top-level item and icon receives focus in left-to-right order.
+23. Given a screen reader user navigates to a top-level item that triggers a mega menu, when the item receives focus and the menu is closed, then the item is announced with aria-haspopup true and aria-expanded false.
+24. Given a screen reader user activates a mega menu trigger, when the menu opens, then aria-expanded updates to true and the CLOSE X control is focusable and announced as Close menu.
+25. Given a screen reader user navigates to Z.IMMERSE, when the item receives focus, then it is announced as a standard link with no aria-haspopup or aria-expanded attributes.
+26. Given a keyboard-only user is on mobile with the drawer closed, when they Tab to the hamburger button, then it is announced as Open navigation menu with aria-expanded false.
+27. Given a keyboard-only user opens the mobile drawer, when the drawer is active, then the close icon is announced as Close navigation menu with aria-expanded true.
+28. Given a keyboard-only user is interacting with the nav on any device, when they interact with any element, then all interactions are achievable without a mouse.
+
+--- field: Acceptance Criteria | created: 2026-08-14T15:27:57.286000+10:00 | by: Isabel Chaloner ---
+TO: *Structure — Desktop*
+1. Given a shopper visits any page on desktop, when the page loads, then the Navigation component renders with top-level nav items fetched from the SFCC category taxonomy, displayed left-aligned in the order configured in Business Manager.
+2. Given a shopper visits any page on desktop, when the page loads, then Search Bar, Account, Wishlist and Bag icons are displayed right-aligned in the nav bar.
+3. Given no mega menu is open on desktop, when the nav renders, then the Search Bar and all three right-aligned icons (Account, Wishlist, Bag) are visible.
+4. Given a shopper opens a mega menu on desktop, when the mega menu is active, then the four icons are replaced by a CLOSE X control on the right side of the nav. - confirm this with design
+5. Given a shopper clicks CLOSE X on desktop, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Tablet*
+6. Given a shopper visits any page on tablet, when the page loads, then the Navigation component renders with all top-level nav items and all four icons visible (Search, Account, Wishlist, Bag)
+7. Given a shopper opens a mega menu on tablet, when the mega menu is active, then the four icons are replaced by CLOSE X on the right side of the nav.
+8. Given a shopper clicks CLOSE X on tablet, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Mobile*
+9. Given a shopper visits any page on mobile, when the page loads, then the Navigation component renders with a hamburger icon on the left and Search and Bag icons on the right. Top-level nav items are not visible.
+10. Given a shopper opens the mobile drawer, when the drawer is active, then the hamburger icon is replaced by a close icon on the left. Search and Bag icons remain visible on the right.
+11. Given a shopper taps the close icon on mobile, when activated, then the mobile drawer is dismissed and the hamburger icon is restored.
+
+*Category Taxonomy*
+12. Given the Navigation component renders, when it reads top-level nav items, then items and their display order are driven by the SFCC category taxonomy configured in Business Manager (SFCC-28) and are not hardcoded in the component.
+13. Given a nav item corresponds to an SFCC category, when a shopper clicks it, then they are navigated to the corresponding category PLP.
+14. Given Z.IMMERSE is configured as a direct link nav item, when a shopper clicks it, then they are navigated directly to the Z.IMMERSE landing page and no mega menu is triggered.
+15. Given the Navigation component fetches top-level categories, when it renders, then it reads from the storefront-specific catalogue assigned to the active storefront, ensuring nav items and their ordering reflect the correct regional configuration.
+16. Given a category is set to offline in Business Manager for a specific storefront, when the Navigation component renders on that storefront, then the corresponding nav item does not appear in the headline nav.
+
+*Scroll Behaviour*
+17. Given a shopper scrolls down the page, when the page scrolls, then the Navigation component remains fixed to the top of the viewport and is always visible across all page templates and storefronts.
+18. Given a shopper scrolls down the page, when scroll behaviour is triggered, then any animation or visual change to the nav is consistent across all page templates. Note: exact scroll animation is pending design confirmation via SFCC-93 and will be added as an addendum prior to build.
+
+*Accessibility*
+19. Given a screen reader user is navigating by landmarks, when they reach the main navigation, then it is wrapped in a nav element with aria-label equal to Main navigation, distinguishing it from any other nav regions on the page.
+20. Given a screen reader user navigates the headline nav, when they move through the top-level items, then each item is announced correctly and the number of items is communicated via a list structure.
+21. Given a keyboard-only user is navigating the header on desktop or tablet, when they Tab through the headline nav, then each top-level item and icon receives focus in left-to-right order.
+22. Given a screen reader user navigates to a top-level item that triggers a mega menu, when the item receives focus and the menu is closed, then the item is announced with aria-haspopup true and aria-expanded false.
+23. Given a screen reader user activates a mega menu trigger, when the menu opens, then aria-expanded updates to true and the CLOSE X control is focusable and announced as Close menu.
+24. Given a screen reader user navigates to Z.IMMERSE, when the item receives focus, then it is announced as a standard link with no aria-haspopup or aria-expanded attributes.
+25. Given a keyboard-only user is on mobile with the drawer closed, when they Tab to the hamburger button, then it is announced as Open navigation menu with aria-expanded false.
+26. Given a keyboard-only user opens the mobile drawer, when the drawer is active, then the close icon is announced as Close navigation menu with aria-expanded true.
+27. Given a keyboard-only user is interacting with the nav on any device, when they interact with any element, then all interactions are achievable without a mouse.
+
+--- field: Acceptance Criteria | created: 2026-08-14T15:19:26.690000+10:00 | by: Isabel Chaloner ---
+TO: *Structure — Desktop*
+1. Given a shopper visits any page on desktop, when the page loads, then the Navigation component renders with top-level nav items fetched from the SFCC category taxonomy, displayed left-aligned in the order configured in Business Manager.
+2. Given a shopper visits any page on desktop, when the page loads, then Search Bar, Account, Wishlist and Bag icons are displayed right-aligned in the nav bar.
+3. Given no mega menu is open on desktop, when the nav renders, then the Search Bar and all three right-aligned icons (Account, Wishlist, Bag) are visible.
+{color:#ff5630}4. Given a shopper opens a mega menu on desktop, when the mega menu is active, then the four icons are replaced by a CLOSE X control on the right side of the nav. - confirm this with design{color}
+5. Given a shopper clicks CLOSE X on desktop, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Tablet*
+6. Given a shopper visits any page on tablet, when the page loads, then the Navigation component renders with all top-level nav items and all four icons visible (Search, Account, Wishlist, Bag)
+{color:#ff5630}7. Given a shopper opens a mega menu on tablet, when the mega menu is active, then the four icons are replaced by CLOSE X on the right side of the nav.{color}
+8. Given a shopper clicks CLOSE X on tablet, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+*Structure — Mobile*
+9. Given a shopper visits any page on mobile, when the page loads, then the Navigation component renders with a hamburger icon on the left and Search and Bag icons on the right. Top-level nav items are not visible.
+10. Given a shopper opens the mobile drawer, when the drawer is active, then the hamburger icon is replaced by a close icon on the left. Search and Bag icons remain visible on the right.
+11. Given a shopper taps the close icon on mobile, when activated, then the mobile drawer is dismissed and the hamburger icon is restored.
+
+*Category Taxonomy*
+12. Given the Navigation component renders, when it reads top-level nav items, then items and their display order are driven by the SFCC category taxonomy configured in Business Manager ([SFCC-28]) and are not hardcoded in the component.
+{color:#ff5630}13. Given a nav item corresponds to an SFCC category, when a shopper clicks it, then they are navigated to the corresponding category PLP.{color}
+14. Given Z.IMMERSE is configured as a direct link nav item, when a shopper clicks it, then they are navigated directly to the Z.IMMERSE landing page and no mega menu is triggered.
+
+{color:#ff5630}*Scroll Behaviour*{color}
+{color:#ff5630}15. Given a shopper scrolls down the page, when the page scrolls, then the Navigation component remains fixed to the top of the viewport and is always visible across all page templates and storefronts.{color}
+{color:#ff5630}16. Given a shopper scrolls down the page, when scroll behaviour is triggered, then any animation or visual change to the nav is consistent across all page templates. Note: exact scroll animation is pending design confirmation via {color}[SFCC-93]{color:#ff5630} and will be added as an addendum prior to build.{color}
+
+{color:#ff5630}*Accessibility*{color}
+{color:#ff5630}17. Given a screen reader user is navigating by landmarks, when they reach the main navigation, then it is wrapped in a nav element with aria-label equal to Main navigation, distinguishing it from any other nav regions on the page.{color}
+{color:#ff5630}18. Given a screen reader user navigates the headline nav, when they move through the top-level items, then each item is announced correctly and the number of items is communicated via a list structure.{color}
+{color:#ff5630}19. Given a keyboard-only user is navigating the header on desktop or tablet, when they Tab through the headline nav, then each top-level item and icon receives focus in left-to-right order.{color}
+{color:#ff5630}20. Given a screen reader user navigates to a top-level item that triggers a mega menu, when the item receives focus and the menu is closed, then the item is announced with aria-haspopup true and aria-expanded false.{color}
+{color:#ff5630}21. Given a screen reader user activates a mega menu trigger, when the menu opens, then aria-expanded updates to true and the CLOSE X control is focusable and announced as Close menu.{color}
+{color:#ff5630}22. Given a screen reader user navigates to Z.IMMERSE, when the item receives focus, then it is announced as a standard link with no aria-haspopup or aria-expanded attributes.{color}
+{color:#ff5630}23. Given a keyboard-only user is on mobile with the drawer closed, when they Tab to the hamburger button, then it is announced as Open navigation menu with aria-expanded false.{color}
+{color:#ff5630}24. Given a keyboard-only user opens the mobile drawer, when the drawer is active, then the close icon is announced as Close navigation menu with aria-expanded true.{color}
+{color:#ff5630}25. Given a keyboard-only user is interacting with the nav on any device, when they interact with any element, then all interactions are achievable without a mouse.{color}
+
+--- field: Link | created: 2026-08-14T15:03:26.095000+10:00 | by: Isabel Chaloner ---
+TO: This work item relates to SFCC-93
+
+--- field: Link | created: 2026-08-14T15:03:22.093000+10:00 | by: Isabel Chaloner ---
+TO: This work item blocks SFCC-97
+
+--- field: Link | created: 2026-08-14T15:03:17.723000+10:00 | by: Isabel Chaloner ---
+TO: This work item blocks SFCC-96
+
+--- field: Link | created: 2026-08-14T15:03:13.106000+10:00 | by: Isabel Chaloner ---
+TO: This work item relates to SFCC-52
+
+--- field: Acceptance Criteria | created: 2026-08-14T15:02:30.209000+10:00 | by: Isabel Chaloner ---
+TO: Structure — Desktop
+1. Given a shopper visits any page on desktop, when the page loads, then the Navigation component renders with top-level nav items fetched from the SFCC category taxonomy, displayed left-aligned in the order configured in Business Manager.
+2. Given a shopper visits any page on desktop, when the page loads, then Search, Account, Wishlist and Bag icons are displayed right-aligned in the nav bar.
+3. Given no mega menu is open on desktop, when the nav renders, then the four right-aligned icons (Search, Account, Wishlist, Bag) are visible.
+4. Given a shopper opens a mega menu on desktop, when the mega menu is active, then the four icons are replaced by a CLOSE X control on the right side of the nav.
+5. Given a shopper clicks CLOSE X on desktop, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+Structure — Tablet
+6. Given a shopper visits any page on tablet, when the page loads, then the Navigation component renders with all top-level nav items and all four icons visible, consistent with the desktop layout.
+7. Given a shopper opens a mega menu on tablet, when the mega menu is active, then the four icons are replaced by CLOSE X on the right side of the nav.
+8. Given a shopper clicks CLOSE X on tablet, when the control is activated, then the mega menu is dismissed and the four icons are restored.
+
+Structure — Mobile
+9. Given a shopper visits any page on mobile, when the page loads, then the Navigation component renders with a hamburger icon on the left and Search and Bag icons on the right. Top-level nav items are not visible.
+10. Given a shopper opens the mobile drawer, when the drawer is active, then the hamburger icon is replaced by a close icon on the left. Search and Bag icons remain visible on the right.
+11. Given a shopper taps the close icon on mobile, when activated, then the mobile drawer is dismissed and the hamburger icon is restored.
+
+Category Taxonomy
+12. Given the Navigation component renders, when it reads top-level nav items, then items and their display order are driven by the SFCC category taxonomy configured in Business Manager (SFCC-28) and are not hardcoded in the component.
+13. Given a nav item corresponds to an SFCC category, when a shopper clicks it, then they are navigated to the corresponding category PLP.
+14. Given Z.IMMERSE is configured as a direct link nav item, when a shopper clicks it, then they are navigated directly to the Z.IMMERSE landing page and no mega menu is triggered.
+
+Scroll Behaviour
+15. Given a shopper scrolls down the page, when the page scrolls, then the Navigation component remains fixed to the top of the viewport and is always visible across all page templates and storefronts.
+16. Given a shopper scrolls down the page, when scroll behaviour is triggered, then any animation or visual change to the nav is consistent across all page templates. Note: exact scroll animation is pending design confirmation via SFCC-93 and will be added as an addendum prior to build.
+
+Accessibility
+17. Given a screen reader user is navigating by landmarks, when they reach the main navigation, then it is wrapped in a nav element with aria-label equal to Main navigation, distinguishing it from any other nav regions on the page.
+18. Given a screen reader user navigates the headline nav, when they move through the top-level items, then each item is announced correctly and the number of items is communicated via a list structure.
+19. Given a keyboard-only user is navigating the header on desktop or tablet, when they Tab through the headline nav, then each top-level item and icon receives focus in left-to-right order.
+20. Given a screen reader user navigates to a top-level item that triggers a mega menu, when the item receives focus and the menu is closed, then the item is announced with aria-haspopup true and aria-expanded false.
+21. Given a screen reader user activates a mega menu trigger, when the menu opens, then aria-expanded updates to true and the CLOSE X control is focusable and announced as Close menu.
+22. Given a screen reader user navigates to Z.IMMERSE, when the item receives focus, then it is announced as a standard link with no aria-haspopup or aria-expanded attributes.
+23. Given a keyboard-only user is on mobile with the drawer closed, when they Tab to the hamburger button, then it is announced as Open navigation menu with aria-expanded false.
+24. Given a keyboard-only user opens the mobile drawer, when the drawer is active, then the close icon is announced as Close navigation menu with aria-expanded true.
+25. Given a keyboard-only user is interacting with the nav on any device, when they interact with any element, then all interactions are achievable without a mouse.
+
+--- field: Dependency | created: 2026-08-14T15:02:30.209000+10:00 | by: Isabel Chaloner ---
+TO: SFCC-28 (Base Category Setup) — top-level category taxonomy must be configured in BM before nav items can be wired up. SFCC-28 is already deployed to UAT; confirm categories are stable before build begins.
+SFCC-96 (Desktop Mega Menu) and SFCC-97 (Mobile Hamburger and Drill-Down) — Navigation component must be in place before these stories can be built on top of it.
+SFCC-93 (Logo Scroll Behaviour) — confirm whether nav and logo scroll behaviour are tied to the same motion design decision. AC16 is blocked until confirmed.
+@Jersey Perez Jr: This story supersedes the navigation portion of SFCC-52 — confirm what has already been built to avoid rework before picking up.
+
+Open Items:
+@Design team: Confirm exact scroll animation behaviour for the nav on scroll — does it stick only, or does it also shrink or change appearance? Consistent across all page templates? (AC16).
+@Zimmermann / Business: Confirm whether a SALE nav item is required. If so, does it appear permanently or only during sale periods? If conditional, what drives its visibility — BM configuration, Contentful, or a feature flag? SFCC-28 may need to be updated accordingly.
+@Zimmermann / Business: Confirm whether Back in Boutique should appear as a top-level headline nav item, consistent with how it is referenced in SFCC-96 and SFCC-97. If so, confirm whether it triggers a mega menu or links directly to a page.
+@Design team / Jersey Perez Jr: Confirm Z.IMMERSE link destination — is this an SFCC-managed page or a Contentful landing page?
+@Design team / Jersey Perez Jr: Confirm Account icon behaviour when shopper is unauthenticated — to be resolved in the Account feature story.
+

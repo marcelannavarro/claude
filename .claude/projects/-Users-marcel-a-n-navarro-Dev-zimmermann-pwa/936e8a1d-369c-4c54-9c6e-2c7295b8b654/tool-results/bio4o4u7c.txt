@@ -1,0 +1,1041 @@
+====================================================================================================
+SESSION 520a7e7f
+--- L7 [2026-09-01T08:08:53] hey claude, ready to work?
+--- L17 [2026-09-01T08:09:00] Base directory for this skill: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Curr
+--- L58 [2026-09-01T08:12:36] before anything, let's make sure to have all our active local branches up to date with remote, and also make sure we have all branches that are in remote but not yet locally
+--- L119 [2026-09-01T08:18:04] <command-message>zimmerMANNReview</command-message>
+<command-name>/zimmerMANNReview</command-name>
+<command-args>PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40003224-106376&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13077&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-10775&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40002339-21732&m=dev
+* https://www.fi
+--- L120 [2026-09-01T08:18:04] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNReview
+
+Review of a colleague's work. Same architecture as the build chain — ground truth, a gated audit,
+then present and stop — tailored to a PR you did not write.
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**The thing that makes it work:** you hold the ground truth and the adjudication, and delegate only
+the reading. Reviewers are cheap and fallible; measurements are expensive and authoritative. Keep
+those on opposite sides of the line.
+
+**Input:** `PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWm
+--- L207 [2026-09-01T08:28:56] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/figma/2.2.96/skills/figma-design-to-code
+
+# Implement a Figma Design as Code (Design → Code)
+
+Use this skill to turn a Figma design into code in a target codebase. This is the **read-FROM-Figma** direction: pull design context out of Figma with `get_design_context`, then adapt it into the project's real stack. For the reverse direction — building or updating a design *in* Figma from code — use [figma-generate-design](../figma-generate-design/SKILL.md) instead.
+
+This skill owns the **workflow** for design-to-code. Parameter mechanics (nodeId / fileKey / branchKey extraction, URL parsing, `format`/`query` options, response shape) live on the `get_design_context` tool description itself — follow them there.
+
+**Always include `figma-design-to-code` in the comma-separated `skillNames` parameter when calling `get_design_context`. If this skill was loaded via an MCP resource, you MUST prefix the name with `resource:` (e.g. `resource:figma-design-to-code`).** This is a logging parameter used to track skill usage — it does not affect execution.
+
+## Direction and Scope
+
+- You MUST use this skill for design → code: implementing, translating, or porting a Figma node into code.
+- You MUST NOT use this skill to write to Figma.
+
+## Workflow
+
+### 1. Call get_design_context first
+
+- You MUST call `get_design_context` on the target node before writing any code. It is your primary tool — a single call returns reference code, a screenshot, and contextual hints.
+- You MUST NOT reach for `get_metadata` or `get_screenshot` as a substitute. Use them only to orient (e.g. picking a node) or to validate, not in place of `get_design_context`.
+
+### 2. Treat the output as a reference, not final code
+
+- The returned code is React + Tailwind enriched with hints. You MUST treat it as a REFERENCE, not as final code to paste verbatim.
+- You MUST adapt it to the target project's language, framework, 
+--- L280 [2026-09-01T08:36:40] [Your previous response had no visible output. Please continue and produce a user-visible response.]
+--- L284 [2026-09-01T08:41:02] <task-notification>
+<task-id>a3e6243058b6b5128</task-id>
+<tool-use-id>toolu_0141kuh4Pma3gjtV37ix78KG</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a3e6243058b6b5128.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 scope verdict" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Scope Verdict: BLOCKED
+
+A Tier 1 hard stop applies before the under/over-scope analysis even matters for merge purposes: **this PR modifies six Tier 1 files across two separate frozen-file categories.** I'm reporting the full requested analysis below, but the loop should stop here per the scope-guard rubric ("No Tier 1 file was touched... this is a hard stop") regardless of what follows.
+
+### Tier 1 violations (hard stop)
+
+**Design System foundation** (`.claude/rules/frozenFiles.md`, Owner: UI Designer; `AGENTS.md` Hard Rule #3: "Never modify `overrides/app/theme/foundation/`"):
+- `overrides/app/theme/foundation/gridSystem.ts` — real value change, not a refactor: `containerPadding` goes from `{base:'30px', md:'24px', xl:'0'}` to `{base: spacing['2xl'], md: spacing['2xl'], xl: spacing['3xl']}` (32px/32px/40px), plus a brand-new `maxWidth: 'none'` token concept added.
+- `overrides/app/theme/foundation/zimmTokens.ts` — adds `--zimm-grid-max-width` derived from the above.
+
+**Test &amp; Tooling config** (`frozenFiles.md`, Owner: Integration/SI Partner; `AGENTS.md` Hard Rule #8):
+- `vitest.config.ts` (root) — new resolve alias for `@salesforce/commerce-sdk-react`.
+- `.storybook/main.js` — new webpack alias for `@tanstack/react-query`.
+- `.storybook/preview.tsx` — new global `window.__CONFIG__` shim + a11y-exclude refactor.
+- `.storybook/a11yExcludes.ts` — brand new file inside the frozen `.storybook
+--- L320 [2026-09-01T08:48:12] <task-notification>
+<task-id>acd97184d91c01b33</task-id>
+<tool-use-id>toolu_01JzDFdRStvjQ3nrK5hLNKjf</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/acd97184d91c01b33.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 multi-angle code audit" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># PR #65 Review — Global Header Rebuild (SFCC-52/746/747/96/97)
+
+I worked this as a single reviewer across the angles below (no Task/sub-agent tool was available in this environment — only `Read`/`Bash` — so I ran each angle as a dedicated, sequential deep-dive against the two worktrees and the base commit, rather than literally spawning parallel agents). I did not re-run `tsc`/`lint`/`test`/`audit:tokens` — your numbers are treated as ground truth throughout.
+
+---
+
+## Angle 1 — Correctness and regression
+
+**🔴 Dead responsive-image pipeline — mega-menu/drawer promo images ship unoptimized. CONFIRMED, ONE-OFF.**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage` — a fully-built, heavily-documented AVIF/WebP responsive-srcset builder whose own doc comment says it's "used for the header mega-menu's promo images (desktop/tablet: `megaMenuContent/index.tsx`, mobile drawer L2: `drawer-menu/index.tsx`)". I grepped every consumer:
+```
+grep -rln "buildContentfulResponsiveImage|ContentfulResponsiveImage|avifSrcSet|webpSrcSet" overrides/app/components
+→ (no results)
+```
+Both actual call sites render a plain, unoptimized image instead:
+- `overrides/app/components/list-menu/megaMenuContent/index.tsx:152`: `&lt;Image src={promoImage.src} alt={promoImage.alt} loading="lazy" __css={styles.promoImage} /&gt;`
+- `overrides/app/components/drawer-men
+--- L329 [2026-09-01T09:06:01] <task-notification>
+<task-id>a13d04db804de17b6</task-id>
+<tool-use-id>toolu_014vm9XfSQaVYM2AyYS59mh8</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a13d04db804de17b6.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify PR #65 findings batch" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Verification results — PR #65, 15 claims
+
+Methodology: read every cited file directly in the HEAD worktree, diffed against BASE (`269d5d4`) for every "new/changed" assertion, grepped the full `overrides/` tree (and, where the mechanism required it, the base `node_modules/@salesforce/retail-react-app` tree) rather than trusting the cited scope, and checked git history/blame on the specific lines for claims 2 and 15. All line numbers below are what I read directly, not copied from the claims.
+
+---
+
+**1. Dead responsive-image pipeline — CONFIRMED**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage`/`avifSrcSet`/`webpSrcSet`. Grepping all of `overrides/app/components`, `overrides/app/utils`, `overrides/app/pages` finds zero consumers outside the function's own file and its own test (`contentfulImage.test.ts`). `megaMenuContent/index.tsx:152` and `drawer-menu/index.tsx:223` both render `&lt;Image src={promoImage.src} ... /&gt;`, and `resolveImageEntry.ts:29` shows `promoImage.src` is literally `asset.fields.file.url` — the raw Contentful asset URL with no query string at all. The pipeline is fully dead code today.
+
+**2. Mega-menu stuck-open edge case — CONFIRMED**, with an important refinement.
+Traced the full path: `useMegaMenuMotion.ts`'s `CLOSE` case for `phase === 'expanding'` (lines 65-67) jumps straight to `'collapsing'`. In `
+--- L338 [2026-09-01T12:27:07] &lt;&lt;autonomous-loop-dynamic&gt;&gt;
+--- L342 [2026-09-01T12:33:48] for this: "1. Tab order — logo should be first, but it's actually last.
+Picture using the site with a keyboard only, no mouse (this is how screen-reader users and many people with motor disabilities browse). You'd expect hitting Tab once to land on the logo, since it's the "take me home" element and the ticket explicitly requires it be first. Instead, right now, Tab takes you through the hamburger button, then all the nav links (New, Clothing, Accessories...), then Search, Account, Wishlist, and Bag — and only after all of that do you reach the logo. The PR's own test literally checks this and expects it: it does Tab, Tab, Tab and only then expects the logo to have focus.
+
+Why did this happen despite the layout looking correct? The logo genuinely does sit visually below the nav bar (that part's right, and required). But browsers tab through elements in the order they appear in the code, not the order they appear on screen — and in the code, the developer wrote the nav bar first and the logo second. Nobody added the (fairly standard) trick to make it appear later but tab first." nav first it correct behavior
+
+for this: "2. Accessible name — screen readers announce "Logo," not "Zimmermann."
+Screen readers read out a label for every button so a blind user knows what it does. The ticket says this one should announce "Zimmermann, go to homepage." There are actually two labels stacked here: an inner one on the logo graphic itself saying "Zimmermann," and an outer one on the button wrapping it saying just "Logo." When a button has its own label, screen readers use only that one and ignore anything inside it — so the "Zimmermann" label never gets heard at all. A screen reader user just hears "Logo, button."
+
+Both are small code fixes once someone's aware of them, but as written they don't match what the ticket asks for." agree, it should not read "logo"
+
+for this: "The responsive.tsx change, plain terms:
+
+There's one shared helper component used all over the site whose only
+--- L354 [2026-09-01T12:42:59] there was a decision for there to be a different footer breakpoint which states "When container reaches 946px, wrap site map columns underneath the subscribe section" - how is this related to this flagged item: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is 
+--- L363 [2026-09-01T12:45:20] what does this mean for the scoped items in this PR: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is what satisfying AC10 literally would require) is the kind of DOM/visual mismatch that's normally flagged as its own accessibility smell.
+But the Jira ticket (
+--- L368 [2026-09-01T12:51:22] is there any docs/comments to why this change was shipped in this PR?
+--- L381 [2026-09-01T12:54:14] so it's a valid fix, but it technically out of scope to this PR?
+--- L386 [2026-09-01T12:54:41] i approve of it, it's good here
+--- L391 [2026-09-01T13:20:42] The tab-order call (AC10). You said nav-first is correct behavior — I want to make sure I capture that as a deliberate override of the written AC, not just quietly drop the finding. Is that a "the AC is outdated, get it corrected in Jira" situation, or do you see it differently? -> on keyboard nav, via screenreader, it's not standard to have the logo as the first touch-point, on what ticket and what AC is this being claimed?
+--- L395 [2026-09-01T14:05:45] what is the standard vs. what does the AC say? ELI5
+--- L400 [2026-09-01T14:09:21] the AC is wrong here, accessibility standard says otherwise against the AC so we flag it in the PR comment so it could be raised to the JIRA ticket and the BA
+--- L405 [2026-09-01T14:10:57] show me the full findings from this review in an ordered table with clear explanations of what each item is/are in ELI5 for understanding
+--- L410 [2026-09-01T14:16:46] a lot of these are bold claims, but i haven't actually done hands-on visual testing, let me do that first by comparing the output to figma then i'll report any discrepancies
+--- L414 [2026-09-01T15:07:27] this is a tough one, this PR has multiple user stories in it, therefore there is so much to check, verify, and validate, how can i have you to help me run - especially visual checks against figma spec?
+
+the live MRT env for this PR is at https://zimmermann-pr-f52-3f524845.sfdc-8tgtt5-ecom1.exp-delivery.com/
+
+i need an in-depth audit of this, i attempted to check manually and i think i saw a lot of discrepancies but i'm quite unsure of them
+
+can you use browser and dev tools?
+
+can you run checks across all the UI this PR builds/touches and check it across all viewports as well?
+
+styles, sizings, spacings, tokens, matchings, full coverage BUT no overthinking and creating, testing, and failing unreachable cases
+
+i need to understand the level of reliability you could provide me on this task
+--- L577 [2026-09-01T15:22:28] keep going, run the full coverage
+--- L664 [2026-09-01T15:33:10] what are the things that we need to look into further?
+--- L669 [2026-09-01T15:35:57] show me the full findings, in an organized table, ELI5, focused on my grasp into the findings of our review
+--- L674 [2026-09-01T15:44:03] let's do a deep dive one by one, first i need to learn what the issue being flagged is, next, if possible, i recreate it or look into it myself to confirm
+--- L679 [2026-09-01T15:45:53] button label is "Logo", svg aria-label is "Zimmermann" - which gets read?
+--- L684 [2026-09-01T15:46:34] then what needs to change here?
+--- L689 [2026-09-01T15:48:31] yes, walk me through #2
+--- L694 [2026-09-01T15:54:56] is this it? : "<nav class="css-1bu4q9a"><div class="css-259i0c"></div><div class="css-ozv6cb"><nav id="list-menu" aria-label="Main navigation" aria-busy="false"><div class="css-s92xpi"><div class="chakra-stack css-7fmfa3"><div class="css-0"><div class="css-0"><a id="popover-trigger-:R18qladakt5enlH1:" href="/new" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover-content-:R18qladakt5enlH1:" class="css-1h1rylb"><span>New</span></a><div style="visibility:hidden;position:absolute;min-width:max-content;inset:0 auto auto 0" class="chakra-popover__popper css-sq7msb"><section data-testid="popover-menu" aria-label="New menu" style="transform-origin:var(--popper-transform-origin);opacity:0;visibility:hidden;transform:scale(0.95) translateZ(0)" id="popover-content-:R18qladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R18qladakt5enlH1:"><div id="popover-body-:R18qladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-1pxdbm0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1c7u9vh"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/dresses" tabindex="-1" class="css-gsn9tp"><span>Dresses</span></a><a href="/new-arrivals/bags" tabindex="-1" class="css-gsn9tp"><span>Bags</span></a><a href="/new-arrivals/tailoring" tabindex="-1" class="css-gsn9tp"><span>Tailoring</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/fall-2026" tabindex="-1" class="css-gsn9tp"><span>Fall 2026</span></a><a href="/new-arrivals" tabindex="-1" class="css-gsn9tp"><span>View all</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/19qCP4SqEAkXZ5Dl1GY5ey/ec49aaf9c22c9ed857f223220846f0ba/header-nav-new-promo.png" loading="lazy" class="chakra-image css-6
+--- L699 [2026-09-01T15:55:52] how does this tab issue get resolved then?
+--- L713 [2026-09-01T15:56:59] go for 3
+--- L718 [2026-09-01T16:03:45] it's a bit unclear, ELI5
+--- L723 [2026-09-01T16:09:03] i recreated something totally different, i hovered across the nav-items and hit escape until i arrived at a blank mega menu, with close X, and this one doesn't self-heal so the mega menu stays blank even on attempts to hover other nav links and i was also able to reproduce this actual reported bug of no mega menu but close X showing and a nav link with underline (active/hovered?)
+--- L760 [2026-09-01T16:13:38] update the finding in the review notes and then let's talk about these bugs further
+--- L771 [2026-09-01T16:25:24] these motion/timing related bugs, what is causing them? and how do we even fix these?
+--- L792 [2026-09-01T16:28:26] walk me through #4
+--- L801 [2026-09-01T16:31:15] isn't it possible that it's working like this because the images aren't in contentful yet?
+--- L814 [2026-09-01T16:34:28] tell me about in, ELI5
+--- L819 [2026-09-01T16:37:42] what should be happening then?
+--- L828 [2026-09-01T16:38:48] walk me through #5
+--- L836 [2026-09-01T16:43:39] why is this wrong? what's wrong with it? explain further
+--- L841 [2026-09-01T16:51:32] so what needs to be done then?
+--- L845 [2026-09-01T16:53:40] what's the difference of importing from salesforce vs. direct?
+--- L851 [2026-09-01T16:59:11] got it, what's next? 6?
+--- L856 [2026-09-01T17:04:54] At tablet width (1024px): click somewhere neutral first, then press Tab repeatedly from the top of the page. You'll pass the nav items (which do show a ring — good baseline to compare against), then reach the search icon button. Does a ring appear on it? YES
+At mobile width (402px): same thing — Tab through, check the hamburger, then later the search icon and bag icon. YES
+Account/profile icon — reachable via Tab at both tablet and desktop widths, a few stops after search. YES
+For the drawer's close icon specifically — open the hamburger drawer, drill into any category (so the back/close icons are on screen), then Tab to it. CLOSE, SEARCH, AND BAG NO TAB-ABLE ON THE HAMBURGER MENU
+--- L958 [2026-09-01T17:15:15] next, #7
+--- L1011 [2026-09-01T17:22:13] how to check myself?
+--- L1018 [2026-09-01T17:24:20] what does this confirm about the size? "<section data-testid="popover-menu" aria-label="Clothing menu" style="transform-origin: var(--popper-transform-origin); opacity: 1; visibility: visible; transform: none;" id="popover-content-:R19aladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R19aladakt5enlH1:"><div id="popover-body-:R19aladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-xcn8j0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1o1wrt5"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing/dresses" class="css-gsn9tp"><span>Dresses</span></a><a href="/clothing/tops" class="css-gsn9tp"><span>Tops</span></a><a href="/clothing/shorts-pants" class="css-gsn9tp"><span>Shorts &amp; Pants</span></a><a href="/clothing/denim" class="css-gsn9tp"><span>Denim</span></a><a href="/clothing/skirts" class="css-gsn9tp"><span>Skirts</span></a><a href="/clothing/knitwear" class="css-gsn9tp"><span>Knitwear</span></a><a href="/clothing/jackets-coats" class="css-gsn9tp"><span>Jackets &amp; Coats</span></a><a href="/clothing/jumpsuits-playsuits" class="css-gsn9tp"><span>Jumpsuits &amp; Playsuits</span></a><a href="/clothing/tailoring" class="css-gsn9tp"><span>Tailoring</span></a><a href="/clothing/swimwear" class="css-gsn9tp"><span>Swimwear</span></a><a href="/clothing/kids" class="css-gsn9tp"><span>Kids</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing" class="css-gsn9tp"><span>All Clothing</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/3RnYKqaXjyK0hieK7AjfSw/51a5ac06e23db3f70bc7e8653be70b67/header-nav-clothing-promo.png" loading="lazy" class="chakra-image css-6jrdpz"></div></div></div></div></div></div></section>"
+--- L1030 [2026-09-01T17:25:03] 754, correct
+--- L1040 [2026-09-01T17:28:20] keep going through 8-11
+--- L1047 [2026-09-01T17:31:43] let's talk verdict now
+--- L1064 [2026-09-02T00:43:53] well, as FED lead we should test it
+--- L1177 [2026-09-02T01:08:14] coverage is good, what matters is we've tested on the affected files
+--- L1185 [2026-09-02T01:10:15] what's our status?
+--- L1192 [2026-09-02T01:10:51] what's this? gridSystem.ts - ELI5?
+--- L1194 [2026-09-02T01:10:52] [Request interrupted by user]
+====================================================================================================
+SESSION 77f65ecc
+--- L7 [2026-09-01T08:08:53] hey claude, ready to work?
+--- L17 [2026-09-01T08:09:00] Base directory for this skill: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Curr
+--- L58 [2026-09-01T08:12:36] before anything, let's make sure to have all our active local branches up to date with remote, and also make sure we have all branches that are in remote but not yet locally
+--- L119 [2026-09-01T08:18:04] <command-message>zimmerMANNReview</command-message>
+<command-name>/zimmerMANNReview</command-name>
+<command-args>PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40003224-106376&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13077&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-10775&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40002339-21732&m=dev
+* https://www.fi
+--- L120 [2026-09-01T08:18:04] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNReview
+
+Review of a colleague's work. Same architecture as the build chain — ground truth, a gated audit,
+then present and stop — tailored to a PR you did not write.
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**The thing that makes it work:** you hold the ground truth and the adjudication, and delegate only
+the reading. Reviewers are cheap and fallible; measurements are expensive and authoritative. Keep
+those on opposite sides of the line.
+
+**Input:** `PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWm
+--- L207 [2026-09-01T08:28:56] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/figma/2.2.96/skills/figma-design-to-code
+
+# Implement a Figma Design as Code (Design → Code)
+
+Use this skill to turn a Figma design into code in a target codebase. This is the **read-FROM-Figma** direction: pull design context out of Figma with `get_design_context`, then adapt it into the project's real stack. For the reverse direction — building or updating a design *in* Figma from code — use [figma-generate-design](../figma-generate-design/SKILL.md) instead.
+
+This skill owns the **workflow** for design-to-code. Parameter mechanics (nodeId / fileKey / branchKey extraction, URL parsing, `format`/`query` options, response shape) live on the `get_design_context` tool description itself — follow them there.
+
+**Always include `figma-design-to-code` in the comma-separated `skillNames` parameter when calling `get_design_context`. If this skill was loaded via an MCP resource, you MUST prefix the name with `resource:` (e.g. `resource:figma-design-to-code`).** This is a logging parameter used to track skill usage — it does not affect execution.
+
+## Direction and Scope
+
+- You MUST use this skill for design → code: implementing, translating, or porting a Figma node into code.
+- You MUST NOT use this skill to write to Figma.
+
+## Workflow
+
+### 1. Call get_design_context first
+
+- You MUST call `get_design_context` on the target node before writing any code. It is your primary tool — a single call returns reference code, a screenshot, and contextual hints.
+- You MUST NOT reach for `get_metadata` or `get_screenshot` as a substitute. Use them only to orient (e.g. picking a node) or to validate, not in place of `get_design_context`.
+
+### 2. Treat the output as a reference, not final code
+
+- The returned code is React + Tailwind enriched with hints. You MUST treat it as a REFERENCE, not as final code to paste verbatim.
+- You MUST adapt it to the target project's language, framework, 
+--- L280 [2026-09-01T08:36:40] [Your previous response had no visible output. Please continue and produce a user-visible response.]
+--- L284 [2026-09-01T08:41:02] <task-notification>
+<task-id>a3e6243058b6b5128</task-id>
+<tool-use-id>toolu_0141kuh4Pma3gjtV37ix78KG</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a3e6243058b6b5128.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 scope verdict" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Scope Verdict: BLOCKED
+
+A Tier 1 hard stop applies before the under/over-scope analysis even matters for merge purposes: **this PR modifies six Tier 1 files across two separate frozen-file categories.** I'm reporting the full requested analysis below, but the loop should stop here per the scope-guard rubric ("No Tier 1 file was touched... this is a hard stop") regardless of what follows.
+
+### Tier 1 violations (hard stop)
+
+**Design System foundation** (`.claude/rules/frozenFiles.md`, Owner: UI Designer; `AGENTS.md` Hard Rule #3: "Never modify `overrides/app/theme/foundation/`"):
+- `overrides/app/theme/foundation/gridSystem.ts` — real value change, not a refactor: `containerPadding` goes from `{base:'30px', md:'24px', xl:'0'}` to `{base: spacing['2xl'], md: spacing['2xl'], xl: spacing['3xl']}` (32px/32px/40px), plus a brand-new `maxWidth: 'none'` token concept added.
+- `overrides/app/theme/foundation/zimmTokens.ts` — adds `--zimm-grid-max-width` derived from the above.
+
+**Test &amp; Tooling config** (`frozenFiles.md`, Owner: Integration/SI Partner; `AGENTS.md` Hard Rule #8):
+- `vitest.config.ts` (root) — new resolve alias for `@salesforce/commerce-sdk-react`.
+- `.storybook/main.js` — new webpack alias for `@tanstack/react-query`.
+- `.storybook/preview.tsx` — new global `window.__CONFIG__` shim + a11y-exclude refactor.
+- `.storybook/a11yExcludes.ts` — brand new file inside the frozen `.storybook
+--- L320 [2026-09-01T08:48:12] <task-notification>
+<task-id>acd97184d91c01b33</task-id>
+<tool-use-id>toolu_01JzDFdRStvjQ3nrK5hLNKjf</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/acd97184d91c01b33.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 multi-angle code audit" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># PR #65 Review — Global Header Rebuild (SFCC-52/746/747/96/97)
+
+I worked this as a single reviewer across the angles below (no Task/sub-agent tool was available in this environment — only `Read`/`Bash` — so I ran each angle as a dedicated, sequential deep-dive against the two worktrees and the base commit, rather than literally spawning parallel agents). I did not re-run `tsc`/`lint`/`test`/`audit:tokens` — your numbers are treated as ground truth throughout.
+
+---
+
+## Angle 1 — Correctness and regression
+
+**🔴 Dead responsive-image pipeline — mega-menu/drawer promo images ship unoptimized. CONFIRMED, ONE-OFF.**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage` — a fully-built, heavily-documented AVIF/WebP responsive-srcset builder whose own doc comment says it's "used for the header mega-menu's promo images (desktop/tablet: `megaMenuContent/index.tsx`, mobile drawer L2: `drawer-menu/index.tsx`)". I grepped every consumer:
+```
+grep -rln "buildContentfulResponsiveImage|ContentfulResponsiveImage|avifSrcSet|webpSrcSet" overrides/app/components
+→ (no results)
+```
+Both actual call sites render a plain, unoptimized image instead:
+- `overrides/app/components/list-menu/megaMenuContent/index.tsx:152`: `&lt;Image src={promoImage.src} alt={promoImage.alt} loading="lazy" __css={styles.promoImage} /&gt;`
+- `overrides/app/components/drawer-men
+--- L329 [2026-09-01T09:06:01] <task-notification>
+<task-id>a13d04db804de17b6</task-id>
+<tool-use-id>toolu_014vm9XfSQaVYM2AyYS59mh8</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a13d04db804de17b6.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify PR #65 findings batch" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Verification results — PR #65, 15 claims
+
+Methodology: read every cited file directly in the HEAD worktree, diffed against BASE (`269d5d4`) for every "new/changed" assertion, grepped the full `overrides/` tree (and, where the mechanism required it, the base `node_modules/@salesforce/retail-react-app` tree) rather than trusting the cited scope, and checked git history/blame on the specific lines for claims 2 and 15. All line numbers below are what I read directly, not copied from the claims.
+
+---
+
+**1. Dead responsive-image pipeline — CONFIRMED**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage`/`avifSrcSet`/`webpSrcSet`. Grepping all of `overrides/app/components`, `overrides/app/utils`, `overrides/app/pages` finds zero consumers outside the function's own file and its own test (`contentfulImage.test.ts`). `megaMenuContent/index.tsx:152` and `drawer-menu/index.tsx:223` both render `&lt;Image src={promoImage.src} ... /&gt;`, and `resolveImageEntry.ts:29` shows `promoImage.src` is literally `asset.fields.file.url` — the raw Contentful asset URL with no query string at all. The pipeline is fully dead code today.
+
+**2. Mega-menu stuck-open edge case — CONFIRMED**, with an important refinement.
+Traced the full path: `useMegaMenuMotion.ts`'s `CLOSE` case for `phase === 'expanding'` (lines 65-67) jumps straight to `'collapsing'`. In `
+--- L338 [2026-09-01T12:27:07] &lt;&lt;autonomous-loop-dynamic&gt;&gt;
+--- L342 [2026-09-01T12:33:48] for this: "1. Tab order — logo should be first, but it's actually last.
+Picture using the site with a keyboard only, no mouse (this is how screen-reader users and many people with motor disabilities browse). You'd expect hitting Tab once to land on the logo, since it's the "take me home" element and the ticket explicitly requires it be first. Instead, right now, Tab takes you through the hamburger button, then all the nav links (New, Clothing, Accessories...), then Search, Account, Wishlist, and Bag — and only after all of that do you reach the logo. The PR's own test literally checks this and expects it: it does Tab, Tab, Tab and only then expects the logo to have focus.
+
+Why did this happen despite the layout looking correct? The logo genuinely does sit visually below the nav bar (that part's right, and required). But browsers tab through elements in the order they appear in the code, not the order they appear on screen — and in the code, the developer wrote the nav bar first and the logo second. Nobody added the (fairly standard) trick to make it appear later but tab first." nav first it correct behavior
+
+for this: "2. Accessible name — screen readers announce "Logo," not "Zimmermann."
+Screen readers read out a label for every button so a blind user knows what it does. The ticket says this one should announce "Zimmermann, go to homepage." There are actually two labels stacked here: an inner one on the logo graphic itself saying "Zimmermann," and an outer one on the button wrapping it saying just "Logo." When a button has its own label, screen readers use only that one and ignore anything inside it — so the "Zimmermann" label never gets heard at all. A screen reader user just hears "Logo, button."
+
+Both are small code fixes once someone's aware of them, but as written they don't match what the ticket asks for." agree, it should not read "logo"
+
+for this: "The responsive.tsx change, plain terms:
+
+There's one shared helper component used all over the site whose only
+--- L354 [2026-09-01T12:42:59] there was a decision for there to be a different footer breakpoint which states "When container reaches 946px, wrap site map columns underneath the subscribe section" - how is this related to this flagged item: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is 
+--- L363 [2026-09-01T12:45:20] what does this mean for the scoped items in this PR: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is what satisfying AC10 literally would require) is the kind of DOM/visual mismatch that's normally flagged as its own accessibility smell.
+But the Jira ticket (
+--- L368 [2026-09-01T12:51:22] is there any docs/comments to why this change was shipped in this PR?
+--- L381 [2026-09-01T12:54:14] so it's a valid fix, but it technically out of scope to this PR?
+--- L386 [2026-09-01T12:54:41] i approve of it, it's good here
+--- L391 [2026-09-01T13:20:42] The tab-order call (AC10). You said nav-first is correct behavior — I want to make sure I capture that as a deliberate override of the written AC, not just quietly drop the finding. Is that a "the AC is outdated, get it corrected in Jira" situation, or do you see it differently? -> on keyboard nav, via screenreader, it's not standard to have the logo as the first touch-point, on what ticket and what AC is this being claimed?
+--- L395 [2026-09-01T14:05:45] what is the standard vs. what does the AC say? ELI5
+--- L400 [2026-09-01T14:09:21] the AC is wrong here, accessibility standard says otherwise against the AC so we flag it in the PR comment so it could be raised to the JIRA ticket and the BA
+--- L405 [2026-09-01T14:10:57] show me the full findings from this review in an ordered table with clear explanations of what each item is/are in ELI5 for understanding
+--- L410 [2026-09-01T14:16:46] a lot of these are bold claims, but i haven't actually done hands-on visual testing, let me do that first by comparing the output to figma then i'll report any discrepancies
+--- L414 [2026-09-01T15:07:27] this is a tough one, this PR has multiple user stories in it, therefore there is so much to check, verify, and validate, how can i have you to help me run - especially visual checks against figma spec?
+
+the live MRT env for this PR is at https://zimmermann-pr-f52-3f524845.sfdc-8tgtt5-ecom1.exp-delivery.com/
+
+i need an in-depth audit of this, i attempted to check manually and i think i saw a lot of discrepancies but i'm quite unsure of them
+
+can you use browser and dev tools?
+
+can you run checks across all the UI this PR builds/touches and check it across all viewports as well?
+
+styles, sizings, spacings, tokens, matchings, full coverage BUT no overthinking and creating, testing, and failing unreachable cases
+
+i need to understand the level of reliability you could provide me on this task
+--- L577 [2026-09-01T15:22:28] keep going, run the full coverage
+--- L664 [2026-09-01T15:33:10] what are the things that we need to look into further?
+--- L669 [2026-09-01T15:35:57] show me the full findings, in an organized table, ELI5, focused on my grasp into the findings of our review
+--- L674 [2026-09-01T15:44:03] let's do a deep dive one by one, first i need to learn what the issue being flagged is, next, if possible, i recreate it or look into it myself to confirm
+--- L679 [2026-09-01T15:45:53] button label is "Logo", svg aria-label is "Zimmermann" - which gets read?
+--- L684 [2026-09-01T15:46:34] then what needs to change here?
+--- L689 [2026-09-01T15:48:31] yes, walk me through #2
+--- L694 [2026-09-01T15:54:56] is this it? : "<nav class="css-1bu4q9a"><div class="css-259i0c"></div><div class="css-ozv6cb"><nav id="list-menu" aria-label="Main navigation" aria-busy="false"><div class="css-s92xpi"><div class="chakra-stack css-7fmfa3"><div class="css-0"><div class="css-0"><a id="popover-trigger-:R18qladakt5enlH1:" href="/new" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover-content-:R18qladakt5enlH1:" class="css-1h1rylb"><span>New</span></a><div style="visibility:hidden;position:absolute;min-width:max-content;inset:0 auto auto 0" class="chakra-popover__popper css-sq7msb"><section data-testid="popover-menu" aria-label="New menu" style="transform-origin:var(--popper-transform-origin);opacity:0;visibility:hidden;transform:scale(0.95) translateZ(0)" id="popover-content-:R18qladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R18qladakt5enlH1:"><div id="popover-body-:R18qladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-1pxdbm0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1c7u9vh"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/dresses" tabindex="-1" class="css-gsn9tp"><span>Dresses</span></a><a href="/new-arrivals/bags" tabindex="-1" class="css-gsn9tp"><span>Bags</span></a><a href="/new-arrivals/tailoring" tabindex="-1" class="css-gsn9tp"><span>Tailoring</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/fall-2026" tabindex="-1" class="css-gsn9tp"><span>Fall 2026</span></a><a href="/new-arrivals" tabindex="-1" class="css-gsn9tp"><span>View all</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/19qCP4SqEAkXZ5Dl1GY5ey/ec49aaf9c22c9ed857f223220846f0ba/header-nav-new-promo.png" loading="lazy" class="chakra-image css-6
+--- L699 [2026-09-01T15:55:52] how does this tab issue get resolved then?
+--- L713 [2026-09-01T15:56:59] go for 3
+--- L718 [2026-09-01T16:03:45] it's a bit unclear, ELI5
+--- L723 [2026-09-01T16:09:03] i recreated something totally different, i hovered across the nav-items and hit escape until i arrived at a blank mega menu, with close X, and this one doesn't self-heal so the mega menu stays blank even on attempts to hover other nav links and i was also able to reproduce this actual reported bug of no mega menu but close X showing and a nav link with underline (active/hovered?)
+--- L760 [2026-09-01T16:13:38] update the finding in the review notes and then let's talk about these bugs further
+--- L771 [2026-09-01T16:25:24] these motion/timing related bugs, what is causing them? and how do we even fix these?
+--- L792 [2026-09-01T16:28:26] walk me through #4
+--- L801 [2026-09-01T16:31:15] isn't it possible that it's working like this because the images aren't in contentful yet?
+--- L814 [2026-09-01T16:34:28] tell me about in, ELI5
+--- L819 [2026-09-01T16:37:42] what should be happening then?
+--- L828 [2026-09-01T16:38:48] walk me through #5
+--- L836 [2026-09-01T16:43:39] why is this wrong? what's wrong with it? explain further
+--- L841 [2026-09-01T16:51:32] so what needs to be done then?
+--- L845 [2026-09-01T16:53:40] what's the difference of importing from salesforce vs. direct?
+--- L851 [2026-09-01T16:59:11] got it, what's next? 6?
+--- L856 [2026-09-01T17:04:54] At tablet width (1024px): click somewhere neutral first, then press Tab repeatedly from the top of the page. You'll pass the nav items (which do show a ring — good baseline to compare against), then reach the search icon button. Does a ring appear on it? YES
+At mobile width (402px): same thing — Tab through, check the hamburger, then later the search icon and bag icon. YES
+Account/profile icon — reachable via Tab at both tablet and desktop widths, a few stops after search. YES
+For the drawer's close icon specifically — open the hamburger drawer, drill into any category (so the back/close icons are on screen), then Tab to it. CLOSE, SEARCH, AND BAG NO TAB-ABLE ON THE HAMBURGER MENU
+--- L958 [2026-09-01T17:15:15] next, #7
+--- L989 [2026-09-01T17:22:13] how to check myself?
+--- L994 [2026-09-01T17:24:20] what does this confirm about the size? "<section data-testid="popover-menu" aria-label="Clothing menu" style="transform-origin: var(--popper-transform-origin); opacity: 1; visibility: visible; transform: none;" id="popover-content-:R19aladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R19aladakt5enlH1:"><div id="popover-body-:R19aladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-xcn8j0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1o1wrt5"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing/dresses" class="css-gsn9tp"><span>Dresses</span></a><a href="/clothing/tops" class="css-gsn9tp"><span>Tops</span></a><a href="/clothing/shorts-pants" class="css-gsn9tp"><span>Shorts &amp; Pants</span></a><a href="/clothing/denim" class="css-gsn9tp"><span>Denim</span></a><a href="/clothing/skirts" class="css-gsn9tp"><span>Skirts</span></a><a href="/clothing/knitwear" class="css-gsn9tp"><span>Knitwear</span></a><a href="/clothing/jackets-coats" class="css-gsn9tp"><span>Jackets &amp; Coats</span></a><a href="/clothing/jumpsuits-playsuits" class="css-gsn9tp"><span>Jumpsuits &amp; Playsuits</span></a><a href="/clothing/tailoring" class="css-gsn9tp"><span>Tailoring</span></a><a href="/clothing/swimwear" class="css-gsn9tp"><span>Swimwear</span></a><a href="/clothing/kids" class="css-gsn9tp"><span>Kids</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing" class="css-gsn9tp"><span>All Clothing</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/3RnYKqaXjyK0hieK7AjfSw/51a5ac06e23db3f70bc7e8653be70b67/header-nav-clothing-promo.png" loading="lazy" class="chakra-image css-6jrdpz"></div></div></div></div></div></div></section>"
+--- L999 [2026-09-01T17:25:03] 754, correct
+--- L1007 [2026-09-01T17:28:20] keep going through 8-11
+--- L1012 [2026-09-01T17:31:43] let's talk verdict now
+--- L1022 [2026-09-02T00:43:53] well, as FED lead we should test it
+--- L1097 [2026-09-02T01:08:14] coverage is good, what matters is we've tested on the affected files
+--- L1103 [2026-09-02T01:10:15] what's our status?
+--- L1107 [2026-09-02T01:10:57] what's this? gridSystem.ts - ELI5
+--- L1120 [2026-09-02T01:14:49] if they're correct, then that's good, what else?
+--- L1127 [2026-09-02T01:17:11] provide me a final list of our findings from this review
+--- L1147 [2026-09-02T01:18:59] add in the details for each, i'm about to walk Tim through my findings
+--- L1179 [2026-09-02T01:32:59] draft the PR comments now
+--- L1183 [2026-09-02T01:35:00] [Request interrupted by user]
+====================================================================================================
+SESSION b35c8cd3
+--- L7 [2026-09-01T08:08:53] hey claude, ready to work?
+--- L17 [2026-09-01T08:09:00] Base directory for this skill: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Curr
+--- L58 [2026-09-01T08:12:36] before anything, let's make sure to have all our active local branches up to date with remote, and also make sure we have all branches that are in remote but not yet locally
+--- L119 [2026-09-01T08:18:04] <command-message>zimmerMANNReview</command-message>
+<command-name>/zimmerMANNReview</command-name>
+<command-args>PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40003224-106376&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13077&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-10775&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40002339-21732&m=dev
+* https://www.fi
+--- L120 [2026-09-01T08:18:04] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNReview
+
+Review of a colleague's work. Same architecture as the build chain — ground truth, a gated audit,
+then present and stop — tailored to a PR you did not write.
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**The thing that makes it work:** you hold the ground truth and the adjudication, and delegate only
+the reading. Reviewers are cheap and fallible; measurements are expensive and authoritative. Keep
+those on opposite sides of the line.
+
+**Input:** `PR #65, this is a massive, critical, and crucial PR, let's take our time on this
+
+here are the resources i could find to help us with this review:
+PR #65 tackles these JIRA Tickets / User Stories:
+
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-52
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-746
+* https://zimmermannworkboard.atlassian.net/browse/SFCC-747
+
+Here are the Figma Nodes:
+
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=2083-53907&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13331&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13482&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13481&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13480&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13478&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13479&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13476&m=dev
+* https://www.figma.com/design/wPiWmZZOVKnrENUWk2XWWm/Zimmermann_Design_System_2026?node-id=40000259-13477&m=dev
+* https://www.figma.com/design/wPiWm
+--- L207 [2026-09-01T08:28:56] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/plugins/cache/claude-plugins-official/figma/2.2.96/skills/figma-design-to-code
+
+# Implement a Figma Design as Code (Design → Code)
+
+Use this skill to turn a Figma design into code in a target codebase. This is the **read-FROM-Figma** direction: pull design context out of Figma with `get_design_context`, then adapt it into the project's real stack. For the reverse direction — building or updating a design *in* Figma from code — use [figma-generate-design](../figma-generate-design/SKILL.md) instead.
+
+This skill owns the **workflow** for design-to-code. Parameter mechanics (nodeId / fileKey / branchKey extraction, URL parsing, `format`/`query` options, response shape) live on the `get_design_context` tool description itself — follow them there.
+
+**Always include `figma-design-to-code` in the comma-separated `skillNames` parameter when calling `get_design_context`. If this skill was loaded via an MCP resource, you MUST prefix the name with `resource:` (e.g. `resource:figma-design-to-code`).** This is a logging parameter used to track skill usage — it does not affect execution.
+
+## Direction and Scope
+
+- You MUST use this skill for design → code: implementing, translating, or porting a Figma node into code.
+- You MUST NOT use this skill to write to Figma.
+
+## Workflow
+
+### 1. Call get_design_context first
+
+- You MUST call `get_design_context` on the target node before writing any code. It is your primary tool — a single call returns reference code, a screenshot, and contextual hints.
+- You MUST NOT reach for `get_metadata` or `get_screenshot` as a substitute. Use them only to orient (e.g. picking a node) or to validate, not in place of `get_design_context`.
+
+### 2. Treat the output as a reference, not final code
+
+- The returned code is React + Tailwind enriched with hints. You MUST treat it as a REFERENCE, not as final code to paste verbatim.
+- You MUST adapt it to the target project's language, framework, 
+--- L280 [2026-09-01T08:36:40] [Your previous response had no visible output. Please continue and produce a user-visible response.]
+--- L284 [2026-09-01T08:41:02] <task-notification>
+<task-id>a3e6243058b6b5128</task-id>
+<tool-use-id>toolu_0141kuh4Pma3gjtV37ix78KG</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a3e6243058b6b5128.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 scope verdict" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Scope Verdict: BLOCKED
+
+A Tier 1 hard stop applies before the under/over-scope analysis even matters for merge purposes: **this PR modifies six Tier 1 files across two separate frozen-file categories.** I'm reporting the full requested analysis below, but the loop should stop here per the scope-guard rubric ("No Tier 1 file was touched... this is a hard stop") regardless of what follows.
+
+### Tier 1 violations (hard stop)
+
+**Design System foundation** (`.claude/rules/frozenFiles.md`, Owner: UI Designer; `AGENTS.md` Hard Rule #3: "Never modify `overrides/app/theme/foundation/`"):
+- `overrides/app/theme/foundation/gridSystem.ts` — real value change, not a refactor: `containerPadding` goes from `{base:'30px', md:'24px', xl:'0'}` to `{base: spacing['2xl'], md: spacing['2xl'], xl: spacing['3xl']}` (32px/32px/40px), plus a brand-new `maxWidth: 'none'` token concept added.
+- `overrides/app/theme/foundation/zimmTokens.ts` — adds `--zimm-grid-max-width` derived from the above.
+
+**Test &amp; Tooling config** (`frozenFiles.md`, Owner: Integration/SI Partner; `AGENTS.md` Hard Rule #8):
+- `vitest.config.ts` (root) — new resolve alias for `@salesforce/commerce-sdk-react`.
+- `.storybook/main.js` — new webpack alias for `@tanstack/react-query`.
+- `.storybook/preview.tsx` — new global `window.__CONFIG__` shim + a11y-exclude refactor.
+- `.storybook/a11yExcludes.ts` — brand new file inside the frozen `.storybook
+--- L320 [2026-09-01T08:48:12] <task-notification>
+<task-id>acd97184d91c01b33</task-id>
+<tool-use-id>toolu_01JzDFdRStvjQ3nrK5hLNKjf</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/acd97184d91c01b33.output</output-file>
+<status>completed</status>
+<summary>Agent "PR #65 multi-angle code audit" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result># PR #65 Review — Global Header Rebuild (SFCC-52/746/747/96/97)
+
+I worked this as a single reviewer across the angles below (no Task/sub-agent tool was available in this environment — only `Read`/`Bash` — so I ran each angle as a dedicated, sequential deep-dive against the two worktrees and the base commit, rather than literally spawning parallel agents). I did not re-run `tsc`/`lint`/`test`/`audit:tokens` — your numbers are treated as ground truth throughout.
+
+---
+
+## Angle 1 — Correctness and regression
+
+**🔴 Dead responsive-image pipeline — mega-menu/drawer promo images ship unoptimized. CONFIRMED, ONE-OFF.**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage` — a fully-built, heavily-documented AVIF/WebP responsive-srcset builder whose own doc comment says it's "used for the header mega-menu's promo images (desktop/tablet: `megaMenuContent/index.tsx`, mobile drawer L2: `drawer-menu/index.tsx`)". I grepped every consumer:
+```
+grep -rln "buildContentfulResponsiveImage|ContentfulResponsiveImage|avifSrcSet|webpSrcSet" overrides/app/components
+→ (no results)
+```
+Both actual call sites render a plain, unoptimized image instead:
+- `overrides/app/components/list-menu/megaMenuContent/index.tsx:152`: `&lt;Image src={promoImage.src} alt={promoImage.alt} loading="lazy" __css={styles.promoImage} /&gt;`
+- `overrides/app/components/drawer-men
+--- L329 [2026-09-01T09:06:01] <task-notification>
+<task-id>a13d04db804de17b6</task-id>
+<tool-use-id>toolu_014vm9XfSQaVYM2AyYS59mh8</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa/113175e9-2496-4539-9640-84df14f78583/tasks/a13d04db804de17b6.output</output-file>
+<status>completed</status>
+<summary>Agent "Verify PR #65 findings batch" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>## Verification results — PR #65, 15 claims
+
+Methodology: read every cited file directly in the HEAD worktree, diffed against BASE (`269d5d4`) for every "new/changed" assertion, grepped the full `overrides/` tree (and, where the mechanism required it, the base `node_modules/@salesforce/retail-react-app` tree) rather than trusting the cited scope, and checked git history/blame on the specific lines for claims 2 and 15. All line numbers below are what I read directly, not copied from the claims.
+
+---
+
+**1. Dead responsive-image pipeline — CONFIRMED**
+`overrides/app/utils/contentfulImage.ts` defines `buildContentfulResponsiveImage`/`ContentfulResponsiveImage`/`avifSrcSet`/`webpSrcSet`. Grepping all of `overrides/app/components`, `overrides/app/utils`, `overrides/app/pages` finds zero consumers outside the function's own file and its own test (`contentfulImage.test.ts`). `megaMenuContent/index.tsx:152` and `drawer-menu/index.tsx:223` both render `&lt;Image src={promoImage.src} ... /&gt;`, and `resolveImageEntry.ts:29` shows `promoImage.src` is literally `asset.fields.file.url` — the raw Contentful asset URL with no query string at all. The pipeline is fully dead code today.
+
+**2. Mega-menu stuck-open edge case — CONFIRMED**, with an important refinement.
+Traced the full path: `useMegaMenuMotion.ts`'s `CLOSE` case for `phase === 'expanding'` (lines 65-67) jumps straight to `'collapsing'`. In `
+--- L338 [2026-09-01T12:27:07] &lt;&lt;autonomous-loop-dynamic&gt;&gt;
+--- L342 [2026-09-01T12:33:48] for this: "1. Tab order — logo should be first, but it's actually last.
+Picture using the site with a keyboard only, no mouse (this is how screen-reader users and many people with motor disabilities browse). You'd expect hitting Tab once to land on the logo, since it's the "take me home" element and the ticket explicitly requires it be first. Instead, right now, Tab takes you through the hamburger button, then all the nav links (New, Clothing, Accessories...), then Search, Account, Wishlist, and Bag — and only after all of that do you reach the logo. The PR's own test literally checks this and expects it: it does Tab, Tab, Tab and only then expects the logo to have focus.
+
+Why did this happen despite the layout looking correct? The logo genuinely does sit visually below the nav bar (that part's right, and required). But browsers tab through elements in the order they appear in the code, not the order they appear on screen — and in the code, the developer wrote the nav bar first and the logo second. Nobody added the (fairly standard) trick to make it appear later but tab first." nav first it correct behavior
+
+for this: "2. Accessible name — screen readers announce "Logo," not "Zimmermann."
+Screen readers read out a label for every button so a blind user knows what it does. The ticket says this one should announce "Zimmermann, go to homepage." There are actually two labels stacked here: an inner one on the logo graphic itself saying "Zimmermann," and an outer one on the button wrapping it saying just "Logo." When a button has its own label, screen readers use only that one and ignore anything inside it — so the "Zimmermann" label never gets heard at all. A screen reader user just hears "Logo, button."
+
+Both are small code fixes once someone's aware of them, but as written they don't match what the ticket asks for." agree, it should not read "logo"
+
+for this: "The responsive.tsx change, plain terms:
+
+There's one shared helper component used all over the site whose only
+--- L354 [2026-09-01T12:42:59] there was a decision for there to be a different footer breakpoint which states "When container reaches 946px, wrap site map columns underneath the subscribe section" - how is this related to this flagged item: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is 
+--- L363 [2026-09-01T12:45:20] what does this mean for the scoped items in this PR: "responsive.tsx — the exact mechanism, from source:
+Old (base SFCC), hardcoded:
+
+```
+HideOnDesktop: display={{base: 'block', lg: 'none'}}   // visible 0–991px, hidden 992px+
+HideOnMobile:  display={{base: 'none', lg: 'block'}}   // hidden 0–991px, visible 992px+
+```
+
+New (this PR):
+
+```
+const MOBILE_DESKTOP_SPLIT = 'md';  // was 'lg'
+HideOnDesktop: display={{base: 'block', md: 'none'}}   // visible 0–767px, hidden 768px+
+HideOnMobile:  display={{base: 'none', md: 'block'}}   // hidden 0–767px, visible 768px+
+```
+
+So concretely: at a window width of, say, 850px — under the old code that's still "mobile" (850 < 992), under the new code it's now "desktop" (850 ≥ 768). Anything using these two helpers flips which version it shows across that whole 768–991px band.
+One thing I should've surfaced the first time: the developer did leave a reason, not a silent change — the code comment says the header/footer/mega-menu already switch at 768px (`md`), but this generic helper was still switching at 992px (`lg`), so in that 768–991px band, something wrapped in both helpers could end up hidden by both simultaneously — a real "dead zone" bug, not an arbitrary pick. That's a legitimate justification for why — it doesn't change that the 9 other pages inheriting it (PDP, PLP, search, checkout, etc.) weren't part of anyone's test plan for this PR.
+On the tab-order point — I want to push on this a bit rather than just drop it, because there's a real tension here:
+WCAG has a principle (2.4.3, "meaningful sequence") that generally says tab order should match visual/reading order — so nav-first-then-logo, matching what's visually on screen, is actually the safer default from that angle. Deliberately making the logo jump to first in tab order while staying visually second (which is what satisfying AC10 literally would require) is the kind of DOM/visual mismatch that's normally flagged as its own accessibility smell.
+But the Jira ticket (
+--- L368 [2026-09-01T12:51:22] is there any docs/comments to why this change was shipped in this PR?
+--- L381 [2026-09-01T12:54:14] so it's a valid fix, but it technically out of scope to this PR?
+--- L386 [2026-09-01T12:54:41] i approve of it, it's good here
+--- L391 [2026-09-01T13:20:42] The tab-order call (AC10). You said nav-first is correct behavior — I want to make sure I capture that as a deliberate override of the written AC, not just quietly drop the finding. Is that a "the AC is outdated, get it corrected in Jira" situation, or do you see it differently? -> on keyboard nav, via screenreader, it's not standard to have the logo as the first touch-point, on what ticket and what AC is this being claimed?
+--- L395 [2026-09-01T14:05:45] what is the standard vs. what does the AC say? ELI5
+--- L400 [2026-09-01T14:09:21] the AC is wrong here, accessibility standard says otherwise against the AC so we flag it in the PR comment so it could be raised to the JIRA ticket and the BA
+--- L405 [2026-09-01T14:10:57] show me the full findings from this review in an ordered table with clear explanations of what each item is/are in ELI5 for understanding
+--- L410 [2026-09-01T14:16:46] a lot of these are bold claims, but i haven't actually done hands-on visual testing, let me do that first by comparing the output to figma then i'll report any discrepancies
+--- L414 [2026-09-01T15:07:27] this is a tough one, this PR has multiple user stories in it, therefore there is so much to check, verify, and validate, how can i have you to help me run - especially visual checks against figma spec?
+
+the live MRT env for this PR is at https://zimmermann-pr-f52-3f524845.sfdc-8tgtt5-ecom1.exp-delivery.com/
+
+i need an in-depth audit of this, i attempted to check manually and i think i saw a lot of discrepancies but i'm quite unsure of them
+
+can you use browser and dev tools?
+
+can you run checks across all the UI this PR builds/touches and check it across all viewports as well?
+
+styles, sizings, spacings, tokens, matchings, full coverage BUT no overthinking and creating, testing, and failing unreachable cases
+
+i need to understand the level of reliability you could provide me on this task
+--- L577 [2026-09-01T15:22:28] keep going, run the full coverage
+--- L664 [2026-09-01T15:33:10] what are the things that we need to look into further?
+--- L669 [2026-09-01T15:35:57] show me the full findings, in an organized table, ELI5, focused on my grasp into the findings of our review
+--- L674 [2026-09-01T15:44:03] let's do a deep dive one by one, first i need to learn what the issue being flagged is, next, if possible, i recreate it or look into it myself to confirm
+--- L679 [2026-09-01T15:45:53] button label is "Logo", svg aria-label is "Zimmermann" - which gets read?
+--- L684 [2026-09-01T15:46:34] then what needs to change here?
+--- L689 [2026-09-01T15:48:31] yes, walk me through #2
+--- L694 [2026-09-01T15:54:56] is this it? : "<nav class="css-1bu4q9a"><div class="css-259i0c"></div><div class="css-ozv6cb"><nav id="list-menu" aria-label="Main navigation" aria-busy="false"><div class="css-s92xpi"><div class="chakra-stack css-7fmfa3"><div class="css-0"><div class="css-0"><a id="popover-trigger-:R18qladakt5enlH1:" href="/new" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover-content-:R18qladakt5enlH1:" class="css-1h1rylb"><span>New</span></a><div style="visibility:hidden;position:absolute;min-width:max-content;inset:0 auto auto 0" class="chakra-popover__popper css-sq7msb"><section data-testid="popover-menu" aria-label="New menu" style="transform-origin:var(--popper-transform-origin);opacity:0;visibility:hidden;transform:scale(0.95) translateZ(0)" id="popover-content-:R18qladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R18qladakt5enlH1:"><div id="popover-body-:R18qladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-1pxdbm0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1c7u9vh"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/dresses" tabindex="-1" class="css-gsn9tp"><span>Dresses</span></a><a href="/new-arrivals/bags" tabindex="-1" class="css-gsn9tp"><span>Bags</span></a><a href="/new-arrivals/tailoring" tabindex="-1" class="css-gsn9tp"><span>Tailoring</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/new-arrivals/fall-2026" tabindex="-1" class="css-gsn9tp"><span>Fall 2026</span></a><a href="/new-arrivals" tabindex="-1" class="css-gsn9tp"><span>View all</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/19qCP4SqEAkXZ5Dl1GY5ey/ec49aaf9c22c9ed857f223220846f0ba/header-nav-new-promo.png" loading="lazy" class="chakra-image css-6
+--- L699 [2026-09-01T15:55:52] how does this tab issue get resolved then?
+--- L713 [2026-09-01T15:56:59] go for 3
+--- L718 [2026-09-01T16:03:45] it's a bit unclear, ELI5
+--- L723 [2026-09-01T16:09:03] i recreated something totally different, i hovered across the nav-items and hit escape until i arrived at a blank mega menu, with close X, and this one doesn't self-heal so the mega menu stays blank even on attempts to hover other nav links and i was also able to reproduce this actual reported bug of no mega menu but close X showing and a nav link with underline (active/hovered?)
+--- L760 [2026-09-01T16:13:38] update the finding in the review notes and then let's talk about these bugs further
+--- L771 [2026-09-01T16:25:24] these motion/timing related bugs, what is causing them? and how do we even fix these?
+--- L792 [2026-09-01T16:28:26] walk me through #4
+--- L801 [2026-09-01T16:31:15] isn't it possible that it's working like this because the images aren't in contentful yet?
+--- L814 [2026-09-01T16:34:28] tell me about in, ELI5
+--- L819 [2026-09-01T16:37:42] what should be happening then?
+--- L828 [2026-09-01T16:38:48] walk me through #5
+--- L836 [2026-09-01T16:43:39] why is this wrong? what's wrong with it? explain further
+--- L841 [2026-09-01T16:51:32] so what needs to be done then?
+--- L845 [2026-09-01T16:53:40] what's the difference of importing from salesforce vs. direct?
+--- L851 [2026-09-01T16:59:11] got it, what's next? 6?
+--- L856 [2026-09-01T17:04:54] At tablet width (1024px): click somewhere neutral first, then press Tab repeatedly from the top of the page. You'll pass the nav items (which do show a ring — good baseline to compare against), then reach the search icon button. Does a ring appear on it? YES
+At mobile width (402px): same thing — Tab through, check the hamburger, then later the search icon and bag icon. YES
+Account/profile icon — reachable via Tab at both tablet and desktop widths, a few stops after search. YES
+For the drawer's close icon specifically — open the hamburger drawer, drill into any category (so the back/close icons are on screen), then Tab to it. CLOSE, SEARCH, AND BAG NO TAB-ABLE ON THE HAMBURGER MENU
+--- L958 [2026-09-01T17:15:15] next, #7
+--- L989 [2026-09-01T17:22:13] how to check myself?
+--- L994 [2026-09-01T17:24:20] what does this confirm about the size? "<section data-testid="popover-menu" aria-label="Clothing menu" style="transform-origin: var(--popper-transform-origin); opacity: 1; visibility: visible; transform: none;" id="popover-content-:R19aladakt5enlH1:" tabindex="-1" role="dialog" class="chakra-popover__content css-1btasv5" aria-describedby="popover-body-:R19aladakt5enlH1:"><div id="popover-body-:R19aladakt5enlH1:" class="chakra-popover__body css-1div00u"><div data-testid="panel-reveal" class="css-xcn8j0"><div class="css-otra1g"><div data-testid="panel-content-fade" class="css-1o1wrt5"><div tabindex="-1" class="css-pe8stn"><div class="css-mesm9p"><div class="css-7br6of"><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing/dresses" class="css-gsn9tp"><span>Dresses</span></a><a href="/clothing/tops" class="css-gsn9tp"><span>Tops</span></a><a href="/clothing/shorts-pants" class="css-gsn9tp"><span>Shorts &amp; Pants</span></a><a href="/clothing/denim" class="css-gsn9tp"><span>Denim</span></a><a href="/clothing/skirts" class="css-gsn9tp"><span>Skirts</span></a><a href="/clothing/knitwear" class="css-gsn9tp"><span>Knitwear</span></a><a href="/clothing/jackets-coats" class="css-gsn9tp"><span>Jackets &amp; Coats</span></a><a href="/clothing/jumpsuits-playsuits" class="css-gsn9tp"><span>Jumpsuits &amp; Playsuits</span></a><a href="/clothing/tailoring" class="css-gsn9tp"><span>Tailoring</span></a><a href="/clothing/swimwear" class="css-gsn9tp"><span>Swimwear</span></a><a href="/clothing/kids" class="css-gsn9tp"><span>Kids</span></a></div></div><div class="css-w5w2ef"><div class="css-1qacikq"><a href="/clothing" class="css-gsn9tp"><span>All Clothing</span></a></div></div></div></div><div class="css-o2szi"><img alt="" src="//images.ctfassets.net/u9kb6gp6slxu/3RnYKqaXjyK0hieK7AjfSw/51a5ac06e23db3f70bc7e8653be70b67/header-nav-clothing-promo.png" loading="lazy" class="chakra-image css-6jrdpz"></div></div></div></div></div></div></section>"
+--- L999 [2026-09-01T17:25:03] 754, correct
+--- L1007 [2026-09-01T17:28:20] keep going through 8-11
+--- L1012 [2026-09-01T17:31:43] let's talk verdict now
+--- L1022 [2026-09-02T00:43:53] well, as FED lead we should test it
+--- L1097 [2026-09-02T01:08:14] coverage is good, what matters is we've tested on the affected files
+--- L1103 [2026-09-02T01:10:15] what's our status?
+--- L1107 [2026-09-02T01:10:57] what's this? gridSystem.ts - ELI5
+--- L1112 [2026-09-02T01:14:49] if they're correct, then that's good, what else?
+--- L1117 [2026-09-02T01:17:11] provide me a final list of our findings from this review
+--- L1130 [2026-09-02T01:18:59] add in the details for each, i'm about to walk Tim through my findings
+--- L1149 [2026-09-02T01:37:42] tim's pushing back on the contenful flag, he guarantees that we're using contenful for the header, let's revisit this
+--- L1226 [2026-09-02T01:42:23] let's verdict, provide me the updated findigns
+--- L1249 [2026-09-02T01:43:51] why is still this existing: Mega-menu/drawer promo images ship full-resolution, unoptimized - haven't we cleared contentful?
+--- L1256 [2026-09-02T01:45:15] #16 (font decode failure) — real, root cause not chased down, needs a ticket-or-not decision - fonts don't seem to fail when i check
+
+#20 (PR [#69](https://github.com/ZimmermannAU/zimmermann-pwa/pull/69) collision on `BP.tabletWide`) — needs a heads-up, method TBD, defer, not for now
+--- L1274 [2026-09-02T01:46:33] Draft the PR comments
+--- L1286 [2026-09-02T01:49:39] i've already approved the PR, but it hasn't moved yet, so comment these in, go ahead
+--- L1337 [2026-09-02T01:58:24] we need to update the comments:
+
+remove: This one's a real design decision on your end, not a one-line fix, happy to talk through it.
+
+remove: Worth a pass to true these up.
+
+remove: so I'm raising it with the BA to get the requirement corrected rather than asking for a code change here.
+
+remove: Would updating this button's own label (and the matching translations/en-US.json entry) to that phrase work, or is there a reason it's set to "Logo" I'm missing?
+
+remove: Was the switch to chakra.nav intentional, or would a Box/div work fine since ListMenu already provides its own landmark?
+
+remove: Wondering if setting closeOnEsc={false} and routing Escape entirely through the existing custom handler, including adding one to the panel content itself, would close this off. Happy to pair on it, this one took some digging. 
+
+add after "Found a way to get the mega menu permanently stuck: hover across a few nav items while pressing Escape a couple of times, and it lands on a state where the header shows "Close" but no panel ever appears, and hovering other items afterward doesn't recover it either, only a full reload does.
+
+Traced it to this comment, Escape deliberately left to Chakra's own closeOnEsc default, while list-menu-trigger.tsx also has its own explicit Escape handler on the trigger. With both live, and five Popover instances sharing one motion-phase reducer, a fast enough sequence across items seems to leave Chakra's own internal open state out of sync with the custom one, and Chakra's visibility: hidden wins regardless of what the custom animation says." that this will not be an issue anymore once the mega menu on hover is replaced with on click
+
+remove: Given how explicitly AGENTS.md calls out serving correctly sized images, might be worth wiring this in before merge. Looks like a small change for this desktop/tablet panel (fixed 862x690 box). The mobile drawer's version is a fluid box though, so that one probably needs its own target size rather than copying the s
+--- L1369 [2026-09-02T02:15:07] provide me an .MD file of the findings that i can send to Tim as another way to document and track the findings
+--- L1388 [2026-09-02T02:22:43] <command-message>zimmerMANNRevImprover</command-message>
+<command-name>/zimmerMANNRevImprover</command-name>
+<command-args>- review done, time to learn from it</command-args>
+--- L1389 [2026-09-02T02:22:43] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNRevImprover
+
+The look-back on review work. Not "was the PR good" — **was the review good.**
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**Input:** `- review done, time to learn from it` — one or more PR numbers. `revimprove 68 70`.
+
+**Scope: reviews Marcel gave on other people's PRs.** How he handled feedback on his own PRs is
+`zimmerMANNPostBuild`'s job, and improving that is `zimmerMANNDevImprover`'s.
+
+---
+
+## What you read
+
+**1. The PR outcome.**
+
+```bash
+gh api "repos/ZimmermannAU/zimmermann-pwa/pulls/<N>/reviews"           # verdicts and their order
+gh api "repos/ZimmermannAU/zimmermann-pwa/pulls/<N>/comments?per_page=100"  # inline comments
+gh api "repos/ZimmermannAU/zimmermann-pwa/pulls/<N>/commits"           # what the author did after
+```
+
+Thread resolution needs GraphQL — the REST API does not expose `isResolved`:
+
+```bash
+gh api graphql -f query='{repository(owner:"ZimmermannAU",name:"zimmermann-pwa"){
+  pullRequest(number:<N>){reviewThreads(first:100){nodes{
+    isResolved isOutdated comments(first:20){nodes{author{login} body path line}}}}}}}'
+```
+
+**2. The review session transcript.** Rank rather than list — a bare grep returns every passing
+mention:
+
+```bash
+D=~/.claude/projects/-Users-marcel-a-n-navarro-Dev-zimmermann-pwa
+for f in "$D"/*.jsonl; do
+  n=$(grep -oE "PR #<N>|pulls/<N>" "$f" 2>/dev/null | wc -l)
+  [ "$n" -gt 10 ] || continue
+  b=$(basename "$f" .jsonl)
+  echo "$n — $b ($(find "$D/$b/subagents" -name '*.jsonl' 2>/dev/null | wc -l) agents)"
+done | sort -rn
+```
+
+**3. Previous look-backs.** `~/Dev/zimmerMANN-skills/.runs/_improver/` — both `rev-*.md` and
+DevImprover's. **Check before proposing:** has this been seen before?
+
+---
+
+## Job A — did each finding hold up?
+
+Classify every finding you raised:
+
+| Outcome | Reads as |
+|---|---|
+| **Accepted and fixed** | The finding was right and landed |
+| **Disputed, you conceded** | You were wrong, or right but at
+--- L1460 [2026-09-02T02:34:53] This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+   This session had three major, sequential phases:
+
+   **A. Session start + branch hygiene** (routine, per AGENTS.md's mandatory session-start ritual): confirm branch, read project memory, then explicitly requested: "before anything, let's make sure to have all our active local branches up to date with remote, and also make sure we have all branches that are in remote but not yet locally."
+
+   **B. `/zimmerMANNReview` of PR #65** (the vast bulk of this session): a full, rigorous FED-lead-style code review of a colleague's (Tim Lavelle's) PR #65, "feat(header): global header rebuild" against `develop`, covering SFCC-52/746/747 (as requested) plus SFCC-96/97 (bundled in, unrequested). The user drove this as a genuine collaborative technical review: repeatedly asking me to explain findings in plain ("ELI5") terms, verify things live in a real browser himself rather than trust automated claims, push back on findings he disagreed with (AC10 tab-order, the Contentful error) forcing re-verification, and ultimately decide the verdict ("Comment only"), draft real PR comments, edit them after posting, and produce a separate Tim-facing tracking document. The intent throughout was rigor and honesty over speed — multiple times the user's own hands-on testing caught things my testing missed or got wrong, and I was expected to update findings accordingly rather than defend an earlier claim.
+
+   **C. `/zimmerMANNRevImprover`** (in progress, interrupted): immediately after finishing the PR #65 review, the user invoked this skill with input "- review done, time to learn from it" to retrospectively assess the QUALITY OF THE REVIEW ITSELF (not the PR), split into Job A (did each finding hold up: fixed/conceded/held/ignored), Job B (coverage gaps: what did the review miss), Job C (process qualit
+--- L1785 [2026-09-02T02:47:38] [Request interrupted by user for tool use]
+====================================================================================================
+SESSION 62d27430
+--- L3 [2026-09-02T03:00:54] hey claude, ready to work?
+--- L17 [2026-09-02T03:01:11] Base directory for this skill: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/skills/session-start
+
+Run the mandatory session start ritual defined in [AGENTS.md](../../../AGENTS.md). Do this before writing any code.
+
+## Steps (in order — do not skip any)
+
+1. **Confirm branch** — run `git branch --show-current`. If the output is `develop` or `main`, stop immediately — no edits permitted (see [AGENTS.md](../../../AGENTS.md) Hard Rule 1). If it matches `release/*` or `hotfix/*`, read [.docs/releaseBranchesRules.md](../../../.docs/releaseBranchesRules.md) in full before proceeding — the supervised-edit and back-merge rules there apply on top of the Hard Rules.
+
+2. **Read tracking docs** — read these in parallel:
+   - [.docs/memory/projectState.md](../../../.docs/memory/projectState.md) — current phase, integration statuses (mock/live/not started), what's done and pending
+   - [.docs/memory/sprintScope.md](../../../.docs/memory/sprintScope.md) — what exists this sprint, what is deferred. **Read before scoping any new work.**
+   - [.docs/memory/feedback.md](../../../.docs/memory/feedback.md) — patterns to avoid or repeat
+   - [.docs/memory/upstreamBaseline.md](../../../.docs/memory/upstreamBaseline.md) — current `@salesforce/retail-react-app` version and review state
+   - [../session-notes.md](../session-notes.md) — lightweight, **gitignored, per-developer** carryover notes from your last local session (a Claude-writable staging area — see "Living Memory" below for how this differs from `.docs/memory/`). If it has pending items, surface them in step 4's "blockers or outstanding issues" and clear/promote each once resolved. It won't exist for a fresh clone or a teammate who hasn't used it — that's expected, skip silently.
+
+3. **Health checks** — run when the helper exists:
+   - `bash scripts/healthCheckAll.sh` — If the script does not exist yet, state that clearly and skip.
+
+4. **State current position** — in plain language, say exactly:
+   - Current branch
+   - Curr
+--- L177 [2026-09-02T03:36:31] <command-message>zimmerMANNReview</command-message>
+<command-name>/zimmerMANNReview</command-name>
+<command-args>let's review PR #67 at https://github.com/ZimmermannAU/zimmermann-pwa/pull/67</command-args>
+--- L178 [2026-09-02T03:36:31] Base directory for this skill: /Users/marcel.a.n.navarro/.claude/skills/zimmerMANNReview
+
+Review of a colleague's work. Same architecture as the build chain — ground truth, a gated audit,
+then present and stop — tailored to a PR you did not write.
+
+**Intended model: Sonnet 5 at maximum effort.**
+
+**The thing that makes it work:** you hold the ground truth and the adjudication, and delegate only
+the reading. Reviewers are cheap and fallible; measurements are expensive and authoritative. Keep
+those on opposite sides of the line.
+
+**Input:** `let's review PR #67 at https://github.com/ZimmermannAU/zimmermann-pwa/pull/67` — a PR number.
+
+**Scale to the work.** A two-file PR does not get four reviewers. Nothing too crazy, no
+overthinking.
+
+---
+
+## Phase 1 — ground truth. Yours, not an agent's.
+
+### Frame the PR
+
+Base SHA, head SHA, files changed, ±lines. **Use the live head** — a stale ref has already caused a
+whole round of re-verification here.
+
+### Requirements — Jira, Confluence, Figma
+
+Build the same requirements picture a PreBuild would build, then judge the PR against it. Every
+scope argument, every "this is missing", every "this wasn't asked for" gets decided against these
+words — not the PR description's paraphrase of them.
+
+**Jira.** Pull the full ticket: description, ACs, linked work items, and — critically — the full
+comment thread. Decisions made in comments routinely contradict the description and never make it
+back into the ACs. Flag: untestable ACs · requirements that contradict each other or the comments
+· a linked blocker still open · a decision in comments that the implementation may not have seen ·
+**evidence that a different PR, branch, or assignee is already working the same ticket.**
+
+**Anything flagged here goes in your next status update to Marcel, even when it's correctly out
+of scope for the PR itself.** "Not my concern for this review" and "not worth telling him" are
+different judgements — a discovery can be exactly right to leave alone in the 

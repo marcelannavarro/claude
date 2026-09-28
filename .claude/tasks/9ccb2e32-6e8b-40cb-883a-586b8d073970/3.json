@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Recheck flags to convergence + report",
+  "description": "Re-verify each flag against sources, iterate until no new flags surface, then produce the standing report on how the TSD holds up.",
+  "activeForm": "Rechecking flags + writing report",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

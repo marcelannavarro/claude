@@ -1,0 +1,706 @@
+=====FILE: overrides/app/components/ui-kits/atoms/zimmButton/index.tsx
+     1	import React, { type CSSProperties } from 'react';
+     2	import { Button as ChakraButton, IconButton } from '@chakra-ui/react';
+     3	import { ZimmIcon } from '../zimmIcon';
+     4	import type { ZimmIconType, ZimmIconSize } from '../zimmIcon';
+     5	
+     6	// All hover/press/focus/disabled interaction states live in zimmButton.css.ts, co-located
+     7	// beside this file. ZimmButton is a thin mapping layer: Zimmermann props (inverse,
+     8	// large/medium) → Chakra variant/size names that zimmButton.css.ts recognises.
+     9	
+    10	type ZimmButtonBaseProps = {
+    11	  /** Visible label (primary/secondary) or aria-label (icon variant — no visible text). */
+    12	  label: string;
+    13	  type?: 'button' | 'submit' | 'reset';
+    14	  disabled?: boolean;
+    15	  inverse?: boolean;
+    16	  onClick?: () => void;
+    17	  style?: CSSProperties;
+    18	};
+    19	
+    20	type ZimmLabelButtonProps = ZimmButtonBaseProps & {
+    21	  variant?: 'primary' | 'secondary';
+    22	  size?: 'large' | 'medium';
+    23	  fullWidth?: boolean;
+    24	};
+    25	
+    26	type ZimmIconButtonProps = ZimmButtonBaseProps & {
+    27	  variant: 'icon';
+    28	  icon: ZimmIconType;
+    29	  /** Icon render size — one of the iconSizes keys ('sm' | 'md' | 'lg'). Defaults to 'md' (16px). */
+    30	  size?: ZimmIconSize;
+    31	};
+    32	
+    33	type ZimmButtonProps = ZimmLabelButtonProps | ZimmIconButtonProps;
+    34	
+    35	const ICON_SIZE_DEFAULT: ZimmIconSize = 'md';
+    36	
+    37	/** Atom — labelled button (primary/secondary) or icon-only button. All visual states
+    38	 *  are handled by `zimmButton.css.ts` (co-located beside this file) — no React state for hover/press/focus. */
+    39	export const ZimmButton = (props: ZimmButtonProps) => {
+    40	  const { label, type = 'button', disabled = false, inverse = false, onClick, style } = props;
+    41	
+    42	  if (props.variant === 'icon') {
+    43	    return (
+    44	      <IconButton
+    45	        aria-label={label}
+    46	        type={type}
+    47	        isDisabled={disabled}
+    48	        onClick={onClick}
+    49	        variant={inverse ? 'iconInverse' : 'icon'}
+    50	        size="icon"
+    51	        icon={<ZimmIcon type={props.icon} size={props.size ?? ICON_SIZE_DEFAULT} aria-hidden={true} />}
+    52	        style={style}
+    53	      />
+    54	    );
+    55	  }
+    56	
+    57	  const variant = props.variant ?? 'primary';
+    58	  const size = props.size === 'medium' ? 'sm' : 'lg';
+    59	  // Maps inverse prop to the *Inverse variant suffix defined in zimmButton.css.ts.
+    60	  const chakraVariant = `${variant}${inverse ? 'Inverse' : ''}`;
+    61	
+    62	  return (
+    63	    <ChakraButton
+    64	      type={type}
+    65	      isDisabled={disabled}
+    66	      onClick={onClick}
+    67	      variant={chakraVariant}
+    68	      size={size}
+    69	      width={props.fullWidth ? '100%' : undefined}
+    70	      style={style}
+    71	    >
+    72	      {label}
+    73	    </ChakraButton>
+    74	  );
+    75	};
+=====FILE: overrides/app/components/ui-kits/atoms/zimmButton/zimmButton.css.ts
+     1	import { defineStyleConfig } from '@chakra-ui/react';
+     2	
+     3	const BUTTON_PRESSED = 'var(--zimm-color-action-primary-bg-pressed)';
+     4	// No --zimm-focus-ring-inverse CSS var yet — inline until designer adds one to zimmTokens.
+     5	const FOCUS_RING_INVERSE = 'var(--zimm-border-width-default) solid var(--zimm-color-action-primary-text)';
+     6	
+     7	// Icon-variant opacity levels. No foundation opacity token covers element-level opacity
+     8	// (colors.opacity holds RGBA overlays, not multipliers), so named constants are the
+     9	// correct pattern per conventions.md > "No magic numbers or strings."
+    10	const OPACITY_ICON_HOVER = 0.6;
+    11	const OPACITY_ICON_DISABLED = 0.4;
+    12	// 0.15s, matching baseStyle. Deliberately NOT var(--zimm-motion-duration-fast) (200ms):
+    13	// see baseStyle's transition comment above — that decision was to leave 0.15s as-is pending
+    14	// the UI designer rather than retime silently, and motion.ts is itself marked provisional.
+    15	// Retiming only the icon variants would leave this file running two different durations.
+    16	// One constant so icon/iconInverse cannot drift.
+    17	const ICON_TRANSITION = 'opacity 0.15s ease';
+    18	
+    19	// fontFamily/fontWeight/lineHeight/letterSpacing/textTransform come from sizes.lg/sm's
+    20	// textStyle (below), not here — button always renders with a size (defaultProps.size
+    21	// is 'lg', there's no sizeless render path), so a duplicate fallback here would only
+    22	// ever mask the per-size textStyle value instead of letting it apply.
+    23	const baseStyle = {
+    24	  borderRadius: 0,
+    25	  // 0.15s matches no motion token (fast 200ms / default 300ms) — left as-is
+    26	  // pending the UI designer's confirmation rather than retimed silently.
+    27	  transition: 'background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease',
+    28	  // Focus ring per Handover button.md §focus: outline only, no background change.
+    29	  // Replaces the previous outline:none + bg-swap, which gave the primary variant an
+    30	  // invisible focus state (#191919 default vs #000000 focus) — a WCAG 2.4.7 failure.
+    31	  // Light-mode ring (border-focus). Dark-surface / inverse ring (grey-white) is the
+    32	  // separate deferred inverse-focus item, owned with the UI designer.
+    33	  _focusVisible: {
+    34	    outline: 'var(--zimm-focus-ring)',
+    35	    outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+    36	    boxShadow: 'none',
+    37	  },
+    38	};
+    39	
+    40	const variants = {
+    41	  primary: {
+    42	    bg: 'var(--zimm-color-text-default)',
+    43	    color: 'var(--zimm-color-text-inverse)',
+    44	    border: 'var(--zimm-border-width-default) solid',
+    45	    borderColor: 'var(--zimm-color-text-default)',
+    46	    _hover: {
+    47	      bg: 'var(--zimm-color-text-inverse-grey)',
+    48	      borderColor: 'var(--zimm-color-text-inverse-grey)',
+    49	      _disabled: { bg: 'var(--zimm-color-border-secondary)', borderColor: 'var(--zimm-color-border-secondary)' },
+    50	    },
+    51	    _active: {
+    52	      bg: BUTTON_PRESSED,
+    53	      borderColor: BUTTON_PRESSED,
+    54	    },
+    55	    _disabled: {
+    56	      bg: 'var(--zimm-color-border-secondary)',
+    57	      borderColor: 'var(--zimm-color-border-secondary)',
+    58	      color: 'var(--zimm-color-text-inverse)',
+    59	      opacity: 1,
+    60	      cursor: 'not-allowed',
+    61	    },
+    62	    // Focus ring inherited from baseStyle (2px offset), per Handover button.md.
+    63	  },
+    64	  primaryInverse: {
+    65	    bg: 'var(--zimm-color-action-primary-text)',
+    66	    color: 'var(--zimm-color-action-primary-bg-default)',
+    67	    border: 'none',
+    68	    _hover: {
+    69	      bg: 'var(--zimm-color-action-secondary-bg-hover)',
+    70	      _disabled: { bg: 'var(--zimm-color-action-primary-bg-disabled)' },
+    71	    },
+    72	    _active: {
+    73	      bg: BUTTON_PRESSED,
+    74	      color: 'var(--zimm-color-action-primary-text)',
+    75	    },
+    76	    _disabled: {
+    77	      bg: 'var(--zimm-color-action-primary-bg-disabled)',
+    78	      color: 'var(--zimm-color-action-primary-text-disabled)',
+    79	      opacity: 1,
+    80	      cursor: 'not-allowed',
+    81	    },
+    82	    _focusVisible: {
+    83	      outline: FOCUS_RING_INVERSE,
+    84	      outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+    85	      boxShadow: 'none',
+    86	    },
+    87	  },
+    88	  secondary: {
+    89	    bg: 'var(--zimm-color-bg-07)',
+    90	    color: 'var(--zimm-color-text-default)',
+    91	    border: 'var(--zimm-border-width-default) solid',
+    92	    borderColor: 'var(--zimm-color-text-default)',
+    93	    _hover: {
+    94	      bg: 'var(--zimm-color-bg-01)',
+    95	      borderColor: 'var(--zimm-color-text-default)',
+    96	      _disabled: { bg: 'transparent', borderColor: 'var(--zimm-color-text-inverse-grey)' },
+    97	    },
+    98	    _active: {
+    99	      bg: BUTTON_PRESSED,
+   100	      borderColor: BUTTON_PRESSED,
+   101	      color: 'var(--zimm-color-text-inverse)',
+   102	    },
+   103	    _disabled: {
+   104	      bg: 'transparent',
+   105	      borderColor: 'var(--zimm-color-text-inverse-grey)',
+   106	      color: 'var(--zimm-color-text-muted)',
+   107	      opacity: 1,
+   108	      cursor: 'not-allowed',
+   109	    },
+   110	    // Handover button.md §focus: outline only (no background change); 3px offset on
+   111	    // secondary to clear its 1px border. Stated explicitly rather than relying on
+   112	    // baseStyle merge, so the ring can't be lost to variant-override semantics.
+   113	    _focusVisible: {
+   114	      outline: 'var(--zimm-focus-ring)',
+   115	      outlineOffset: 'var(--zimm-focus-ring-offset-secondary)',
+   116	      boxShadow: 'none',
+   117	    },
+   118	  },
+   119	  secondaryInverse: {
+   120	    bg: 'transparent',
+   121	    color: 'var(--zimm-color-action-primary-text)',
+   122	    border: 'var(--zimm-border-width-default) solid',
+   123	    borderColor: 'var(--zimm-color-action-primary-text)',
+   124	    _hover: {
+   125	      bg: 'var(--zimm-color-action-secondary-bg-hover)',
+   126	      _disabled: {
+   127	        bg: 'transparent',
+   128	        borderColor: 'var(--zimm-color-action-secondary-text-disabled)',
+   129	      },
+   130	    },
+   131	    _active: {
+   132	      bg: BUTTON_PRESSED,
+   133	      borderColor: BUTTON_PRESSED,
+   134	      color: 'var(--zimm-color-action-primary-text)',
+   135	    },
+   136	    _disabled: {
+   137	      bg: 'transparent',
+   138	      borderColor: 'var(--zimm-color-action-secondary-text-disabled)',
+   139	      color: 'var(--zimm-color-action-secondary-text-disabled)',
+   140	      opacity: 1,
+   141	      cursor: 'not-allowed',
+   142	    },
+   143	    _focusVisible: {
+   144	      outline: FOCUS_RING_INVERSE,
+   145	      outlineOffset: 'var(--zimm-focus-ring-offset-secondary)',
+   146	      boxShadow: 'none',
+   147	    },
+   148	  },
+   149	  // Icon-only variant — opacity-based hover; transition overrides baseStyle to include opacity.
+   150	  icon: {
+   151	    bg: 'transparent',
+   152	    border: 'none',
+   153	    color: 'var(--zimm-color-action-primary-bg-default)',
+   154	    transition: ICON_TRANSITION,
+   155	    _hover: {
+   156	      bg: 'transparent',
+   157	      opacity: OPACITY_ICON_HOVER,
+   158	    },
+   159	    _active: {
+   160	      bg: 'transparent',
+   161	      opacity: 1,
+   162	    },
+   163	    _disabled: {
+   164	      bg: 'transparent',
+   165	      opacity: OPACITY_ICON_DISABLED,
+   166	      cursor: 'not-allowed',
+   167	    },
+   168	    _focusVisible: {
+   169	      outline: 'var(--zimm-focus-ring)',
+   170	      outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+   171	      boxShadow: 'none',
+   172	    },
+   173	  },
+   174	  iconInverse: {
+   175	    bg: 'transparent',
+   176	    border: 'none',
+   177	    color: 'var(--zimm-color-action-primary-text)',
+   178	    transition: ICON_TRANSITION,
+   179	    _hover: {
+   180	      bg: 'transparent',
+   181	      opacity: OPACITY_ICON_HOVER,
+   182	    },
+   183	    _active: {
+   184	      bg: 'transparent',
+   185	      opacity: 1,
+   186	    },
+   187	    _disabled: {
+   188	      bg: 'transparent',
+   189	      opacity: OPACITY_ICON_DISABLED,
+   190	      cursor: 'not-allowed',
+   191	    },
+   192	    _focusVisible: {
+   193	      outline: FOCUS_RING_INVERSE,
+   194	      outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+   195	      boxShadow: 'none',
+   196	    },
+   197	  },
+   198	};
+   199	
+   200	// PROVISIONAL prototype button dimensions. The Handover's action tokens specify 52px (lg) /
+   201	// 40px (md) — see actionSizes in foundation/sizes.ts. Reconciling prototype ↔ Handover is a
+   202	// UI-designer decision (Hard Rule #3), pending sign-off, so the prototype values are named
+   203	// here to make the temporary exception explicit rather than switched silently. The 5px
+   204	// vertical padding has no token counterpart.
+   205	const BTN_HEIGHT_LG = '50px';
+   206	const BTN_HEIGHT_SM = '41px';
+   207	const BTN_PADDING_Y = '5px';
+   208	
+   209	// `textStyle` is a special key Chakra's style engine expands wherever it appears (see
+   210	// link.ts) — resolves against the full registered textStyles.button/buttonSm
+   211	// (foundation/typography.ts), the single source for fontFamily/fontSize/fontWeight/
+   212	// lineHeight/letterSpacing/textTransform.
+   213	const sizes = {
+   214	  lg: {
+   215	    h: BTN_HEIGHT_LG,
+   216	    px: 'var(--zimm-scale-xl)',
+   217	    py: BTN_PADDING_Y,
+   218	    textStyle: 'button',
+   219	  },
+   220	  sm: {
+   221	    h: BTN_HEIGHT_SM,
+   222	    px: 'var(--zimm-scale-xl)',
+   223	    py: BTN_PADDING_Y,
+   224	    textStyle: 'buttonSm',
+   225	  },
+   226	  // WCAG 2.2 AA SC 2.5.8 — 24px minimum target size. SFCC-55's accessibility note names this
+   227	  // control specifically ("the minimum size of that email sign up button").
+   228	  //
+   229	  // minW/minH, NOT padding: Chakra's IconButton hard-sets `padding: "0"` as a *style prop*, and
+   230	  // style props merge after __css, so any p/px/py declared here is silently discarded. The
+   231	  // previous `p: 'xs'` read as a 32px target and rendered 16x16 — the icon's own boxSize.
+   232	  //
+   233	  // var, not 'xl': min-width/height resolve through theme.sizes (xl = 36rem = 576px), not
+   234	  // theme.space. Same rule and same token as clearButton in zimmTextInput.ts, which is the
+   235	  // sibling control in the same trailing slot.
+   236	  icon: {
+   237	    h: 'auto',
+   238	    minW: 'var(--zimm-scale-xl)',
+   239	    minH: 'var(--zimm-scale-xl)',
+   240	  },
+   241	};
+   242	
+   243	export const Button = defineStyleConfig({
+   244	  baseStyle,
+   245	  variants,
+   246	  sizes,
+   247	  defaultProps: {
+   248	    variant: 'primary',
+   249	    size: 'lg',
+   250	  },
+   251	});
+=====FILE: overrides/app/components/ui-kits/atoms/zimmIcon/index.tsx
+     1	import React from 'react';
+     2	import { iconSizes } from 'app/theme/foundation';
+     3	import {
+     4	  ArrowDownIcon,
+     5	  ArrowLinkIcon,
+     6	  ArrowUpIcon,
+     7	  BagIcon,
+     8	  BagSelectedIcon,
+     9	  CalendarIcon,
+    10	  CarouselIcon,
+    11	  CarouselSelectedIcon,
+    12	  ChatIcon,
+    13	  CheckIcon,
+    14	  ChevronDownIcon,
+    15	  ChevronLeftIcon,
+    16	  ChevronRightIcon,
+    17	  ChevronUpIcon,
+    18	  CloseIcon,
+    19	  DeleteIcon,
+    20	  EditIcon,
+    21	  ExternalLinkIcon,
+    22	  InfoIcon,
+    23	  InfoSelectedIcon,
+    24	  LocationIcon,
+    25	  MenuIcon,
+    26	  MinusIcon,
+    27	  MuteIcon,
+    28	  PasswordShowIcon,
+    29	  PauseIcon,
+    30	  PlayIcon,
+    31	  PlusIcon,
+    32	  ProfileIcon,
+    33	  SearchIcon,
+    34	  ShareIcon,
+    35	  ShareTwoIcon,
+    36	  FavouritesIcon,
+    37	  FavouritesSolidIcon,
+    38	  PhoneIcon,
+    39	  WhatsAppIcon,
+    40	  EmailIcon,
+    41	} from 'app/components/icons';
+    42	
+    43	// Figma iconography spec: node 1892:59595 — 34 of 34 types implemented.
+    44	export type ZimmIconType =
+    45	  | 'arrow-down'
+    46	  | 'arrow-link'
+    47	  | 'arrow-up'
+    48	  | 'bag'
+    49	  | 'bag-selected'
+    50	  | 'calendar'
+    51	  | 'carousel'
+    52	  | 'carousel-selected'
+    53	  | 'chat'
+    54	  | 'check'
+    55	  | 'chevron-down'
+    56	  | 'chevron-left'
+    57	  | 'chevron-right'
+    58	  | 'chevron-up'
+    59	  | 'close'
+    60	  | 'delete'
+    61	  | 'edit'
+    62	  | 'external-link'
+    63	  | 'info'
+    64	  | 'info-selected'
+    65	  | 'location'
+    66	  | 'menu'
+    67	  | 'minus'
+    68	  | 'mute'
+    69	  | 'password'
+    70	  | 'pause'
+    71	  | 'play'
+    72	  | 'plus'
+    73	  | 'profile'
+    74	  | 'search'
+    75	  | 'share'
+    76	  | 'share-2'
+    77	  | 'wishlist'
+    78	  | 'wishlist-selected'
+    79	  // Footer-specific custom icons — not yet in Figma node 1892:59595,
+    80	  // pending addition to the iconography spec in the next design sync.
+    81	  | 'phone'
+    82	  | 'whatsapp'
+    83	  | 'email';
+    84	
+    85	export type ZimmIconSize = keyof typeof iconSizes;
+    86	
+    87	type ZimmIconProps = {
+    88	  type: ZimmIconType;
+    89	  size?: ZimmIconSize;
+    90	  /** Pass Chakra token strings or CSS keywords (e.g. 'text.primary', 'currentColor').
+    91	   *  Do not pass hardcoded hex values — use theme tokens. */
+    92	  color?: string;
+    93	} & ({ 'aria-hidden': true; 'aria-label'?: never } | { 'aria-hidden'?: never; 'aria-label': string });
+    94	
+    95	const ICON_MAP = {
+    96	  'arrow-down': ArrowDownIcon,
+    97	  'arrow-link': ArrowLinkIcon,
+    98	  'arrow-up': ArrowUpIcon,
+    99	  bag: BagIcon,
+   100	  'bag-selected': BagSelectedIcon,
+   101	  calendar: CalendarIcon,
+   102	  carousel: CarouselIcon,
+   103	  'carousel-selected': CarouselSelectedIcon,
+   104	  chat: ChatIcon,
+   105	  check: CheckIcon,
+   106	  'chevron-down': ChevronDownIcon,
+   107	  'chevron-left': ChevronLeftIcon,
+   108	  'chevron-right': ChevronRightIcon,
+   109	  'chevron-up': ChevronUpIcon,
+   110	  close: CloseIcon,
+   111	  delete: DeleteIcon,
+   112	  edit: EditIcon,
+   113	  'external-link': ExternalLinkIcon,
+   114	  info: InfoIcon,
+   115	  'info-selected': InfoSelectedIcon,
+   116	  location: LocationIcon,
+   117	  menu: MenuIcon,
+   118	  minus: MinusIcon,
+   119	  mute: MuteIcon,
+   120	  password: PasswordShowIcon,
+   121	  pause: PauseIcon,
+   122	  play: PlayIcon,
+   123	  plus: PlusIcon,
+   124	  profile: ProfileIcon,
+   125	  search: SearchIcon,
+   126	  share: ShareIcon,
+   127	  'share-2': ShareTwoIcon,
+   128	  wishlist: FavouritesIcon,
+   129	  'wishlist-selected': FavouritesSolidIcon,
+   130	  // Footer-specific custom icons — not yet in Figma node 1892:59595,
+   131	  // pending addition to the iconography spec in the next design sync.
+   132	  phone: PhoneIcon,
+   133	  whatsapp: WhatsAppIcon,
+   134	  email: EmailIcon,
+   135	} as const;
+   136	
+   137	/** Atom — single icon from the Zimmermann icon set. Mirrors zimm-icon contract. */
+   138	export const ZimmIcon = ({ type, size = 'md', color = 'currentColor', ...aria }: ZimmIconProps) => {
+   139	  const Icon = ICON_MAP[type];
+   140	  // Both keys exist in every member of the union (one required, one optional-`never`), so the
+   141	  // rest object is indexable directly. The XOR is enforced by ZimmIconProps, not by a cast —
+   142	  // casting here only widened 'aria-hidden' from `true | undefined` to `boolean | undefined`.
+   143	  const ariaHidden = aria['aria-hidden'];
+   144	  const ariaLabel = aria['aria-label'];
+   145	  return (
+   146	    <Icon
+   147	      boxSize={iconSizes[size]}
+   148	      color={color}
+   149	      aria-hidden={ariaHidden}
+   150	      aria-label={ariaLabel}
+   151	      role={ariaLabel ? 'img' : undefined}
+   152	    />
+   153	  );
+   154	};
+=====FILE: overrides/app/components/ui-kits/atoms/zimmLogo/index.tsx
+     1	import React, { type CSSProperties } from 'react';
+     2	import { useToken } from '@chakra-ui/react';
+     3	
+     4	type ZimmLogoProps = {
+     5	  variant?: 'inverse' | 'default';
+     6	  style?: CSSProperties;
+     7	};
+     8	
+     9	// §7 raise: alias/size/logo/max-width (327px) and alias/size/logo/height (39px) → foundation/sizes.ts (UI designer)
+    10	// px kept provisionally — SVG viewport dimensions confirmed by Figma node 1892:50472 / 1892:50474.
+    11	// Pending designer confirmation: scale with zoom (→ rem) or remain fixed (→ px, hairline exception).
+    12	const LOGO_MAX_WIDTH = '327px'; // provisional
+    13	const LOGO_HEIGHT = '39px'; // provisional
+    14	
+    15	/**
+    16	 * Atom — Zimmermann wordmark. Mirrors zimm-logo contract.
+    17	 * Inlined because webpack svg-sprite-loader (server) + ignore-loader (client)
+    18	 * prevent <img src> from resolving an SVG import to a URL.
+    19	 */
+    20	export const ZimmLogo = ({ variant = 'default', style }: ZimmLogoProps) => {
+    21	  // Resolved from the registered theme rather than a var() string: an SVG `fill`
+    22	  // attribute needs a concrete colour value, not a custom-property reference.
+    23	  const [inverseColour, defaultColour] = useToken('colors', ['text.inverse', 'text.default']);
+    24	  const fill = variant === 'inverse' ? inverseColour : defaultColour;
+    25	  return (
+    26	    <svg
+    27	      viewBox="0 0 631 74.5312"
+    28	      fill="none"
+    29	      xmlns="http://www.w3.org/2000/svg"
+    30	      aria-label="Zimmermann"
+    31	      role="img"
+    32	      style={{
+    33	        display: 'block',
+    34	        width: '100%',
+    35	        maxWidth: LOGO_MAX_WIDTH,
+    36	        height: LOGO_HEIGHT,
+    37	        overflow: 'clip',
+    38	        ...style,
+    39	      }}
+    40	    >
+    41	      <path
+    42	        d="M4.7064 7.67794H45.8272L0 74.5312H54.5873V69.0322H10.5808L10.6495 68.963C11.9893 66.9916 54.7247 4.66903 56.4424 2.21347H4.7064V7.71253V7.67794Z"
+    43	        fill={fill}
+    44	      />
+    45	      <path d="M67.9087 2.21347H62.103V74.5312H67.9087V2.21347Z" fill={fill} />
+    46	      <path
+    47	        d="M153.922 74.5312L138.188 0L113.763 59.7979L89.3375 0L73.5693 74.5312H79.3063L91.0208 17.9497L113.763 74.5312L136.504 17.9497L148.219 74.5312H153.922Z"
+    48	        fill={fill}
+    49	      />
+    50	      <path
+    51	        d="M239.934 74.5312L224.166 0L199.741 59.7979L175.35 0L159.582 74.5312H165.285L177.033 17.9497L199.741 74.5312L222.483 17.9497L234.232 74.5312H239.934Z"
+    52	        fill={fill}
+    53	      />
+    54	      <path
+    55	        d="M245.595 2.21347V74.5312H288.021V68.9976H251.367V40.8798H285.685V35.3807H251.367V7.74711H288.021V2.21347H245.595Z"
+    56	        fill={fill}
+    57	      />
+    58	      <path
+    59	        d="M316.114 40.8798C316.836 40.8452 317.523 40.776 318.176 40.7068C332.673 39.2197 335.661 27.8411 335.661 21.685C335.661 18.1227 334.803 14.4566 333.154 11.3786C331.402 8.12755 328.688 5.63741 325.355 4.15025C322.47 2.80142 318.107 2.21347 310.79 2.21347H293.682V74.5312H299.419V40.9144H309.656L332.501 74.5312H339.062L316.114 40.8452V40.8798ZM310.618 7.7817C316.63 7.7817 320.752 8.19672 322.916 9.19969C325.184 10.2027 326.97 11.8282 328.138 14.0416C329.34 16.2897 329.959 19.0565 329.959 21.685C329.959 22.6879 329.89 23.6563 329.718 24.5901C329.169 27.772 326.661 34.2394 318.072 35.1386C316.664 35.277 315.049 35.4153 313.4 35.4153H299.419V7.7817H310.618Z"
+    60	        fill={fill}
+    61	      />
+    62	      <path
+    63	        d="M425.076 74.5312L409.307 0L384.917 59.7979L360.491 0L344.723 74.5312H350.426L362.175 17.9497L384.917 74.5312L407.624 17.9497L419.373 74.5312H425.076Z"
+    64	        fill={fill}
+    65	      />
+    66	      <path
+    67	        d="M430.77 74.5312H436.782C436.782 74.5312 445.851 51.9816 446.195 51.1862H476.117C476.426 51.9816 485.529 74.5312 485.529 74.5312H491.541L461.173 0L430.736 74.5312H430.77ZM448.394 45.5833C449.081 43.9233 460.074 16.4972 461.173 13.7649C462.272 16.4972 473.197 43.9233 473.884 45.5833H448.394Z"
+    68	        fill={fill}
+    69	      />
+    70	      <path
+    71	        d="M555.465 59.9708L497.202 0V74.5312H503.008V14.1799C505.241 16.5663 561.271 74.5312 561.271 74.5312V2.21346H555.465V60.0054V59.9708Z"
+    72	        fill={fill}
+    73	      />
+    74	      <path
+    75	        d="M625.194 59.9708L566.931 0V74.5312H572.737V14.1799C574.97 16.5663 631 74.5312 631 74.5312V2.21346H625.194V60.0054V59.9708Z"
+    76	        fill={fill}
+    77	      />
+    78	    </svg>
+    79	  );
+    80	};
+=====FILE: overrides/app/components/ui-kits/atoms/zimmNavItem/index.tsx
+     1	import React, { type CSSProperties } from 'react';
+     2	import { chakra, useStyleConfig, type SystemStyleObject } from '@chakra-ui/react';
+     3	import { isSafeHref } from 'app/utils/safeHref';
+     4	
+     5	// Allowlist guards against javascript:/data:/vbscript: URIs from CMS-sourced hrefs (XSS vector).
+     6	// A single leading / is a same-origin path. // is protocol-relative and resolves off-origin,
+     7	// so it is excluded here and must arrive as an explicit https: URL instead.
+     8	
+     9	type ZimmNavItemProps = {
+    10	  /** Visible label text */
+    11	  label: string;
+    12	  /**
+    13	   * Link destination. When omitted the item renders as a `<button>` with no navigation
+    14	   * side-effects — no fragment scroll, no redirect — so placeholder items are safe until
+    15	   * real hrefs are sourced from Contentful or the routing layer.
+    16	   */
+    17	  href?: string;
+    18	  /** Marks the item as currently selected; renders the underline */
+    19	  active?: boolean;
+    20	  /** Inverse mode — white text on a dark background */
+    21	  inverse?: boolean;
+    22	  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
+    23	  style?: CSSProperties;
+    24	  /** Theme-resolved style overrides. Preferred over `style` — token keys resolve. */
+    25	  sx?: SystemStyleObject;
+    26	};
+    27	
+    28	/** Atom — navigation link with bottom-border underline on hover/active. Renders an `<a>` when
+    29	 *  `href` is provided and safe, a `<button>` otherwise (no scroll, no redirect for placeholder items).
+    30	 *  Mirrors zimm-nav-item web component 1:1. */
+    31	export const ZimmNavItem = ({ label, href, active = false, inverse = false, onClick, style, sx }: ZimmNavItemProps) => {
+    32	  const variant = inverse ? 'inverse' : 'light';
+    33	  const styles = useStyleConfig('ZimmNavItem', { variant });
+    34	
+    35	  if (href && isSafeHref(href)) {
+    36	    return (
+    37	      <chakra.a
+    38	        href={href}
+    39	        aria-current={active ? 'page' : undefined}
+    40	        onClick={onClick}
+    41	        __css={styles}
+    42	        sx={sx}
+    43	        style={style}
+    44	      >
+    45	        <span>{label}</span>
+    46	      </chakra.a>
+    47	    );
+    48	  }
+    49	
+    50	  return (
+    51	    <chakra.button
+    52	      type="button"
+    53	      aria-current={active ? 'page' : undefined}
+    54	      onClick={onClick}
+    55	      __css={styles}
+    56	      sx={sx}
+    57	      style={style}
+    58	    >
+    59	      <span>{label}</span>
+    60	    </chakra.button>
+    61	  );
+    62	};
+=====FILE: overrides/app/components/ui-kits/atoms/zimmNavItem/zimmNavItem.css.ts
+     1	import { defineStyleConfig } from '@chakra-ui/react';
+     2	
+     3	// Vertical leading around the label. Figma's footer-item allows equal space above and
+     4	// below the text and lets the item height follow the line count — 24px for one line,
+     5	// 38px for two (node 40000407:11736 > About Section > Links). Its text boxes are
+     6	// cap-height (8px one line, 22px two) where a browser line box is not, so the rule
+     7	// transfers rather than the numbers. The inner span reserves 1px for the underline
+     8	// indicator, so a line box measures 15px and two measure 29px; 4.5px each side yields
+     9	// 15+9=24 and 29+9=38 exactly. No 4.5px entry exists in spacing.ts — same provisional
+    10	// treatment as zimmButton.css.ts's BTN_PADDING_Y, pending UI-designer sign-off.
+    11	const NAV_ITEM_PAD_Y = '4.5px';
+    12	
+    13	const baseStyle = {
+    14	  // textStyle is expanded in place by Chakra's style engine; fontFamily below
+    15	  // deliberately overrides it — Figma Default/Navigation binds brand/font/family/body,
+    16	  // not the heading family textStyles.navigation carries.
+    17	  textStyle: 'navigation',
+    18	  fontFamily: 'var(--zimm-font-family-body)',
+    19	  display: 'inline-flex',
+    20	  // Figma h-[24px] is a FLOOR, not a fixed height — the design's own ABOUT column
+    21	  // wraps "ACKNOWLEDGEMENT OF COUNTRY" onto two lines. minHeight keeps the 24px
+    22	  // target while letting multi-line labels grow, so no caller needs to override it.
+    23	  minHeight: 'var(--zimm-scale-xl)', // 1.5rem (24px) — Figma: h-[24px]
+    24	  // Height comes from lineHeight + padding, not from centring inside minHeight.
+    25	  // Centring only distributes space a single line leaves over, so a wrapped label
+    26	  // overflowed the floor and lost its leading entirely — the second line of
+    27	  // "ACKNOWLEDGEMENT OF COUNTRY" sat flush against the item above it.
+    28	  lineHeight: 'var(--zimm-font-lineheight-4xs)', // 0.875rem (14px)
+    29	  paddingBlock: NAV_ITEM_PAD_Y,
+    30	  justifyContent: 'center',
+    31	  alignItems: 'center',
+    32	  whiteSpace: 'normal',
+    33	  cursor: 'pointer',
+    34	  background: 'none',
+    35	  border: 'none',
+    36	  // paddingInline, not the `padding` shorthand: a shorthand here would sit after
+    37	  // paddingBlock above and reset it back to 0.
+    38	  paddingInline: 0,
+    39	  textDecoration: 'none',
+    40	  // Inner span carries the underline. Use transparent instead of 'none' so
+    41	  // border-color transitions smoothly on hover/active without a display change.
+    42	  '& > span': {
+    43	    borderBottom: 'var(--zimm-border-width-default) solid transparent',
+    44	    transition: `border-color var(--zimm-motion-duration-fast) var(--zimm-motion-easing-standard)`,
+    45	  },
+    46	  _hover: {
+    47	    '& > span': { borderBottomColor: 'currentColor' },
+    48	  },
+    49	  // Active (aria-current="page"): permanent underline regardless of hover
+    50	  '&[aria-current="page"] > span': {
+    51	    borderBottomColor: 'currentColor',
+    52	  },
+    53	};
+    54	
+    55	const variants = {
+    56	  light: {
+    57	    color: 'var(--zimm-color-text-default)',
+    58	    _focusVisible: {
+    59	      outline: 'var(--zimm-focus-ring)',
+    60	      outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+    61	      boxShadow: 'none',
+    62	    },
+    63	  },
+    64	  inverse: {
+    65	    color: 'var(--zimm-color-text-inverse)',
+    66	    _focusVisible: {
+    67	      outline: 'var(--zimm-border-width-default) solid var(--zimm-color-text-inverse)',
+    68	      outlineOffset: 'var(--zimm-focus-ring-offset-default)',
+    69	      boxShadow: 'none',
+    70	    },
+    71	  },
+    72	};
+    73	
+    74	export const ZimmNavItem = defineStyleConfig({
+    75	  baseStyle,
+    76	  variants,
+    77	  defaultProps: { variant: 'light' },
+    78	});

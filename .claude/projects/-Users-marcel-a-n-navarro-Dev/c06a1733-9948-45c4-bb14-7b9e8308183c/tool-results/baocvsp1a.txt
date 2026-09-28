@@ -1,0 +1,591 @@
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/overrideStyling.md ##########
+     1	# Styling an Override Component
+     2	
+     3	How to style a component under `overrides/app/components/` or `overrides/app/theme/`.
+     4	Cross-references [overrides.md](./overrides.md) (module-replacement correctness — a
+     5	different concern: that file is about not breaking SFCC's own imports, this one is
+     6	about what values to reach for once the component compiles). Day-to-day CSS/token
+     7	rules live in [css.md](./css.md); this file is the practical "what do I actually type"
+     8	companion.
+     9	
+    10	---
+    11	
+    12	## The hierarchy — reach for these in order
+    13	
+    14	1. **`textStyle` prop** for anything textual. `textStyle="body2"`, never a raw `fontSize`.
+    15	   All 22 Handover text styles are registered in `theme/foundation/typography.ts`.
+    16	2. **Raw `var(--zimm-*)` CSS custom properties** for colour and spacing — `color="var(--zimm-color-text-default)"`,
+    17	   `bg="var(--zimm-color-bg-02)"`, `gap="var(--zimm-scale-m)"`. **Never** a bare Chakra/theme
+    18	   token string (`color="text.default"`, `gap="m"`) — even though `theme.colors`/`theme.space`
+    19	   ARE registered from the same Zimmermann foundations (see `theme/index.ts`'s own comment on
+    20	   which scales are and aren't registered) and a bare key resolves to the identical value. This
+    21	   is a house-style requirement, not a correctness one: a `var(--zimm-*)` reference is
+    22	   unambiguous at every call site, where a bare key forces a PR reviewer to check
+    23	   `theme/index.ts`'s registered-scale list to know whether it happens to be correct. Mechanically
+    24	   enforced across every recipe file by `theme/components/recipeGuards.test.ts`'s "no
+    25	   override-component style uses a bare token key on a registered scale" test — it walks the
+    26	   registered recipe map only, so it cannot see the same mistake made as a JSX/`sx` prop (see
+    27	   that test's SCOPE note); apply the same discipline there by hand.
+    28	3. **A component's own theme config** — either centralized (`theme/components/<name>.ts`)
+    29	   or, per the co-location pattern below, beside the component as `<name>.css.ts` — for
+    30	   anything that needs to vary by variant/size/state and isn't already a Chakra prop — see
+    31	   "Component-local tokens" and "Co-locating a component's theme file" below. For an
+    32	   interactive component with existing Chakra support (buttons, inputs, etc.), this theme
+    33	   config is the single source of truth — see "One canonical styling surface per component
+    34	   type" below.
+    35	4. **`sx` prop** for a one-off Chakra-prop-system gap, per [css.md](./css.md).
+    36	5. **Scoped `.scss`** only when `sx` genuinely can't express it (complex pseudo-selectors,
+    37	   keyframes) — same file, same rules as [css.md](./css.md) already documents.
+    38	
+    39	**Never**: a raw hex/px/rem/em literal in a component file — reach for the token
+    40	instead. The one standing exception is `zimmButton.css.ts`'s provisional height/padding
+    41	constants (`BTN_HEIGHT_LG`/`BTN_HEIGHT_SM`/`BTN_PADDING_Y`), pending UI-designer
+    42	sign-off — see Units below. Run `npm run audit:tokens` (`node scripts/auditTokenUsage.mjs`)
+    43	before opening a PR that touches `overrides/app/components/**` or
+    44	`overrides/app/theme/components/**` — it greps for exactly this, scoped to those two paths
+    45	(`.ts`/`.tsx`/`.scss`, excluding `*.test.ts(x)` and `*.stories.tsx`). A match is downgraded
+    46	from a failure to an acknowledged exception when the surrounding comment block already
+    47	contains `provisional`, `pending`, `placeholder`, or an explicit `audit-allow: <reason>` —
+    48	the exact vocabulary this codebase already uses for its documented raw-value exceptions, so
+    49	existing well-commented code doesn't need a second, separately-maintained allow-list. Built
+    50	2026-08-23 — it is not wired into CI yet, deliberately: someone still needs to own triaging a
+    51	full run's worth of pre-existing findings first (a first run against this repo surfaced 14
+    52	genuine pre-existing violations, none touched by that session, all outside its scope to fix).
+    53	Note this is a *different, broader* check than `recipeGuards.test.ts`'s bare-token-key guard
+    54	mentioned above: that one exists and runs today (`npm run test`), but only catches a bare
+    55	Chakra key standing in for a zimm var — it says nothing about a raw hex/px/rem/em literal,
+    56	which is what `audit:tokens` is for.
+    57	
+    58	## Units
+    59	
+    60	- **`rem`** for anything that should scale with the user's root font-size / browser zoom
+    61	  (WCAG 1.4.4): type (`fontSize`, `lineHeight`, `letterSpacing`) and spacing
+    62	  (`spacing.ts`'s named scale). Letter-spacing values that were specified as sub-pixel px
+    63	  in the source don't round to clean rem numbers, so those keep a trailing `// -0.12px`
+    64	  comment for traceability.
+    65	- **`px`** for hairline geometry that should _not_ scale: border widths, focus-ring
+    66	  offsets, and (for now) the provisional button-height constants in `zimmButton.css.ts` that are
+    67	  still pending UI-designer sign-off against Handover.
+    68	- **`em`** only for breakpoints (`gridSystem.ts` — deliberate, so `.zimm-grid`'s media
+    69	  queries shift with zoom the same way Chakra's responsive props do) and other
+    70	  genuinely context-relative cases. Not a general-purpose unit.
+    71	
+    72	## The alias tier is a reference, not a second copy
+    73	
+    74	`theme/foundation/colour.ts`'s primitive tier (`grey`, `ivory`, ...) is defined first as
+    75	plain `const`s, and the semantic/alias tier below it (`text`, `background`, `border`,
+    76	...) reads from those consts (`text.default: grey[900]`) instead of retyping the hex
+    77	value. Do the same for any new primitive/alias pair you add — two values can't disagree
+    78	if only one of them is ever typed.
+    79	
+    80	`zimmTokens.ts` (the `--zimm-*` CSS-var registry for `globalStyles.ts`'s `.zimm-*`
+    81	classes) is fully derived the same way — it imports `colors`/`spacing`/`fontSizes`/
+    82	`lineHeights`/`letterSpacings`/`fontWeights`/`iconSizes`/`actionSizes`/`motion`/`grid`
+    83	from their owning files rather than retyping values. The only literals left are the 7
+    84	numeric `--zimm-scale-NNN` aliases with no named-scale equivalent (`025`, `700`, `1100`,
+    85	`1200`, `1300`, `3500`, `4500`) — not duplicates, just Handover values with nothing to
+    86	derive them from. `theme/index.test.tsx`'s collision-guard tests still exist as a
+    87	regression net; treat a failure there as a real drift signal, not test noise.
+    88	
+    89	## One canonical styling surface per component type
+    90	
+    91	Only one place should define how a given interactive component looks: its theme config —
+    92	either centralized as `theme/components/<name>.ts` or, per the co-location pattern below,
+    93	beside the component as `<name>.css.ts` — consumed via Chakra's component (`<Button>`,
+    94	`<Link>` variant, etc.). Don't also give it a `.zimm-*` global class in
+    95	`globalStyles.ts` — a static CSS class can't express `_hover`/`_active`/`_disabled`/
+    96	`_focusVisible` states the way a Chakra theme config can, so a class "mirror" is
+    97	structurally incomplete from the start, and nothing stops its values from disagreeing
+    98	with the real theme config over time. `zimmButton.css.ts` (co-located at `overrides/app/components/ui-kits/atoms/zimmButton/`) is the single source of truth for
+    99	button styling; `globalStyles.ts` has no `.zimm-btn-*` classes — use Chakra's `<Button>`
+   100	for any button, not a class.
+   101	
+   102	`.zimm-*` classes remain the right tool for genuinely static, non-interactive,
+   103	massively-reused treatments (typography, the responsive grid, form-field layout) where
+   104	there's no interactive state to lose.
+   105	
+   106	## Importing an already-overridden component from a new component
+   107	
+   108	If component A (e.g. `productDetailOptions`) uses component B, and B already has an
+   109	override (e.g. `swatch-group`), **import B via a relative path
+   110	(`'../swatch-group'`), not the SFCC base path
+   111	(`'@salesforce/retail-react-app/app/components/swatch-group'`)** — even though the
+   112	base path is exactly what [overrides.md](./overrides.md) requires _inside_ an override
+   113	that's itself shadowing an SFCC module (see `product-tile/index.tsx`'s `DisplayPrice`
+   114	import, which is correct for that file).
+   115	
+   116	The reason the two cases differ: the resolver that redirects
+   117	`@salesforce/retail-react-app/...` imports to `overrides/` (`ccExtensibility` in
+   118	`package.json`, read by a webpack plugin) only runs in the **real app build** — dev
+   119	server and production. `.storybook/main.js` aliases that package straight to
+   120	`node_modules` and `vitest.config.ts` doesn't touch it at all, so neither loads the
+   121	resolver. A base-path import of an already-overridden component will build and run
+   122	correctly in the shipped app, but silently render/test the **unstyled base SFCC
+   123	version** in Storybook and Vitest — the story or test looks like it's exercising your
+   124	override and isn't.
+   125	
+   126	**Known instance of this, not yet fixed:** `product-tile/index.tsx`'s `DisplayPrice`
+   127	import uses the base path. Currently dormant only because its Storybook story exercises
+   128	the `CardBaseline` named export (which takes `price` as a pre-rendered node and never
+   129	calls `DisplayPrice`), not the default `ProductTile` bridge that actually renders it —
+   130	worth fixing before anything writes a story/test against the default export.
+   131	
+   132	An override component's own base-path imports (of modules it is _not_ also
+   133	overriding) are unaffected by this — `RecommendedProducts`, `Seo`, `QuantityPicker`
+   134	etc. have no local override to miss, so the base path is simply correct for them.
+   135	
+   136	## Component-local tokens
+   137	
+   138	When a component needs a spacing/sizing value that already has a `spacing.ts` /
+   139	`iconSizes` / etc. entry, reference that entry **as a `var(--zimm-*)` custom property**
+   140	— `marginBottom: 'var(--zimm-scale-xs)'`, not `marginBottom: 2`, not
+   141	`marginBottom: '0.5rem'`, and **not** the bare key `marginBottom: 'xs'`. The bare-key
+   142	form resolved correctly against the registered `theme.space` and was what this section
+   143	used to recommend, but hierarchy point 2 above now forbids it and
+   144	`theme/components/recipeGuards.test.ts`'s bare-token guard **fails the build on it** —
+   145	so following the old advice inside a registered recipe breaks `npm run test`.
+   146	
+   147	See `overrides/app/components/footer/footer.css.ts` and
+   148	`.../footer/bottomBar/bottomBar.css.ts` for the pattern in a real recipe. The reason is
+   149	traceability, not parity with the base theme: a `var(--zimm-*)` reference names the
+   150	Figma token it came from, where a raw `2` or `'0.5rem'` names nothing. (Note these
+   151	recipes are deliberately namespaced `ZimmFooter*` so they do **not** inherit the base
+   152	SFCC `Footer` config — their values come from Figma, not from re-expressing base
+   153	numerics. See `recipeGuards.test.ts`'s namespacing guard.)
+   154	
+   155	**Responsive steps are explicit media queries, not Chakra's array shorthand.** A
+   156	co-located recipe keys them off `BP` in `theme/components/footerShared.ts`, in the form:
+   157	
+   158	```ts
+   159	[`@media (min-width: ${BP.tablet})`]: { gap: 'var(--zimm-scale-3xl)' },
+   160	```
+   161	
+   162	The array shorthand (`['2xs', '2xs', 'xs', 'xs']`) is what this section used to
+   163	recommend, and it would put a bare token key back at every step — the guard walks
+   164	responsive arrays and attributes each element to the same prop, so all four fail.
+   165	`footer.css.ts`'s `contentRow` and `linksInner` parts are the reference.
+   166	
+   167	When a component needs a dimension with **no existing foundation entry** (and you don't
+   168	have a confirmed Figma value for it), leave it inherited from the base SFCC theme rather
+   169	than inventing a number — don't guess at design values. Follow the precedent already in
+   170	`header.ts`/`zimmButton.css.ts`: if you do have to ship a placeholder value pending designer
+   171	sign-off, say so in a comment next to it, the same way those files already do.
+   172	
+   173	## The SFCC bridge pattern (shared components only)
+   174	
+   175	If the component is used internally by SFCC's own base components (check with `grep -r
+   176	"from '@salesforce/retail-react-app/app/components/<name>'"
+   177	node_modules/@salesforce/retail-react-app/app/`), its **default export must stay a
+   178	faithful, undecorated port** — full original prop surface, same `forwardRef` behaviour,
+   179	matching what [overrides.md](./overrides.md) already requires for correctness. Put
+   180	Zimmermann-only styling behind a **named export** that wraps the default and adds
+   181	brand-specific defaults, the same split `product-tile/index.tsx` (`CardBaseline`
+   182	name + default) and `link/index.tsx` already use. `image-gallery`, `display-price`, and
+   183	`swatch-group` are all shared internal SFCC dependencies. When one of them does get
+   184	overridden, keep its default export API-compatible and put brand styling in a theme
+   185	recipe rather than a named-export split — token-driven theming doesn't require a second
+   186	export the way `CardBaseline`'s prop-narrowing did.
+   187	
+   188	**As of `7b9b5dc`, none of the three is overridden at all** — no component override, no
+   189	theme recipe, nothing registered for them in `theme/components/index.ts`. Verify current
+   190	state before relying on any of this. `protectedFiles.md` and `CODEOWNERS` list those
+   191	paths forward-lookingly, not descriptively. An earlier revision of this paragraph cited
+   192	`theme/components/imageGallery.ts` / `swatchGroup.ts` as holding their styling; neither
+   193	file has ever existed on any branch.
+   194	
+   195	---
+   196	
+   197	## Co-locating a component's theme file
+   198	
+   199	A component's recipe may live beside it as `<name>.css.ts` (e.g.
+   200	`overrides/app/components/footer/footer.css.ts`, or an organism's own
+   201	`overrides/app/components/ui-kits/organisms/<name>/<name>.css.ts`) instead of in
+   202	`theme/components/`. Either way it's still registered in
+   203	`overrides/app/theme/components/index.ts` — Chakra resolves a recipe by the string key
+   204	passed to `useMultiStyleConfig`, not by file path, so co-location is purely an
+   205	organisational choice with no runtime difference.
+   206	
+   207	**Governance follows the file, not the folder.** `theme/components/` is Tier 2, gated to
+   208	the UI designer (protectedFiles.md). A co-located `<name>.css.ts` is deliberately routed
+   209	differently: CODEOWNERS' `overrides/app/components/**/*.css.ts` rule sends it to the
+   210	owning squad(s) only, dropping the Tier 1/2 approver requirement that the surrounding
+   211	directory (e.g. `header/`, `footer/`) otherwise carries. That's intentional — a co-located
+   212	file is for composing a component's own layout from **already-established** tokens
+   213	(spacing, colour, typography scale), not for authoring new raw design values. Authoring an
+   214	actual new token still means editing `theme/foundation/` (Tier 1) or a `theme/components/`
+   215	recipe that's still designer-owned (`header.ts`, `listMenu.ts`, `navConstants.ts` — the
+   216	files that remain in that directory) — both stay behind the full gate.
+   217	
+   218	> **Known inconsistency, flagged not resolved.** This paragraph used to cite `button.ts`'s
+   219	> `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM`/`BTN_PADDING_Y` as the designer-gated example. That file
+   220	> is now `ui-kits/atoms/zimmButton/zimmButton.css.ts`, which the `**/*.css.ts` rule above
+   221	> routes to the squads — so those provisional, unapproved constants are **no longer
+   222	> designer-gated**, while still keying the app-wide `Button` recipe. The example was swapped
+   223	> to `header.ts` (genuinely still gated) so this paragraph stops asserting something false.
+   224	> Whether `zimmButton.css.ts` should be re-gated is an open governance question, not a doc
+   225	> fix, and is deliberately left open here.
+   226	
+   227	**Enforcement gap, partially closed:** the Tier 1/2 human reviewer was, until this rule
+   228	existed, the only thing catching a hardcoded hex/px/rem/em value landing in a theme file.
+   229	`scripts/auditTokenUsage.mjs` (`npm run audit:tokens`, see the `Never` note above) now exists
+   230	and runs correctly against the real codebase — built 2026-08-23. What's still open: it is not
+   231	wired into CI, so it only catches something if a developer or reviewer remembers to run it —
+   232	removing the Tier 1/2 reviewer from co-located `.css.ts` files still removes an *automatic*
+   233	backstop for exactly the files most likely to need it. Wiring `audit:tokens` as a required CI
+   234	check on `overrides/app/components/**/*.css.ts` is the remaining near-term follow-up, not an
+   235	optional nice-to-have — and per the script's own header, someone should triage a full run's
+   236	findings first (14 pre-existing, unrelated violations turned up the day it was built) before
+   237	turning it into a hard gate.
+   238	
+   239	**Cross-file shared values** (a breakpoint or provisional size needed by more than one
+   240	split-out file) go in a small shared module that stays in `theme/components/` — e.g.
+   241	`footerShared.ts`, holding the breakpoints and the one size value `footerNavColumn.css.ts`
+   242	and `bottomBar.css.ts` both need. Don't copy the same literal into two co-located files;
+   243	that's exactly the drift risk "The alias tier is a reference, not a second copy" (above)
+   244	already warns about.
+   245	
+   246	**Reference example:** the footer decomposition (SFCC-55 follow-up) split
+   247	`theme/components/footer.ts`'s 33 parts across `footer/footer.css.ts` (shell),
+   248	`footer/footerNavColumn/footerNavColumn.css.ts`, `footer/bottomBar/bottomBar.css.ts`, and
+   249	three `ui-kits/organisms/`/`ui-kits/molecules/` recipes — with `footerShared.ts` left
+   250	behind in `theme/components/` for the two genuinely cross-file values.
+   251	
+   252	## Known gaps (not silently dropped — logged here)
+   253	
+   254	- The f2r `zimm-product-detail-options` prototype spec includes a size-as-dropdown
+   255	  picker, a wishlist button, a "find in boutique" link, and description/shipping
+   256	  accordions. None of those exist as overrides yet, so `ProductDetailOptions` ships
+   257	  without them — it's colour/size swatches, quantity, and add-to-bag only.
+   258	- `swatch-group`'s `square`/`circle` variant functions (selected/disabled colour logic,
+   259	  the diagonal disabled-state gradient) are still inherited from the base SFCC theme —
+   260	  real visual design decisions with no Zimmermann Figma spec behind them yet.
+   261	- `zimmButton.css.ts`'s `BTN_HEIGHT_LG`/`BTN_HEIGHT_SM` (50px/41px) disagree with the
+   262	  Handover-sourced `actionSizes.height.lg`/`.md` (52px/40px) — flagged in `zimmButton.css.ts`,
+   263	  pending UI-designer sign-off. `BTN_PADDING_Y` (5px) has no Handover token at all —
+   264	  a gap to fill, not a conflict to resolve.
+   265	- `overrides/app/pages/product-detail/` is claimed by `.claude/rules/squadA.md`
+   266	  (draft, scope still settling) — flagged for awareness, not treated as a hard block.
+   267	
+   268	## Follow-up work (separate initiatives)
+   269	
+   270	- **Per-component CSS loading.** `globalStyles.ts`'s `.zimm-*` class registry is
+   271	  registered as one `theme.styles.global` block and ships on every page regardless of
+   272	  which classes a given page's components actually use. If component overrides start
+   273	  applying `.zimm-*` classNames directly for the non-interactive cases described above,
+   274	  only the classes a page's components actually reference should load, not the whole
+   275	  registry. Needs its own investigation, not scoped or estimated yet.
+   276	- **`globalStyles.ts` adoption is currently near zero.** Of the classes still defined
+   277	  there, none have a real consumer anywhere in the app today except one Storybook demo
+   278	  (`spacing.stories.tsx`'s `.zimm-grid` example). They're Handover-ported 1:1 and
+   279	  presumably _intended_ to be reused, just not adopted by any component yet — worth
+   280	  revisiting once component overrides actually start applying them.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/squadA.md ##########
+     1	---
+     2	paths:
+     3	  - "overrides/app/pages/home/**"
+     4	  - "overrides/app/pages/product-detail/**"
+     5	  - "overrides/app/pages/product-list/**"
+     6	  - "overrides/app/pages/cart/**"
+     7	  - "overrides/app/pages/checkout/**"
+     8	  - "overrides/app/pages/checkout-one-click/**"
+     9	  - "overrides/app/pages/confirmation/**"
+    10	  - "overrides/app/components/header/**"
+    11	  - "overrides/app/components/footer/**"
+    12	  - "overrides/app/components/drawer-menu/**"
+    13	  - "overrides/app/components/list-menu/**"
+    14	  - "overrides/app/components/sf-payments-express/**"
+    15	  - "overrides/app/components/sf-payments-express-buttons/**"
+    16	  - "overrides/app/components/multiship/**"
+    17	  - "overrides/app/components/bonus-product-view-modal/**"
+    18	  - "overrides/app/hooks/use-checkout-auto-select*"
+    19	  - "overrides/app/hooks/use-multiship*"
+    20	  - "overrides/app/hooks/use-pickup-shipment*"
+    21	  - "overrides/app/hooks/use-sf-payments*"
+    22	---
+    23	
+    24	# Squad A — Core Build & Commerce
+    25	
+    26	> **Draft squad split — scope can still change as sprints are confirmed.**
+    27	
+    28	Squad A owns this code. If you are from Squad B and need to touch these files, message the Squad A Lead directly before proceeding.
+    29	
+    30	## Squad A Territory
+    31	
+    32	```text
+    33	overrides/app/pages/home/
+    34	overrides/app/pages/product-detail/
+    35	overrides/app/pages/product-list/
+    36	overrides/app/pages/product-list/partials/
+    37	overrides/app/pages/cart/
+    38	overrides/app/pages/checkout/
+    39	overrides/app/pages/checkout/partials/
+    40	overrides/app/pages/checkout-one-click/
+    41	overrides/app/pages/confirmation/
+    42	overrides/app/components/header/
+    43	overrides/app/components/footer/
+    44	overrides/app/components/drawer-menu/
+    45	overrides/app/components/list-menu/
+    46	overrides/app/components/sf-payments-express/
+    47	overrides/app/components/sf-payments-express-buttons/
+    48	overrides/app/components/multiship/
+    49	overrides/app/components/bonus-product-view-modal/
+    50	overrides/app/hooks/use-checkout-auto-select.ts
+    51	overrides/app/hooks/use-multiship.ts
+    52	overrides/app/hooks/use-pickup-shipment.ts
+    53	overrides/app/hooks/use-sf-payments.ts
+    54	```
+    55	
+    56	Note: `use-current-basket.ts` is listed here for reference but is **Tier 1** — do not modify it without Integration lead approval. `header/`, `footer/`, `drawer-menu/`, and `list-menu/` are **Tier 2** — coordinate with Squad B before touching.
+    57	
+    58	## Scoping Rules for Squad A
+    59	
+    60	- Do not modify `order-summary/` without notifying Squad B — it is Tier 2.
+    61	- Do not modify `use-current-basket.ts` — Tier 1, Integration lead owns it.
+    62	- Always scope to the specific partial — do not refactor the parent checkout page unless explicitly asked.
+    63	- Changes to express payment components require Integration lead awareness.
+    64	- `header/`, `footer/`, `drawer-menu/`, `list-menu/` are shared shell — notify Squad B before any change.
+    65	
+    66	## Good vs Bad Prompts (Squad A)
+    67	
+    68	**Fixing a spacing issue in the shipping address form:**
+    69	✅ `In overrides/app/pages/checkout/partials/shipping-address.tsx only, adjust the Stack spacing prop from 6 to 3 at the base breakpoint. Do not modify any theme files, hooks, or other partials.`
+    70	❌ `Fix the spacing in the checkout form` — Claude may touch multiple partials and theme tokens.
+    71	
+    72	**Adding a gift message field:**
+    73	✅ `In overrides/app/pages/checkout/partials/shipping-address.tsx only, add a gift message textarea below the address form using the existing React Hook Form field wrapper. Do not modify any hooks or order-summary.`
+    74	❌ `Add a gift message to checkout` — Claude may modify basket hooks and order summary.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/squadB.md ##########
+     1	---
+     2	paths:
+     3	  - "overrides/app/pages/search/**"
+     4	  - "overrides/app/pages/account/**"
+     5	  - "overrides/app/pages/store-locator/**"
+     6	  - "overrides/app/components/search/**"
+     7	  - "overrides/app/components/store-locator/**"
+     8	  - "overrides/app/hooks/use-product-view-modal*"
+     9	  - "overrides/app/hooks/use-derived-product*"
+    10	  - "overrides/app/hooks/use-variant*"
+    11	  - "overrides/app/hooks/use-wish-list*"
+    12	---
+    13	
+    14	# Squad B — Discovery, Localisation & Analytics
+    15	
+    16	> **Draft squad split — scope can still change as sprints are confirmed.**
+    17	
+    18	Squad B owns this code. If you are from Squad A and need to touch these files, message the Squad B Lead directly before proceeding.
+    19	
+    20	## Squad B Territory
+    21	
+    22	```text
+    23	overrides/app/pages/search/
+    24	overrides/app/pages/account/
+    25	overrides/app/pages/store-locator/
+    26	overrides/app/components/search/
+    27	overrides/app/components/store-locator/
+    28	overrides/app/hooks/use-product-view-modal.ts
+    29	overrides/app/hooks/use-derived-product.ts
+    30	overrides/app/hooks/use-variant.ts
+    31	overrides/app/hooks/use-wish-list.ts
+    32	```
+    33	
+    34	Future Squad B areas (not yet scaffolded): promotions, Zimmerse, SEO & analytics (GTM, Optimizely, Crazy Egg, Inside Chat).
+    35	
+    36	## Scoping Rules for Squad B
+    37	
+    38	- Do not modify `product-tile/` or `product-item/` for search-only changes — these are Tier 2 shared components requiring Squad A notification.
+    39	- Do not modify `use-current-customer.ts` or `use-navigation.ts` — Tier 1.
+    40	- Search component changes must not affect its use in the header without Squad A notification.
+    41	- `product-detail/` and `product-list/` are Squad A territory — do not modify without Squad A Lead approval.
+    42	
+    43	## Good vs Bad Prompts (Squad B)
+    44	
+    45	**Fixing a style bug on the product tile (search context):**
+    46	✅ `In overrides/app/components/product-tile/index.tsx only, adjust the bottom margin on the product name text element to 8px. Do not modify any theme files or shared style tokens.`
+    47	❌ `Fix the spacing issue on the product tile` — Claude may modify the component AND theme tokens.
+    48	
+    49	**Adding a new filter to search:**
+    50	✅ `In overrides/app/pages/search/index.tsx only, add a brand filter using Chakra UI CheckboxGroup. Do not modify any shared components or hooks.`
+    51	❌ `Add a brand filter` — Claude may modify shared search components or PLP partials.
+    52	
+    53	**Debugging a hook (read-only):**
+    54	✅ `Without modifying any files, explain how use-derived-product.ts works and what it returns when all variants are out of stock.`
+    55	❌ `Fix use-derived-product so it handles out-of-stock correctly` — Claude will modify the hook.
+
+########## FILE: /Users/marcel.a.n.navarro/Dev/zimmermann-pwa/.claude/rules/tagging.md ##########
+     1	# Tagging & Environment Promotion
+     2	
+     3	How releases are versioned, tagged, and promoted through the environments. This is the
+     4	day-to-day companion to the branch rules in [AGENTS.md](../../AGENTS.md) (Branch Rules) and the
+     5	supervised-release flow in [.docs/releaseBranchesRules.md](../../.docs/releaseBranchesRules.md) —
+     6	this file covers **tags and promotion**, those cover **branches**.
+     7	
+     8	---
+     9	
+    10	## Tag taxonomy
+    11	
+    12	Every deployable version is an **immutable, annotated git tag**. The **tag-promoted** tiers
+    13	(`test` / `uat` / `staging` / `prod`) deploy a specific tag — never "whatever's on a branch right
+    14	now." (The continuous tiers are the exception: `dev` and `sit` deploy commit refs, and Test also
+    15	takes a branch ref for on-demand quick looks — see the Environment model below.)
+    16	
+    17	| Pattern | Meaning | Example | Cut from | Who |
+    18	| --- | --- | --- | --- | --- |
+    19	| `vX.Y.Z-rc.N` | Release candidate — a stabilising snapshot, cheap to iterate | `v0.1.0-rc.2` | a commit on `release/vX.Y.Z` | **any developer** |
+    20	| `vX.Y.Z` | Final release — the exact candidate that passed every gate | `v0.1.0` | the `release/vX.Y.Z` commit merged to `main` | **tier-1-approver only** |
+    21	| `vX.Y.Z-hotfix.N` | Emergency fix candidate, outside the normal train | `v0.1.1-hotfix.1` | a commit on `hotfix/vX.Y.Z` | **tier-1-approver only** |
+    22	
+    23	**Versioning:**
+    24	- **MAJOR** locked at `0` pre-launch (SemVer reserves `0.y.z` for initial development). `v1.0.0`
+    25	  is reserved for **go-live**; MAJOR reverts to its normal rare-breaking-change meaning after.
+    26	- **MINOR** bumps once per sprint, when a new `release/vX.Y.Z` branch is cut — sprint 1 = `v0.1.0`,
+    27	  sprint 2 = `v0.2.0`.
+    28	- **PATCH** = bug-fix-only release against an already-shipped `MAJOR.MINOR` (e.g. a hotfix after
+    29	  `v0.1.0` → `v0.1.1`).
+    30	- The `-rc.N` counter is a plain incrementing number, **not** an environment reference — it counts
+    31	  candidate builds, not deployments. The same `v0.1.0-rc.1` can be deployed (and re-deployed) to
+    32	  Test on demand; which environment ran which candidate is tracked via each `deploy-*.yml`'s Actions
+    33	  run history, not the tag name.
+    34	- The dot in `-rc.N` matters: SemVer compares `rc.10 > rc.2` numerically only as dot-separated
+    35	  fields; `rc10`/`rc2` would sort alphabetically (wrong). This is exactly what the version-guard
+    36	  relies on.
+    37	
+    38	Non-`v*` tags are a separate namespace and unaffected by any of this: `sprint/{N}/{date}` (sprint
+    39	rollover, auto-cut by `deploy-dev.yml`) and any `sit/deploy/*` refs.
+    40	
+    41	---
+    42	
+    43	## Cutting a tag
+    44	
+    45	Tags are cut with a **tag-only push** — a raw annotated `git tag`, then pushing the tag alone. We
+    46	deliberately avoid `npm version`: it creates a local `package.json`-bump *commit* alongside the tag,
+    47	and pushing that commit to the release branch is blocked by `release/**` branch protection
+    48	(`isAdminEnforced`, no bypass). Pushing only the tag sidesteps this — a tag push is not a branch
+    49	push. **Consequence:** `package.json`'s `version` field does not auto-track each candidate — it is
+    50	bumped once, deliberately, at the final-release PR.
+    51	
+    52	**Release candidate (any developer):**
+    53	
+    54	```bash
+    55	git checkout release/v0.1.0 && git pull --ff-only   # fail rather than tag a local merge commit
+    56	git tag -a v0.1.0-rc.0 -m "Release candidate v0.1.0-rc.0"
+    57	git push origin v0.1.0-rc.0           # tag only — NOT a branch push
+    58	gh workflow run deploy-test.yml -f ref=v0.1.0-rc.0
+    59	```
+    60	
+    61	- Always **annotated** (`-a -m`) — the tagger identity, timestamp, and message live in the tag
+    62	  object (`git show v0.1.0-rc.0`). Never lightweight.
+    63	- A tag push is not a branch push, so branch protection doesn't block it.
+    64	
+    65	**Final release (tier-1-approver only):** cut `vX.Y.Z` on the release-branch commit being merged to
+    66	`main`, then promote it up through `uat` → `staging` → `prod`. Run [`/generate-changelog`](../skills/generate-changelog/SKILL.md)
+    67	at this point to produce the GitHub Release.
+    68	
+    69	**Rollback.** The downgrade guard (see below) deliberately blocks deploying an older tag, so a
+    70	rollback takes one of two authorised paths:
+    71	
+    72	- **Emergency (fastest) — re-activate the previous bundle in Managed Runtime**, outside the deploy
+    73	  pipeline (the rollback procedure in the Environment Topology doc). This does not run the guard, so
+    74	  afterwards re-record the baseline so it doesn't treat a superseded tag as live:
+    75	  `node scripts/versionGuard.mjs record prod v0.1.0`.
+    76	- **Controlled — pipeline rollback with the guard override.** Redeploy the known-good tag with
+    77	  `rollback=true`; the guard's downgrade check is skipped (the run logs the skip for audit) and
+    78	  `record` still runs, so the rolled-back tag becomes the new live baseline:
+    79	  `gh workflow run deploy-prod.yml -f ref=v0.1.0 -f rollback=true`. Because this bypasses the guard,
+    80	  its only human gate is the environment's **required reviewers** — so `prod` (and `staging`/`uat`)
+    81	  must have required reviewers with "prevent self-review" configured. **Prerequisite: until that is
+    82	  set, `rollback=true` is not gated.**
+    83	
+    84	---
+    85	
+    86	## Enforcement — what actually holds the line
+    87	
+    88	On this org's GitHub **`team`** plan, ruleset *metadata* rules (`tag_name_pattern`) are
+    89	Enterprise-only and silently **inert** — a malformed `v*` tag is not blocked at push time by a
+    90	ruleset. Naming is enforced by the hook and workflow below, not the rulesets. Three layers, in
+    91	order of reliability:
+    92	
+    93	1. **Pre-push hook** ([.husky/pre-push](../../.husky/pre-push) → [scripts/hooks/pre-push](../../scripts/hooks/pre-push))
+    94	   — *best-effort prevention*. Rejects a malformed `v*` tag before it leaves the developer's machine
+    95	   — the earliest catch, but bypassable (`git push --no-verify`, or a checkout without the hook
+    96	   installed), so not a hard guarantee. Allowed: `vX.Y.Z-rc.N`, `vX.Y.Z`, `vX.Y.Z-hotfix.N`.
+    97	   Non-`v*` tags and branch pushes pass through untouched.
+    98	2. **`tag-validate.yml`** ([.github/workflows/tag-validate.yml](../../.github/workflows/tag-validate.yml))
+    99	   — *detection*. Fails if a malformed `v*` tag lands on the remote (post-hoc alert, not a block).
+   100	3. **GitHub Rulesets** `tag-rc` (id 20487306) + `tag-release` (id 20487243) — enforce what core rules
+   101	   *can* on the `team` plan: **immutability** (`update` + `deletion` restricted) and **tier-1-only
+   102	   final tags** (`creation` restricted on `tag-release`, bypass = `@ZimmermannAU/tier-1-approvers`).
+   103	   Their `tag_name_pattern` rules (`^v\d+\.\d+\.\d+-rc\.\d+$` and `^v\d+\.\d+\.\d+(-hotfix\.\d+)?$`)
+   104	   are **kept but inert on `team`** — they self-activate if the org ever upgrades to Enterprise.
+   105	
+   106	GitHub ruleset objects have no free-text description field, so the "inert on team" caveat can't
+   107	live on the ruleset itself — this section is its canonical record. The rulesets may optionally be
+   108	renamed in Settings → Rules to append " — naming inert on team plan" for an at-a-glance signal.
+   109	
+   110	---
+   111	
+   112	## Environment model — two categories
+   113	
+   114	| Category | Environments | How it deploys |
+   115	| --- | --- | --- |
+   116	| **Continuous / auto** | `dev`, `sit` | No human-picked tag. `dev` auto-deploys every `develop` merge; `sit` deploys the gate's commit via `workflow_run` off the SIT Gate on `release/**`. |
+   117	| **Tag-promoted / deliberate** | `test`, `uat`, `staging`, `prod` | `workflow_dispatch` with a specific tag `ref`. Each can sit on a different tag simultaneously, decoupling their cadences. |
+   118	
+   119	**SIT stays branch/gate-driven** — its `workflow_run` trigger off the SIT Gate on `release/**` is
+   120	unchanged. This is an intentional exception to "every environment sits on a named tag": SIT is a
+   121	continuous auto-integration tier, the same category as `dev`, not a deliberate pinned-promotion
+   122	tier. Using tags is not the same as being triggered by a tag — tags and Releases still exist and are
+   123	visible; SIT simply auto-refreshes.
+   124	
+   125	**Environment names are the real GitHub Environment names** — `dev / test / sit / uat / staging /
+   126	prod`. Tooling must key off these, not the workflow-file suffix: `deploy-stg.yml` binds
+   127	`environment: staging` (the `stg`≠`staging` mismatch already caused a bug once).
+   128	
+   129	---
+   130	
+   131	## Downgrade protection (version-guard)
+   132	
+   133	[scripts/versionGuard.mjs](../../scripts/versionGuard.mjs), wired into the four tag-promoted
+   134	`deploy-*.yml` workflows:
+   135	
+   136	- **`check <env> <ref>`** runs *before* the push: reads the environment's last recorded deployed tag
+   137	  and **blocks** if `ref` is semver-older (`semver.lt`). Skips non-`v*` refs, allows the first-ever
+   138	  deploy, and **fails closed** on any lookup/parse error.
+   139	- **`record <env> <ref>`** runs *after* a successful push: stamps the deployed tag as an explicit
+   140	  GitHub Deployment (the auto-created Deployment records the *trigger* ref, not the deployed tag, so
+   141	  we record it ourselves and read it back).
+   142	- **`dev` and `sit` are excluded** — they have no human-picked `ref` to compare (consistent with the
+   143	  two-category model above).
+   144	- Guard/record key off the **GitHub Environment name** (`stg`→`staging`).
+   145	
+   146	---
+   147	
+   148	## The Test gate
+   149	
+   150	`deploy-test.yml` runs **deploy-then-gate**: it deploys first (Test is the fast, disposable
+   151	quick-look tier), then a post-deploy gate verifies the same build. The run's overall pass/fail is the
+   152	**"safe to promote to SIT"** signal.
+   153	
+   154	- **`bundle-size`** — `npm run test:max-file-size`, enforcing the `package.json` budgets
+   155	  (`main.js` ≤ 180 kB, `vendor.js` ≤ 550 kB). Bundle-size is cheap, deterministic, and mobile
+   156	  page-speed is a top project priority, so bloat is caught at the earliest deployed tier.
+   157	- **P0 Playwright** — attaches to the same gate once a `*.p0.spec` exists (Lead QA, gherkin-first);
+   158	  it targets the Test storefront via the `test` env's `RETAIL_APP_HOME` variable.
+   159	
+   160	This intentionally differs from SIT's **gate-then-deploy** (`digital-sit.yml`), which can hang a
+   161	pre-check on a `release/**` push event that Test doesn't have.
+   162	
+   163	---
+   164	
+   165	## References
+   166	
+   167	- Design: Confluence *Tag-Based Environment Promotion (GitFlow)* (335216656)
+   168	- Branch rules: [AGENTS.md](../../AGENTS.md) · supervised release: [.docs/releaseBranchesRules.md](../../.docs/releaseBranchesRules.md)
+   169	- Implementation: [versionGuard.mjs](../../scripts/versionGuard.mjs) · [deploy-*.yml](../../.github/workflows/) · [tag-validate.yml](../../.github/workflows/tag-validate.yml) · pre-push hook
+   170	- Changelog: [`/generate-changelog`](../skills/generate-changelog/SKILL.md)
+   171	
+   172	---
+   173	
+   174	_This file is Tier 1 (Governance) — changes require both squad leads and the Integration lead._
+
